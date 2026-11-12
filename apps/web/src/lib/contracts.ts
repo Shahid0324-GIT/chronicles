@@ -17,7 +17,12 @@ export type RelationshipType =
   | "CONNECTED_TO"
   | "FORESHADOWS"
   | "ALLIED_WITH"
-  | "CONTRADICTS";
+  | "CONTRADICTS"
+  | "OPPOSED"
+  | "MEMBER_OF"
+  | "RELATED_TO"
+  | "PRECEDES"
+  | "ENABLED";
 export interface Universe {
   id: string;
   slug: string;

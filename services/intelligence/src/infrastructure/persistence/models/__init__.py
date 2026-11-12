@@ -16,6 +16,12 @@ from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .base import Base
+from .knowledge import (  # noqa: F401 -- register additive publication metadata
+    EntityAliasModel,
+    KnowledgeDecisionModel,
+    PromotionEvidenceModel,
+    PromotionRecordModel,
+)
 from .research import (  # noqa: F401 -- register research metadata for Alembic
     ClaimEvidenceModel,
     ProviderUsageModel,

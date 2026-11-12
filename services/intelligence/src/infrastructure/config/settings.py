@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     groq_api_key_primary: SecretStr | None = Field(default=None, repr=False)
     groq_api_key_secondary: SecretStr | None = Field(default=None, repr=False)
     groq_model: str | None = None
+    promotion_minimum_sources: int = Field(default=1, ge=1, le=5)
+    promotion_strong_sources: int = Field(default=2, ge=2, le=5)
     agent_max_iterations: int = Field(default=3, ge=1, le=5)
     agent_max_search_queries: int = Field(default=10, ge=0, le=20)
     agent_max_sources: int = Field(default=20, ge=1, le=20)

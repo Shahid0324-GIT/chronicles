@@ -44,7 +44,9 @@ class FindingResponse(BaseModel):
     payload: CandidateEntity | CandidateRelationship
     decision: Literal["supported", "disputed", "insufficient", "review"]
     reason: str
-    canonical: Literal[False]
+    canonical: bool
+    canonical_id: UUID | None = None
+    promotion_id: UUID | None = None
     evidence: list[EvidenceResponse]
 
 
@@ -53,3 +55,33 @@ class EventResponse(BaseModel):
     stage: str
     detail: dict[str, Any]
     created_at: datetime
+
+
+class AliasResponse(BaseModel):
+    id: UUID
+    node_id: UUID
+    name: str
+    normalized_name: str
+    claim_id: UUID
+
+
+class PromotionResponse(BaseModel):
+    id: UUID
+    claim_id: UUID
+    job_id: UUID
+    universe_id: UUID
+    continuity_id: UUID
+    target_id: UUID
+    kind: Literal["entity", "relationship"]
+    created: bool
+    reversed: bool
+    data: dict[str, Any]
+    created_at: datetime
+    reversed_at: datetime | None
+    correction_reason: str | None
+
+
+class KnowledgeResponse(BaseModel):
+    decisions: dict[str, dict[str, Any]]
+    promotions: list[PromotionResponse]
+    summary: dict[str, int]

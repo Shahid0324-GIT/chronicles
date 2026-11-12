@@ -11,6 +11,7 @@ from src.domain.entities import now
 from src.domain.exceptions import NotFoundError
 from src.domain.research import SourceDocument, SourcePassage, digest
 from src.infrastructure.persistence.models import ContinuityModel, NodeModel, UniverseModel
+from src.infrastructure.persistence.models.knowledge import PromotionRecordModel
 from src.infrastructure.persistence.models.research import (
     ClaimEvidenceModel,
     ProviderUsageModel,
@@ -129,6 +130,15 @@ class SqlResearchRepository:
             "updated_at": row.updated_at.isoformat(),
             "provider_usage": [item.detail for item in usage],
         }
+
+    async def lock_job(self, job_id: UUID) -> dict[str, Any] | None:
+        row = await self.session.scalar(
+            select(ResearchJobModel)
+            .where(ResearchJobModel.id == job_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        return await self.get_job(job_id) if row else None
 
     async def update_job(self, job_id: UUID, **values: Any) -> None:
         row = await self.session.scalar(
@@ -281,6 +291,14 @@ class SqlResearchRepository:
             .where(ResearchClaimModel.job_id == job_id)
             .order_by(ResearchClaimModel.id)
         )
+        publications = {
+            record.claim_id: record
+            for record in await self.session.scalars(
+                select(PromotionRecordModel).where(
+                    PromotionRecordModel.job_id == job_id, PromotionRecordModel.reversed.is_(False)
+                )
+            )
+        }
         result = []
         for row in rows:
             evidence = (
@@ -302,7 +320,13 @@ class SqlResearchRepository:
                     "payload": row.payload,
                     "decision": row.decision,
                     "reason": row.reason,
-                    "canonical": False,
+                    "canonical": row.id in publications,
+                    "canonical_id": str(publications[row.id].target_id)
+                    if row.id in publications
+                    else None,
+                    "promotion_id": str(publications[row.id].id)
+                    if row.id in publications
+                    else None,
                     "evidence": [
                         {
                             "passage_id": str(p.id),

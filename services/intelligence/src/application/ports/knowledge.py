@@ -1,0 +1,46 @@
+from contextlib import AbstractAsyncContextManager
+from dataclasses import dataclass
+from typing import Any, Protocol
+from uuid import UUID
+
+from src.application.ports.research import ResearchRepository
+from src.domain.entities import GraphNode, GraphRelationship
+
+
+class KnowledgeRepository(Protocol):
+    async def lock_scope(self, universe_id: UUID, continuity_id: UUID) -> None: ...
+    async def catalog(self, universe_id: UUID, continuity_id: UUID) -> list[dict[str, Any]]: ...
+    async def decision(
+        self, claim_id: UUID, job_id: UUID, universe_id: UUID, continuity_id: UUID, **data: Any
+    ) -> None: ...
+    async def decisions(self, job_id: UUID) -> dict[str, dict[str, Any]]: ...
+    async def node(self, identifier: UUID) -> GraphNode | None: ...
+    async def edge(
+        self, source: UUID, target: UUID, kind: str, continuity: UUID
+    ) -> GraphRelationship | None: ...
+    async def add_node(self, node: GraphNode) -> None: ...
+    async def add_edge(self, edge: GraphRelationship) -> None: ...
+    async def alias(self, node: GraphNode, name: str, claim_id: UUID, sensitive: bool) -> UUID: ...
+    async def records(self, job_id: UUID | None = None) -> list[dict[str, Any]]: ...
+    async def record(
+        self,
+        claim: dict[str, Any],
+        job: dict[str, Any],
+        target: UUID,
+        created: bool,
+        data: dict[str, Any],
+    ) -> dict[str, Any]: ...
+    async def rollback(self, record_id: UUID, reason: str) -> dict[str, Any]: ...
+    async def aliases(
+        self, node_id: UUID, allowed_sources: list[UUID] | None
+    ) -> list[dict[str, Any]]: ...
+
+
+@dataclass(frozen=True)
+class KnowledgeSession:
+    archive: ResearchRepository
+    graph: KnowledgeRepository
+
+
+class KnowledgeTransaction(Protocol):
+    def __call__(self) -> AbstractAsyncContextManager[KnowledgeSession]: ...

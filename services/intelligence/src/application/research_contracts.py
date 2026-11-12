@@ -9,7 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field
 from src.domain.value_objects import NodeType, RelationshipType
 
 T = TypeVar("T", bound=BaseModel)
-Task = Literal["planning", "extraction", "verification"]
+Task = Literal[
+    "planning", "extraction", "verification", "identity_resolution", "relationship_analysis"
+]
 
 
 class StructuredModel(BaseModel):
@@ -42,7 +44,7 @@ class CandidateRelationship(StructuredModel):
 
 
 class Extraction(StructuredModel):
-    entities: list[CandidateEntity] = Field(default_factory=list, max_length=8)
+    entities: list[CandidateEntity] = Field(default_factory=list, max_length=12)
     relationships: list[CandidateRelationship] = Field(default_factory=list, max_length=8)
 
 
@@ -50,6 +52,10 @@ class Assessment(StructuredModel):
     claim_id: UUID
     decision: Literal["supported", "disputed", "insufficient", "review"]
     reason: str = Field(min_length=3, max_length=600)
+
+    material_conflict: bool = False
+    continuity_matches: bool = True
+    contradiction_evidence: list[Citation] = Field(default_factory=list, max_length=3)
 
 
 class Verification(StructuredModel):
