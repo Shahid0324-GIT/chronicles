@@ -1,0 +1,202 @@
+{
+  "captured_at": "2026-11-12T13:32:03.564376+00:00",
+  "execution": "REAL Ollama inference and real approved web retrieval; not fake test inference",
+  "job": {
+    "id": "edb37626-d8f7-4e8e-9437-70e56f46f719",
+    "universe_id": "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6",
+    "continuity_id": "7f3e5d50-2c7a-5bf7-942c-04094052a639",
+    "objective": "Identify the two characters explicitly described in the introductory premise. Write each character description in Japanese and limit it to one explicit fact from the source. Use the original Japanese spelling. No inferred names, no aliases as duplicate characters. Do not extract powers or later-story details. Return an empty relationships list when no available relationship type accurately describes the source.",
+    "status": "completed",
+    "stage": "verifier",
+    "iteration": 1,
+    "cancel_requested": false,
+    "error": null,
+    "provider_usage": [
+      {
+        "task": "planning",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "provider": "ollama",
+        "credential": "local",
+        "elapsed_ms": 2741,
+        "input_tokens": 363,
+        "output_tokens": 116
+      },
+      {
+        "task": "extraction",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "provider": "ollama",
+        "credential": "local",
+        "elapsed_ms": 4669,
+        "input_tokens": 831,
+        "output_tokens": 241
+      },
+      {
+        "task": "verification",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "provider": "ollama",
+        "credential": "local",
+        "elapsed_ms": 1957,
+        "input_tokens": 436,
+        "output_tokens": 97
+      },
+      {
+        "task": "verification",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "provider": "ollama",
+        "credential": "local",
+        "elapsed_ms": 2342,
+        "input_tokens": 440,
+        "output_tokens": 121
+      }
+    ]
+  },
+  "events": [
+    {
+      "id": 13,
+      "stage": "research.queued",
+      "detail": {},
+      "created_at": "2026-11-12T13:26:19.416038Z"
+    },
+    {
+      "id": 14,
+      "stage": "research.planner",
+      "detail": {
+        "sources": 0,
+        "iteration": 1,
+        "supported": 0,
+        "candidates": 0
+      },
+      "created_at": "2026-11-12T13:26:27.314799Z"
+    },
+    {
+      "id": 15,
+      "stage": "research.researcher",
+      "detail": {
+        "sources": 1,
+        "iteration": 1,
+        "supported": 0,
+        "candidates": 0
+      },
+      "created_at": "2026-11-12T13:26:27.389049Z"
+    },
+    {
+      "id": 16,
+      "stage": "research.extractor",
+      "detail": {
+        "sources": 1,
+        "iteration": 1,
+        "supported": 0,
+        "candidates": 2
+      },
+      "created_at": "2026-11-12T13:26:32.648984Z"
+    },
+    {
+      "id": 17,
+      "stage": "research.verifier",
+      "detail": {
+        "sources": 1,
+        "iteration": 1,
+        "supported": 2,
+        "candidates": 2
+      },
+      "created_at": "2026-11-12T13:26:38.151485Z"
+    },
+    {
+      "id": 18,
+      "stage": "research.completed",
+      "detail": {
+        "error": null
+      },
+      "created_at": "2026-11-12T13:26:38.180217Z"
+    }
+  ],
+  "canonical_graph": {
+    "nodes": 15,
+    "edges": 25
+  },
+  "providers": {
+    "mode": "hybrid",
+    "cloud_content_allowed": false,
+    "cloud_configured": true,
+    "disabled_credentials": [],
+    "cloud_cooldown": false,
+    "ollama": {
+      "available": true,
+      "model": "qwen3.5:4b"
+    },
+    "groq": {
+      "model": "openai/gpt-oss-20b",
+      "credentials": [
+        "primary",
+        "secondary"
+      ],
+      "probed": false
+    }
+  },
+  "findings": [
+    {
+      "id": "128178be-1ee2-516f-9239-d3b23325469e",
+      "kind": "entity",
+      "name": "スバル",
+      "type": "CHARACTER",
+      "english_paraphrase_for_report": "Subaru is disoriented and at a loss in an unfamiliar world.",
+      "decision": "supported",
+      "canonical": false,
+      "evidence": [
+        {
+          "passage_id": "0b7cb235-f642-5494-b732-7a76b5464f25",
+          "source_id": "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d",
+          "passage_start": 0,
+          "quote_start": 549,
+          "quote_end": 601,
+          "url": "https://www.tv-tokyo.co.jp/anime/re-zero/story/",
+          "title": "テレビ東京・あにてれ Re:ゼロから始める異世界生活",
+          "publisher": "www.tv-tokyo.co.jp",
+          "content_hash": "319a549836c6500e2c0069083fc3683c43d8a9a7345b86ea52e50fb576b9181e",
+          "retrieved_at": "2026-11-12T13:19:41.156703Z",
+          "source_scope": "Original TV anime opening premise, restricted to the arrival and the initial search.",
+          "permission_basis": "Public broadcaster synopsis; bounded local research requested by the user, robots checked, no source-text republication.",
+          "public_web": true,
+          "truncated": false
+        }
+      ]
+    },
+    {
+      "id": "4844f2e4-3e07-5e23-8c5a-76e738e3819c",
+      "kind": "entity",
+      "name": "菜月昴",
+      "type": "CHARACTER",
+      "english_paraphrase_for_report": "Natsuki Subaru is an ordinary high-school student who finds himself in another world while returning from a convenience store.",
+      "decision": "supported",
+      "canonical": false,
+      "evidence": [
+        {
+          "passage_id": "0b7cb235-f642-5494-b732-7a76b5464f25",
+          "source_id": "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d",
+          "passage_start": 0,
+          "quote_start": 507,
+          "quote_end": 548,
+          "url": "https://www.tv-tokyo.co.jp/anime/re-zero/story/",
+          "title": "テレビ東京・あにてれ Re:ゼロから始める異世界生活",
+          "publisher": "www.tv-tokyo.co.jp",
+          "content_hash": "319a549836c6500e2c0069083fc3683c43d8a9a7345b86ea52e50fb576b9181e",
+          "retrieved_at": "2026-11-12T13:19:41.156703Z",
+          "source_scope": "Original TV anime opening premise, restricted to the arrival and the initial search.",
+          "permission_basis": "Public broadcaster synopsis; bounded local research requested by the user, robots checked, no source-text republication.",
+          "public_web": true,
+          "truncated": false
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Two spellings of Subaru were extracted as separate entity candidates; identity reconciliation is not implemented.",
+    "Supported is a model-assisted entailment assessment with exact evidence checks, not canon promotion or independent historical verification.",
+    "Source bodies, quotations, and copied model descriptions/reasons are omitted from this Git artifact. The local database retains evidence and offsets.",
+    "Groq was configured but not invoked because cloud content sharing is disabled."
+  ]
+}

@@ -24,7 +24,7 @@ An edge validates endpoint identity and universe equality. Scoped endpoints must
 
 ## Application and composition
 
-Only `UniverseRepository` and `GraphRepository` are ports. Each is a meaningful persistence/test substitution boundary. ListUniverses, GetUniverse, GetUniverseGraph and GetNodeDetails receive their dependencies through constructors. Frozen result DTOs aggregate graph and detail responses without depending on HTTP.
+`UniverseRepository` and `GraphRepository` are the canonical graph ports. Phase 3 adds scoped archive, transaction, source-acquisition and search ports in `application/ports/research.py`, plus provider-independent inference contracts. Each is a meaningful persistence/test substitution boundary. ListUniverses, GetUniverse, GetUniverseGraph and GetNodeDetails receive their dependencies through constructors. Frozen result DTOs aggregate graph and detail responses without depending on HTTP.
 
 FastAPI Depends providers are the composition root. The cached request session is shared by both repositories; its yield dependency opens a transaction, commits on success, rolls back on failure and closes. Graph reads are sequential because AsyncSession cannot be shared across concurrent tasks. Engine creation happens in application lifespan; shutdown disposes its pool. No engine is opened merely by importing domain or application modules.
 
@@ -46,4 +46,4 @@ Domain and application tests run with pure values and fakes. API and repository 
 
 ## Deferred work
 
-Ollama, LangChain, LangGraph, SearXNG, embeddings and SSE transport remain deferred. Sigma and GSAP were added in Phase 2 without changing backend contracts. No placeholder agents or fabricated research results are included. Provenance, claim-level evidence, research job state and editing endpoints need their own design before ingestion is added.
+Phase 3 increment 1 implements injected Ollama/Groq inference, approved sources, persistent claim/evidence storage, a four-role LangGraph and an independent local PostgreSQL worker. Its archive is separate from the read-only canonical graph; a model-supported claim is not automatically canon. See [the research architecture and transaction/checkpoint boundaries](../phase-3-research.md). Embeddings, SSE, native LangGraph checkpointers, human promotion and frontend research integration remain deferred. No future-agent placeholder classes or fabricated production research results are included.

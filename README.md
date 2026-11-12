@@ -1,12 +1,12 @@
 # Chronicles · Universe Atlas
 
-A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed, read-only API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. There is no AI inference, research automation, authentication, cloud storage, or deployment.
+A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed, read-only API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. Phase 3 increment 1 adds a local source-backed research worker with Ollama, optional Groq, LangGraph and a persistent evidence archive. The existing frontend still uses the curated graph; research does not automatically update canon. No authentication, cloud storage or deployment is included.
 
 ## Prerequisites
 
 - Windows 11, PowerShell, Python 3.11+, Node.js 20.9+ (Node 24 LTS recommended), npm, Docker Desktop using Linux containers.
 - Docker Desktop must be running. Ports 5432, 8000 and 3000 must be free.
-- Internet is needed once for packages and the PostgreSQL image; application runtime is local.
+- Internet is needed for installation and public-source research. Graph browsing and research over imported permitted text run locally with Ollama. Groq is optional and requires explicit cloud-content permission.
 - Verified versions and check results are in [verification.md](docs/verification.md).
 
 ## Install
@@ -55,7 +55,7 @@ npm run dev --prefix apps/web
 
 Open [the atlas](http://127.0.0.1:3000) and [API documentation](http://127.0.0.1:8000/docs). Next.js server components fetch FastAPI through server-only `API_BASE_URL`; the browser receives a continuous illustrated atlas. Universe switching uses a same-origin forwarding route, and selection, camera, filters and relationship traversal use shared exploration state.
 
-Backend settings read process environment and `.env` in the current directory. `DATABASE_URL` must use `postgresql+asyncpg://`. Frontend `.env.local` sets `API_BASE_URL`; it is not a `NEXT_PUBLIC_` variable. Restart services after changing settings. CORS origins are an explicit JSON list for future direct browser API clients; the current frontend fetches server-side.
+Backend settings read process environment, the repository-root `.env`, and then `.env` in the current directory (process environment wins). `DATABASE_URL` must use `postgresql+asyncpg://`. Frontend `.env.local` sets `API_BASE_URL`; it is not a `NEXT_PUBLIC_` variable. Restart services after changing settings. CORS origins are an explicit JSON list for future direct browser API clients; the current frontend fetches server-side.
 
 ## Checks
 
@@ -115,7 +115,7 @@ See [architecture](docs/architecture/overview.md), [backend ADR](docs/adr/0001-b
 - `presentation`: API schemas, routes and FastAPI dependency composition.
 - `apps/web`: Next.js App Router, strict TypeScript, Tailwind, Atlas rendering boundary.
 
-Phase 1 is deliberately read-only. No research agents, Ollama, LangChain, LangGraph, SearXNG, pgvector, or SSE transport are implemented. Sigma, Graphology, GSAP and Zustand power the Phase 2 frontend. A complete graph is returned in one request for this small foundation; pagination and large-graph limits belong to a subsequent task.
+The canonical graph remains read-only. Phase 3 adds four-role LangGraph research, injected Ollama/Groq inference, approved URL/text ingestion and a separate PostgreSQL claim/evidence archive. Optional SearXNG search is wired but not installed by default. Embeddings/pgvector, SSE and canon promotion are deferred. Sigma, Graphology, GSAP and Zustand power the Phase 2 frontend. A complete graph is returned in one request for this small foundation; pagination and large-graph limits belong to a subsequent task.
 
 ## Troubleshooting
 
@@ -129,7 +129,7 @@ Phase 1 is deliberately read-only. No research agents, Ollama, LangChain, LangGr
 - **PowerShell activation policy:** invoke `.venv\Scripts\python` directly; changing execution policy is unnecessary.
 - **Async tests stall under a restrictive Windows sandbox:** run the same tests in a normal local terminal; SQLite uses worker threads and PostgreSQL uses loopback sockets.
 
-Suggested next task: provide licensed media and evidence-backed chronology through explicit backend contracts before adding research or streaming.
+Next research increments should address alias reconciliation, human review and scoped semantic retrieval before populating frontend narrative contracts. See the Phase 3 runbook below.
 
 ## Phase 2.5A narrative and lore
 
@@ -139,7 +139,7 @@ The atlas opens a four-moment, manually curated Re:Zero introduction covering or
 
 Rerun the existing seed to add required graph records while preserving existing data: the illustrative atlas now has **15 nodes and 25 edges**. No migration is required. Notes reference API UUIDs through an injectable local provider; React contains no canonical graph fixtures. Progress/history stay in the current session.
 
-See [architecture and limitations](docs/phase-2-5a-narrative.md), [future API contracts](docs/contracts/narrative-api.md), and [verification](docs/verification.md). Narrative API endpoints and AI research remain future work.
+See [architecture and limitations](docs/phase-2-5a-narrative.md), [future API contracts](docs/contracts/narrative-api.md), and [verification](docs/verification.md). Narrative API endpoints and frontend integration with the new research archive remain future work.
 
 ## Phase 2 frontend
 
@@ -151,3 +151,15 @@ npm run test:e2e --prefix apps/web
 ```
 
 Unit tests need no backend. Playwright requires real seeded PostgreSQL/FastAPI at port 8000 and installed Google Chrome; the runner starts or reuses Next.js on port 3000. Use `/` to search, Tab/Enter for map entities, arrows to pan the focused map, +/- to zoom, and Home or the full-map control to reset. Guided mode never invents chronology for unordered data.
+
+## Phase 3 increment 1: research engine
+
+See [the architecture, API and worker runbook](docs/phase-3-research.md), [actual research findings and provider audit](docs/phase-3-demo.json), and [executed checks and limitations](docs/phase-3-verification.md). This is an incremental implementation, not every agent in the overall Phase 3 specification.
+
+From `services/intelligence`, apply `alembic upgrade head`, start the API as above, and start the independent worker with:
+
+```powershell
+..\..\.venv\Scripts\python -m src.research_worker
+```
+
+Submit jobs through [local Swagger](http://127.0.0.1:8000/docs). The worker runs Planner → Researcher → Extractor → Verifier and persists exact evidence and candidate decisions. The default `AI_CLOUD_CONTENT_ALLOWED=false` keeps model context local. Ollama must already be running with the configured chat model. No seed content is presented as agent-discovered.

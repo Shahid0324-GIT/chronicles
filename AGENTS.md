@@ -61,3 +61,9 @@ Narrative contracts, fixtures, resolver and injectable provider live in `apps/we
 ## Phase 2.5B Pass 1
 
 The default is the dedicated horizontal illustrated canvas in `features/chronicle/`, not a timeline above Sigma. Sigma remains the Free graph view. Theme/motion/spine settings live in `chronicle/design.ts`; visual dimensions/typography live in `src/app/chronicle.css`. Derive causes/consequences only from explicit scoped `CAUSED` edges, never sequence adjacency. Existing seed has no such edges; show missing causal knowledge honestly. Keep branch origin and journey progress visible. Target desktop 1920×1080. See docs/phase-2-5b-pass-1.md. Stop before advanced Pass 2 choreography or agents unless requested.
+
+## Phase 3 research increment 1
+
+Research is implemented only through the four-role workflow in `src/orchestration/research_workflow.py`. Keep new archive jobs, documents, passages, candidate claims and evidence separate from the canonical graph. A supported model assessment is not canon or independent verification. Never present fake inference tests or curated seeds as real research. Do not add future-agent stubs.
+
+Research ports live in `application/ports/research.py`; `infrastructure/research_runtime.py` composes concrete dependencies. Keep LLM/network calls outside short archive transactions. The independent worker owns node-boundary snapshots, cooperative cancellation and a PostgreSQL advisory lock; do not claim native LangGraph checkpointing, SSE, semantic RAG or embeddings. Respect source policy and the default cloud-content boundary; never rotate credentials to bypass a rate limit. See `docs/phase-3-research.md` and `docs/phase-3-verification.md`. The current Phase 3 specification forbids remote pushes and deployment; local milestone commits are authorized.
