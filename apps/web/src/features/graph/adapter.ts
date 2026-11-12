@@ -1,3 +1,7 @@
+import type {
+  NarrativeJourney,
+  LoreThread,
+} from "@/features/narrative/contracts";
 import { MultiDirectedGraph } from "graphology";
 import type { GraphNode, GraphEdge, UniverseGraph } from "@/lib/contracts";
 import { resolveMedia } from "@/features/discovery/media-registry";
@@ -13,21 +17,39 @@ export interface AtlasNodeAttributes {
   image: string;
   aspectRatio: number;
   entity: GraphNode;
+  presentationRole: "moment" | "concept" | "supporting";
 }
 export interface AtlasEdgeAttributes {
   size: number;
   color: string;
   label: string;
   entity: GraphEdge;
+  narrativePath: boolean;
+  loreLink: boolean;
 }
 export type AtlasGraph = MultiDirectedGraph<
   AtlasNodeAttributes,
   AtlasEdgeAttributes
 >;
-export function adaptGraph(data: UniverseGraph, previous?: Map<string, Point>) {
+export function adaptGraph(
+  data: UniverseGraph,
+  previous?: Map<string, Point>,
+  presentation?: {
+    positions: Map<string, Point>;
+    journey?: NarrativeJourney;
+    thread?: LoreThread;
+  },
+) {
   const graph: AtlasGraph = new MultiDirectedGraph();
   const issues: string[] = [];
-  const positions = layoutNodes(data.nodes, data.edges, previous);
+  const positions =
+    presentation?.positions ?? layoutNodes(data.nodes, data.edges, previous);
+  const moments = new Set(
+    presentation?.journey?.steps.map((step) => step.eventNodeId) ?? [],
+  );
+  const loreEdges = new Set(
+    presentation?.thread?.presentation.relationshipIds ?? [],
+  );
   for (const node of data.nodes) {
     if (
       graph.hasNode(node.id) ||
@@ -40,7 +62,20 @@ export function adaptGraph(data: UniverseGraph, previous?: Map<string, Point>) {
     const visual = NODE_IDENTITIES[node.type];
     graph.addNode(node.id, {
       ...positions.get(node.id)!,
-      size: node.type === "CHARACTER" ? 32 : node.type === "LOCATION" ? 33 : 23,
+      size: moments.has(node.id)
+        ? 34
+        : node.id === presentation?.thread?.conceptNodeId
+          ? 38
+          : node.type === "CHARACTER"
+            ? 29
+            : node.type === "LOCATION"
+              ? 29
+              : 23,
+      presentationRole: moments.has(node.id)
+        ? "moment"
+        : node.id === presentation?.thread?.conceptNodeId
+          ? "concept"
+          : "supporting",
       color: visual.color,
       label:
         node.title.length > 24 ? node.title.slice(0, 22) + "…" : node.title,
@@ -79,6 +114,17 @@ export function adaptGraph(data: UniverseGraph, previous?: Map<string, Point>) {
             : "#718082",
       label: humanize(edge.relationship_type),
       entity: edge,
+      narrativePath: Boolean(
+        presentation?.journey?.steps.some(
+          (step, index, steps) =>
+            index > 0 &&
+            ((steps[index - 1].eventNodeId === edge.source &&
+              step.eventNodeId === edge.target) ||
+              (steps[index - 1].eventNodeId === edge.target &&
+                step.eventNodeId === edge.source)),
+        ),
+      ),
+      loreLink: loreEdges.has(edge.id),
     });
   }
   return { graph, positions, issues };

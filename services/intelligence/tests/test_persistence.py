@@ -16,8 +16,8 @@ async def test_seed_is_idempotent_and_preserves_edits(factory):
         await seed(session)
     async with factory() as session:
         assert await session.scalar(select(func.count()).select_from(UniverseModel)) == 1
-        assert await session.scalar(select(func.count()).select_from(NodeModel)) == 10
-        assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 12
+        assert await session.scalar(select(func.count()).select_from(NodeModel)) == 15
+        assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 25
         assert await session.scalar(select(NodeModel).where(NodeModel.title == "User-edited title"))
 
 

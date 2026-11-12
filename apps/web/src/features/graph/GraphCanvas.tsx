@@ -14,9 +14,20 @@ import {
 } from "sigma/rendering";
 import { layerImage } from "@sigma/node-image";
 import type { UniverseGraph } from "@/lib/contracts";
-import { useExplorationApi } from "@/stores/ExplorationProvider";
+import {
+  useExploration,
+  useExplorationApi,
+} from "@/stores/ExplorationProvider";
+import {
+  activeJourney,
+  activeThread,
+  activePresentation,
+  narrativeHighlights,
+} from "@/features/narrative/selectors";
+import { layoutStrategy } from "./layout-strategies";
 import { DEFAULT_CAMERA, type CameraCommand } from "@/stores/exploration";
 import { CameraDirector } from "@/animations/CameraDirector";
+import { useAtlasMotion } from "@/animations/useAtlasMotion";
 import { reduceMotion } from "@/animations/useAtlasMotion";
 import {
   adaptGraph,
@@ -28,20 +39,48 @@ import { NODE_IDENTITIES, NODE_TYPES } from "./identity";
 import type { Point } from "./layout";
 
 export default function GraphCanvas({ data }: { data: UniverseGraph }) {
+  const region = useRef<HTMLDivElement>(null);
   const container = useRef<HTMLDivElement>(null),
     overlay = useRef<HTMLDivElement>(null);
   const store = useExplorationApi();
   const [failure, setFailure] = useState<string | null>(null);
-  const [positions] = useState(() => new Map<string, Point>());
+  const [positionCaches] = useState(
+    () => new Map<string, Map<string, Point>>(),
+  );
+  const kind = useExploration((s) => s.layoutKind);
+  const journey = useExploration(activeJourney);
+  const thread = useExploration(activeThread);
+  const layoutKey = [
+    kind,
+    kind === "narrative" ? journey?.id : kind === "lore" ? thread?.id : "",
+  ].join(":");
+  useAtlasMotion(region, layoutKey, "mode");
   useEffect(() => {
     if (!container.current) return;
-    const model = adaptGraph(data, positions);
-    model.positions.forEach((point, id) => positions.set(id, point));
+    const state = store.getState();
+    const previous = positionCaches.get(layoutKey) ?? new Map<string, Point>();
+    const positions = layoutStrategy(state.layoutKind).compute({
+      graph: data,
+      journey: activeJourney(state),
+      thread: activeThread(state),
+      discoveries: state.narrative.discoveries,
+      previous,
+    });
+    positionCaches.set(layoutKey, positions);
+    const model = adaptGraph(data, previous, {
+      positions,
+      journey:
+        state.layoutKind === "narrative" ? activeJourney(state) : undefined,
+      thread: state.layoutKind === "lore" ? activeThread(state) : undefined,
+    });
     let selection = store.getState().selectedId,
       query = store.getState().query,
       emphasis = 1;
     let visible = new Set<string>(),
       neighbors = new Set<string>();
+    let importantNodes = new Set<string>(),
+      importantEdges = new Set<string>(),
+      narrativeFocus = false;
     const updateView = () => {
       const state = store.getState();
       visible = new Set(
@@ -51,6 +90,10 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
       );
       selection = state.selectedId;
       query = state.query.toLowerCase();
+      const highlights = narrativeHighlights(state, data);
+      importantNodes = highlights.nodeIds;
+      importantEdges = highlights.edgeIds;
+      narrativeFocus = Boolean(highlights.focus);
       neighbors = new Set(
         selection && model.graph.hasNode(selection)
           ? model.graph.neighbors(selection)
@@ -62,7 +105,17 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
     let revealing = new Set<string>(),
       revealAmount = 1;
     const active = (id: string) =>
-      !selection || selection === id || neighbors.has(id);
+      narrativeFocus
+        ? importantNodes.has(id)
+        : !selection || selection === id || neighbors.has(id);
+    const edgeActive = (attrs: AtlasEdgeAttributes) =>
+      narrativeFocus
+        ? importantEdges.has(attrs.entity.id)
+        : Boolean(
+            selection &&
+            (attrs.entity.source === selection ||
+              attrs.entity.target === selection),
+          );
     let renderer: Sigma<AtlasNodeAttributes, AtlasEdgeAttributes>;
     try {
       renderer = new Sigma<AtlasNodeAttributes, AtlasEdgeAttributes>(
@@ -105,11 +158,13 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
                 labelSize: compact ? 11 : 13,
                 labelColor: "#e0dfd0",
                 labelVisibility: (attrs) =>
-                  attrs.entity.id === selection
-                    ? "visible"
-                    : compact && attrs.entity.title.length > 17
-                      ? "hidden"
-                      : "auto",
+                  narrativeFocus && !importantNodes.has(attrs.entity.id)
+                    ? "hidden"
+                    : attrs.entity.id === selection
+                      ? "visible"
+                      : compact && attrs.entity.title.length > 17
+                        ? "hidden"
+                        : "auto",
                 backdropVisibility: "hidden",
                 opacity: (attrs) =>
                   (active(attrs.entity.id) ? 1 : 1 - 0.7 * emphasis) *
@@ -142,31 +197,30 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
                 labelFont: "Arial",
                 labelSize: 9,
                 labelBackgroundColor: "#102028",
+                color: (attrs) =>
+                  attrs.narrativePath
+                    ? "#c9ac75"
+                    : attrs.loreLink
+                      ? "#87b6af"
+                      : attrs.color,
                 opacity: (attrs) =>
-                  !selection
-                    ? 0.5
-                    : attrs.entity.source === selection ||
-                        attrs.entity.target === selection
-                      ? 0.5 + 0.5 * emphasis
-                      : 0.12,
+                  edgeActive(attrs)
+                    ? 0.55 + 0.45 * emphasis
+                    : narrativeFocus || selection
+                      ? 0.1
+                      : attrs.narrativePath
+                        ? 0.85
+                        : 0.35,
                 visibility: (attrs) =>
                   visible.has(attrs.entity.source) &&
                   visible.has(attrs.entity.target)
                     ? "visible"
                     : "hidden",
                 labelVisibility: (attrs) =>
-                  selection &&
-                  (attrs.entity.source === selection ||
-                    attrs.entity.target === selection)
-                    ? "visible"
-                    : "hidden",
+                  edgeActive(attrs) ? "visible" : "hidden",
                 size: (attrs) =>
                   attrs.size *
-                  (selection &&
-                  (attrs.entity.source === selection ||
-                    attrs.entity.target === selection)
-                    ? 1.6
-                    : 1),
+                  (edgeActive(attrs) ? 1.9 : attrs.narrativePath ? 1.6 : 1),
               },
             ],
             stage: { background: "transparent", cursor: "grab" },
@@ -219,6 +273,15 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
           "translate(" + p.x + "px," + p.y + "px) translate(-50%,-50%)";
       }
       for (const element of overlay.current.querySelectorAll<HTMLElement>(
+        "[data-marker-id]",
+      )) {
+        const point = model.positions.get(element.dataset.markerId!);
+        if (!point) continue;
+        const p = renderer.graphToViewport(point);
+        element.style.transform =
+          "translate(" + p.x + "px," + (p.y - 48) + "px) translate(-50%,-50%)";
+      }
+      for (const element of overlay.current.querySelectorAll<HTMLElement>(
         "[data-cluster]",
       )) {
         const type = element.dataset.cluster as keyof typeof NODE_IDENTITIES;
@@ -250,14 +313,16 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
         director.move({
           ...point,
           x: point.x + (window.innerWidth > 800 ? 0.12 : 0),
-          y: point.y + (window.innerWidth <= 800 ? -0.12 : 0),
-          ratio: 0.7,
+          y: point.y + (window.innerWidth <= 800 ? -0.3 : 0),
+          ratio: activePresentation(state)?.focusRatio ?? 0.85,
         });
         director.highlight((value) => {
           emphasis = value;
           renderer.refresh({ skipIndexation: true });
         });
-      } else if (kind === "reset") director.move(DEFAULT_CAMERA);
+      } else if (kind === "restore" && state.cameraRequest.target)
+        director.move(state.cameraRequest.target);
+      else if (kind === "reset") director.move(DEFAULT_CAMERA);
       else if (kind === "zoom-in" || kind === "zoom-out")
         director.move({
           ratio: Math.max(
@@ -283,7 +348,10 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
         state.continuityId !== before.continuityId ||
         state.types !== before.types ||
         state.query !== before.query ||
-        state.journeyIndex !== before.journeyIndex
+        state.journeyIndex !== before.journeyIndex ||
+        state.mode !== before.mode ||
+        state.currentDiscoveryId !== before.currentDiscoveryId ||
+        state.narrative !== before.narrative
       ) {
         updateView();
         renderer.refresh({ skipIndexation: true });
@@ -331,6 +399,7 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
       project();
     };
     breakpoint.addEventListener("change", resizeVisuals);
+    if (store.getState().selectedId) command();
     renderer.refresh();
     project();
     return () => {
@@ -343,9 +412,10 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
       breakpoint.removeEventListener("change", resizeVisuals);
       renderer.kill();
     };
-  }, [data, store, positions]);
+  }, [data, store, positionCaches, layoutKey]);
   return (
     <div
+      ref={region}
       className="graph-region"
       role="region"
       aria-label="Interactive universe map"
@@ -374,18 +444,30 @@ export default function GraphCanvas({ data }: { data: UniverseGraph }) {
         data-testid="sigma-canvas"
       />
       <div ref={overlay} className="graph-accessibility-overlay">
-        {NODE_TYPES.filter((type) =>
-          data.nodes.some((n) => n.type === type),
-        ).map((type) => (
-          <span
-            key={type}
-            data-cluster={type}
-            className="cluster-label"
-            aria-hidden="true"
-          >
-            {NODE_IDENTITIES[type].label}
-          </span>
-        ))}
+        {kind === "free" &&
+          NODE_TYPES.filter((type) =>
+            data.nodes.some((n) => n.type === type),
+          ).map((type) => (
+            <span
+              key={type}
+              data-cluster={type}
+              className="cluster-label"
+              aria-hidden="true"
+            >
+              {NODE_IDENTITIES[type].label}
+            </span>
+          ))}
+        {kind === "narrative" &&
+          journey?.steps.map((step, index) => (
+            <span
+              key={step.id}
+              data-marker-id={step.eventNodeId}
+              className="story-ordinal"
+              aria-hidden="true"
+            >
+              {String(index + 1).padStart(2, "0")}
+            </span>
+          ))}
         {data.nodes.map((node) => (
           <button
             key={node.id}

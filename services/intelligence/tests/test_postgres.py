@@ -43,8 +43,8 @@ async def test_postgres_migrations_seed_and_api():
             async with factory() as session, session.begin():
                 await seed(session)
         async with factory() as session:
-            assert await session.scalar(select(func.count()).select_from(NodeModel)) == 10
-            assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 12
+            assert await session.scalar(select(func.count()).select_from(NodeModel)) == 15
+            assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 25
         app = create_app()
 
         async def isolated_session():
@@ -55,8 +55,8 @@ async def test_postgres_migrations_seed_and_api():
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
             assert (await client.get("/api/health")).status_code == 200
             graph = (await client.get("/api/universes/re-zero/graph")).json()
-            assert len(graph["nodes"]) == 10
-            assert len(graph["edges"]) == 12
+            assert len(graph["nodes"]) == 15
+            assert len(graph["edges"]) == 25
         async with engine.begin() as connection:
 
             def downgrade(sync_connection):

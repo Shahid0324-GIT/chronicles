@@ -1,4 +1,10 @@
 import { createStore } from "zustand/vanilla";
+import { createNarrativeState, type NarrativeState } from "./narrative-state";
+import type {
+  ExplorationMode,
+  NarrativeDataProvider,
+} from "@/features/narrative/contracts";
+import { LocalNarrativeDataProvider } from "@/features/narrative/provider";
 import type {
   GraphNode,
   NodeType,
@@ -16,6 +22,7 @@ export interface CameraPosition {
   angle: number;
 }
 export type CameraCommand =
+  | "restore"
   | "focus"
   | "reset"
   | "zoom-in"
@@ -24,7 +31,7 @@ export type CameraCommand =
   | "pan-right"
   | "pan-up"
   | "pan-down";
-interface ExplorationState {
+export interface ExplorationState extends NarrativeState {
   graph: UniverseGraph | null;
   activeUniverse: Universe | null;
   status: "ready" | "loading" | "error";
@@ -33,12 +40,16 @@ interface ExplorationState {
   selectedId: string | null;
   selectedEdgeId: string | null;
   panelMinimized: boolean;
-  mode: "explore" | "guided";
+  mode: ExplorationMode;
   continuityId: string | null;
   types: NodeType[];
   query: string;
   camera: CameraPosition;
-  cameraRequest: { command: CameraCommand; version: number };
+  cameraRequest: {
+    command: CameraCommand;
+    version: number;
+    target?: CameraPosition;
+  };
   journeyIndex: number;
   discoveredIds: string[];
   researchProgress: { completed: number; total: number } | null;
@@ -53,7 +64,7 @@ interface ExplorationState {
   toggleType: (type: NodeType) => void;
   resetFilters: () => void;
   setQuery: (query: string) => void;
-  setMode: (mode: "explore" | "guided") => void;
+  setMode: (mode: ExplorationMode) => void;
   stepJourney: (delta: number) => void;
   requestCamera: (command: CameraCommand) => void;
   setCamera: (camera: CameraPosition) => void;
@@ -67,8 +78,10 @@ export const DEFAULT_CAMERA: CameraPosition = {
 };
 export function createExplorationStore(
   initialGraph: UniverseGraph | null = null,
+  provider: NarrativeDataProvider = new LocalNarrativeDataProvider(),
 ) {
   return createStore<ExplorationState>()((set, get) => ({
+    ...createNarrativeState(set, get, provider),
     graph: initialGraph,
     activeUniverse: initialGraph?.universe ?? null,
     status: "ready",
@@ -87,6 +100,7 @@ export function createExplorationStore(
     discoveredIds: [],
     researchProgress: null,
     beginUniverse: (universe) => {
+      get().resetNarrativeScope();
       const token = get().loadVersion + 1;
       set({
         activeUniverse: universe,
@@ -125,6 +139,15 @@ export function createExplorationStore(
     },
     selectNode: (id, source) => {
       const state = get();
+      if (!source) {
+        const thread = state.narrative.loreThreads.find(
+          (t) => t.conceptNodeId === id,
+        );
+        if (thread) {
+          get().enterLore(thread.id);
+          return;
+        }
+      }
       const node = state.graph?.nodes.find((n) => n.id === id);
       if (
         !node ||
@@ -134,6 +157,10 @@ export function createExplorationStore(
           node.continuity_id !== state.continuityId)
       )
         return;
+      if (source !== "journey") {
+        get().bookmarkJourney();
+        get().rememberFocus();
+      }
       set({
         selectedId: id,
         selectedEdgeId: null,
@@ -161,6 +188,8 @@ export function createExplorationStore(
       set({ selectedEdgeId: id });
     },
     clearSelection: () => {
+      get().bookmarkJourney();
+      get().rememberFocus();
       set({
         selectedId: null,
         selectedEdgeId: null,
@@ -172,7 +201,9 @@ export function createExplorationStore(
     minimizePanel: () => set((s) => ({ panelMinimized: !s.panelMinimized })),
     setContinuity: (id) => {
       if (id && !get().graph?.continuities.some((c) => c.id === id)) return;
+      get().resetNarrativeScope();
       set({
+        mode: "explore",
         continuityId: id,
         selectedId: null,
         selectedEdgeId: null,
@@ -183,6 +214,8 @@ export function createExplorationStore(
       if (get().mode === "guided") get().setMode("guided");
     },
     toggleType: (type) => {
+      get().bookmarkJourney();
+      get().rememberFocus();
       set((s) => ({
         types: s.types.includes(type)
           ? s.types.filter((t) => t !== type)
@@ -201,6 +234,21 @@ export function createExplorationStore(
       }),
     setQuery: (query) => set({ query }),
     setMode: (mode) => {
+      if (mode === "guided" && get().narrative.journeys.length) {
+        get().resumeJourney();
+        return;
+      }
+      if (mode === "lore") {
+        const thread = get().narrative.loreThreads[0];
+        if (thread) get().enterLore(thread.id);
+        return;
+      }
+      if (mode === "explore") {
+        get().bookmarkJourney();
+        get().rememberFocus();
+        set({ mode, layoutKind: "free" });
+        return;
+      }
       set({ mode, journeyIndex: 0 });
       if (mode === "guided") {
         const s = get();
@@ -214,6 +262,10 @@ export function createExplorationStore(
       }
     },
     stepJourney: (delta) => {
+      if (get().activeJourneyId && get().narrative.journeys.length) {
+        get().advanceNarrative(delta);
+        return;
+      }
       const s = get();
       if (s.mode !== "guided" || !s.graph) return;
       const result = deriveJourney(s.graph, s.continuityId);

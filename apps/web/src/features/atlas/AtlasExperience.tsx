@@ -9,6 +9,8 @@ import {
 } from "@/stores/ExplorationProvider";
 import { useUniverseLoader } from "@/features/universe/useUniverseLoader";
 import UniverseSwitcher from "@/features/universe/UniverseSwitcher";
+import NarrativePanel from "@/features/narrative/NarrativePanel";
+import NarrativeNavigation from "@/features/narrative/NarrativeNavigation";
 import ContextPanel from "@/features/discovery/ContextPanel";
 import JourneyControls from "@/features/journey/JourneyControls";
 import { useAtlasMotion } from "@/animations/useAtlasMotion";
@@ -81,7 +83,7 @@ function Experience({ universes }: { universes: Universe[] }) {
       className={[
         "atlas-app",
         selected ? "has-selection" : "",
-        mode === "guided" ? "is-guided" : "",
+        mode === "guided" ? "is-guided" : mode === "lore" ? "is-lore" : "",
       ].join(" ")}
       aria-label="Chronicles universe explorer"
     >
@@ -108,6 +110,12 @@ function Experience({ universes }: { universes: Universe[] }) {
             onClick={() => setMode("guided")}
           >
             <span aria-hidden="true">⌁</span> Guided
+          </button>
+          <button
+            aria-pressed={mode === "lore"}
+            onClick={() => setMode("lore")}
+          >
+            ◎ Lore
           </button>
         </div>
       </header>
@@ -199,6 +207,8 @@ function Experience({ universes }: { universes: Universe[] }) {
           )}
         </div>
       )}
+      <NarrativeNavigation />
+      <NarrativePanel />
       <ContextPanel />
       <JourneyControls />
       <div className="atlas-bottom entry-motion">

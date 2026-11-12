@@ -1,3 +1,34 @@
+# Phase 2.5A verification — 2026-11-12
+
+Current implementation: [narrative/lore architecture](phase-2-5a-narrative.md), [file manifest](phase-2-5a-files.txt), [future API contracts](contracts/narrative-api.md). Earlier verification below is historical; its 10-node/12-edge counts describe Phase 1.
+
+| Check | Result |
+| --- | --- |
+| `npm run lint --prefix apps/web` | Passed |
+| `npm run typecheck --prefix apps/web` | Passed |
+| `npm run test --prefix apps/web` | 34 passed across 6 files |
+| `npm run format:check --prefix apps/web` | Passed after formatting the new narrative test file |
+| `npm run build --prefix apps/web` | Passed, including Next production TypeScript validation |
+| `npm run test:e2e --prefix apps/web` | 5 passed using real seeded services and installed Chrome |
+| Root venv `python -m ruff check .`, from `services/intelligence` | Passed |
+| Root venv `python -m ruff format --check .` | Passed |
+| Root venv `python -m mypy -p src` | Passed: 23 source files |
+| Root venv `python -m pytest -q` | 22 passed with explicit PostgreSQL test URL |
+| Seed run twice | 15 nodes / 25 edges, deterministic IDs, existing rows retained |
+| Root venv `python -m alembic check` | No new upgrade operations |
+
+The test URL explicitly targets `universe_atlas_test`; the integration test creates a unique schema, exercises actual migration upgrade/downgrade and cleans up its own schema. No schema changes or developer volume resets were made. The new backend test resolves every frontend fixture UUID against persisted seed records and validates relationship invariants.
+
+Frontend units cover journey boundaries/restart, scope guards, branch return and camera history, provider injection and stale responses, missing references/citations, continuity separation and deterministic layouts. Existing camera tests cover reduced-motion/interrupt cleanup. Five browser tests cover the complete four-moment journey, inspecting Subaru, traversing established/interpretive/unresolved lore discoveries and returning to moment two, on desktop and 390×844 reduced motion. They also retain keyboard search, free graph inspection, filters, continuity, empty layers, artwork fallback, route stability and page-error checks. The final run uses the production server.
+
+Manual browser review checked desktop story/lore rendering and mobile panels. It found and corrected a missing panel glass surface and retained scroll position on discovery changes. A measured mobile assertion verifies the selected event remains above the panel; an exploratory offset change was reverted after measuring its placement. [Story preview](narrative-preview.png) and [lore preview](lore-preview.png), plus [mobile preview](narrative-mobile-preview.png), use local permitted SVG art. Full large-graph performance and comprehensive accessibility audits were not performed.
+
+Initial seeding failed because the existing Docker PostgreSQL container was stopped. `docker compose up -d --wait` recovered it without deleting data. A development Next image LCP advisory suggested eager loading for the initial city illustration; no functional page errors were observed. Playwright prints its environment's NO_COLOR/FORCE_COLOR warning. A stale in-app browser tab could not reload after the dev/production server switch; a fresh tab worked. These were environment/development observations, not failing acceptance checks.
+
+Progress remains in memory. Sources are manual editorial references, not automated verification. Narrative APIs, research agents and live streams are absent. Temporary Next/FastAPI verification servers were stopped; PostgreSQL data was retained. No deployment, commit or push was performed for this phase.
+
+---
+
 # Phase 1 verification
 
 Verified locally on Windows 11 on 12 November 2026 (Asia/Calcutta).

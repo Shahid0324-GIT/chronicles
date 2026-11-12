@@ -21,6 +21,8 @@ it("re-evaluates guided ordering when continuity changes", () => {
   store.getState().setContinuity("c2");
   expect(store.getState().selectedId).toBeNull();
   store.getState().setContinuity("c1");
+  expect(store.getState().selectedId).toBeNull();
+  store.getState().setMode("guided");
   expect(store.getState().selectedId).toBe("a");
   expect(store.getState().journeyIndex).toBe(0);
 });

@@ -87,6 +87,46 @@ def sample_graph() -> tuple[Universe, Continuity, list[GraphNode], list[GraphRel
             "Subaru helps Emilia seek her missing insignia.",
         ),
     ]
+    # Phase 2.5A: curated additions for the original broadcast's introductory presentation.
+    # These are persisted graph facts, not frontend-generated research or inferred chronology.
+    entries.extend(
+        [
+            (
+                "arrival",
+                "EVENT",
+                "Arrival in the royal capital",
+                "Subaru finds himself in another world and encounters its royal capital.",
+            ),
+            (
+                "first-return",
+                "EVENT",
+                "The first return",
+                "After a fatal encounter at the loot house, "
+                "Subaru finds himself back in the capital.",
+            ),
+            (
+                "recognition",
+                "EVENT",
+                "Recognizing Return by Death",
+                "After repeated deaths and returns, Subaru recognizes the pattern "
+                "and names it Return by Death.",
+            ),
+            (
+                "return-by-death",
+                "LORE",
+                "Return by Death",
+                "Subaru experiences a return to an earlier point after dying. "
+                "This entry covers only its introductory presentation.",
+            ),
+            (
+                "return-origin",
+                "MYSTERY",
+                "The unexplained cause of the return",
+                "The cause of Subaru's returns remains unexplained "
+                "within this introductory episode scope.",
+            ),
+        ]
+    )
     nodes = [
         GraphNode(
             id=identity(key),
@@ -117,6 +157,85 @@ def sample_graph() -> tuple[Universe, Continuity, list[GraphNode], list[GraphRel
         ("reinhard", "subaru", "CONNECTED_TO", "Reinhard meets Subaru in the capital."),
         ("search", "insignia", "CONNECTED_TO", "The missing insignia is the object of the search."),
     ]
+    connections.extend(
+        [
+            (
+                "arrival",
+                "capital",
+                "OCCURRED_AT",
+                "Subaru's arrival places him in the royal capital.",
+            ),
+            (
+                "subaru",
+                "arrival",
+                "PARTICIPATED_IN",
+                "Subaru is the stranger arriving in this world.",
+            ),
+            (
+                "arrival",
+                "search",
+                "CONNECTED_TO",
+                "The opening presentation moves from Subaru's arrival "
+                "to helping search for the insignia.",
+            ),
+            (
+                "search",
+                "first-return",
+                "CONNECTED_TO",
+                "The initial search brings Subaru to the loot house before his first return.",
+            ),
+            (
+                "subaru",
+                "first-return",
+                "PARTICIPATED_IN",
+                "Subaru experiences the first fatal encounter and return.",
+            ),
+            (
+                "first-return",
+                "loot-house",
+                "CONNECTED_TO",
+                "The fatal encounter preceding the first return occurs at the loot house.",
+            ),
+            (
+                "first-return",
+                "capital",
+                "OCCURRED_AT",
+                "Subaru finds himself back in the capital after the first return.",
+            ),
+            (
+                "first-return",
+                "recognition",
+                "CONNECTED_TO",
+                "Repeated returns lead Subaru to recognize what is happening.",
+            ),
+            ("subaru", "recognition", "PARTICIPATED_IN", "Subaru recognizes the repeated pattern."),
+            (
+                "recognition",
+                "return-by-death",
+                "REVEALED",
+                "Subaru identifies and names his experience Return by Death.",
+            ),
+            (
+                "first-return",
+                "return-by-death",
+                "CONNECTED_TO",
+                "The first return is an early instance of the phenomenon.",
+            ),
+            (
+                "return-by-death",
+                "subaru",
+                "CONNECTED_TO",
+                "The introductory story presents the phenomenon through Subaru's experience.",
+            ),
+            (
+                "return-by-death",
+                "return-origin",
+                "CONNECTED_TO",
+                "The phenomenon raises a question about its unexplained cause "
+                "within the introduction.",
+            ),
+        ]
+    )
     lookup = {n.id: n for n in nodes}
     edges = [
         GraphRelationship(
@@ -179,7 +298,7 @@ async def main() -> None:
         async with factory() as session, session.begin():
             await seed(session)
         print(
-            "Illustrative Re:Zero seed ready: 10 nodes, 12 relationships (existing rows preserved)."
+            "Illustrative Re:Zero seed ready: 15 nodes, 25 relationships (existing rows preserved)."
         )
     finally:
         await engine.dispose()

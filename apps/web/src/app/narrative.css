@@ -1,0 +1,497 @@
+.atlas-app .narrative-panel {
+  top: 116px;
+  bottom: 155px;
+  width: 330px;
+}
+.narrative-panel .context-art {
+  height: 140px;
+  margin: 0 10px;
+}
+.narrative-panel progress,
+.narrative-dock progress {
+  accent-color: var(--gold);
+}
+.narrative-art {
+  position: relative;
+}
+.chapter-stamp {
+  position: absolute;
+  bottom: 9px;
+  left: 22px;
+  font:
+    italic 42px Georgia,
+    serif;
+  color: #e2d1a4bb;
+  text-shadow: 0 2px 12px #0d1b22;
+}
+.narrative-panel .context-copy {
+  padding: 17px 22px 22px;
+}
+.narrative-panel .context-copy > .eyebrow {
+  font-size: 7px;
+  margin-bottom: 9px;
+}
+.narrative-panel .context-copy h2 {
+  font-size: 27px;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+.narrative-panel .node-summary {
+  font-size: 14px;
+  line-height: 1.65;
+}
+.canonical-reference {
+  color: #8d9e94;
+  font-size: 7px;
+  letter-spacing: 1.1px;
+  margin-top: 14px;
+  line-height: 1.6;
+}
+.related-entities {
+  border-top: 1px solid var(--line);
+  margin-top: 17px;
+  padding-top: 14px;
+}
+.related-entities .eyebrow {
+  font-size: 7px;
+  margin-bottom: 9px;
+  color: var(--muted);
+}
+.related-entities button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: transparent;
+  padding: 7px 0;
+  font:
+    13px Georgia,
+    serif;
+  color: var(--gold);
+}
+.related-entities button > span:last-child {
+  margin-left: auto;
+  color: #8a9f92;
+}
+.lore-entry-links {
+  padding: 15px 0;
+  border-top: 1px solid var(--line);
+  margin-top: 16px;
+}
+.lore-entry-links .eyebrow {
+  font-size: 7px;
+  margin-bottom: 8px;
+}
+.lore-entry-links button,
+.lore-prompt {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  gap: 9px;
+  text-align: left;
+  border: 1px solid #8cb6ad44;
+  background: #86b6af0a;
+  padding: 11px;
+  color: #a3c3b6;
+  font:
+    13px/1.5 Georgia,
+    serif;
+}
+.lore-prompt {
+  margin-top: 16px;
+}
+.lore-entry-links button:hover,
+.lore-prompt:hover {
+  background: #86b6af18;
+}
+.narrative-sources {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: 9px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.narrative-sources summary {
+  cursor: pointer;
+  color: #a2b1a5;
+}
+.narrative-sources p {
+  margin: 9px 0;
+}
+.narrative-sources a {
+  display: block;
+  color: var(--gold);
+  margin: 12px 0;
+}
+.narrative-sources small {
+  display: block;
+  color: var(--muted);
+  font-size: 8px;
+}
+.discovery-class {
+  font-size: 8px;
+  line-height: 1.7;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+.established {
+  color: #a1c5af;
+}
+.interpretation {
+  color: #d4b17e;
+}
+.unresolved {
+  color: #b2b7ce;
+}
+.related-discoveries {
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  padding-top: 15px;
+}
+.related-discoveries > .eyebrow {
+  font-size: 7px;
+  margin-bottom: 5px;
+}
+.related-discoveries button {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: 13px 0;
+  font:
+    15px/1.3 Georgia,
+    serif;
+  color: var(--ink);
+}
+.related-discoveries button > span:nth-child(2) {
+  flex: 1;
+}
+.related-discoveries small {
+  display: block;
+  color: var(--muted);
+  font:
+    7px/1.5 Arial,
+    sans-serif;
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+.discovery-dot {
+  width: 7px;
+  height: 7px;
+  border: 1px solid currentColor;
+  flex-shrink: 0;
+  transform: rotate(45deg);
+}
+.narrative-navigation {
+  position: absolute;
+  top: 115px;
+  right: 390px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px;
+  border-radius: 3px;
+  box-shadow: none;
+}
+.narrative-navigation button {
+  width: 29px;
+  height: 28px;
+  background: transparent;
+  border: 0;
+  color: var(--gold);
+}
+.narrative-navigation select {
+  background: transparent;
+  color: #a7b5a9;
+  font-size: 9px;
+  padding: 7px;
+  border: 0;
+  max-width: 105px;
+}
+.narrative-navigation select option {
+  background: #102129;
+}
+.story-ordinal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1px solid #c9ac7544;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--gold);
+  font:
+    9px Arial,
+    sans-serif;
+  background: #102129d9;
+}
+.atlas-app .narrative-dock {
+  left: 35px;
+  right: auto;
+  bottom: 87px;
+  transform: none;
+  width: min(700px, calc(100% - 430px));
+  max-width: none;
+  padding: 17px 20px;
+  gap: 19px;
+}
+.journey-counter {
+  flex: 0 0 auto !important;
+  border-right: 1px solid var(--line);
+  padding-right: 17px;
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  color: var(--gold);
+}
+.journey-counter strong {
+  font:
+    italic 35px Georgia,
+    serif;
+}
+.journey-counter span {
+  color: var(--muted);
+  font-size: 8px;
+}
+.narrative-dock .journey-heading {
+  min-width: 0;
+}
+.narrative-dock .journey-heading h2 {
+  font-size: 19px;
+  margin: 3px 0 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.narrative-dock .journey-heading small {
+  display: block;
+  font-size: 8px;
+  color: var(--muted);
+  margin-top: 7px;
+}
+.narrative-dock .eyebrow {
+  font-size: 6px;
+}
+.narrative-dock .journey-arrows {
+  display: flex;
+  gap: 6px;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  max-width: 100px;
+}
+.narrative-dock .journey-arrows button {
+  min-width: 33px;
+  min-height: 32px;
+}
+.narrative-dock .journey-arrows .restart-journey {
+  font-size: 8px;
+  width: 100%;
+  border: 0;
+  padding: 4px;
+  min-height: 20px;
+}
+.narrative-dock .resume-journey {
+  font-size: 10px;
+  max-width: 100px;
+  border-color: #cfb78955;
+  line-height: 1.7;
+}
+.is-guided .layers-position,
+.is-lore .layers-position {
+  display: none;
+}
+.is-lore .narrative-panel {
+  border-color: #8bb8ad55;
+}
+.atlas-app .narrative-panel.minimized {
+  bottom: auto;
+}
+.is-lore .map-compass {
+  display: none;
+}
+@media (min-width: 1500px) {
+  .atlas-app .narrative-panel {
+    width: 350px;
+  }
+  .narrative-panel .context-art {
+    height: 200px;
+  }
+}
+@media (max-width: 1100px) {
+  .narrative-navigation {
+    right: 350px;
+  }
+  .atlas-app .narrative-dock {
+    width: calc(100% - 380px);
+    padding: 15px;
+    gap: 12px;
+  }
+  .journey-counter {
+    padding-right: 12px;
+  }
+}
+@media (max-width: 800px) {
+  .atlas-topbar {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .atlas-search {
+    grid-column: 1/-1;
+  }
+  .mode-switch {
+    grid-column: 1/-1;
+    justify-self: stretch;
+  }
+  .mode-switch button {
+    flex: 1;
+    padding: 7px 8px;
+  }
+  .atlas-caption {
+    top: 222px;
+    left: 26px;
+    max-width: 220px;
+  }
+  .atlas-caption h1 {
+    font-size: 29px;
+  }
+  .atlas-caption h1 > span {
+    display: none;
+  }
+  .continuity-control {
+    margin-top: 9px;
+  }
+  .atlas-caption .scope-label {
+    font-size: 5px;
+    letter-spacing: 0.8px;
+  }
+  .map-compass {
+    display: none;
+  }
+  .graph-region,
+  .has-selection .graph-region {
+    inset: 285px 14px 175px;
+  }
+  .narrative-navigation {
+    top: 223px;
+    right: 20px;
+    gap: 0;
+    padding: 3px;
+  }
+  .narrative-navigation select {
+    max-width: 85px;
+    font-size: 8px;
+    padding: 5px;
+  }
+  .narrative-navigation button {
+    width: 26px;
+  }
+  .atlas-app .narrative-panel {
+    top: auto;
+    left: 20px;
+    right: 20px;
+    bottom: 185px;
+    width: auto;
+    max-height: 225px;
+    display: grid;
+    grid-template-columns: 90px 1fr;
+  }
+  .narrative-panel .narrative-art {
+    grid-column: 1;
+  }
+  .narrative-panel .context-art {
+    height: 112px;
+    margin: 0 0 0 12px;
+  }
+  .narrative-panel .chapter-stamp {
+    font-size: 25px;
+    bottom: 5px;
+    left: 20px;
+  }
+  .narrative-panel .context-copy {
+    padding: 0 15px 17px;
+    min-width: 0;
+  }
+  .narrative-panel .context-copy h2 {
+    font-size: 21px;
+    line-height: 1.2;
+  }
+  .narrative-panel .node-summary {
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .narrative-panel .context-copy > .eyebrow {
+    font-size: 5px;
+  }
+  .discovery-class {
+    font-size: 6px;
+  }
+  .related-entities {
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+  .related-entities button {
+    font-size: 12px;
+    padding: 8px 0;
+  }
+  .canonical-reference {
+    font-size: 6px;
+  }
+  .atlas-app .narrative-panel.minimized {
+    top: auto;
+    bottom: 185px;
+    left: 20px;
+    width: auto;
+    display: block;
+  }
+  .atlas-app .narrative-panel.minimized .context-copy {
+    padding: 8px 15px 15px;
+  }
+  .atlas-app .narrative-dock {
+    left: 20px;
+    right: 20px;
+    bottom: 78px;
+    width: auto;
+    padding: 12px;
+    gap: 10px;
+  }
+  .narrative-dock .journey-heading h2 {
+    font-size: 14px;
+  }
+  .narrative-dock .journey-heading small {
+    font-size: 6px;
+  }
+  .journey-counter {
+    padding-right: 9px;
+    gap: 4px;
+  }
+  .journey-counter strong {
+    font-size: 25px;
+  }
+  .narrative-dock .eyebrow {
+    font-size: 5px;
+    letter-spacing: 1px;
+  }
+  .narrative-dock .resume-journey {
+    font-size: 8px;
+    max-width: 75px;
+  }
+  .narrative-dock .journey-arrows {
+    gap: 4px;
+    max-width: 68px;
+  }
+  .narrative-dock .journey-arrows button {
+    min-width: 30px;
+  }
+}

@@ -10,4 +10,4 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 ## Chronicles frontend
 
-Read the repository-root AGENTS.md. Keep the primary route a continuous atlas. Feature boundaries, contracts and test instructions are documented in ../../docs/phase-2-atlas.md. Do not import Sigma into server components or put graph data in the media registry.
+Read the repository-root AGENTS.md. Keep the primary route a continuous atlas. Feature boundaries, contracts and test instructions are documented in ../../docs/phase-2-atlas.md and ../../docs/phase-2-5a-narrative.md. Do not import Sigma into server components or put graph data in the media registry.

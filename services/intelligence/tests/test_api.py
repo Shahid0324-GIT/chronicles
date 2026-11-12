@@ -18,7 +18,7 @@ async def test_persisted_endpoints(app):
         response = await client.get("/api/universes/re-zero/graph")
         assert response.status_code == 200
         graph = response.json()
-        assert len(graph["nodes"]) == 10 and len(graph["edges"]) == 12
+        assert len(graph["nodes"]) == 15 and len(graph["edges"]) == 25
         assert len(graph["continuities"]) == 1
         node_id = graph["nodes"][0]["id"]
         details = await client.get(f"/api/nodes/{node_id}")

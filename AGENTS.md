@@ -1,5 +1,9 @@
 # Universe Atlas repository guidance
 
+## Git workflow preference
+
+The user has authorized small commits at meaningful checkpoints and pushes when work is complete or reaches a milestone. Follow this standing instruction without asking again. Use `main` for completed milestones and report the commit and push result. Run relevant checks and keep credentials/local environment files out of commits.
+
 Implement only the scope requested. Phase 1 provides a read-only local graph; Phase 2 provides the continuous frontend atlas. Neither implements AI research. Never present curated seed content as discovered or verified by an agent. Do not deploy or push without explicit user instructions.
 
 ## Layout and dependency direction
@@ -49,3 +53,7 @@ Report exact checks, failures and blockers. Consult `docs/verification.md` for t
 Keep exploration on the same canvas; entities and universes use state changes. Dynamically import Sigma with SSR disabled. Preserve deterministic type clusters and backend IDs. GSAP owns interruptible camera/presentation tweens; Sigma owns graph rendering. Clean up subscriptions, listeners, WebGL resources and tweens. Respect reduced motion. Follow docs/contracts/journeys.md; never infer chronology from traversal. Media registry entries are presentation assets, never graph data. No fake SSE or AI producer.
 
 Run npm run test --prefix apps/web for graph/state/ordering tests. npm run test:e2e --prefix apps/web uses real seeded services and installed Chrome, without database resets. See docs/phase-2-atlas.md.
+
+## Phase 2.5A narrative
+
+Narrative contracts, fixtures, resolver and injectable provider live in `apps/web/src/features/narrative/`; history/progress live in `src/stores/narrative-state.ts`. Keep canonical entities in the API graph. Use sourced broadcast presentation order, never inferred chronology. Layout strategies belong in `features/graph/layout-strategies.ts`; focus changes must not rearrange nodes. Preserve journey position across inspection and lore branches. See docs/phase-2-5a-narrative.md and docs/contracts/narrative-api.md; proposed narrative endpoints are not implemented.

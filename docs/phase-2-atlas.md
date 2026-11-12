@@ -63,7 +63,7 @@ Playwright: start the real seeded FastAPI/PostgreSQL service at 127.0.0.1:8000, 
 
 ## Limits and follow-up
 
-The Re:Zero sample has no supported order. Guided mode reports uncharted chronology. Sourced ordering and progression are tested using explicit synthetic sequences only. See [journeys](contracts/journeys.md).
+Phase 2 originally had no supported order and reported uncharted chronology. Phase 2.5A adds an explicit manually curated broadcast-presentation journey and lore provider; see [the current narrative guide](phase-2-5a-narrative.md) and [journey contracts](contracts/journeys.md).
 
 Media uses a stable-ID registry; see the [proposed backend media contract](contracts/media.md). Real SSE transport is absent; see the [event-consumer interface](contracts/atlas-events.md).
 

@@ -14,6 +14,27 @@ const original = (file: string, alt: string): MediaAsset => ({
 });
 // Stable IDs select presentation assets only. No graph records or relationships live here.
 const assets: Record<string, MediaAsset> = {
+  "b83a5f3b-6c0a-555a-ad16-cac64617c389": original(
+    "capital",
+    "Interpretive city illustration for the arrival",
+  ),
+  "738aeff2-bebe-56d4-8b5c-f9dd8a9389b8": original(
+    "uncharted",
+    "Symbolic compass illustration for a return",
+  ),
+  "ee52282d-ab74-5ff4-b3e2-256d44e193da": original(
+    "search",
+    "Symbolic investigation illustration",
+  ),
+  "4948b221-369a-59a5-a943-9d4f443a7256": original(
+    "uncharted",
+    "Symbolic compass illustration for Return by Death",
+  ),
+  "9cb0f8a5-d141-58ae-9676-1bde504a8802": original(
+    "uncharted",
+    "A compass marking an unanswered question",
+  ),
+
   "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6": original(
     "capital",
     "An imagined fantasy city, illustrated for the atlas",

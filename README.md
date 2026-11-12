@@ -35,7 +35,7 @@ Set-Location services/intelligence
 
 Run the seed again safely. It inserts missing deterministic IDs, preserves existing rows and user edits, and uses one transaction. Run one seed process at a time. A conflicting pre-existing `re-zero` slug aborts the operation.
 
-The sample contains one universe, one anime continuity, 10 nodes and 12 edges. It is hand-curated **illustrative data**, limited to the original TV anime's opening three episodes, with early-story spoilers. It does not claim exhaustive or researched coverage. Reference: [official first-season story guide](https://re-zero-anime.jp/tv/story/tv1r.html) (the guide includes later episodes; the seed excludes them). No adaptation is assumed equivalent to another.
+The sample contains one universe, one anime continuity, 15 nodes and 25 edges. It is hand-curated **illustrative data**, limited to the original TV anime's opening three episodes, with early-story spoilers. It does not claim exhaustive or researched coverage. Reference: [official first-season story guide](https://re-zero-anime.jp/tv/story/tv1r.html) (the guide includes later episodes; the seed excludes them). No adaptation is assumed equivalent to another.
 
 `compose.yaml` binds PostgreSQL to loopback and stores data in a named volume. The supplied credentials are for local development. `docker compose stop` stops it without removing data. Backend owns all schema changes; frontend never connects to PostgreSQL.
 
@@ -130,6 +130,14 @@ Phase 1 is deliberately read-only. No research agents, Ollama, LangChain, LangGr
 - **Async tests stall under a restrictive Windows sandbox:** run the same tests in a normal local terminal; SQLite uses worker threads and PostgreSQL uses loopback sockets.
 
 Suggested next task: provide licensed media and evidence-backed chronology through explicit backend contracts before adding research or streaming.
+
+## Phase 2.5A narrative and lore
+
+The atlas opens a four-moment, manually curated Re:Zero introduction covering original anime episodes 1–2. Follow story moments, inspect a character, investigate Return by Death and return to the same step. Facts, interpretations and unresolved questions have distinct labels. Story order follows broadcast presentation, including repeated attempts; it is not inferred chronology.
+
+Rerun the existing seed to add required graph records while preserving existing data: the illustrative atlas now has **15 nodes and 25 edges**. No migration is required. Notes reference API UUIDs through an injectable local provider; React contains no canonical graph fixtures. Progress/history stay in the current session.
+
+See [architecture and limitations](docs/phase-2-5a-narrative.md), [future API contracts](docs/contracts/narrative-api.md), and [verification](docs/verification.md). Narrative API endpoints and AI research remain future work.
 
 ## Phase 2 frontend
 

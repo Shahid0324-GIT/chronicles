@@ -1,18 +1,32 @@
 "use client";
-import { createContext, useContext, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  type ReactNode,
+} from "react";
 import { useStore } from "zustand";
+import type { NarrativeDataProvider } from "@/features/narrative/contracts";
 import type { UniverseGraph } from "@/lib/contracts";
 import { createExplorationStore, type ExplorationStore } from "./exploration";
 const Context = createContext<ExplorationStore | null>(null);
 export function ExplorationProvider({
   graph,
   children,
+  provider,
 }: {
   graph: UniverseGraph | null;
   children: ReactNode;
+  provider?: NarrativeDataProvider;
 }) {
-  const [store] = useState(() => createExplorationStore(graph));
-  return <Context.Provider value={store}>{children}</Context.Provider>;
+  const [store] = useState(() => createExplorationStore(graph, provider));
+  return (
+    <Context.Provider value={store}>
+      <NarrativeLoader store={store} />
+      {children}
+    </Context.Provider>
+  );
 }
 export function useExploration<T>(
   selector: (state: ReturnType<ExplorationStore["getState"]>) => T,
@@ -27,4 +41,16 @@ export function useExplorationApi() {
   if (!store)
     throw new Error("Exploration state requires an ExplorationProvider");
   return store;
+}
+
+function NarrativeLoader({ store }: { store: ExplorationStore }) {
+  const graph = useStore(store, (state) => state.graph),
+    continuity = useStore(store, (state) => state.continuityId);
+  useEffect(() => {
+    if (!graph) return;
+    const controller = new AbortController();
+    void store.getState().loadNarrative(controller.signal);
+    return () => controller.abort();
+  }, [graph, continuity, store]);
+  return null;
 }

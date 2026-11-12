@@ -43,7 +43,7 @@ async def test_use_cases_with_constructor_injected_fakes():
     assert await ListUniverses(universes).execute() == [universes.universe]
     assert await GetUniverse(universes).execute("re-zero") == universes.universe
     result = await GetUniverseGraph(universes, graph).execute("re-zero")
-    assert len(result.nodes) == 10 and len(result.edges) == 12
+    assert len(result.nodes) == 15 and len(result.edges) == 25
     details = await GetNodeDetails(graph).execute(graph.nodes[0].id)
     assert details.node == graph.nodes[0]
     assert all(details.node.id in (e.source_node_id, e.target_node_id) for e in details.edges)

@@ -1,23 +1,11 @@
 # Explicit journey ordering
 
-Graph relationships, response-array order, discovery arrival and graph traversal are not chronological evidence.
+Graph relationships, response-array order, discovery arrival and traversal are not chronological evidence.
 
-The frontend supports this optional future convention in an EVENT node's existing metadata:
+Phase 2.5A uses `NarrativeJourney` and `JourneyStep` from `apps/web/src/features/narrative/contracts.ts`, supplied through `NarrativeDataProvider`. The four-step Re:Zero introduction is manually curated outside React in `features/narrative/fixtures/re-zero.ts`. It follows **original broadcast presentation**, not linear in-world chronology. Each step references a real EVENT UUID, source locators and existing graph relationships.
 
-    {
-      "journey": {
-        "id": "a-stable-sequence-id",
-        "title": "A sourced journey",
-        "order": 0,
-        "source": "https://example.org/an-authoritative-sequence",
-        "order_verified": true
-      }
-    }
+The resolver requires a selected matching continuity, at least two steps, unique step IDs, valid graph references and citations. Missing references make the journey unavailable, without invented substitutes or traversal-based ordering. The seed contains graph knowledge, not editorial sequence metadata. Previous/Next clamp at boundaries; inspection and lore preserve separate journey progress.
 
-This is a producer contract example, not sample content or a claim that the example URL verifies a story. The Re:Zero seed has no journey metadata.
+The older `features/journey/derive-journey.ts` validator remains a compatibility utility. Its optional EVENT metadata convention requires `journey.id`, `title`, unique nonnegative integer `order`, HTTP(S) `source`, and `order_verified: true`; consecutive events must be connected in one continuity. That flag is not evidence by itself and is not the provider for the current introduction. New work should use the explicit narrative contracts.
 
-Validation requires one selected continuity, at least two EVENT nodes within it, unique nonnegative integer order values, consistent title/source, an HTTP(S) source reference, and an explicit verified-order flag. Every consecutive pair must also be connected by a relationship scoped to that continuity. Edges establish connectivity; sourced metadata establishes ordering. The first valid group by stable ID is used in this prototype.
-
-If validation fails, Guided mode has an informative unavailable state, without artificial Previous/Next progression. Valid data initializes the first event, clamps Previous/Next at sequence boundaries, focuses the camera and updates the context panel. Arbitrary selection returns to Explore mode. Changing continuity reevaluates the sequence.
-
-Before ingestion, replace the flag convention with a backend-owned sequence resource carrying evidence, spoiler scope, ordering basis (publication versus in-world order), revision and reviewer status. Add a sequence chooser when multiple journeys exist. Never fabricate ordering to demonstrate controls.
+See [Phase 2.5A](../phase-2-5a-narrative.md) and [future API requirements](narrative-api.md). Backend-owned ordering requires evidence, spoiler scope, revisions and editorial review. Never fabricate ordering to demonstrate controls.

@@ -3,10 +3,12 @@ import { useEffect, useRef } from "react";
 import { useExploration } from "@/stores/ExplorationProvider";
 import { useAtlasMotion, useExitMotion } from "@/animations/useAtlasMotion";
 import { NODE_IDENTITIES, humanize } from "@/features/graph/identity";
+import LoreEntryLinks from "@/features/narrative/LoreEntryLinks";
 import IconButton from "@/components/ui/IconButton";
 import MediaArtwork from "./MediaArtwork";
 import { resolveMedia } from "./media-registry";
 export default function ContextPanel() {
+  const mode = useExploration((s) => s.mode);
   const graph = useExploration((s) => s.graph),
     selectedId = useExploration((s) => s.selectedId),
     selectedEdgeId = useExploration((s) => s.selectedEdgeId),
@@ -18,7 +20,7 @@ export default function ContextPanel() {
     types = useExploration((s) => s.types);
   const root = useRef<HTMLElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
-  useAtlasMotion(root, `${selectedId}-${minimized}`, "card");
+  useAtlasMotion(root, `${mode}-${selectedId}-${minimized}`, "card");
   const dismiss = useExitMotion(
     root,
     () => {
@@ -32,9 +34,9 @@ export default function ContextPanel() {
   useEffect(() => {
     if (selectedId && !minimized)
       heading.current?.focus({ preventScroll: true });
-  }, [selectedId, minimized]);
+  }, [selectedId, minimized, mode]);
   const node = graph?.nodes.find((n) => n.id === selectedId);
-  if (!node || !graph) return null;
+  if (!node || !graph || mode !== "explore") return null;
   const visual = NODE_IDENTITIES[node.type];
   const edges = graph.edges.filter(
     (e) =>
@@ -94,6 +96,7 @@ export default function ContextPanel() {
                 <small>Illustrative sample · early-story spoilers</small>
               )}
             </div>
+            <LoreEntryLinks nodeId={node.id} />
             <div className="thread-title">
               <h3>Follow a thread</h3>
               <span>{edges.length}</span>
