@@ -39,9 +39,15 @@ export default function StoryBranches() {
   const items = branch === "lore" ? [] : region[branch];
   const activeLore =
     branch === "lore" && mode === "lore" && thread && discovery;
+  const catalogInvestigation =
+    activeLore && !region.lore.some((item) => item.id === thread.id);
   return (
     <section
-      className={"story-branch branch-" + branch}
+      className={
+        "story-branch branch-" +
+        branch +
+        (catalogInvestigation ? " catalog-investigation" : "")
+      }
       ref={root}
       aria-label={definition.label + " branch"}
     >
@@ -50,8 +56,9 @@ export default function StoryBranches() {
         <p>
           {definition.label}
           <small>
-            FROM MOMENT {String(stepNumber(catalog, step.id)).padStart(2, "0")}{" "}
-            · {step.title}
+            {catalogInvestigation ? "JOURNEY BOOKMARK" : "FROM MOMENT"}{" "}
+            {String(stepNumber(catalog, step.id)).padStart(2, "0")} ·{" "}
+            {step.title}
           </small>
         </p>
         <button aria-label="Collapse branch" onClick={() => toggle(branch)}>

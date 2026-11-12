@@ -133,6 +133,8 @@ Suggested next task: provide licensed media and evidence-backed chronology throu
 
 ## Phase 2.5A narrative and lore
 
+**Current visual experience:** [Phase 2.5B Pass 1](docs/phase-2-5b-pass-1.md) replaces the default graph presentation with a horizontal illustrated chronicle. Open a milestone, expand a character/lore/place branch and return to the saved story position. Free graph retains Sigma exploration. Desktop 1920×1080 is the primary target. [Visual review and checks](docs/phase-2-5b-verification.md).
+
 The atlas opens a four-moment, manually curated Re:Zero introduction covering original anime episodes 1–2. Follow story moments, inspect a character, investigate Return by Death and return to the same step. Facts, interpretations and unresolved questions have distinct labels. Story order follows broadcast presentation, including repeated attempts; it is not inferred chronology.
 
 Rerun the existing seed to add required graph records while preserving existing data: the illustrative atlas now has **15 nodes and 25 edges**. No migration is required. Notes reference API UUIDs through an injectable local provider; React contains no canonical graph fixtures. Progress/history stay in the current session.

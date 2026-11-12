@@ -163,10 +163,10 @@
 }
 .chronicle-canvas {
   position: absolute;
-  inset: var(--header-height) 0 0;
+  inset: var(--header-height) 0 72px;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--space-5) var(--page-gutter) 90px;
+  padding: var(--space-5) var(--page-gutter) var(--space-4);
   scrollbar-width: thin;
   scrollbar-color: var(--frame-line) transparent;
 }
@@ -613,6 +613,9 @@
   position: relative;
   border-top: 1px solid var(--frame-line);
   padding-top: 20px;
+}
+.catalog-investigation:before {
+  display: none;
 }
 .story-branch:before {
   content: "";
@@ -1068,6 +1071,17 @@
   }
 }
 @media (max-width: 1400px) {
+  .chronicle-canvas.investigating {
+    --spine-height: 190px;
+    --milestone-height: 95px;
+    --milestone-width: 185px;
+    --scene-height: 150px;
+    --scene-width: 150px;
+    padding-top: 20px;
+  }
+  .investigating .story-intro h1 {
+    font-size: 30px;
+  }
   .chronicle-shell {
     --header-height: 82px;
     --page-gutter: 35px;

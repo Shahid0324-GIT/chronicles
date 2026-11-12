@@ -1,3 +1,7 @@
+# Current verification
+
+The latest visual implementation is **Phase 2.5B Pass 1**. See [its executed checks, browser evidence and limitations](phase-2-5b-verification.md), [architecture](phase-2-5b-pass-1.md), and [changed-file manifest](phase-2-5b-files.txt). The sections below are historical records.
+
 # Phase 2.5A verification — 2026-11-12
 
 Current implementation: [narrative/lore architecture](phase-2-5a-narrative.md), [file manifest](phase-2-5a-files.txt), [future API contracts](contracts/narrative-api.md). Earlier verification below is historical; its 10-node/12-edge counts describe Phase 1.

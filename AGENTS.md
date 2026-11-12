@@ -57,3 +57,7 @@ Run npm run test --prefix apps/web for graph/state/ordering tests. npm run test:
 ## Phase 2.5A narrative
 
 Narrative contracts, fixtures, resolver and injectable provider live in `apps/web/src/features/narrative/`; history/progress live in `src/stores/narrative-state.ts`. Keep canonical entities in the API graph. Use sourced broadcast presentation order, never inferred chronology. Layout strategies belong in `features/graph/layout-strategies.ts`; focus changes must not rearrange nodes. Preserve journey position across inspection and lore branches. See docs/phase-2-5a-narrative.md and docs/contracts/narrative-api.md; proposed narrative endpoints are not implemented.
+
+## Phase 2.5B Pass 1
+
+The default is the dedicated horizontal illustrated canvas in `features/chronicle/`, not a timeline above Sigma. Sigma remains the Free graph view. Theme/motion/spine settings live in `chronicle/design.ts`; visual dimensions/typography live in `src/app/chronicle.css`. Derive causes/consequences only from explicit scoped `CAUSED` edges, never sequence adjacency. Existing seed has no such edges; show missing causal knowledge honestly. Keep branch origin and journey progress visible. Target desktop 1920×1080. See docs/phase-2-5b-pass-1.md. Stop before advanced Pass 2 choreography or agents unless requested.

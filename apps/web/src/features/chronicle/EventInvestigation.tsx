@@ -35,6 +35,7 @@ export default function EventInvestigation() {
   const node = graph.nodes.find((n) => n.id === step.eventNodeId);
   if (!node) return null;
   const region = eventRegion(graph, step, catalog, continuity);
+  const asset = resolveMedia(node.id, node.type);
   const origin =
     (spineLayout(journey, index).find((item) => item.index === index)?.x ??
       50) * 10;
@@ -75,16 +76,18 @@ export default function EventInvestigation() {
         )}
         <aside className="event-anchor" aria-label="Journey story">
           <div className="event-scene">
-            <MediaArtwork
-              asset={resolveMedia(node.id, node.type)}
-              variant="scene"
-              priority
-            />
+            <MediaArtwork asset={asset} variant="scene" priority />
             <span className="scene-annotation">
               {String(index + 1).padStart(2, "0")} /{" "}
               {String(journey.steps.length).padStart(2, "0")}
             </span>
-            <span className="scene-caption">INTERPRETIVE ATLAS ART</span>
+            <span className="scene-caption">
+              {asset.kind === "interpretive"
+                ? "INTERPRETIVE ATLAS ART"
+                : asset.kind === "reference"
+                  ? "ATTRIBUTED REFERENCE"
+                  : "ARTWORK NOT CATALOGUED"}
+            </span>
           </div>
           <div className="event-prose">
             <p className="folio-eyebrow">{step.episodeLabel}</p>

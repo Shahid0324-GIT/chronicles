@@ -362,6 +362,13 @@ for (const reduced of [false, true]) {
     page.on("pageerror", (error) => errors.push(error.message));
     await page.goto("/");
     const spine = page.getByRole("navigation", { name: "Story milestones" });
+    await page.getByRole("button", { name: "Lore", exact: true }).click();
+    await expect(
+      page
+        .getByRole("region", { name: "Lore branch" })
+        .getByText(/JOURNEY BOOKMARK/),
+    ).toBeVisible();
+    await page.getByRole("button", { name: "Return to journey" }).click();
     for (const index of [2, 4, 1, 3, 2])
       await spine
         .getByRole("button", {
