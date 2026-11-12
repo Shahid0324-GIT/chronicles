@@ -1,6 +1,7 @@
 "use client";
 import { useRef, type RefObject } from "react";
 import gsap from "gsap";
+import { CHRONICLE_DESIGN } from "@/features/chronicle/design";
 import { useGSAP } from "@gsap/react";
 gsap.registerPlugin(useGSAP);
 export const reduceMotion = () =>
@@ -32,9 +33,11 @@ export function useAtlasMotion(
             {
               autoAlpha: 1,
               y: 0,
-              duration: context.conditions?.reduced ? 0 : 0.55,
+              duration: context.conditions?.reduced
+                ? 0
+                : CHRONICLE_DESIGN.motion.enter,
               stagger: kind === "entry" ? 0.05 : 0,
-              ease: "power2.out",
+              ease: CHRONICLE_DESIGN.motion.ease,
               overwrite: true,
             },
           );

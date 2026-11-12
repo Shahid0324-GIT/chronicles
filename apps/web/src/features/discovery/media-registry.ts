@@ -3,8 +3,11 @@ export interface MediaAsset {
   src: string;
   alt: string;
   credit: string;
-  kind: "interpretive" | "fallback";
+  kind: "interpretive" | "reference" | "fallback";
   focalPoint?: string;
+  thumbnailSrc?: string;
+  fullSrc?: string;
+  sourceUrl?: string;
 }
 const original = (file: string, alt: string): MediaAsset => ({
   src: `/art/${file}.svg`,

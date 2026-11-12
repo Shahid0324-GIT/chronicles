@@ -9,10 +9,10 @@ import {
 } from "@/stores/ExplorationProvider";
 import { useUniverseLoader } from "@/features/universe/useUniverseLoader";
 import UniverseSwitcher from "@/features/universe/UniverseSwitcher";
-import NarrativePanel from "@/features/narrative/NarrativePanel";
-import NarrativeNavigation from "@/features/narrative/NarrativeNavigation";
 import ContextPanel from "@/features/discovery/ContextPanel";
 import JourneyControls from "@/features/journey/JourneyControls";
+import StoryCanvas from "@/features/chronicle/StoryCanvas";
+import { themeForUniverse, themeStyle } from "@/features/chronicle/design";
 import { useAtlasMotion } from "@/animations/useAtlasMotion";
 import { filterGraph } from "@/features/graph/filter";
 import Search from "./Search";
@@ -22,7 +22,7 @@ const GraphCanvas = dynamic(() => import("@/features/graph/GraphCanvas"), {
   ssr: false,
   loading: () => (
     <div className="canvas-status" role="status">
-      Unfolding the atlas…
+      Unfolding the graph…
     </div>
   ),
 });
@@ -51,21 +51,30 @@ function Experience({ universes }: { universes: Universe[] }) {
     setContinuity = useExploration((s) => s.setContinuity),
     types = useExploration((s) => s.types),
     selected = useExploration((s) => s.selectedId),
-    resetFilters = useExploration((s) => s.resetFilters);
+    resetFilters = useExploration((s) => s.resetFilters),
+    layout = useExploration((s) => s.layoutKind),
+    narrativeStatus = useExploration((s) => s.narrativeStatus);
   const store = useExplorationApi(),
     load = useUniverseLoader();
   const visible = useMemo(
     () => (graph ? filterGraph(graph, continuity, types) : null),
     [graph, continuity, types],
   );
+  const story =
+    layout !== "free" ||
+    mode !== "explore" ||
+    narrativeStatus === "idle" ||
+    narrativeStatus === "loading";
+  const theme = themeForUniverse(active?.slug);
   useAtlasMotion(root, active?.id);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
-      const editable =
+      if (
         event.target instanceof HTMLElement &&
         (event.target.matches("input, select, textarea") ||
-          event.target.isContentEditable);
-      if (editable) return;
+          event.target.isContentEditable)
+      )
+        return;
       if (event.key === "/") {
         event.preventDefault();
         root.current
@@ -80,55 +89,35 @@ function Experience({ universes }: { universes: Universe[] }) {
   return (
     <section
       ref={root}
+      style={themeStyle(theme)}
+      data-theme={theme.id}
+      data-motif={theme.motif}
       className={[
         "atlas-app",
+        "chronicle-shell",
+        story ? "story-view" : "free-view",
         selected ? "has-selection" : "",
         mode === "guided" ? "is-guided" : mode === "lore" ? "is-lore" : "",
       ].join(" ")}
       aria-label="Chronicles universe explorer"
     >
-      <div className="map-texture" aria-hidden="true" />
-      <header className="atlas-topbar glass entry-motion">
+      <div className="chronicle-atmosphere" aria-hidden="true" />
+      <header className="atlas-topbar entry-motion">
         <div className="chronicles-brand">
-          <span aria-hidden="true">✧</span>
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <path
+              d="M24 2l5 17 17 5-17 5-5 17-5-17-17-5 17-5zM24 9v30M9 24h30"
+              fill="none"
+              stroke="currentColor"
+            />
+            <circle cx="24" cy="24" r="15" fill="none" stroke="currentColor" />
+          </svg>
           <div>
-            CHRONICLES<small>A FICTIONAL UNIVERSE ATLAS</small>
+            Chronicles<small>AN ATLAS OF STORIES</small>
           </div>
         </div>
-        <div className="topbar-divider" />
-        <UniverseSwitcher universes={universes} load={load} />
-        <Search />
-        <div className="mode-switch" role="group" aria-label="Exploration mode">
-          <button
-            aria-pressed={mode === "explore"}
-            onClick={() => setMode("explore")}
-          >
-            Explore
-          </button>
-          <button
-            aria-pressed={mode === "guided"}
-            onClick={() => setMode("guided")}
-          >
-            <span aria-hidden="true">⌁</span> Guided
-          </button>
-          <button
-            aria-pressed={mode === "lore"}
-            onClick={() => setMode("lore")}
-          >
-            ◎ Lore
-          </button>
-        </div>
-      </header>
-      <div className="atlas-caption entry-motion">
-        <p className="eyebrow">
-          A WORLD IN THE MAKING <span>✦</span>
-        </p>
-        <h1>
-          {active?.title.split(" — ")[0] ?? "Uncharted worlds"}
-          <span>Every connection is a doorway.</span>
-        </h1>
-        <div className="continuity-control">
-          <span aria-hidden="true">◉</span>
+        <div className="header-world">
+          <UniverseSwitcher universes={universes} load={load} />
           <select
             aria-label="Active continuity"
             value={continuity ?? "all"}
@@ -144,13 +133,34 @@ function Experience({ universes }: { universes: Universe[] }) {
             ))}
           </select>
         </div>
-        <p className="scope-label">
-          {graph?.nodes.some((n) => n.metadata.illustrative === true)
-            ? "ILLUSTRATIVE ATLAS · EARLY-STORY SPOILERS"
-            : "LOCAL COLLECTION"}
-        </p>
-      </div>
-      {graph && graph.nodes.length > 0 && <GraphCanvas data={graph} />}
+        <nav className="mode-switch" aria-label="Exploration mode">
+          <button
+            aria-label="Guided"
+            aria-pressed={mode !== "lore" && story}
+            onClick={() => setMode("guided")}
+          >
+            <span aria-hidden="true">▤</span> Story map
+          </button>
+          <button
+            aria-label="Lore"
+            aria-pressed={mode === "lore" && story}
+            onClick={() => setMode("lore")}
+          >
+            <span aria-hidden="true">◎</span> Lore
+          </button>
+          <button
+            aria-label="Explore"
+            aria-pressed={!story}
+            onClick={() => setMode("explore")}
+          >
+            <span aria-hidden="true">⌘</span> Free graph
+          </button>
+        </nav>
+        <Search />
+      </header>
+      {graph &&
+        status === "ready" &&
+        (story ? <StoryCanvas /> : <GraphCanvas data={graph} />)}
       {status === "loading" && (
         <div className="canvas-status" role="status">
           <span className="status-symbol">✧</span>
@@ -175,13 +185,12 @@ function Experience({ universes }: { universes: Universe[] }) {
       {status === "ready" && !graph && (
         <div className="canvas-status">
           <h2>Your atlas starts here.</h2>
-          <p>Choose a universe above to begin exploring.</p>
           {universes[0] ? (
             <button
               className="primary-button"
               onClick={() => void load(universes[0])}
             >
-              Enter {universes[0].title.split(" — ")[0]} ↗
+              Enter {universes[0].title} ↗
             </button>
           ) : (
             <p>No universes have been added to this local collection.</p>
@@ -207,39 +216,23 @@ function Experience({ universes }: { universes: Universe[] }) {
           )}
         </div>
       )}
-      <NarrativeNavigation />
-      <NarrativePanel />
       <ContextPanel />
       <JourneyControls />
-      <div className="atlas-bottom entry-motion">
-        <div className="map-meta">
-          <span className="live-mark" />
-          LOCAL ATLAS<span className="meta-divider">/</span>
-          {visible?.nodes.length ?? 0} ENTRIES
-          <span className="meta-divider">/</span>
-          {visible?.edges.length ?? 0} THREADS
-        </div>
-        <p>
-          Drag to wander <span>·</span> Scroll to look closer <span>·</span>{" "}
-          Select a thread to follow
-        </p>
-        <MapControls />
-      </div>
-      <div className="layers-position entry-motion">
-        <LayerControls />
-      </div>
-      <div className="map-compass" aria-hidden="true">
-        <span>N</span>
-        <svg viewBox="0 0 64 64">
-          <path
-            d="M32 5l8 27-8 27-8-27zM5 32l27-8 27 8-27 8z"
-            fill="none"
-            stroke="currentColor"
-          />
-          <path d="M32 5v54M5 32h54" stroke="currentColor" opacity=".4" />
-        </svg>
-        <small>NOT ALL PATHS ARE LINEAR</small>
-      </div>
+      {!story && (
+        <>
+          <div className="atlas-bottom">
+            <div className="map-meta">
+              LOCAL ATLAS / {visible?.nodes.length ?? 0} ENTRIES /{" "}
+              {visible?.edges.length ?? 0} THREADS
+            </div>
+            <p>Drag to wander · Scroll to look closer</p>
+            <MapControls />
+          </div>
+          <div className="layers-position">
+            <LayerControls />
+          </div>
+        </>
+      )}
     </section>
   );
 }

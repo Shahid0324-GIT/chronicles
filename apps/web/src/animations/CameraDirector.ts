@@ -1,4 +1,5 @@
 import gsap from "gsap";
+import { CHRONICLE_DESIGN } from "@/features/chronicle/design";
 import type { Camera } from "sigma";
 import type { CameraPosition } from "@/stores/exploration";
 import { reduceMotion } from "./useAtlasMotion";
@@ -14,8 +15,8 @@ export class CameraDirector {
     const position = { ...this.camera.getState() };
     this.motion = gsap.to(position, {
       ...target,
-      duration: reduceMotion() ? 0 : 0.85,
-      ease: "power3.inOut",
+      duration: reduceMotion() ? 0 : CHRONICLE_DESIGN.motion.camera,
+      ease: CHRONICLE_DESIGN.motion.cameraEase,
       onUpdate: () => this.camera.setState(position),
     });
   }
@@ -24,8 +25,8 @@ export class CameraDirector {
     const state = { value: 0 };
     this.emphasis = gsap.to(state, {
       value: 1,
-      duration: reduceMotion() ? 0 : 0.5,
-      ease: "power2.out",
+      duration: reduceMotion() ? 0 : CHRONICLE_DESIGN.motion.emphasis,
+      ease: CHRONICLE_DESIGN.motion.ease,
       onUpdate: () => update(state.value),
     });
   }
@@ -39,8 +40,8 @@ export class CameraDirector {
     update(0);
     this.discovery = gsap.to(state, {
       value: 1,
-      duration: reduceMotion() ? 0 : 0.6,
-      ease: "power2.out",
+      duration: reduceMotion() ? 0 : CHRONICLE_DESIGN.motion.reveal,
+      ease: CHRONICLE_DESIGN.motion.ease,
       onUpdate: () => update(state.value),
     });
   }

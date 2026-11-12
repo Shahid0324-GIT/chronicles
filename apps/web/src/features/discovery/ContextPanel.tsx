@@ -26,7 +26,9 @@ export default function ContextPanel() {
     () => {
       clear();
       document
-        .querySelector<HTMLElement>('[aria-label="Interactive universe map"]')
+        .querySelector<HTMLElement>(
+          '[aria-label="Interactive universe map"], [aria-label="Narrative atlas"]',
+        )
         ?.focus({ preventScroll: true });
     },
     selectedId,

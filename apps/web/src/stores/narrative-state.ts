@@ -1,3 +1,4 @@
+import type { BranchKind } from "@/features/chronicle/model";
 import type { StoreApi } from "zustand/vanilla";
 import type { NodeType } from "@/lib/contracts";
 import type {
@@ -29,8 +30,19 @@ export interface FocusFrame {
   discoveryId: string | null;
   camera: CameraPosition;
   types: NodeType[];
+  expandedBranch: BranchKind | null;
+  eventExpanded: boolean;
 }
 export interface NarrativeState {
+  expandedBranch: BranchKind | null;
+  eventExpanded: boolean;
+  showUpcoming: boolean;
+  sourceNotesOpen: boolean;
+  selectMilestone: (index: number) => void;
+  toggleBranch: (kind: BranchKind) => void;
+  setEventExpanded: (expanded: boolean) => void;
+  toggleUpcoming: () => void;
+  toggleSourceNotes: () => void;
   narrative: NarrativeCatalog;
   narrativeStatus: "idle" | "loading" | "ready" | "error";
   narrativeError: string | null;
@@ -70,6 +82,8 @@ function snapshot(state: ExplorationState): FocusFrame | null {
     discoveryId: state.currentDiscoveryId,
     camera: { ...state.camera },
     types: [...state.types],
+    expandedBranch: state.expandedBranch,
+    eventExpanded: state.eventExpanded,
   };
 }
 const progressKey = (state: ExplorationState, id: string) =>
@@ -92,6 +106,47 @@ export function createNarrativeState(
     });
   };
   return {
+    expandedBranch: null,
+    eventExpanded: false,
+    showUpcoming: true,
+    sourceNotesOpen: false,
+    selectMilestone: (index) => {
+      const s = get(),
+        journey = activeJourney(s);
+      if (
+        !journey ||
+        !Number.isInteger(index) ||
+        index < 0 ||
+        index >= journey.steps.length
+      )
+        return;
+      get().rememberFocus();
+      set({
+        journeyIndex: index,
+        journeyProgress: {
+          ...s.journeyProgress,
+          [progressKey(s, journey.id)]: index,
+        },
+        layoutKind: "narrative",
+        expandedBranch: null,
+        eventExpanded: true,
+        journeyBookmark: null,
+        sourceNotesOpen: false,
+      });
+      focus(journey.steps[index].eventNodeId, "guided");
+    },
+    toggleBranch: (kind) => {
+      get().rememberFocus();
+      set((s) => ({
+        expandedBranch: s.expandedBranch === kind ? null : kind,
+        eventExpanded: true,
+      }));
+    },
+    setEventExpanded: (eventExpanded) =>
+      set({ eventExpanded, expandedBranch: null, sourceNotesOpen: false }),
+    toggleUpcoming: () => set((s) => ({ showUpcoming: !s.showUpcoming })),
+    toggleSourceNotes: () =>
+      set((s) => ({ sourceNotesOpen: !s.sourceNotesOpen })),
     narrative: emptyNarrativeCatalog(),
     narrativeStatus: "idle",
     narrativeError: null,
@@ -168,6 +223,9 @@ export function createNarrativeState(
     resetNarrativeScope: () =>
       set((s) => ({
         narrative: emptyNarrativeCatalog(),
+        expandedBranch: null,
+        eventExpanded: false,
+        sourceNotesOpen: false,
         narrativeStatus: "idle",
         narrativeError: null,
         narrativeIssues: [],
@@ -203,6 +261,8 @@ export function createNarrativeState(
         activeJourneyId: id,
         journeyIndex: index,
         layoutKind: "narrative",
+        expandedBranch: null,
+        sourceNotesOpen: false,
         journeyBookmark: null,
         journeyProgress: { ...s.journeyProgress, [key]: index },
       });
@@ -220,6 +280,9 @@ export function createNarrativeState(
       get().rememberFocus();
       set({
         journeyIndex: index,
+        eventExpanded: true,
+        expandedBranch: null,
+        sourceNotesOpen: false,
         journeyProgress: {
           ...s.journeyProgress,
           [progressKey(s, journey.id)]: index,
@@ -242,6 +305,9 @@ export function createNarrativeState(
         activeLoreThreadId: thread.id,
         currentDiscoveryId: discovery.id,
         layoutKind: "lore",
+        eventExpanded: true,
+        expandedBranch: "lore",
+        sourceNotesOpen: false,
       });
       focus(discovery.nodeId, "lore");
     },
@@ -284,6 +350,9 @@ export function createNarrativeState(
         activeLoreThreadId: frame.threadId,
         currentDiscoveryId: frame.discoveryId,
         types: frame.types,
+        expandedBranch: frame.expandedBranch,
+        eventExpanded: frame.eventExpanded,
+        sourceNotesOpen: false,
         panelMinimized: false,
         query: "",
         cameraRequest: {
@@ -307,7 +376,7 @@ export function createNarrativeState(
       if (kind === "narrative" && !activeJourney(s)) return;
       if (kind === "lore" && !activeThread(s)) return;
       get().rememberFocus();
-      set({ layoutKind: kind });
+      set({ layoutKind: kind, sourceNotesOpen: false });
       get().requestCamera("reset");
     },
   };

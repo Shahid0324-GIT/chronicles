@@ -128,8 +128,12 @@ test("handles missing artwork, continuity filters, empty layers and reduced moti
   await expect(
     page.getByRole("button", { name: "Explore Emilia", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: /YOUR UNIVERSE/ }).click();
+  await page.getByRole("button", { name: "Re:Zero", exact: true }).click();
   await page.getByRole("button", { name: /Currently exploring/ }).click();
+  await expect(
+    page.getByRole("navigation", { name: "Story milestones" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Explore", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Explore Emilia", exact: true }),
   ).toBeVisible();
@@ -159,30 +163,14 @@ for (const mobile of [false, true]) {
     await expect(
       story.getByRole("heading", { name: "A promise in an unfamiliar city" }),
     ).toBeVisible();
-    if (mobile) {
-      await expect
-        .poll(async () => {
-          const node = await page
-            .getByRole("button", {
-              name: "Explore Search for the stolen insignia",
-              exact: true,
-            })
-            .boundingBox();
-          const panel = await story.boundingBox();
-          const map = await page
-            .getByRole("region", { name: "Interactive universe map" })
-            .boundingBox();
-          return Boolean(
-            node &&
-            panel &&
-            map &&
-            node.y + node.height / 2 < panel.y &&
-            node.y > map.y,
-          );
-        })
-        .toBe(true);
-    }
-    await story.getByRole("button", { name: "Inspect Subaru Natsuki" }).click();
+    await page
+      .getByRole("group", { name: "Explore event branches" })
+      .getByRole("button", { name: /Characters/ })
+      .click();
+    await page
+      .getByRole("region", { name: "Characters branch" })
+      .getByRole("button", { name: "Inspect Subaru Natsuki" })
+      .click();
     const entity = page.getByRole("complementary", {
       name: "Story information",
     });
@@ -201,7 +189,7 @@ for (const mobile of [false, true]) {
     await expect(
       lore.getByText("Established in the opening", { exact: true }).first(),
     ).toBeVisible();
-    await lore
+    await page
       .getByRole("button", {
         name: "Recognizing a repeated beginning",
         exact: false,
@@ -210,7 +198,7 @@ for (const mobile of [false, true]) {
     await expect(
       lore.getByRole("heading", { name: "Recognizing a repeated beginning" }),
     ).toBeVisible();
-    await lore
+    await page
       .getByRole("button", {
         name: "A second chance is still a burden",
         exact: false,
@@ -222,7 +210,7 @@ for (const mobile of [false, true]) {
     await expect(
       lore.getByText("Editorial interpretation", { exact: true }).first(),
     ).toBeVisible();
-    await lore
+    await page
       .getByRole("button", { name: "What causes the return?", exact: false })
       .click();
     await expect(
@@ -236,7 +224,10 @@ for (const mobile of [false, true]) {
       story.getByRole("heading", { name: "A promise in an unfamiliar city" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("progressbar", { name: "Journey progress" }),
+      page.getByRole("progressbar", {
+        name: "Journey progress",
+        includeHidden: true,
+      }),
     ).toHaveAttribute("value", "2");
     await page.getByRole("button", { name: "Next story moment" }).click();
     await expect(
@@ -259,6 +250,135 @@ for (const mobile of [false, true]) {
       ),
     ).toBe(true);
     await expect(page).toHaveURL("http://127.0.0.1:3000/");
+    expect(errors).toEqual([]);
+  });
+}
+
+test("opens illustrated milestones, reveals scoped branches and keeps the story visible", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.goto("/");
+  const spine = page.getByRole("navigation", { name: "Story milestones" });
+  await expect(spine.getByRole("button")).toHaveCount(4);
+  await expect(page.getByTestId("sigma-canvas")).toHaveCount(0);
+  await page
+    .getByRole("checkbox", { name: "Preview upcoming details" })
+    .uncheck();
+  await expect(
+    spine.getByRole("button", { name: "Continue to moment 3", exact: true }),
+  ).toBeVisible();
+  await expect(
+    spine.getByRole("button", { name: /An ending that leads back/ }),
+  ).toHaveCount(0);
+  await page
+    .getByRole("checkbox", { name: "Preview upcoming details" })
+    .check();
+  await spine
+    .getByRole("button", {
+      name: "Open story moment 2: A promise in an unfamiliar city",
+      exact: true,
+    })
+    .click();
+  await expect(spine.locator('[aria-current="step"]')).toHaveAccessibleName(
+    "Open story moment 2: A promise in an unfamiliar city",
+  );
+  const causes = page.getByRole("region", { name: "Causes", exact: true });
+  const consequences = page.getByRole("region", {
+    name: "Consequences",
+    exact: true,
+  });
+  await expect(
+    causes.getByText(
+      "No explicit causal relationship is recorded for this moment.",
+    ),
+  ).toBeVisible();
+  await expect(
+    consequences.getByText("Story sequence · not a causal claim"),
+  ).toBeVisible();
+  const branches = page.getByRole("group", { name: "Explore event branches" });
+  await branches.getByRole("button", { name: /Characters/ }).click();
+  await expect(
+    page.getByRole("region", { name: "Characters branch" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Collapse branch" }).click();
+  await expect(
+    page.getByRole("region", { name: "Characters branch" }),
+  ).toHaveCount(0);
+  await branches.getByRole("button", { name: /Lore/ }).click();
+  await page
+    .getByRole("button", { name: "Investigate Return by Death" })
+    .click();
+  await expect(
+    page.getByRole("complementary", { name: "Lore discovery" }),
+  ).toBeVisible();
+  await expect(spine).toBeInViewport();
+  await expect(
+    page.getByRole("region", { name: "Lore branch" }),
+  ).toBeInViewport({ ratio: 1 });
+  await page
+    .getByRole("complementary", { name: "Lore discovery" })
+    .getByRole("button", { name: "Sources & scope" })
+    .click();
+  const notes = page.getByRole("complementary", { name: "Source notes" });
+  await expect(
+    notes.getByRole("link", { name: /Official anime story guide/ }),
+  ).toHaveAttribute("href", "https://re-zero-anime.jp/tv/story/tv1r.html");
+  await page
+    .getByRole("button", { name: "Close source notes" })
+    .press("Escape");
+  await expect(notes).toHaveCount(0);
+  await page.getByRole("button", { name: "Return to journey" }).click();
+  await expect(spine.locator('[aria-current="step"]')).toHaveAccessibleName(
+    /Open story moment 2/,
+  );
+  await expect(page.getByRole("region", { name: "Lore branch" })).toHaveCount(
+    0,
+  );
+  await consequences
+    .getByRole("button", { name: "An ending that leads back" })
+    .click();
+  await expect(spine.locator('[aria-current="step"]')).toHaveAccessibleName(
+    /Open story moment 3/,
+  );
+  await causes
+    .getByRole("button", { name: "A promise in an unfamiliar city" })
+    .click();
+  await expect(spine.locator('[aria-current="step"]')).toHaveAccessibleName(
+    /Open story moment 2/,
+  );
+  await expect(page).toHaveURL("http://127.0.0.1:3000/");
+});
+
+for (const reduced of [false, true]) {
+  test(`handles rapid milestone changes and keyboard navigation (${reduced ? "reduced" : "normal"} motion)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.emulateMedia({
+      reducedMotion: reduced ? "reduce" : "no-preference",
+    });
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    await page.goto("/");
+    const spine = page.getByRole("navigation", { name: "Story milestones" });
+    for (const index of [2, 4, 1, 3, 2])
+      await spine
+        .getByRole("button", {
+          name: new RegExp("^Open story moment " + index + ":"),
+        })
+        .click();
+    await spine.locator('[aria-current="step"]').press("ArrowRight");
+    await expect(spine.locator('[aria-current="step"]')).toHaveAccessibleName(
+      /Open story moment 3/,
+    );
+    await expect(
+      page.getByRole("complementary", { name: "Journey story" }),
+    ).toHaveCSS("opacity", "1");
+    await spine.locator('[aria-current="step"]').press("Home");
+    await expect(spine.locator('[aria-current="step"]')).toHaveAccessibleName(
+      /Open story moment 1/,
+    );
     expect(errors).toEqual([]);
   });
 }

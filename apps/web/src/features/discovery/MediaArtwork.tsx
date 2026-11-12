@@ -6,13 +6,20 @@ export default function MediaArtwork({
   asset,
   className = "",
   priority = false,
+  variant = "thumbnail",
 }: {
   asset: MediaAsset;
   className?: string;
   priority?: boolean;
+  variant?: "thumbnail" | "scene";
 }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const shown = failedSrc === asset.src ? FALLBACK_MEDIA : asset;
+  const requestedSrc =
+    (variant === "scene" ? asset.fullSrc : asset.thumbnailSrc) ?? asset.src;
+  const shown =
+    failedSrc === requestedSrc
+      ? FALLBACK_MEDIA
+      : { ...asset, src: requestedSrc };
   return (
     <div className={`media-art ${className}`}>
       <Image
@@ -27,7 +34,7 @@ export default function MediaArtwork({
           objectPosition: asset.focalPoint ?? "center 35%",
         }}
         onError={() => {
-          if (shown.src !== FALLBACK_MEDIA.src) setFailedSrc(asset.src);
+          if (shown.src !== FALLBACK_MEDIA.src) setFailedSrc(requestedSrc);
         }}
       />
     </div>
