@@ -107,6 +107,17 @@ async def test_postgres_migrations_seed_and_api():
                 "Synthetic test only",
             )
             assert (await archive.findings(identifier))[0]["evidence"][0]["quote"] == document.text
+            other_continuity = uuid4()
+            session.add(
+                ContinuityModel(
+                    id=other_continuity,
+                    universe_id=continuity.universe_id,
+                    name="Separate synthetic adaptation",
+                    medium="test",
+                    description="Test only",
+                )
+            )
+            await session.flush()
             with pytest.raises(IntegrityError):
                 async with session.begin_nested():
                     session.add(
@@ -114,7 +125,7 @@ async def test_postgres_migrations_seed_and_api():
                             claim_id=claim_id,
                             passage_id=passages[0].id,
                             universe_id=continuity.universe_id,
-                            continuity_id=uuid4(),
+                            continuity_id=other_continuity,
                             quote=document.text,
                             quote_start=1,
                             quote_end=len(document.text),

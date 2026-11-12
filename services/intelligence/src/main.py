@@ -8,9 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy.exc import SQLAlchemyError
 
+from src.application.research_use_cases import ResearchRequestError
 from src.domain.exceptions import DomainError, NotFoundError
 from src.infrastructure.config.settings import Settings, get_settings
 from src.infrastructure.persistence.database import create_database
+from src.presentation.api.research import router as research_router
 from src.presentation.api.routers import router
 from src.presentation.api.schemas import ErrorResponse
 
@@ -39,10 +41,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             503: {"model": ErrorResponse},
         },
     )
+    app.state.settings = config
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,
-        allow_methods=["GET"],
+        allow_methods=["GET", "POST"],
         allow_headers=["Accept", "Content-Type"],
     )
 
@@ -53,6 +56,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.exception_handler(DomainError)
     async def invalid(_: Request, exc: DomainError) -> JSONResponse:
         return JSONResponse(status_code=422, content={"code": "invalid_graph", "message": str(exc)})
+
+    @app.exception_handler(ResearchRequestError)
+    async def invalid_research(_: Request, exc: ResearchRequestError) -> JSONResponse:
+        return JSONResponse(
+            status_code=422, content={"code": "invalid_research_request", "message": str(exc)}
+        )
 
     @app.exception_handler(RequestValidationError)
     async def validation(_: Request, exc: RequestValidationError) -> JSONResponse:
@@ -72,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.add_exception_handler(ConnectionError, unavailable)
     app.add_exception_handler(TimeoutError, unavailable)
     app.include_router(router)
+    app.include_router(research_router)
     return app
 
 

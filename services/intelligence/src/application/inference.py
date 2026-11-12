@@ -2,6 +2,8 @@ import asyncio
 from collections.abc import Callable
 from time import monotonic
 
+from pydantic import ValidationError
+
 from src.application.research_contracts import (
     InferenceFailure,
     InferenceProvider,
@@ -44,14 +46,14 @@ class InferenceRouter:
         *,
         public_source_content: bool = False,
     ) -> InferenceResult:
-        eligible = self.mode != "local" and self.cloud_content_allowed and public_source_content
-        prefer_cloud = eligible and (self.mode == "cloud" or task == "verification")
-        candidates = [self.local]
-        if prefer_cloud and self.clock() >= self.cloud_until:
-            candidate = next((p for p in self.cloud if p.credential not in self.disabled), None)
-            if candidate:
-                candidates.insert(0, candidate)
         async with self.gate:
+            eligible = self.mode != "local" and self.cloud_content_allowed and public_source_content
+            prefer_cloud = eligible and (self.mode == "cloud" or task == "verification")
+            candidates = [self.local]
+            if prefer_cloud and self.clock() >= self.cloud_until:
+                candidate = next((p for p in self.cloud if p.credential not in self.disabled), None)
+                if candidate:
+                    candidates.insert(0, candidate)
             for provider in candidates:
                 for _ in range(self.attempts):
                     start = self.clock()
@@ -63,8 +65,14 @@ class InferenceRouter:
                             schema.model_validate(result.value.model_dump())
                         self.usage.append(result.usage)
                         return result
-                    except (InferenceFailure, TimeoutError) as error:
-                        code = error.code if isinstance(error, InferenceFailure) else "timeout"
+                    except (InferenceFailure, TimeoutError, ValidationError) as error:
+                        code = (
+                            error.code
+                            if isinstance(error, InferenceFailure)
+                            else "invalid_output"
+                            if isinstance(error, ValidationError)
+                            else "timeout"
+                        )
                         self.usage.append(
                             InferenceUsage(
                                 provider.name,

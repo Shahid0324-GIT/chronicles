@@ -158,6 +158,24 @@ class SqlResearchRepository:
         )
         return source_entity(row) if row else None
 
+    async def cancel_job(self, job_id: UUID) -> bool:
+        row = await self.session.scalar(
+            select(ResearchJobModel)
+            .where(ResearchJobModel.id == job_id)
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        if not row:
+            raise NotFoundError("Research job not found")
+        if row.status not in {"queued", "running"}:
+            return False
+        row.cancel_requested = True
+        if row.status == "queued":
+            row.status = "cancelled"
+        row.updated_at = now()
+        await self.session.flush()
+        return True
+
     async def save_source(self, source: SourceDocument, passages: list[SourcePassage]) -> None:
         if await self.session.get(SourceDocumentModel, source.id):
             return

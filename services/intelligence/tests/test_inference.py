@@ -108,6 +108,28 @@ async def test_router_serializes_local_inference():
     assert peak == 1
 
 
+async def test_waiting_cloud_request_rechecks_cooldown_after_acquiring_gate():
+    local = Provider()
+
+    class RateLimited(Provider):
+        async def generate(self, *args):
+            self.calls += 1
+            await asyncio.sleep(0.01)
+            raise InferenceFailure("rate_limited", 120)
+
+    cloud = RateLimited("groq")
+    router = InferenceRouter(local, [cloud], cloud_content_allowed=True)
+    await asyncio.gather(
+        *[
+            router.generate(
+                "Test", "Test", ResearchPlan, "verification", public_source_content=True
+            )
+            for _ in range(2)
+        ]
+    )
+    assert cloud.calls == 1 and local.calls == 2
+
+
 def test_credentials_are_masked_and_ollama_cannot_point_to_public_inference():
     settings = Settings(_env_file=None, groq_api_key_primary="test-secret")
     assert "test-secret" not in repr(settings)
