@@ -10,9 +10,15 @@ from alembic.config import Config
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select, text
 from sqlalchemy.engine import make_url
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from src.infrastructure.persistence.models import NodeModel, RelationshipModel
+from src.application.research import ResearchRequest, SourceInput
+from src.domain.entities import now
+from src.domain.research import SourceDocument, digest, passages_for
+from src.infrastructure.persistence.models import ContinuityModel, NodeModel, RelationshipModel
+from src.infrastructure.persistence.models.research import ClaimEvidenceModel
+from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.infrastructure.persistence.seed import seed
 from src.main import create_app
 from src.presentation.dependencies import get_session
@@ -45,6 +51,76 @@ async def test_postgres_migrations_seed_and_api():
         async with factory() as session:
             assert await session.scalar(select(func.count()).select_from(NodeModel)) == 15
             assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 25
+        # Exercise the actual PostgreSQL archive and its composite evidence scope constraints.
+        async with factory() as session, session.begin():
+            archive = SqlResearchRepository(session)
+            continuity = await session.scalar(select(ContinuityModel))
+            document = SourceDocument(
+                uuid4(),
+                continuity.universe_id,
+                continuity.id,
+                "local:synthetic",
+                "Synthetic migration test",
+                "Test fixture",
+                "A synthetic character entered the observatory.",
+                digest("synthetic"),
+                now(),
+                "Owned synthetic test material",
+                "Test continuity",
+                False,
+                False,
+            )
+            passages = passages_for(document)
+            await archive.save_source(document, passages)
+            identifier = await archive.create_job(
+                ResearchRequest(
+                    universe_id=continuity.universe_id,
+                    continuity_id=continuity.id,
+                    objective="Exercise PostgreSQL evidence storage with a synthetic fixture.",
+                    sources=[
+                        SourceInput(
+                            text=document.text,
+                            permission_basis=document.permission_basis,
+                            source_scope=document.source_scope,
+                        )
+                    ],
+                )
+            )
+            claim_id = uuid4()
+            await archive.save_claim(
+                identifier,
+                {
+                    "id": str(claim_id),
+                    "kind": "entity",
+                    "hash": digest("test claim"),
+                    "payload": {"name": "Synthetic character"},
+                },
+                [
+                    {
+                        "passage_id": str(passages[0].id),
+                        "quote": document.text,
+                        "start": 0,
+                        "end": len(document.text),
+                    }
+                ],
+                "review",
+                "Synthetic test only",
+            )
+            assert (await archive.findings(identifier))[0]["evidence"][0]["quote"] == document.text
+            with pytest.raises(IntegrityError):
+                async with session.begin_nested():
+                    session.add(
+                        ClaimEvidenceModel(
+                            claim_id=claim_id,
+                            passage_id=passages[0].id,
+                            universe_id=continuity.universe_id,
+                            continuity_id=uuid4(),
+                            quote=document.text,
+                            quote_start=1,
+                            quote_end=len(document.text),
+                        )
+                    )
+                    await session.flush()
         app = create_app()
 
         async def isolated_session():

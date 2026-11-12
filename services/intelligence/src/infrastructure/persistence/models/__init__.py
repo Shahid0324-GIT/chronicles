@@ -13,11 +13,18 @@ from sqlalchemy import (
     UniqueConstraint,
 )
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 
-
-class Base(DeclarativeBase):
-    pass
+from .base import Base
+from .research import (  # noqa: F401 -- register research metadata for Alembic
+    ClaimEvidenceModel,
+    ProviderUsageModel,
+    ResearchClaimModel,
+    ResearchEventModel,
+    ResearchJobModel,
+    SourceDocumentModel,
+    SourcePassageModel,
+)
 
 
 class UniverseModel(Base):
