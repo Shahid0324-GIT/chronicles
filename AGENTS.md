@@ -1,6 +1,6 @@
 # Universe Atlas repository guidance
 
-Implement only the scope requested. Phase 1 provides a read-only local knowledge graph, not AI research. Never present curated seed content as discovered or verified by an agent. Do not deploy or push without explicit user instructions.
+Implement only the scope requested. Phase 1 provides a read-only local graph; Phase 2 provides the continuous frontend atlas. Neither implements AI research. Never present curated seed content as discovered or verified by an agent. Do not deploy or push without explicit user instructions.
 
 ## Layout and dependency direction
 
@@ -9,7 +9,7 @@ Implement only the scope requested. Phase 1 provides a read-only local knowledge
 - Application depends on domain and repository Protocols in `application/ports`.
 - Infrastructure implements ports structurally and maps ORM rows to domain entities.
 - Presentation composes concrete repositories with FastAPI Depends and converts application results to dedicated API schemas.
-- Next.js lives in `apps/web`. Server-only API client is `src/lib/api.ts`; transport types are `src/lib/contracts.ts`; graph UI boundary is `src/components/Atlas.tsx`.
+- Next.js lives in `apps/web`. Server-only API client is `src/lib/api.ts`; transport types are `src/lib/contracts.ts`; graph implementation is in `src/features/graph/`, with `src/components/Atlas.tsx` retained as a compatibility export.
 
 Use constructor injection, explicit meaningful Protocols, composition, Python type hints and strict TypeScript. Do not introduce BaseService/BaseAgent, generic repository frameworks, microservices, external auth, cloud storage, or unused future dependencies.
 
@@ -40,6 +40,12 @@ Frontend (from root): `npm run lint --prefix apps/web`, `npm run typecheck --pre
 
 Default tests use in-memory SQLite or fake repositories. PostgreSQL tests require an explicit `TEST_DATABASE_URL` ending in `_test` and a unique schema; never fall back to `DATABASE_URL`. Verify actual migration upgrade/downgrade and `alembic check` when touching persistence. Backend dependency resolution is recorded in `requirements-dev.lock`; npm versions are locked in `package-lock.json`. Update locks intentionally after meaningful checks.
 
-Keep credentials out of Git. Local `.env` files are ignored; update examples when settings change. Maintain loading, error, empty, not-found, keyboard and responsive states. Do not embed sample data in React. Prefer simple local state until cross-component state actually requires a store.
+Keep credentials out of Git. Local `.env` files are ignored; update examples when settings change. Maintain loading, error, empty, not-found, keyboard and responsive states. Do not embed sample data in React. The exploration store is per-experience Zustand state. Keep per-frame updates out of the full React tree.
 
 Report exact checks, failures and blockers. Consult `docs/verification.md` for the last implementation verification; rerun only relevant checks for subsequent changes.
+
+## Phase 2 frontend
+
+Keep exploration on the same canvas; entities and universes use state changes. Dynamically import Sigma with SSR disabled. Preserve deterministic type clusters and backend IDs. GSAP owns interruptible camera/presentation tweens; Sigma owns graph rendering. Clean up subscriptions, listeners, WebGL resources and tweens. Respect reduced motion. Follow docs/contracts/journeys.md; never infer chronology from traversal. Media registry entries are presentation assets, never graph data. No fake SSE or AI producer.
+
+Run npm run test --prefix apps/web for graph/state/ordering tests. npm run test:e2e --prefix apps/web uses real seeded services and installed Chrome, without database resets. See docs/phase-2-atlas.md.

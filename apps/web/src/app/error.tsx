@@ -6,14 +6,17 @@ export default function ErrorPage({
   reset: () => void;
 }) {
   return (
-    <section className="notice" role="alert">
-      <p className="eyebrow">CONNECTION INTERRUPTED</p>
-      <h1>The atlas is out of reach.</h1>
+    <section className="standalone-state" role="alert">
+      <span className="state-brand">✧ CHRONICLES</span>
+      <p className="eyebrow">THE LOCAL ATLAS IS UNAVAILABLE</p>
+      <h1>A world just out of reach.</h1>
       <p>
-        Check that FastAPI and PostgreSQL are running and migrations have been
-        applied.
+        Start FastAPI and PostgreSQL, check migrations, then open the atlas
+        again.
       </p>
-      <button onClick={reset}>Try again ↗</button>
+      <button className="primary-button" onClick={reset}>
+        Open the atlas ↗
+      </button>
     </section>
   );
 }

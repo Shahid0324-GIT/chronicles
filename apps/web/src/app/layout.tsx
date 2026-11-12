@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import "./globals.css";
 export const metadata: Metadata = {
-  title: "Universe Atlas",
-  description: "A local atlas of interconnected fictional worlds.",
+  title: "Chronicles — A fictional universe atlas",
+  description:
+    "Enter a world. Follow a thread. An immersive local atlas of interconnected stories.",
 };
 export default function RootLayout({
   children,
@@ -12,23 +12,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <a className="skip" href="#main">
-          Skip to content
+          Skip to the atlas
         </a>
-        <header className="masthead">
-          <Link className="brand" href="/">
-            <span aria-hidden="true">✧</span> UNIVERSE ATLAS
-          </Link>
-          <span className="edition">FIELD NOTES / VOLUME 01</span>
-          <span className="local">
-            <i /> LOCAL EDITION
-          </span>
-        </header>
         <main id="main">{children}</main>
-        <footer>
-          <span>UNIVERSE ATLAS</span>
-          <span>A beginning, not a boundary.</span>
-          <span>PHASE 01 · FOUNDATIONS</span>
-        </footer>
       </body>
     </html>
   );

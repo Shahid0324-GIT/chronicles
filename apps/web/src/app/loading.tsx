@@ -1,9 +1,10 @@
 export default function Loading() {
   return (
-    <section className="notice" role="status">
-      <p className="eyebrow">OPENING THE ATLAS</p>
-      <h1>Tracing the threads…</h1>
-      <p>Loading records from your local library.</p>
+    <section className="standalone-state" role="status">
+      <span className="state-brand">✧ CHRONICLES</span>
+      <p className="eyebrow">UNFOLDING THE ATLAS</p>
+      <h1>Worlds are made of connections.</h1>
+      <p>Opening your local collection…</p>
     </section>
   );
 }

@@ -1,10 +1,10 @@
 # Architecture overview
 
-The catalog and overview flow from a Next.js server component to the local FastAPI API, through a constructor-injected application use case, through repository Protocols implemented by SQLAlchemy adapters, and into PostgreSQL. API schemas map domain values explicitly. Browser interaction uses the graph already retrieved from the backend.
+The continuous atlas flows from a Next.js server component to the local FastAPI API, through a constructor-injected application use case, through repository Protocols implemented by SQLAlchemy adapters, and into PostgreSQL. API schemas map domain values explicitly. Browser interaction uses the graph already retrieved from the backend.
 
 ```mermaid
 flowchart LR
-  Web[Next.js catalog / overview] --> API[FastAPI routers and schemas]
+  Web[Next.js continuous atlas] --> API[FastAPI routers and schemas]
   API --> UseCases[Application use cases]
   UseCases --> Ports[Repository Protocols]
   Adapters[SQLAlchemy repositories] -. implements .-> Ports
@@ -38,7 +38,7 @@ The health endpoint probes database connectivity. Not-found, validation and unav
 
 ## Frontend
 
-App Router server components fetch fresh local API data with a timeout and no persistent cache. `API_BASE_URL` stays server-only. Catalog and overview include framework loading, error and not-found boundaries. The catalog has an empty state. Atlas owns selection, text search and continuity filtering, including incoming/outgoing relationship traversal. This component is the future Sigma boundary. There are no frontend sample records, remote fonts, paid assets or inference calls.
+App Router server components fetch fresh local API data with a timeout and no persistent cache. `API_BASE_URL` stays server-only. The primary route is a full-viewport single-page atlas, with compatibility deep links, loading/error/not-found boundaries and empty states. Feature modules separate the Sigma/Graphology renderer, illustrated context panels, universe switching and explicit-order journeys. Per-experience Zustand state owns selection, filters, camera and mode; GSAP coordinates interruptible presentation/camera motion. See [Phase 2](../phase-2-atlas.md). There are no frontend sample records, remote fonts, paid assets or inference calls.
 
 ## Verification strategy
 
@@ -46,4 +46,4 @@ Domain and application tests run with pure values and fakes. API and repository 
 
 ## Deferred work
 
-Ollama, LangChain, LangGraph, SearXNG, embeddings, SSE, Sigma and GSAP are outside Phase 1. No placeholder agents or fabricated research results are included. Provenance, claim-level evidence, research job state and editing endpoints need their own design before ingestion is added.
+Ollama, LangChain, LangGraph, SearXNG, embeddings and SSE transport remain deferred. Sigma and GSAP were added in Phase 2 without changing backend contracts. No placeholder agents or fabricated research results are included. Provenance, claim-level evidence, research job state and editing endpoints need their own design before ingestion is added.

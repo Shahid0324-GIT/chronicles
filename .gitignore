@@ -13,3 +13,6 @@ node_modules/
 .coverage
 .tmp/
 *.tsbuildinfo
+
+playwright-report/
+test-results/

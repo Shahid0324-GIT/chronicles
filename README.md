@@ -1,6 +1,6 @@
-# Universe Atlas · Phase 1
+# Chronicles · Universe Atlas
 
-A local-first foundation for exploring fictional worlds as connected knowledge. This phase includes a PostgreSQL-backed, read-only API and a Next.js editorial atlas. There is no AI inference, research automation, authentication, cloud storage, or deployment.
+A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed, read-only API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. There is no AI inference, research automation, authentication, cloud storage, or deployment.
 
 ## Prerequisites
 
@@ -53,7 +53,7 @@ Terminal 2, from the repository root:
 npm run dev --prefix apps/web
 ```
 
-Open [the atlas](http://127.0.0.1:3000) and [API documentation](http://127.0.0.1:8000/docs). Next.js server components fetch FastAPI through server-only `API_BASE_URL`; browsers receive rendered catalog data and a small interactive Atlas component. Searches, continuity filters, and traversing incoming/outgoing edges run locally in that component.
+Open [the atlas](http://127.0.0.1:3000) and [API documentation](http://127.0.0.1:8000/docs). Next.js server components fetch FastAPI through server-only `API_BASE_URL`; the browser receives a continuous illustrated atlas. Universe switching uses a same-origin forwarding route, and selection, camera, filters and relationship traversal use shared exploration state.
 
 Backend settings read process environment and `.env` in the current directory. `DATABASE_URL` must use `postgresql+asyncpg://`. Frontend `.env.local` sets `API_BASE_URL`; it is not a `NEXT_PUBLIC_` variable. Restart services after changing settings. CORS origins are an explicit JSON list for future direct browser API clients; the current frontend fetches server-side.
 
@@ -103,7 +103,7 @@ For a production-mode local frontend, run `npm run start --prefix apps/web` afte
 | `GET /api/universes/{slug}/graph` | `{universe, continuities, nodes, edges}` |
 | `GET /api/nodes/{id}` | `{node, edges}` with incoming and outgoing edges |
 
-IDs are UUID strings; timestamps are ISO 8601. Graph edges expose `id`, `source`, `target`, `relationship_type`, `description`, `universe_id`, and nullable `continuity_id`. Nodes have IDs and typed attributes but no layout coordinates. A future Sigma adapter owns layout. Errors use `{code, message}` for missing records (404), invalid parameters (422), and unavailable persistence (503). Empty catalog and graph results are valid successful responses. The health endpoint checks connectivity, not schema revision; use `alembic current`/`alembic check` for migrations.
+IDs are UUID strings; timestamps are ISO 8601. Graph edges expose `id`, `source`, `target`, `relationship_type`, `description`, `universe_id`, and nullable `continuity_id`. Nodes have IDs and typed attributes but no layout coordinates. The frontend Sigma adapter owns layout. Errors use `{code, message}` for missing records (404), invalid parameters (422), and unavailable persistence (503). Empty catalog and graph results are valid successful responses. The health endpoint checks connectivity, not schema revision; use `alembic current`/`alembic check` for migrations.
 
 ## Architecture and scope
 
@@ -115,7 +115,7 @@ See [architecture](docs/architecture/overview.md), [backend ADR](docs/adr/0001-b
 - `presentation`: API schemas, routes and FastAPI dependency composition.
 - `apps/web`: Next.js App Router, strict TypeScript, Tailwind, Atlas rendering boundary.
 
-Phase 1 is deliberately read-only. No research agents, Ollama, LangChain, LangGraph, SearXNG, pgvector, SSE, Sigma or GSAP are installed. Local component state is sufficient; Zustand can be introduced when a real shared-state need emerges. A complete graph is returned in one request for this small foundation; pagination and large-graph limits belong to a subsequent task.
+Phase 1 is deliberately read-only. No research agents, Ollama, LangChain, LangGraph, SearXNG, pgvector, or SSE transport are implemented. Sigma, Graphology, GSAP and Zustand power the Phase 2 frontend. A complete graph is returned in one request for this small foundation; pagination and large-graph limits belong to a subsequent task.
 
 ## Troubleshooting
 
@@ -129,4 +129,15 @@ Phase 1 is deliberately read-only. No research agents, Ollama, LangChain, LangGr
 - **PowerShell activation policy:** invoke `.venv\Scripts\python` directly; changing execution policy is unnecessary.
 - **Async tests stall under a restrictive Windows sandbox:** run the same tests in a normal local terminal; SQLite uses worker threads and PostgreSQL uses loopback sockets.
 
-Suggested next task: add a typed Sigma adapter behind `Atlas`, preserving continuity scoping and the existing backend contracts. Keep research-agent work separate.
+Suggested next task: provide licensed media and evidence-backed chronology through explicit backend contracts before adding research or streaming.
+
+## Phase 2 frontend
+
+See [the continuous atlas guide](docs/phase-2-atlas.md) for architecture, interaction, limitations and future contracts. Open `/` to explore without route changes.
+
+```powershell
+npm run test --prefix apps/web
+npm run test:e2e --prefix apps/web
+```
+
+Unit tests need no backend. Playwright requires real seeded PostgreSQL/FastAPI at port 8000 and installed Google Chrome; the runner starts or reuses Next.js on port 3000. Use `/` to search, Tab/Enter for map entities, arrows to pan the focused map, +/- to zoom, and Home or the full-map control to reset. Guided mode never invents chronology for unordered data.
