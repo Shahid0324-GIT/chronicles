@@ -118,11 +118,11 @@ class EvidenceRetrieval:
         )[:40]
         # Reciprocal rank fusion gives exact names their own route into the evidence set.
         scores: dict[UUID, float] = {}
-        values = {}
+        values: dict[UUID, EvidenceHit] = {}
         for ranking in (semantic, lexical):
             for rank, h in enumerate(ranking):
                 scores[h.passage.id] = scores.get(h.passage.id, 0) + 1 / (20 + rank)
-                values[h.passage.id] = h
+                values.setdefault(h.passage.id, h)
         ordered = sorted(values.values(), key=lambda h: (-scores[h.passage.id], str(h.passage.id)))
         chosen: list[EvidenceHit] = []
         hashes: set[str] = set()

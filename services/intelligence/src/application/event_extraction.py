@@ -3,7 +3,7 @@
 import json
 import re
 from collections.abc import Awaitable, Callable
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -13,7 +13,11 @@ from src.domain.research import SourcePassage, digest
 
 class EventFrame(StructuredModel):
     trigger: str = Field(min_length=2, max_length=100)
+    occurrence_status: Literal["actual", "intended", "hypothetical", "uncertain"]
     participants: list[str] = Field(default_factory=list, max_length=5)
+    participant_roles: dict[str, Literal["actor", "recipient", "witness", "mentioned"]] = Field(
+        default_factory=dict, max_length=5
+    )
     location: str | None = None
     arc: str | None = None
     chronological_position: int | None = Field(default=None, ge=0)
@@ -68,6 +72,11 @@ async def extract_events(
         prompt = (
             "Extract up to three concrete story occurrences from these sentences. "
             "Each event needs the actual named participants/location and the "
+            "occurrence_status: actual for an action that happened, intended for a future goal, "
+            "hypothetical or uncertain otherwise. A purpose clause is not a completed occurrence. "
+            "For each participant specify participant_roles: actor performs this precise action, "
+            "recipient is acted on, witness is present, mentioned is merely referenced. People "
+            "whose future fate someone hopes to change are mentioned, not actors in that action. "
             "trigger phrase copied exactly from a sentence (for example its action verb phrase), "
             "participants/location only if stated as proper names. Use source-language names. "
             "Copy sentence IDs, NOT "
@@ -85,6 +94,8 @@ async def extract_events(
             if ordinal >= len(source_frames):
                 continue
             frame = source_frames[ordinal]
+            if frame.occurrence_status != "actual":
+                continue
             selected = [u for u in local if u["id"] in frame.sentence_ids]
             if len(selected) != len(set(frame.sentence_ids)):
                 continue
@@ -96,6 +107,11 @@ async def extract_events(
                 for u in selected
             ]
             metadata = frame.model_dump(exclude={"sentence_ids", "title", "description"})
+            metadata["participants"] = [
+                n
+                for n in frame.participants
+                if frame.participant_roles.get(n) in {"actor", "recipient", "witness"}
+            ]
             metadata["identity_anchor"] = digest(
                 f"{p.source_id}:"
                 f"{p.start + anchor['start'] + anchor['text'].find(frame.trigger)}:{frame.trigger}"
@@ -115,7 +131,11 @@ async def extract_events(
                 "event": metadata,
             }
             for name, kind, relation in [
-                *((n, "CHARACTER", "PARTICIPATED_IN") for n in frame.participants),
+                *(
+                    (n, "CHARACTER", "PARTICIPATED_IN")
+                    for n in frame.participants
+                    if frame.participant_roles.get(n) in {"actor", "recipient", "witness"}
+                ),
                 *(([(frame.location, "LOCATION", "OCCURRED_AT")]) if frame.location else []),
             ]:
                 # Names must literally occur in at least one attached sentence.

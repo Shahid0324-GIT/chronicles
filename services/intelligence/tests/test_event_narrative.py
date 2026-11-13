@@ -29,7 +29,9 @@ async def test_event_frame_materializes_evidenced_endpoints_and_typed_edges():
                 "events": [
                     {
                         "trigger": "entered",
+                        "occurrence_status": "actual",
                         "participants": ["Mira Vale"],
+                        "participant_roles": {"Mira Vale": "actor"},
                         "location": "observatory",
                         "sentence_ids": [0],
                     }
@@ -54,6 +56,7 @@ async def test_missing_trigger_or_sentence_does_not_manufacture_event_evidence()
                 "events": [
                     {
                         "trigger": "invented action",
+                        "occurrence_status": "actual",
                         "sentence_ids": [0],
                     }
                 ]
@@ -68,6 +71,58 @@ def test_long_sentence_units_preserve_exact_passage_offsets():
     units = evidence_units([p])
     assert units and all(len(u["text"]) <= 400 for u in units)
     assert all(p.text[u["start"] : u["start"] + len(u["text"])] == u["text"] for u in units)
+
+
+async def test_intended_outcome_is_not_an_event_and_beneficiary_is_not_a_participant():
+    p = passage("Mira runs to save Corin from a future danger.")
+
+    async def intended(prompt, schema):
+        return EventFrames.model_validate(
+            {
+                "events": [
+                    {
+                        "trigger": "save Corin",
+                        "occurrence_status": "intended",
+                        "sentence_ids": [0],
+                    }
+                ]
+            }
+        )
+
+    assert not (await extract_events([p], "Research actual occurrences", intended)).entities
+
+    async def actual(prompt, schema):
+        return EventFrames.model_validate(
+            {
+                "events": [
+                    {
+                        "trigger": "runs",
+                        "occurrence_status": "actual",
+                        "sentence_ids": [0],
+                        "participants": ["Mira", "Corin"],
+                        "participant_roles": {"Mira": "actor", "Corin": "mentioned"},
+                    }
+                ]
+            }
+        )
+
+    result = await extract_events([p], "Research actual occurrences", actual)
+    assert {r.source_name for r in result.relationships} == {"Mira"}
+
+
+async def test_publication_rejects_intended_event_even_with_supported_assessment(factory):
+    from uuid import UUID
+
+    from src.infrastructure.persistence.models.research import ResearchClaimModel
+
+    job, service, _, claims, resolutions = await prepared(factory)
+    event = next(c for c in claims if c["payload"].get("type") == "EVENT")
+    async with factory() as session, session.begin():
+        row = await session.get(ResearchClaimModel, UUID(event["id"]))
+        row.payload = {**row.payload, "event": {"occurrence_status": "intended"}}
+    result = await service.publish(job, resolutions, {}, False)
+    assert len(result["promoted"]) == 1
+    assert len(result["unresolved"]) == 2
 
 
 async def accepted_fixture(factory):
@@ -169,9 +224,15 @@ async def test_ambiguous_episode_keeps_representative_and_explicit_gap(factory):
     ]
 
     class Memory:
+        calls = 0
+
         async def knowledge(self, *_):
+            type(self).calls += 1
+            facts = knowledge.facts + extra
             return NarrativeKnowledge(
-                knowledge.nodes + others, knowledge.edges, knowledge.facts + extra
+                knowledge.nodes + others,
+                knowledge.edges,
+                list(reversed(facts)) if self.calls % 2 else facts,
             )
 
         async def save(self, *_):
@@ -188,3 +249,39 @@ async def test_ambiguous_episode_keeps_representative_and_explicit_gap(factory):
     assert catalog["orderingGaps"][0]["kind"] == "ambiguous-within-episode-order"
     assert catalog["journeys"][0]["steps"][0]["episodeLabel"] == "By episode 1"
     assert catalog == await builder.build(universe, continuity)
+    assert all(s["locator"].count("passage ") == 1 for s in catalog["sources"])
+
+
+async def test_lore_projection_uses_allowed_assertion_instead_of_later_summary(factory):
+    from contextlib import asynccontextmanager
+    from dataclasses import replace
+    from uuid import UUID
+
+    from src.application.ports.narrative import NarrativeKnowledge
+
+    _, _, saved = await accepted_fixture(factory)
+    universe, continuity = UUID(saved["universe_id"]), UUID(saved["continuity_id"])
+    async with narrative_transactions(factory)() as repo:
+        knowledge = await repo.knowledge(universe, continuity)
+    fact = next(f for f in knowledge.facts if f["kind"] == "entity")
+    node = next(n for n in knowledge.nodes if str(n.id) == fact["target_id"])
+    from src.domain.value_objects import NodeType
+
+    lore = replace(node, type=NodeType.LORE, title="Later secret title", summary="Later spoiler")
+
+    class Memory:
+        async def knowledge(self, *_):
+            return NarrativeKnowledge([lore], [], [fact])
+
+        async def save(self, *_):
+            pass
+
+    @asynccontextmanager
+    async def tx():
+        yield Memory()
+
+    catalog = await NarrativeBuilder(tx).build(universe, continuity, spoiler_position=1)
+    thread = catalog["loreThreads"][0]
+    assert thread["title"] == fact["payload"]["name"]
+    assert thread["introduction"] == fact["payload"]["description"]
+    assert "Later spoiler" not in str(catalog) and "Later secret title" not in str(catalog)

@@ -23,6 +23,7 @@ class NarrativeBuilder:
             knowledge = await repo.knowledge(universe, continuity)
         allowed = set(map(str, allowed_sources)) if allowed_sources is not None else None
         source_map: dict[str, dict[str, Any]] = {}
+        source_locators: dict[str, set[str]] = {}
         facts: dict[str, list[dict[str, Any]]] = {}
         positions: dict[str, int] = {}
         for f in knowledge.facts:
@@ -41,8 +42,7 @@ class NarrativeBuilder:
                 continue
             facts.setdefault(f["target_id"], []).append(f)
             for s in sources:
-                previous = source_map.get(s["id"])
-                locators = set(previous["locator"].split("; ")) if previous else set()
+                locators = source_locators.setdefault(s["id"], set())
                 locators.add(s["locator"])
                 source_map[s["id"]] = {**s, "locator": "; ".join(sorted(locators))}
                 if s["provenance"].get("position_basis") == "broadcast-presentation":
@@ -174,6 +174,9 @@ class NarrativeBuilder:
                 str(uuid5(node.id, "discovery")),
             )
             citations = sorted({s["id"] for f in facts[identifier] for s in f["sources"]})
+            assertion = sorted(
+                facts[identifier], key=lambda f: json.dumps(f["payload"], sort_keys=True)
+            )[0]["payload"]
             presentation: dict[str, Any] = {"relatedNodeIds": [], "relationshipIds": []}
             threads.append(
                 {
@@ -181,8 +184,8 @@ class NarrativeBuilder:
                     "universeId": str(universe),
                     "continuityId": str(continuity),
                     "conceptNodeId": identifier,
-                    "title": node.title,
-                    "introduction": node.summary,
+                    "title": assertion.get("name", node.title),
+                    "introduction": assertion["description"],
                     "spoilerScope": "Accepted source boundary",
                     "discoveryIds": [discovery_id],
                     "initialDiscoveryId": discovery_id,
@@ -194,8 +197,8 @@ class NarrativeBuilder:
                     "id": discovery_id,
                     "threadId": thread_id,
                     "nodeId": identifier,
-                    "title": node.title,
-                    "explanation": node.summary,
+                    "title": assertion.get("name", node.title),
+                    "explanation": assertion["description"],
                     "classification": "unresolved"
                     if node.type == NodeType.MYSTERY
                     else "established",

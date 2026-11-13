@@ -16,6 +16,7 @@ async def test_real_pgvector_index_retrieval_and_dimension_isolation(postgres_fa
     assert (await service.index(scope.universe_id, scope.id))["indexed"] == 2
     results = await service.retrieve(scope.universe_id, scope.id, "arrival", names=["Mira Vale"])
     assert results[0].source.id == ids[0]
+    assert type(results[0].distance) is float
     async with postgres_factory() as session:
         assert set(
             await session.scalars(select(func.vector_dims(PassageEmbeddingModel.vector)))

@@ -158,5 +158,5 @@ class SqlEvidenceIndex:
             distance_value = 1 - sum(a * b for a, b in zip(vector, v, strict=True)) / (
                 norm * math.sqrt(sum(x * x for x in v))
             )
-            scored.append(hit(passage, source, distance_value))
+            scored.append(hit(passage, source, float(distance_value)))
         return sorted(scored, key=lambda h: (h.distance or 0, str(h.passage.id)))[:limit]

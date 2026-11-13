@@ -824,6 +824,8 @@ class ResearchWorkflow:
                 "Validate the entity TYPE and name, not merely the description: a person name "
                 "cannot name an EVENT or LOCATION. An EVENT name must identify an occurrence. "
                 "For relationships, both the TYPE and description must be supported. "
+                "Mere mention or being an intended beneficiary does not establish participation "
+                "in the precise event. A goal or hypothetical outcome is not a completed event. "
                 "Compare cross_source_passages for contradictions and adaptation mismatch. "
                 "Set material_conflict=true for unresolved contradictions; "
                 "cite them in contradiction_evidence. "

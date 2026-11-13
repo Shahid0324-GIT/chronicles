@@ -175,6 +175,8 @@ class CanonicalGraphPromotionService:
                     )
                     accepted = accepted and identity_grounded
                     event = payload.get("event") or {}
+                    if event.get("occurrence_status", "actual") != "actual":
+                        accepted = False
                     anchor = event.get("identity_anchor")
                     if anchor:
                         trigger = event.get("trigger", "")
