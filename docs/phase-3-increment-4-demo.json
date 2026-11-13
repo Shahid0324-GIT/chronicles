@@ -1,0 +1,4192 @@
+{
+  "observed_on": "2026-11-13",
+  "kind": "actual Ollama research; unit and synthetic UI tests reported separately",
+  "cloud_inference_used": false,
+  "source_bodies_prompts_model_prose_omitted": true,
+  "jobs": [
+    {
+      "id": "bea5eae3-976d-46ba-93e5-6292fa2b3f18",
+      "objective": "Research only the original introductory TV anime episode 1: Subaru’s summoning and the immediate street encounter. Extract actual occurrences, directly participating characters, and any explicitly stated in-world location. Reuse known aliases and canonical event identities; keep reports, intentions and unsupported chronology or causality unresolved.",
+      "summary": {
+        "id": "bea5eae3-976d-46ba-93e5-6292fa2b3f18",
+        "status": "partial",
+        "stage": "narrative_builder",
+        "error": null,
+        "model_calls": 18,
+        "incomplete_call_reservations": 0,
+        "cache_hits": 0,
+        "retry_count": 2,
+        "validation_failures": 3,
+        "providers": [
+          "ollama:qwen3.5:4b"
+        ],
+        "sources": 2,
+        "source_retrievals": 2,
+        "embedding_reused": 2,
+        "embedding_generated": 0,
+        "candidate_entities": 6,
+        "accepted_relationships": 0,
+        "unresolved_findings": 7,
+        "elapsed_ms": 166835,
+        "stage_elapsed_ms": {
+          "planner": 8889,
+          "verifier": 56159,
+          "extractor": 15821,
+          "researcher": 4981,
+          "promotion_policy": 448,
+          "research_context": 7041,
+          "identity_resolver": 64820,
+          "narrative_builder": 198,
+          "relationship_analyst": 7630
+        },
+        "discoveries": [
+          {
+            "id": "6cb71db3-18f7-5388-a027-9e2830844cf5",
+            "canonical_id": "56769ce6-f699-50fe-8515-9640345429d5",
+            "kind": "entity",
+            "type": "EVENT",
+            "label": "叩きのめされる"
+          }
+        ]
+      },
+      "source_ids": [
+        "63d644ac-6513-5385-94d5-d02fb7590a7c",
+        "be6632a9-3e0f-5915-a0e6-61e6c4735bdd"
+      ],
+      "indexing": {
+        "reused": 2,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "retrieved_passage_ids": [
+        "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+        "f20157f0-f05a-5c2d-aebe-b85cb4951376"
+      ],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "count": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "invalid_output",
+          "count": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "count": 4
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "count": 7
+        }
+      ],
+      "validation_diagnostics": [
+        [
+          ":value_error"
+        ],
+        [
+          ":value_error"
+        ],
+        [
+          ":value_error"
+        ]
+      ],
+      "stage_events": [
+        {
+          "id": 176,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "planner"
+          },
+          "created_at": "2026-11-13T10:54:36.629365+00:00"
+        },
+        {
+          "id": 178,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "planner",
+            "elapsed_ms": 8889
+          },
+          "created_at": "2026-11-13T10:54:45.528927+00:00"
+        },
+        {
+          "id": 179,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "researcher"
+          },
+          "created_at": "2026-11-13T10:54:45.561344+00:00"
+        },
+        {
+          "id": 181,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "researcher",
+            "elapsed_ms": 4981
+          },
+          "created_at": "2026-11-13T10:54:50.549395+00:00"
+        },
+        {
+          "id": 182,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "research_context"
+          },
+          "created_at": "2026-11-13T10:54:50.570581+00:00"
+        },
+        {
+          "id": 184,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "research_context",
+            "elapsed_ms": 7041
+          },
+          "created_at": "2026-11-13T10:54:57.620953+00:00"
+        },
+        {
+          "id": 185,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "extractor"
+          },
+          "created_at": "2026-11-13T10:54:57.648785+00:00"
+        },
+        {
+          "id": 187,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "extractor",
+            "elapsed_ms": 15821
+          },
+          "created_at": "2026-11-13T10:55:13.484605+00:00"
+        },
+        {
+          "id": 188,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "identity_resolver"
+          },
+          "created_at": "2026-11-13T10:55:13.510283+00:00"
+        },
+        {
+          "id": 190,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "identity_resolver",
+            "elapsed_ms": 64820
+          },
+          "created_at": "2026-11-13T10:56:18.339840+00:00"
+        },
+        {
+          "id": 191,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "relationship_analyst"
+          },
+          "created_at": "2026-11-13T10:56:18.378696+00:00"
+        },
+        {
+          "id": 193,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "relationship_analyst",
+            "elapsed_ms": 7630
+          },
+          "created_at": "2026-11-13T10:56:26.020413+00:00"
+        },
+        {
+          "id": 194,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "verifier"
+          },
+          "created_at": "2026-11-13T10:56:26.050145+00:00"
+        },
+        {
+          "id": 196,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "verifier",
+            "elapsed_ms": 56159
+          },
+          "created_at": "2026-11-13T10:57:22.221970+00:00"
+        },
+        {
+          "id": 197,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "promotion_policy"
+          },
+          "created_at": "2026-11-13T10:57:22.245044+00:00"
+        },
+        {
+          "id": 200,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "promotion_policy",
+            "elapsed_ms": 448
+          },
+          "created_at": "2026-11-13T10:57:22.706748+00:00"
+        },
+        {
+          "id": 201,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "narrative_builder"
+          },
+          "created_at": "2026-11-13T10:57:22.729376+00:00"
+        },
+        {
+          "id": 203,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "narrative_builder",
+            "elapsed_ms": 198
+          },
+          "created_at": "2026-11-13T10:57:22.941447+00:00"
+        },
+        {
+          "id": 204,
+          "stage": "research.partial",
+          "detail": {
+            "error": null
+          },
+          "created_at": "2026-11-13T10:57:22.975055+00:00"
+        }
+      ],
+      "findings": [
+        {
+          "id": "01c4cceb-bdd3-5fab-98a3-b1c3edf93432",
+          "kind": "relationship",
+          "type": "CAUSED",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "disputed",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "2f78cee6-a4d1-5477-b62b-44a2859b53f2",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "絡まれ",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 179,
+            "participants": [],
+            "trigger_start": 176,
+            "identity_anchor": "131f3a6f8b58979a4f7ffa126590b7e7e1d290d8cf03d54eb857763613753215",
+            "occurrence_status": "actual",
+            "participant_roles": {}
+          },
+          "resolution": {
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "decision": "NEW_ENTITY",
+            "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "6cb71db3-18f7-5388-a027-9e2830844cf5",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "叩きのめされる",
+          "canonical": true,
+          "canonical_id": "56769ce6-f699-50fe-8515-9640345429d5",
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 225,
+            "participants": [],
+            "trigger_start": 218,
+            "identity_anchor": "5de2491f1387ce40c33c0657eaf7c0c5e3398d3edfdd503b7a79ed28a8aed686",
+            "occurrence_status": "actual",
+            "participant_roles": {}
+          },
+          "resolution": {
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "decision": "NEW_ENTITY",
+            "canonical_id": "56769ce6-f699-50fe-8515-9640345429d5"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "83781c4a-feb4-5b9f-9d92-81961f18c451",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "surrounds him",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 309,
+            "participants": [],
+            "trigger_start": 296,
+            "identity_anchor": "808eb7d62a6f73f75a93179448f51bc2e0756026ac9419137af62cfc58653f2e",
+            "occurrence_status": "actual",
+            "participant_roles": {}
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "bf24ac22-1f1b-5f31-bb60-91ffaa885874",
+          "kind": "relationship",
+          "type": "PRECEDES",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "db3f9fac-a1b3-5279-b6e8-9727e2a262c1",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "is summoned",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 26,
+            "participants": [],
+            "trigger_start": 15,
+            "identity_anchor": "81917585437250acd631e57642de1b8ebf767cf4d26f989501f82a0a5dacb223",
+            "occurrence_status": "actual",
+            "participant_roles": {}
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ef5f50e5-f364-5682-9807-74f983e1c828",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "appears",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 503,
+            "participants": [],
+            "trigger_start": 496,
+            "identity_anchor": "52f90583962d23412c14740c7e321236d985ac43571755ee0b04bd6f75abfc1d",
+            "occurrence_status": "intended",
+            "participant_roles": {}
+          },
+          "resolution": {
+            "proof": "nonactual_event",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 444,
+              "quote_end": 506,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "fd0653a3-f57a-56a1-9445-3999066e7afe",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "召喚されてしまった",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 58,
+            "participants": [],
+            "trigger_start": 49,
+            "identity_anchor": "857b1d593031852164f71f7a7ccf1ac1e199b8f7f79be16aa6865442f0a6dbcb",
+            "occurrence_status": "actual",
+            "participant_roles": {}
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "2bc03728-a8de-50ad-b8ab-b9e912d6535f",
+          "claim_id": "6cb71db3-18f7-5388-a027-9e2830844cf5",
+          "target_id": "56769ce6-f699-50fe-8515-9640345429d5",
+          "kind": "entity",
+          "created": true,
+          "reversed": false,
+          "endpoints": {
+            "type": "EVENT"
+          }
+        }
+      ]
+    },
+    {
+      "id": "8fd5bc32-b319-45ec-a70a-831942b3b49b",
+      "objective": "Research only the original introductory TV anime episode 1: Subaru’s summoning and the immediate street encounter. Extract actual occurrences, directly participating characters, and any explicitly stated in-world location. Reuse known aliases and canonical event identities; keep reports, intentions and unsupported chronology or causality unresolved.",
+      "summary": {
+        "id": "8fd5bc32-b319-45ec-a70a-831942b3b49b",
+        "status": "partial",
+        "stage": "narrative_builder",
+        "error": null,
+        "model_calls": 36,
+        "incomplete_call_reservations": 0,
+        "cache_hits": 0,
+        "retry_count": 0,
+        "validation_failures": 0,
+        "providers": [
+          "ollama:qwen3.5:4b"
+        ],
+        "sources": 2,
+        "source_retrievals": 0,
+        "embedding_reused": 2,
+        "embedding_generated": 0,
+        "candidate_entities": 12,
+        "accepted_relationships": 2,
+        "unresolved_findings": 17,
+        "elapsed_ms": 321931,
+        "stage_elapsed_ms": {
+          "planner": 9238,
+          "verifier": 193679,
+          "extractor": 19857,
+          "researcher": 133,
+          "promotion_policy": 649,
+          "research_context": 8053,
+          "identity_resolver": 79247,
+          "narrative_builder": 299,
+          "relationship_analyst": 9485
+        },
+        "discoveries": [
+          {
+            "id": "1c9b4b5f-65e6-58d1-be6b-e662cfc876fd",
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "kind": "entity",
+            "type": "CHARACTER",
+            "label": "スバル"
+          },
+          {
+            "id": "96685eae-87f8-5bc1-8ebb-688f68425aab",
+            "canonical_id": "83aa89f1-7390-515e-bb22-7406f5cecf20",
+            "kind": "relationship",
+            "type": "PARTICIPATED_IN",
+            "label": "Natsuki Subaru → 現れ · participated in"
+          },
+          {
+            "id": "d1731ad9-6dc9-5c05-8ea7-9371d4398108",
+            "canonical_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+            "kind": "relationship",
+            "type": "PARTICIPATED_IN",
+            "label": "スバル → 絡まれ · participated in"
+          },
+          {
+            "id": "dd9b0127-7c18-5c6f-ac36-2210d03f79b8",
+            "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+            "kind": "entity",
+            "type": "EVENT",
+            "label": "絡まれ"
+          },
+          {
+            "id": "eabc85d3-91f8-5d47-824e-0d9893b9487b",
+            "canonical_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+            "kind": "entity",
+            "type": "EVENT",
+            "label": "現れ"
+          }
+        ]
+      },
+      "source_ids": [
+        "63d644ac-6513-5385-94d5-d02fb7590a7c",
+        "be6632a9-3e0f-5915-a0e6-61e6c4735bdd"
+      ],
+      "indexing": {
+        "reused": 2,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "retrieved_passage_ids": [
+        "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+        "f20157f0-f05a-5c2d-aebe-b85cb4951376"
+      ],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "count": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "count": 9
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "count": 23
+        }
+      ],
+      "validation_diagnostics": [],
+      "stage_events": [
+        {
+          "id": 206,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "planner"
+          },
+          "created_at": "2026-11-13T11:02:45.226654+00:00"
+        },
+        {
+          "id": 208,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "planner",
+            "elapsed_ms": 9238
+          },
+          "created_at": "2026-11-13T11:02:54.462165+00:00"
+        },
+        {
+          "id": 209,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "researcher"
+          },
+          "created_at": "2026-11-13T11:02:54.503529+00:00"
+        },
+        {
+          "id": 211,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "researcher",
+            "elapsed_ms": 133
+          },
+          "created_at": "2026-11-13T11:02:54.636801+00:00"
+        },
+        {
+          "id": 212,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "research_context"
+          },
+          "created_at": "2026-11-13T11:02:54.669523+00:00"
+        },
+        {
+          "id": 214,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "research_context",
+            "elapsed_ms": 8053
+          },
+          "created_at": "2026-11-13T11:03:02.725276+00:00"
+        },
+        {
+          "id": 215,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "extractor"
+          },
+          "created_at": "2026-11-13T11:03:02.763611+00:00"
+        },
+        {
+          "id": 217,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "extractor",
+            "elapsed_ms": 19857
+          },
+          "created_at": "2026-11-13T11:03:22.716364+00:00"
+        },
+        {
+          "id": 218,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "identity_resolver"
+          },
+          "created_at": "2026-11-13T11:03:22.862739+00:00"
+        },
+        {
+          "id": 220,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "identity_resolver",
+            "elapsed_ms": 79247
+          },
+          "created_at": "2026-11-13T11:04:42.032685+00:00"
+        },
+        {
+          "id": 221,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "relationship_analyst"
+          },
+          "created_at": "2026-11-13T11:04:42.074222+00:00"
+        },
+        {
+          "id": 223,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "relationship_analyst",
+            "elapsed_ms": 9485
+          },
+          "created_at": "2026-11-13T11:04:51.558727+00:00"
+        },
+        {
+          "id": 224,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "verifier"
+          },
+          "created_at": "2026-11-13T11:04:51.595181+00:00"
+        },
+        {
+          "id": 226,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "verifier",
+            "elapsed_ms": 193679
+          },
+          "created_at": "2026-11-13T11:08:05.276701+00:00"
+        },
+        {
+          "id": 227,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "promotion_policy"
+          },
+          "created_at": "2026-11-13T11:08:05.311019+00:00"
+        },
+        {
+          "id": 230,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "promotion_policy",
+            "elapsed_ms": 649
+          },
+          "created_at": "2026-11-13T11:08:05.959492+00:00"
+        },
+        {
+          "id": 231,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "narrative_builder"
+          },
+          "created_at": "2026-11-13T11:08:05.994061+00:00"
+        },
+        {
+          "id": 233,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "narrative_builder",
+            "elapsed_ms": 299
+          },
+          "created_at": "2026-11-13T11:08:06.322083+00:00"
+        },
+        {
+          "id": 234,
+          "stage": "research.partial",
+          "detail": {
+            "error": null
+          },
+          "created_at": "2026-11-13T11:08:06.354109+00:00"
+        }
+      ],
+      "findings": [
+        {
+          "id": "1c9b4b5f-65e6-58d1-be6b-e662cfc876fd",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "スバル",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "204ebce5-c890-51ff-8e43-4036e4b1990a",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "is summoned",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 26,
+            "participants": [
+              "Natsuki Subaru",
+              "parallel world"
+            ],
+            "trigger_start": 15,
+            "identity_anchor": "81917585437250acd631e57642de1b8ebf767cf4d26f989501f82a0a5dacb223",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Natsuki Subaru": "actor",
+              "parallel world": "recipient"
+            }
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "28b96d98-70b6-56f9-a9dc-ecd193bccb7a",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "菜月昴",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "43841a84-873f-500d-bc4b-6abceff05607",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "4cc324e0-d1f4-53bd-9740-b24f404a01de",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "5cf34188-a3c9-5737-ae89-066f30edc46f",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "5e70418f-13f0-5c12-8d4f-2dc8de48aaa4",
+          "kind": "relationship",
+          "type": "PRECEDES",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "7023db2c-3dc3-5b0f-bb4b-e5dc6eab90cd",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "Natsuki Subaru",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "7dca9013-df46-518d-a4bb-0d30dbcc73ac",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "召喚されてしまった",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 58,
+            "participants": [
+              "菜月昴",
+              "スバル"
+            ],
+            "trigger_start": 49,
+            "identity_anchor": "857b1d593031852164f71f7a7ccf1ac1e199b8f7f79be16aa6865442f0a6dbcb",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "スバル": "recipient",
+              "菜月昴": "actor"
+            }
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "933e6954-e2d8-5879-a24b-0ae3380b8c58",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "一人の少女",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "96685eae-87f8-5bc1-8ebb-688f68425aab",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": true,
+          "canonical_id": "83aa89f1-7390-515e-bb22-7406f5cecf20",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "a2be92fe-eee0-54ef-9eda-0c6f12b16a30",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "parallel world",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "a49698a6-57ce-52ad-ac90-732242a3805d",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "b61e1de3-cd7a-5a04-814a-4fb907fbcf7b",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "surrounds him",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 309,
+            "participants": [
+              "gang of punks",
+              "Natsuki Subaru"
+            ],
+            "trigger_start": 296,
+            "identity_anchor": "808eb7d62a6f73f75a93179448f51bc2e0756026ac9419137af62cfc58653f2e",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "gang of punks": "opponent",
+              "Natsuki Subaru": "recipient"
+            }
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "b9784a2a-f013-59f8-be64-14e19b15b899",
+          "kind": "relationship",
+          "type": "OCCURRED_AT",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "bc24f2b9-61a9-5f1e-8a2e-905eee64b74d",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "d1731ad9-6dc9-5c05-8ea7-9371d4398108",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": true,
+          "canonical_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "d52aadbb-9499-540b-9f9e-f394ae7df07b",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "チンピラ",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "dd9b0127-7c18-5c6f-ac36-2210d03f79b8",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "絡まれ",
+          "canonical": true,
+          "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 179,
+            "participants": [
+              "チンピラ",
+              "スバル"
+            ],
+            "trigger_start": 176,
+            "identity_anchor": "131f3a6f8b58979a4f7ffa126590b7e7e1d290d8cf03d54eb857763613753215",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "スバル": "recipient",
+              "チンピラ": "actor"
+            }
+          },
+          "resolution": {
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "decision": "NEW_ENTITY",
+            "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "e94cced3-4a4e-51e1-acff-f04f38050006",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "gang of punks",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "decision": "NEW_ENTITY",
+            "canonical_id": "d61c09ef-06fb-540e-b56b-17cefc448c31"
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "eabc85d3-91f8-5d47-824e-0d9893b9487b",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "現れ",
+          "canonical": true,
+          "canonical_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 246,
+            "participants": [
+              "一人の少女"
+            ],
+            "trigger_start": 244,
+            "identity_anchor": "7debdb16c76be1459bb4baacea66f395a8b0084d72d21e96b2a83d2934bec3b7",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "一人の少女": "actor"
+            }
+          },
+          "resolution": {
+            "proof": "same_evidence_event_anchor",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "ebb886e4-b0a9-539f-884f-06fa719e3af3",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "fc4e0b6d-edc2-56f8-9cde-7bada5046518",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "05fb2fa2-c23d-51b9-94c0-e145784fe2fc",
+          "claim_id": "1c9b4b5f-65e6-58d1-be6b-e662cfc876fd",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "CHARACTER"
+          }
+        },
+        {
+          "id": "4b5e8593-bb10-5c28-9a8a-a04836ef8b5a",
+          "claim_id": "7023db2c-3dc3-5b0f-bb4b-e5dc6eab90cd",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "CHARACTER"
+          }
+        },
+        {
+          "id": "4fb70624-e0b9-5838-ae06-df21ae2e8ef3",
+          "claim_id": "dd9b0127-7c18-5c6f-ac36-2210d03f79b8",
+          "target_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "kind": "entity",
+          "created": true,
+          "reversed": false,
+          "endpoints": {
+            "type": "EVENT"
+          }
+        },
+        {
+          "id": "2b3b42b7-1224-5f74-88fd-23b5bb1896e0",
+          "claim_id": "eabc85d3-91f8-5d47-824e-0d9893b9487b",
+          "target_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "EVENT"
+          }
+        },
+        {
+          "id": "a43699a8-0d07-56b7-968d-84267a62d65c",
+          "claim_id": "96685eae-87f8-5bc1-8ebb-688f68425aab",
+          "target_id": "83aa89f1-7390-515e-bb22-7406f5cecf20",
+          "kind": "relationship",
+          "created": true,
+          "reversed": false,
+          "endpoints": {
+            "type": "PARTICIPATED_IN",
+            "source": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "target": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde"
+          }
+        },
+        {
+          "id": "f81050ee-454c-57a1-88f5-b245774621df",
+          "claim_id": "d1731ad9-6dc9-5c05-8ea7-9371d4398108",
+          "target_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "kind": "relationship",
+          "created": true,
+          "reversed": false,
+          "endpoints": {
+            "type": "PARTICIPATED_IN",
+            "source": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "target": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+          }
+        }
+      ]
+    },
+    {
+      "id": "9cc9e81c-68de-4d5f-99e2-9aed9e68c0f6",
+      "objective": "Research only the original introductory TV anime episode 1: Subaru’s summoning and the immediate street encounter. Extract actual occurrences, directly participating characters, and any explicitly stated in-world location. Reuse known aliases and canonical event identities; keep reports, intentions and unsupported chronology or causality unresolved.",
+      "summary": {
+        "id": "9cc9e81c-68de-4d5f-99e2-9aed9e68c0f6",
+        "status": "partial",
+        "stage": "narrative_builder",
+        "error": null,
+        "model_calls": 34,
+        "incomplete_call_reservations": 0,
+        "cache_hits": 2,
+        "retry_count": 0,
+        "validation_failures": 0,
+        "providers": [
+          "ollama:qwen3.5:4b"
+        ],
+        "sources": 2,
+        "source_retrievals": 0,
+        "embedding_reused": 2,
+        "embedding_generated": 0,
+        "candidate_entities": 12,
+        "accepted_relationships": 1,
+        "unresolved_findings": 18,
+        "elapsed_ms": 277899,
+        "stage_elapsed_ms": {
+          "planner": 10345,
+          "verifier": 182277,
+          "extractor": 1294,
+          "researcher": 152,
+          "promotion_policy": 604,
+          "research_context": 7105,
+          "identity_resolver": 65266,
+          "narrative_builder": 185,
+          "relationship_analyst": 10060
+        },
+        "discoveries": [
+          {
+            "id": "45eae82c-fa15-57c3-ae1d-a840d0dfc380",
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "kind": "entity",
+            "type": "CHARACTER",
+            "label": "スバル"
+          },
+          {
+            "id": "86d5b8f9-69a3-5040-8ff2-f4f0a299bc1b",
+            "canonical_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+            "kind": "relationship",
+            "type": "PARTICIPATED_IN",
+            "label": "スバル → 絡まれ · participated in"
+          },
+          {
+            "id": "b97a660a-3af4-5a25-bafe-5fc50bc4654b",
+            "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+            "kind": "entity",
+            "type": "EVENT",
+            "label": "絡まれ"
+          },
+          {
+            "id": "f8b1c790-26b4-57c7-b2dc-9706514cb175",
+            "canonical_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+            "kind": "entity",
+            "type": "EVENT",
+            "label": "現れ"
+          }
+        ]
+      },
+      "source_ids": [
+        "63d644ac-6513-5385-94d5-d02fb7590a7c",
+        "be6632a9-3e0f-5915-a0e6-61e6c4735bdd"
+      ],
+      "indexing": {
+        "reused": 2,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "retrieved_passage_ids": [
+        "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+        "f20157f0-f05a-5c2d-aebe-b85cb4951376"
+      ],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "cache_hit",
+          "count": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "count": 8
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "count": 24
+        }
+      ],
+      "validation_diagnostics": [],
+      "stage_events": [
+        {
+          "id": 236,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "planner"
+          },
+          "created_at": "2026-11-13T11:20:10.967636+00:00"
+        },
+        {
+          "id": 239,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "planner",
+            "elapsed_ms": 10345
+          },
+          "created_at": "2026-11-13T11:20:21.157622+00:00"
+        },
+        {
+          "id": 240,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "researcher"
+          },
+          "created_at": "2026-11-13T11:20:21.197792+00:00"
+        },
+        {
+          "id": 242,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "researcher",
+            "elapsed_ms": 152
+          },
+          "created_at": "2026-11-13T11:20:21.351692+00:00"
+        },
+        {
+          "id": 243,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "research_context"
+          },
+          "created_at": "2026-11-13T11:20:21.388964+00:00"
+        },
+        {
+          "id": 245,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "research_context",
+            "elapsed_ms": 7105
+          },
+          "created_at": "2026-11-13T11:20:28.492807+00:00"
+        },
+        {
+          "id": 246,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "extractor"
+          },
+          "created_at": "2026-11-13T11:20:28.525871+00:00"
+        },
+        {
+          "id": 248,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "extractor",
+            "elapsed_ms": 1294
+          },
+          "created_at": "2026-11-13T11:20:29.817207+00:00"
+        },
+        {
+          "id": 249,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "identity_resolver"
+          },
+          "created_at": "2026-11-13T11:20:29.847948+00:00"
+        },
+        {
+          "id": 259,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "identity_resolver",
+            "elapsed_ms": 65266
+          },
+          "created_at": "2026-11-13T11:21:35.118388+00:00"
+        },
+        {
+          "id": 260,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "relationship_analyst"
+          },
+          "created_at": "2026-11-13T11:21:35.158660+00:00"
+        },
+        {
+          "id": 263,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "relationship_analyst",
+            "elapsed_ms": 10060
+          },
+          "created_at": "2026-11-13T11:21:45.216921+00:00"
+        },
+        {
+          "id": 264,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "verifier"
+          },
+          "created_at": "2026-11-13T11:21:45.249295+00:00"
+        },
+        {
+          "id": 290,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "verifier",
+            "elapsed_ms": 182277
+          },
+          "created_at": "2026-11-13T11:24:47.544937+00:00"
+        },
+        {
+          "id": 291,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "promotion_policy"
+          },
+          "created_at": "2026-11-13T11:24:47.647083+00:00"
+        },
+        {
+          "id": 294,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "promotion_policy",
+            "elapsed_ms": 604
+          },
+          "created_at": "2026-11-13T11:24:48.250989+00:00"
+        },
+        {
+          "id": 295,
+          "stage": "stage.started",
+          "detail": {
+            "stage": "narrative_builder"
+          },
+          "created_at": "2026-11-13T11:24:48.305722+00:00"
+        },
+        {
+          "id": 297,
+          "stage": "stage.completed",
+          "detail": {
+            "stage": "narrative_builder",
+            "elapsed_ms": 185
+          },
+          "created_at": "2026-11-13T11:24:48.484317+00:00"
+        },
+        {
+          "id": 298,
+          "stage": "research.partial",
+          "detail": {
+            "error": null
+          },
+          "created_at": "2026-11-13T11:24:48.531646+00:00"
+        }
+      ],
+      "findings": [
+        {
+          "id": "0ed8d8dc-1ae6-5a34-9093-b495306de81b",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "1e11ccdb-d6df-51f7-921e-39559957ef61",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "gang of punks",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "decision": "NEW_ENTITY",
+            "canonical_id": "4086a4af-8aa2-59a3-8812-f75399973591"
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "3be22697-bad3-5807-b65d-0b8092251112",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "菜月昴",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "41ead37c-5b2b-52e7-839f-bbacebfc9ae3",
+          "kind": "relationship",
+          "type": "PRECEDES",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 444,
+              "quote_end": 506,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "45eae82c-fa15-57c3-ae1d-a840d0dfc380",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "スバル",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "478a3d00-cd66-596d-bd3c-d9bc6c2ff634",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "52468d87-2b21-5981-b7fe-4bde68a356b2",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "6b453601-3749-5e3e-a311-098b2bd38dd7",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "6ed6bf28-c1b7-5927-aec9-0f519108dc57",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "7b217cc0-b8ce-55ca-9d93-32824ebeb424",
+          "kind": "relationship",
+          "type": "OCCURRED_AT",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "86d5b8f9-69a3-5040-8ff2-f4f0a299bc1b",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": true,
+          "canonical_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 125,
+              "quote_end": 154,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "89957da9-02f2-5435-8e9f-cfcde4c2fd35",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "surrounds him",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 309,
+            "participants": [
+              "gang of punks",
+              "Natsuki Subaru"
+            ],
+            "trigger_start": 296,
+            "identity_anchor": "808eb7d62a6f73f75a93179448f51bc2e0756026ac9419137af62cfc58653f2e",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "gang of punks": "opponent",
+              "Natsuki Subaru": "recipient"
+            }
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "a402f0c9-e8bd-58a9-858e-5b398ce1d577",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "Natsuki Subaru",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "aa278688-15e1-532d-b496-92df59d748b1",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "af99aa8a-e119-589f-b910-699fdadcb836",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "召喚されてしまった",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 58,
+            "participants": [
+              "菜月昴",
+              "スバル"
+            ],
+            "trigger_start": 49,
+            "identity_anchor": "857b1d593031852164f71f7a7ccf1ac1e199b8f7f79be16aa6865442f0a6dbcb",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "スバル": "recipient",
+              "菜月昴": "actor"
+            }
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "b97a660a-3af4-5a25-bafe-5fc50bc4654b",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "絡まれ",
+          "canonical": true,
+          "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 179,
+            "participants": [
+              "チンピラ",
+              "スバル"
+            ],
+            "trigger_start": 176,
+            "identity_anchor": "131f3a6f8b58979a4f7ffa126590b7e7e1d290d8cf03d54eb857763613753215",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "スバル": "recipient",
+              "チンピラ": "actor"
+            }
+          },
+          "resolution": {
+            "proof": "same_evidence_event_anchor",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "bd4000b7-19f8-50e3-bbd0-263c5c130067",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "parallel world",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "d32a3783-208c-5b5a-b5a4-8c6c181b478f",
+          "kind": "relationship",
+          "type": "PRECEDES",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 125,
+              "quote_end": 154,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 275,
+              "quote_end": 443,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 444,
+              "quote_end": 506,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "d63fa695-862a-57f9-87b3-9590fec0e3ae",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "is summoned",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {
+            "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+            "trigger_end": 26,
+            "participants": [
+              "Natsuki Subaru",
+              "parallel world"
+            ],
+            "trigger_start": 15,
+            "identity_anchor": "81917585437250acd631e57642de1b8ebf767cf4d26f989501f82a0a5dacb223",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Natsuki Subaru": "actor",
+              "parallel world": "recipient"
+            }
+          },
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "e0985fcb-3174-526b-b668-1e91faf6ac66",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": true,
+          "canonical_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "f3e7089d-932e-592c-9b50-a39186e3860f",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "チンピラ",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "insufficient",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 154,
+              "quote_end": 229,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "f4f60b35-255f-53ef-a31e-e8ea4c8d5d80",
+          "kind": "relationship",
+          "type": "PARTICIPATED_IN",
+          "name": null,
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 0,
+              "quote_end": 65,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            },
+            {
+              "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+              "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+              "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+              "title": "The End of the Beginning and the Beginning of the End",
+              "publisher": "api.tvmaze.com",
+              "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+              "quote_start": 0,
+              "quote_end": 90,
+              "retrieved_at": "2026-11-13T08:47:14.586253+00:00",
+              "independence_key": "re-zero-anime.jp",
+              "provenance": {
+                "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+                "page_id": "660417",
+                "category": "episode-guide",
+                "authority": "secondary",
+                "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+                "revision_id": null,
+                "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+                "season_number": "1",
+                "episode_number": "1",
+                "position_basis": "broadcast-presentation",
+                "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+                "extraction_version": "api-text-v1",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "f8b1c790-26b4-57c7-b2dc-9706514cb175",
+          "kind": "entity",
+          "type": "EVENT",
+          "name": "現れ",
+          "canonical": true,
+          "canonical_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+          "assessment": "supported",
+          "event": {
+            "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "trigger_end": 246,
+            "participants": [
+              "一人の少女"
+            ],
+            "trigger_start": 244,
+            "identity_anchor": "7debdb16c76be1459bb4baacea66f395a8b0084d72d21e96b2a83d2934bec3b7",
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "一人の少女": "actor"
+            }
+          },
+          "resolution": {
+            "proof": "same_evidence_event_anchor",
+            "accepted": true,
+            "decision": "SAME_ENTITY",
+            "canonical_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        },
+        {
+          "id": "f9d39417-e8d2-59da-b0bb-d939fe487767",
+          "kind": "entity",
+          "type": "CHARACTER",
+          "name": "一人の少女",
+          "canonical": false,
+          "canonical_id": null,
+          "assessment": "supported",
+          "event": {},
+          "resolution": {
+            "proof": "unresolved",
+            "accepted": false,
+            "decision": "AMBIGUOUS",
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+              "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+              "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト",
+              "publisher": "re-zero-anime.jp",
+              "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+              "quote_start": 229,
+              "quote_end": 249,
+              "retrieved_at": "2026-11-13T08:01:02.145229+00:00",
+              "independence_key": null,
+              "provenance": {
+                "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+                "category": "episode-guide",
+                "authority": "primary",
+                "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+                "revision_id": null,
+                "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+                "position_basis": "broadcast-presentation",
+                "extraction_version": "normalized-html-v2",
+                "presentation_position": 1
+              }
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "381eab86-7b6d-582c-8f42-a047ace90d4e",
+          "claim_id": "45eae82c-fa15-57c3-ae1d-a840d0dfc380",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "CHARACTER"
+          }
+        },
+        {
+          "id": "ccaf88a8-69c2-50ee-8e73-1fa7bdbeb98f",
+          "claim_id": "a402f0c9-e8bd-58a9-858e-5b398ce1d577",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "CHARACTER"
+          }
+        },
+        {
+          "id": "bdcd52d0-a5e8-5d70-87e8-c0903dc95b4b",
+          "claim_id": "b97a660a-3af4-5a25-bafe-5fc50bc4654b",
+          "target_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "EVENT"
+          }
+        },
+        {
+          "id": "d61f6f94-fa80-560f-b12c-9f59892c6463",
+          "claim_id": "f8b1c790-26b4-57c7-b2dc-9706514cb175",
+          "target_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "EVENT"
+          }
+        },
+        {
+          "id": "a8c8fb75-0e49-5fcf-a3bb-3a02d0955f07",
+          "claim_id": "86d5b8f9-69a3-5040-8ff2-f4f0a299bc1b",
+          "target_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "kind": "relationship",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "PARTICIPATED_IN",
+            "source": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "target": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+          }
+        },
+        {
+          "id": "1cfe9ce3-df30-588b-9206-f71fac7e6196",
+          "claim_id": "e0985fcb-3174-526b-b668-1e91faf6ac66",
+          "target_id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "kind": "relationship",
+          "created": false,
+          "reversed": false,
+          "endpoints": {
+            "type": "PARTICIPATED_IN",
+            "source": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "target": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+          }
+        }
+      ]
+    }
+  ],
+  "storage": {
+    "passage_embeddings": 8,
+    "validated_inference_cache_rows": 58
+  },
+  "graph": {
+    "nodes": 24,
+    "edges": 31,
+    "changed_or_missing_original_ids": {
+      "nodes": [],
+      "edges": []
+    },
+    "increment_added_ids": {
+      "nodes": [
+        "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+        "56769ce6-f699-50fe-8515-9640345429d5"
+      ],
+      "edges": [
+        "83aa89f1-7390-515e-bb22-7406f5cecf20",
+        "fea25aba-6435-5cec-9942-a508a21682b7"
+      ]
+    },
+    "repeat_added_ids": {
+      "nodes": [],
+      "edges": []
+    },
+    "duplicate_relationship_fingerprints": []
+  },
+  "narrative": {
+    "revision": "cfd80a24ccf8fd920632367d29246629fcb47fdc607e4b77880069e551eed3aa",
+    "partial": true,
+    "ordering_gaps": [
+      {
+        "kind": "ambiguous-within-episode-order",
+        "position": 1,
+        "eventNodeIds": [
+          "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "48d3c6b3-2ec4-5536-9360-fe31c42b8d93",
+          "56769ce6-f699-50fe-8515-9640345429d5",
+          "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+          "c3d03c54-0b61-5606-9f68-83b883d41cf7"
+        ]
+      },
+      {
+        "kind": "missing-verified-presentation-order",
+        "eventNodeIds": [
+          "48d3c6b3-2ec4-5536-9360-fe31c42b8d93",
+          "56769ce6-f699-50fe-8515-9640345429d5",
+          "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+          "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+          "c3d03c54-0b61-5606-9f68-83b883d41cf7"
+        ]
+      }
+    ],
+    "journeys": [
+      {
+        "id": "ad7696ea-d4ba-5e0c-9100-e5156067bfa5",
+        "ordering": {
+          "basis": "broadcast-presentation",
+          "explanation": "Earliest supporting episode source in this archive, not proof of first reveal or in-world chronology. Synopses may recap earlier events. Ambiguous episode groups show one representative; other events remain unordered. Within-episode order requires accepted PRECEDES evidence.",
+          "sourceIds": [
+            "63d644ac-6513-5385-94d5-d02fb7590a7c",
+            "c46d5515-36c4-5481-a462-cec2135519cf",
+            "ff448fb7-73ef-514f-9caa-e94a602fd3a7"
+          ]
+        },
+        "steps": [
+          {
+            "id": "924d94a0-74d4-524f-9600-7191b51df7c1",
+            "eventNodeId": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+            "title": "絡まれ",
+            "episodeLabel": "By episode 1",
+            "sourceIds": [
+              "63d644ac-6513-5385-94d5-d02fb7590a7c"
+            ],
+            "participantIds": [
+              "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+            ],
+            "participantRoles": [
+              {
+                "nodeId": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+                "role": "recipient"
+              }
+            ],
+            "locationIds": [],
+            "causes": [],
+            "consequences": []
+          },
+          {
+            "id": "6a527a3d-607b-50d2-9a23-4a4a9bc5dd47",
+            "eventNodeId": "9507722f-4ff0-5332-b670-97427f67ce42",
+            "title": "After being attacked by someone the first time",
+            "episodeLabel": "By episode 2",
+            "sourceIds": [
+              "ff448fb7-73ef-514f-9caa-e94a602fd3a7"
+            ],
+            "participantIds": [
+              "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+            ],
+            "participantRoles": [],
+            "locationIds": [],
+            "causes": [],
+            "consequences": []
+          },
+          {
+            "id": "9da7da81-3ea8-5a31-a53a-850b615ad74c",
+            "eventNodeId": "3eb1995d-d0b7-584f-abec-14af61be2a45",
+            "title": "エルザが盗品蔵に来る前にフェルトから徽章を買い取り、サテラに返そうとするスバル",
+            "episodeLabel": "By episode 3",
+            "sourceIds": [
+              "c46d5515-36c4-5481-a462-cec2135519cf"
+            ],
+            "participantIds": [
+              "4dd188d1-64a3-5cc7-a76c-ce4ae222a8f7",
+              "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+            ],
+            "participantRoles": [],
+            "locationIds": [],
+            "causes": [],
+            "consequences": []
+          }
+        ]
+      }
+    ],
+    "unordered_milestones": [
+      {
+        "id": "77661339-04be-5c03-b5bd-bf9245898e60",
+        "eventNodeId": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+        "title": "attack",
+        "sourceIds": [
+          "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+          "40671cf3-3477-5f0a-89a4-a065ed542558"
+        ]
+      },
+      {
+        "id": "7ef37b54-57f5-5b33-87a6-58b41a594079",
+        "eventNodeId": "56769ce6-f699-50fe-8515-9640345429d5",
+        "title": "叩きのめされる",
+        "sourceIds": [
+          "63d644ac-6513-5385-94d5-d02fb7590a7c"
+        ]
+      },
+      {
+        "id": "a061616c-7118-536c-9b44-08205d6bdf19",
+        "eventNodeId": "c3d03c54-0b61-5606-9f68-83b883d41cf7",
+        "title": "surrounds",
+        "sourceIds": [
+          "be6632a9-3e0f-5915-a0e6-61e6c4735bdd"
+        ]
+      },
+      {
+        "id": "c0003eda-cb8d-5dc3-b936-39fa4ce81119",
+        "eventNodeId": "48d3c6b3-2ec4-5536-9360-fe31c42b8d93",
+        "title": "summoned",
+        "sourceIds": [
+          "be6632a9-3e0f-5915-a0e6-61e6c4735bdd"
+        ]
+      },
+      {
+        "id": "c291e10b-fa6c-5d38-9e69-1fc61507c937",
+        "eventNodeId": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+        "title": "現れ",
+        "sourceIds": [
+          "63d644ac-6513-5385-94d5-d02fb7590a7c"
+        ]
+      }
+    ],
+    "changed_or_missing_existing_milestone_ids": []
+  },
+  "repeat": {
+    "same_objective": true,
+    "same_source_ids": true,
+    "note": "The diagnostic run used the split role schema. The next run repaired that schema. The final production-browser repeat reused both typed-frame results; semantic assessments still varied and earlier independent support was preserved."
+  },
+  "retrieval_demonstration": [
+    {
+      "passage_id": "f20157f0-f05a-5c2d-aebe-b85cb4951376",
+      "source_id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+      "start": 0,
+      "end": 506,
+      "url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1#scope-cef30d8c09c5f3bd",
+      "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+      "distance": 0.53865647315979,
+      "provenance": {
+        "job_id": "11ce3eee-718b-4192-9260-6e0661204cbb",
+        "page_id": "660417",
+        "category": "episode-guide",
+        "authority": "secondary",
+        "registry_id": "ed329f8d-c00f-58ed-959f-db7f9034d3f7",
+        "revision_id": null,
+        "canonical_url": "http://api.tvmaze.com/shows/14459/episodebynumber?season=1&number=1",
+        "season_number": "1",
+        "episode_number": "1",
+        "position_basis": "broadcast-presentation",
+        "attribution_url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+        "extraction_version": "api-text-v1",
+        "presentation_position": 1
+      }
+    },
+    {
+      "passage_id": "3132c69c-0e5b-5afc-983b-4e3dd6102233",
+      "source_id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+      "start": 0,
+      "end": 290,
+      "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+      "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+      "distance": 0.5829017758369446,
+      "provenance": {
+        "job_id": "a73da6e9-a9f9-42f3-943f-da87fe5d7941",
+        "category": "episode-guide",
+        "authority": "primary",
+        "registry_id": "e8758c10-a41f-5fc1-b58c-dbe1fdf8aef4",
+        "revision_id": null,
+        "canonical_url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+        "position_basis": "broadcast-presentation",
+        "extraction_version": "normalized-html-v2",
+        "presentation_position": 1
+      }
+    }
+  ],
+  "screenshots": [
+    "phase-3-increment-4-generated-spine.png",
+    "phase-3-increment-4-selected-event.png",
+    "phase-3-increment-4-relationships.png",
+    "phase-3-increment-4-research-summary.png"
+  ],
+  "browser_verification": {
+    "kind": "actual production UI and persisted real job; no response mocks",
+    "job": "9cc9e81c-68de-4d5f-99e2-9aed9e68c0f6",
+    "revision": "cfd80a24ccf8fd920632367d29246629fcb47fdc607e4b77880069e551eed3aa",
+    "journeyId": "ad7696ea-d4ba-5e0c-9100-e5156067bfa5",
+    "steps": [
+      {
+        "id": "924d94a0-74d4-524f-9600-7191b51df7c1",
+        "eventNodeId": "3cc13390-aa77-51a8-9fc0-38ab93aae46c"
+      },
+      {
+        "id": "6a527a3d-607b-50d2-9a23-4a4a9bc5dd47",
+        "eventNodeId": "9507722f-4ff0-5332-b670-97427f67ce42"
+      },
+      {
+        "id": "9da7da81-3ea8-5a31-a53a-850b615ad74c",
+        "eventNodeId": "3eb1995d-d0b7-584f-abec-14af61be2a45"
+      }
+    ],
+    "pageErrors": []
+  }
+}

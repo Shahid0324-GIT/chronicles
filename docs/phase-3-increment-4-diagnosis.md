@@ -12,3 +12,9 @@ Inspected the actual router, LangChain adapter, worker, typed workflow state, so
 - The existing illustrated spine, event investigation, branches and source notes can render the same catalog shape. No redesign is needed. A same-origin Next route can proxy a deliberately limited set of backend reads/job creation, keeping the backend base URL server-only. Bounded status polling is simpler than adding SSE to the independent worker in this increment.
 
 Preserve strict evidence, continuity, retraction and source-family gates. Changes will not manufacture location, chronology or causal edges to fill panels. Real UI/model verification and repeat results will be reported separately from synthetic tests.
+
+## Additional findings from executed runs
+
+The first UI-started job completed in 18 calls but created no participation edges. Persisted extraction showed names populated while the separate arbitrary-key role dictionary stayed empty. The compact typed participant entry fixes that schema/prompt mismatch without assuming missing roles. The same diagnostic job recorded three root-level identity validation failures: the redundant compared-target Pydantic validator was not expressible to the model's JSON schema. Its equivalent deterministic resolver check now preserves uncertainty once rather than retrying it blindly.
+
+Browser verification also caught an unbound native fetch method and Next's normalization of localhost request origins. Both were corrected; loopback alias handling retains cross-site/port checks. Refresh previously traversed canonical edges not included in a generated catalog, risking curated/generated mixing. Scoped relationship hints now constrain generated regions. Finally, summary support records could list the same accepted edge twice; summaries now deduplicate canonical IDs and show readable relationship labels.

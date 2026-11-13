@@ -1,6 +1,6 @@
 # Current verification
 
-The latest backend implementation is **Phase 3, increment 3**: see [executed checks and actual research](phase-3-increment-3-verification.md), [architecture/runbook](phase-3-increment-3.md), and [quotation-free audit](phase-3-increment-3-demo.json). Earlier increment reports remain historical records. Frontend design is preserved.
+The latest implementation is **Phase 3, increment 4**: see [executed checks, real research and production-browser screenshots](phase-3-increment-4-verification.md), [architecture/runbook](phase-3-increment-4.md), and [quotation-free audit](phase-3-increment-4-demo.json). The existing frontend design is preserved and now loads generated backend journeys. Earlier increment reports remain historical records.
 
 The latest visual implementation is **Phase 2.5B Pass 1**. See [its executed checks, browser evidence and limitations](phase-2-5b-verification.md), [architecture](phase-2-5b-pass-1.md), and [changed-file manifest](phase-2-5b-files.txt). The sections below are historical records.
 
