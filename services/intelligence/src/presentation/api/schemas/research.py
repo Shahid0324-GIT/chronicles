@@ -59,6 +59,37 @@ class EventResponse(BaseModel):
     created_at: datetime
 
 
+class ResearchDiscoveryResponse(BaseModel):
+    id: UUID
+    canonical_id: UUID
+    kind: Literal["entity", "relationship"]
+    type: str
+    label: str
+
+
+class ResearchSummaryResponse(BaseModel):
+    id: UUID
+    status: Literal["queued", "running", "completed", "partial", "failed", "cancelled"]
+    stage: str
+    error: str | None
+    model_calls: int = Field(ge=0)
+    incomplete_call_reservations: int = Field(ge=0)
+    cache_hits: int = Field(ge=0)
+    retry_count: int = Field(ge=0)
+    validation_failures: int = Field(ge=0)
+    providers: list[str]
+    sources: int = Field(ge=0)
+    source_retrievals: int = Field(ge=0)
+    embedding_reused: int = Field(ge=0)
+    embedding_generated: int = Field(ge=0)
+    candidate_entities: int = Field(ge=0)
+    accepted_relationships: int = Field(ge=0)
+    unresolved_findings: int = Field(ge=0)
+    elapsed_ms: int = Field(ge=0)
+    stage_elapsed_ms: dict[str, int]
+    discoveries: list[ResearchDiscoveryResponse]
+
+
 class AliasResponse(BaseModel):
     id: UUID
     node_id: UUID

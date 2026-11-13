@@ -26,6 +26,7 @@ from src.presentation.api.schemas.research import (
     JobResponse,
     KnowledgeResponse,
     PromotionResponse,
+    ResearchSummaryResponse,
 )
 from src.presentation.dependencies import Session
 
@@ -67,12 +68,14 @@ async def inspect_job(job_id: UUID, archive: Archive) -> JobResponse:
     return await job_response(archive, job_id)
 
 
-@router.get("/research/jobs/{job_id}/summary")
-async def inspect_summary(job_id: UUID, archive: Archive) -> dict[str, Any]:
+@router.get("/research/jobs/{job_id}/summary", response_model=ResearchSummaryResponse)
+async def inspect_summary(job_id: UUID, archive: Archive) -> ResearchSummaryResponse:
     job = await archive.get_job(job_id)
     if not job:
         raise NotFoundError("Research job not found")
-    return research_summary(job, await archive.findings(job_id), await archive.events(job_id))
+    return ResearchSummaryResponse.model_validate(
+        research_summary(job, await archive.findings(job_id), await archive.events(job_id))
+    )
 
 
 @router.post("/research/jobs/{job_id}/retry", response_model=JobResponse, status_code=202)
