@@ -65,6 +65,8 @@ class SqlNarrativeRepository:
         )
         facts: dict[UUID, dict[str, Any]] = {}
         for promotion, claim, passage, source in rows:
+            if promotion.data.get("resolution", {}).get("hidden_identity"):
+                continue  # Ordinary narrative reads must not become a sensitive-alias side channel.
             fact = facts.setdefault(
                 promotion.id,
                 {

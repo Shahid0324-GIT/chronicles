@@ -195,6 +195,27 @@ async def test_narrative_api_keeps_existing_catalog_shape(factory, app):
         assert all(k in catalog for k in ["journeys", "loreThreads", "discoveries", "sources"])
 
 
+async def test_narrative_identity_names_do_not_expose_sensitive_alias_support(factory):
+    from uuid import UUID
+
+    from src.infrastructure.persistence.models.knowledge import PromotionRecordModel
+    from src.infrastructure.persistence.models.research import ResearchClaimModel
+
+    _, _, saved = await accepted_fixture(factory)
+    async with factory() as session, session.begin():
+        records = await session.scalars(select(PromotionRecordModel))
+        hidden_id = None
+        for record in records:
+            claim = await session.get(ResearchClaimModel, record.claim_id)
+            if claim.payload.get("type") == "CHARACTER":
+                record.data = {**record.data, "resolution": {"hidden_identity": True}}
+                hidden_id = str(record.target_id)
+    catalog = await NarrativeBuilder(narrative_transactions(factory)).build(
+        UUID(saved["universe_id"]), UUID(saved["continuity_id"])
+    )
+    assert hidden_id and all(i["id"] != hidden_id for i in catalog["identities"])
+
+
 async def test_ambiguous_episode_keeps_representative_and_explicit_gap(factory):
     from contextlib import asynccontextmanager
     from dataclasses import replace
