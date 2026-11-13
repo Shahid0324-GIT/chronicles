@@ -70,6 +70,7 @@ class SourceDocumentModel(Base):
     source_scope: Mapped[str] = mapped_column(Text)
     public_web: Mapped[bool] = mapped_column(Boolean)
     truncated: Mapped[bool] = mapped_column(Boolean)
+    independence_key: Mapped[str | None] = mapped_column(String(200), nullable=True)
 
 
 class SourcePassageModel(Base):

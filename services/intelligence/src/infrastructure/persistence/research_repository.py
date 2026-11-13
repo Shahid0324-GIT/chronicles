@@ -38,6 +38,7 @@ def source_entity(row: SourceDocumentModel) -> SourceDocument:
         row.source_scope,
         row.public_web,
         row.truncated,
+        row.independence_key,
     )
 
 
@@ -63,6 +64,11 @@ class SqlResearchRepository:
                 ResearchClaimModel.universe_id == universe_id,
                 ResearchClaimModel.continuity_id == continuity_id,
                 ResearchClaimModel.decision == "supported",
+                ResearchClaimModel.id.in_(
+                    select(PromotionRecordModel.claim_id).where(
+                        PromotionRecordModel.reversed.is_(False)
+                    )
+                ),
             )
             .limit(10)
         )
@@ -70,7 +76,7 @@ class SqlResearchRepository:
             "universe": universe.title,
             "continuity": continuity.name,
             "curated_titles_not_evidence": list(titles),
-            "previous_archive_claims": [row.payload for row in known],
+            "previous_published_claims": [row.payload for row in known],
         }
 
     async def create_job(self, request: ResearchRequest) -> UUID:
@@ -205,6 +211,7 @@ class SqlResearchRepository:
                 source_scope=source.source_scope,
                 public_web=source.public_web,
                 truncated=source.truncated,
+                independence_key=source.independence_key,
             )
         )
         await self.session.flush()
@@ -344,6 +351,7 @@ class SqlResearchRepository:
                             "permission_basis": s.permission_basis,
                             "public_web": s.public_web,
                             "truncated": s.truncated,
+                            "independence_key": s.independence_key,
                         }
                         for e, p, s in evidence
                     ],

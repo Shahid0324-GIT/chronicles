@@ -76,6 +76,7 @@ async def test_evidenced_japanese_alias_resolution(decision, expected):
 
     async def infer(prompt, schema):
         return IdentityComparison(
+            entity_type_valid=True,
             decision=decision,
             target_id=target,
             reason="Synthetic alias evidence.",
@@ -134,6 +135,7 @@ async def test_similarity_and_shared_surnames_cannot_force_a_merge():
 
     async def infer(prompt, schema):
         return IdentityComparison(
+            entity_type_valid=True,
             decision="SAME_ENTITY",
             target_id=target,
             reason="Deliberately wrong fake model.",
@@ -231,13 +233,34 @@ async def prepared(factory, supported=True, label=""):
         False,
     )
     passage = passages_for(source)[0]
+    second_text = (
+        "Mira Vale entered the square during the arrival at that place. "
+        "This account names the participant."
+    )
+    second_source = SourceDocument(
+        uuid5(scope, "synthetic-second-source"),
+        universe,
+        scope,
+        "https://independent.example.net/story",
+        "Second owned fixture",
+        "Independent test publisher",
+        second_text,
+        digest(second_text),
+        now(),
+        "Owned synthetic test material",
+        "Test continuity",
+        False,
+        False,
+    )
+    second_passage = passages_for(second_source)[0]
     citation = {"passage_id": str(passage.id), "quote": TEXT}
+    second_citation = {"passage_id": str(second_passage.id), "quote": second_text}
     entities = [
         {
             "name": "Mira Vale",
             "type": "CHARACTER",
             "description": "Mira Vale entered the square.",
-            "evidence": [citation],
+            "evidence": [citation, second_citation],
         },
         {
             "name": "arrival",
@@ -270,6 +293,7 @@ async def prepared(factory, supported=True, label=""):
             )
         )
         await unit.archive.save_source(source, [passage])
+        await unit.archive.save_source(second_source, [second_passage])
         for kind, payload in [("entity", p) for p in entities] + [("relationship", relationship)]:
             cid = uuid4()
             claim = {"id": str(cid), "kind": kind, "hash": digest(str(cid)), "payload": payload}
@@ -277,7 +301,15 @@ async def prepared(factory, supported=True, label=""):
             await unit.archive.save_claim(
                 job_id,
                 claim,
-                [{"passage_id": str(passage.id), "quote": TEXT, "start": 0, "end": len(TEXT)}],
+                [
+                    {
+                        "passage_id": c["passage_id"],
+                        "quote": c["quote"],
+                        "start": 0,
+                        "end": len(c["quote"]),
+                    }
+                    for c in payload["evidence"]
+                ],
                 "supported" if supported else "insufficient",
                 "Synthetic assessment only",
             )
@@ -285,6 +317,7 @@ async def prepared(factory, supported=True, label=""):
                 resolutions[str(cid)] = {
                     "decision": "NEW_ENTITY",
                     "accepted": True,
+                    "entity_type_valid": True,
                     "canonical_id": str(uuid5(scope, "entity:" + str(cid))),
                     "proof": "new_scoped_entity",
                     "evidence": [citation],
@@ -302,7 +335,7 @@ async def test_atomic_promotion_idempotency_provenance_aliases_and_rollback(fact
         assert await session.scalar(select(func.count()).select_from(NodeModel)) == 17
         assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 26
         assert await session.scalar(select(func.count()).select_from(EntityAliasModel)) == 2
-        assert await session.scalar(select(func.count()).select_from(PromotionEvidenceModel)) == 3
+        assert await session.scalar(select(func.count()).select_from(PromotionEvidenceModel)) == 4
     async with tx() as unit:
         node_id = UUID(resolutions[claims[0]["id"]]["canonical_id"])
         assert len(await unit.graph.aliases(node_id, None)) == 1
@@ -319,7 +352,7 @@ async def test_atomic_promotion_idempotency_provenance_aliases_and_rollback(fact
     async with factory() as session:
         assert await session.scalar(select(func.count()).select_from(NodeModel)) == 15
         assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 25
-        assert await session.scalar(select(func.count()).select_from(PromotionEvidenceModel)) == 3
+        assert await session.scalar(select(func.count()).select_from(PromotionEvidenceModel)) == 4
 
 
 async def test_unsupported_and_contradictory_findings_do_not_block_unrelated_supported_entities(
@@ -386,3 +419,225 @@ async def test_rollback_preserves_nodes_referenced_by_unrelated_relationships(fa
     await service.rollback_job(job, "Withdraw synthetic researched assertions only.")
     async with tx() as unit:
         assert await unit.graph.node(a) and await unit.graph.node(b)
+
+
+async def test_type_mismatch_cannot_publish_even_when_claim_is_labeled_supported(factory):
+    job, service, _, claims, resolutions = await prepared(factory)
+    resolutions[claims[0]["id"]]["entity_type_valid"] = False
+    result = await service.publish(job, resolutions, {}, False)
+    assert len(result["promoted"]) == 1  # The unrelated, correctly typed event survives.
+    assert len(result["unresolved"]) == 2
+
+
+async def test_hidden_identity_requires_additional_independent_evidence(factory):
+    job, service, _, claims, resolutions = await prepared(factory)
+    resolutions[claims[0]["id"]]["hidden_identity"] = True
+    service.policy = PromotionPolicy(strong_sources=3)
+    result = await service.publish(job, resolutions, {}, False)
+    assert any(r["claim_id"] == claims[0]["id"] for r in result["unresolved"])
+    assert len(result["promoted"]) == 1
+
+
+async def test_targeted_rollback_does_not_withdraw_unrelated_claims(factory):
+    job, service, tx, claims, resolutions = await prepared(factory)
+    result = await service.publish(job, resolutions, {}, False)
+    edge = next(r for r in result["promoted"] if r["kind"] == "relationship")
+    await service.rollback_promotion(UUID(edge["id"]), "Withdraw one synthetic relationship only.")
+    async with tx() as unit:
+        records = await unit.graph.records(job)
+        assert sum(r["reversed"] for r in records) == 1
+        assert sum(not r["reversed"] for r in records) == 2
+    async with factory() as session:
+        assert await session.scalar(select(func.count()).select_from(NodeModel)) == 17
+        assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 25
+
+
+async def test_replay_rechecks_evidence_and_withdraws_newly_contradicted_publication(factory):
+    job, service, tx, claims, resolutions = await prepared(factory)
+    await service.publish(job, resolutions, {}, False)
+    result = await service.publish(
+        job, resolutions, {claims[-1]["id"]: {"material_conflict": True}}, False
+    )
+    assert len(result["promoted"]) == 2
+    async with tx() as unit:
+        records = await unit.graph.records(job)
+        assert next(r for r in records if r["kind"] == "relationship")["reversed"]
+
+
+@pytest.mark.parametrize(
+    "kind,name,description",
+    [
+        ("EVENT", "第3話", "An episode title is not an in-world event."),
+        ("EVENT", "Episode 2", "An episode number is publication metadata."),
+        ("LOCATION", "Cafe", "TVアニメ初イベント＆コラボカフェの開催決定！"),
+    ],
+)
+def test_publication_metadata_is_not_in_world_knowledge(kind, name, description):
+    from src.domain.knowledge import in_world_structure
+
+    assert not in_world_structure({"type": kind, "name": name, "description": description}, [])
+
+
+def test_causality_preserves_direction_and_rejects_negation():
+    text = ["The theft caused the search."]
+    assert relation_structure(
+        RelationshipType.CAUSED, NodeType.EVENT, NodeType.EVENT, text, "theft", "search"
+    )
+    assert not relation_structure(
+        RelationshipType.CAUSED, NodeType.EVENT, NodeType.EVENT, text, "search", "theft"
+    )
+    assert not relation_structure(
+        RelationshipType.CAUSED,
+        NodeType.EVENT,
+        NodeType.EVENT,
+        ["The theft never caused the search."],
+        "theft",
+        "search",
+    )
+
+
+async def test_supported_causality_requires_two_distinct_uncopied_sources(factory):
+    from src.infrastructure.research_runtime import knowledge_transactions
+
+    tx = knowledge_transactions(factory)
+    async with factory() as session:
+        scope = await session.scalar(select(ContinuityModel))
+    texts = [
+        "The theft directly caused the search to begin.",
+        "Because thieves stole a badge, a search began in response to that theft.",
+    ]
+    documents = [
+        SourceDocument(
+            uuid4(),
+            scope.universe_id,
+            scope.id,
+            f"https://publisher-{index}.example{'org' if index == 0 else 'net'}/story",
+            "Owned synthetic source",
+            "Test publisher",
+            value,
+            digest(value),
+            now(),
+            "Owned synthetic test material",
+            "Synthetic continuity",
+            False,
+            False,
+        )
+        for index, value in enumerate(texts)
+    ]
+    passages = [passages_for(document)[0] for document in documents]
+    citations = [{"passage_id": str(p.id), "quote": p.text} for p in passages]
+    resolutions = {}
+    async with tx() as unit:
+        job = await unit.archive.create_job(
+            ResearchRequest(
+                universe_id=scope.universe_id,
+                continuity_id=scope.id,
+                objective="Verify a causal assertion in owned synthetic text.",
+                sources=[
+                    SourceInput(
+                        text=texts[0],
+                        permission_basis="Owned synthetic test source",
+                        source_scope="Synthetic continuity",
+                    )
+                ],
+            )
+        )
+        for document, passage in zip(documents, passages, strict=True):
+            await unit.archive.save_source(document, [passage])
+        for kind, payload in [
+            (
+                "entity",
+                {
+                    "name": "theft",
+                    "type": "EVENT",
+                    "description": "A theft occurred.",
+                    "evidence": citations[:1],
+                },
+            ),
+            (
+                "entity",
+                {
+                    "name": "search",
+                    "type": "EVENT",
+                    "description": "A search followed the theft.",
+                    "evidence": citations[:1],
+                },
+            ),
+            (
+                "relationship",
+                {
+                    "source_name": "theft",
+                    "target_name": "search",
+                    "type": "CAUSED",
+                    "description": "The theft caused the search.",
+                    "evidence": citations,
+                },
+            ),
+        ]:
+            cid = uuid4()
+            claim = {"id": str(cid), "kind": kind, "hash": digest(str(cid)), "payload": payload}
+            evidence = [
+                {
+                    "passage_id": c["passage_id"],
+                    "quote": c["quote"],
+                    "start": 0,
+                    "end": len(c["quote"]),
+                }
+                for c in payload["evidence"]
+            ]
+            await unit.archive.save_claim(
+                job, claim, evidence, "supported", "Synthetic semantic assessment"
+            )
+            if kind == "entity":
+                resolutions[str(cid)] = {
+                    "decision": "NEW_ENTITY",
+                    "accepted": True,
+                    "entity_type_valid": True,
+                    "canonical_id": str(uuid5(scope.id, "entity:" + str(cid))),
+                    "proof": "new_scoped_entity",
+                    "evidence": citations[:1],
+                }
+    service = CanonicalGraphPromotionService(tx, PromotionPolicy())
+    result = await service.publish(job, resolutions, {}, False)
+    assert len(result["promoted"]) == 3
+    edge = next(r for r in result["promoted"] if r["kind"] == "relationship")
+    async with tx() as unit:
+        decision = (await unit.graph.decisions(job))[edge["claim_id"]]
+        assert decision["policy"]["independent_sources"] == 2
+
+
+def test_declared_groups_merge_sources_but_never_split_one_publisher():
+    assert (
+        independent_sources(
+            [
+                {
+                    "content_hash": "one",
+                    "url": "https://a.example.org/one",
+                    "independence_key": "group-one",
+                },
+                {
+                    "content_hash": "two",
+                    "url": "https://b.example.org/two",
+                    "independence_key": "group-two",
+                },
+            ]
+        )
+        == 1
+    )
+    assert (
+        independent_sources(
+            [
+                {
+                    "content_hash": "one",
+                    "url": "https://first.example.org/one",
+                    "independence_key": "shared-origin",
+                },
+                {
+                    "content_hash": "two",
+                    "url": "https://second.example.net/two",
+                    "independence_key": "shared-origin",
+                },
+            ]
+        )
+        == 1
+    )

@@ -14,7 +14,9 @@ from src.infrastructure.persistence.models.knowledge import (
     PromotionEvidenceModel,
     PromotionRecordModel,
 )
-from src.infrastructure.persistence.models.research import ClaimEvidenceModel, SourcePassageModel
+from src.infrastructure.persistence.models.research import (
+    ResearchClaimModel,
+)
 from src.infrastructure.persistence.repositories import edge_entity, node_entity
 
 
@@ -238,6 +240,10 @@ class SqlKnowledgeRepository:
         await self.session.flush()
         return self.record_data(row)
 
+    async def promotion_record(self, record_id: UUID) -> dict[str, Any] | None:
+        row = await self.session.get(PromotionRecordModel, record_id, populate_existing=True)
+        return self.record_data(row) if row else None
+
     async def rollback(self, record_id: UUID, reason: str) -> dict[str, Any]:
         row = await self.session.get(PromotionRecordModel, record_id, populate_existing=True)
         if not row:
@@ -262,7 +268,30 @@ class SqlKnowledgeRepository:
         if owner is not None and not still_supported:
             if row.kind == "relationship":
                 edge = await self.session.get(RelationshipModel, row.target_id)
-                if edge and edge.description == owner.data.get("snapshot", {}).get("description"):
+                snapshot = owner.data.get("snapshot", {})
+                endpoints_match = False
+                if edge:
+                    if "source" in snapshot and "target" in snapshot and "type" in snapshot:
+                        endpoints_match = (
+                            str(edge.source_node_id) == snapshot["source"]
+                            and str(edge.target_node_id) == snapshot["target"]
+                            and edge.relationship_type == snapshot["type"]
+                        )
+                    else:
+                        endpoints_match = (
+                            uuid5(
+                                owner.continuity_id,
+                                f"edge:{edge.source_node_id}:{edge.target_node_id}:{edge.relationship_type}",
+                            )
+                            == owner.target_id
+                        )
+                if (
+                    edge
+                    and endpoints_match
+                    and edge.universe_id == owner.universe_id
+                    and edge.continuity_id == owner.continuity_id
+                    and edge.description == snapshot.get("description")
+                ):
                     await self.session.delete(edge)
                     removed = True
             else:
@@ -278,9 +307,16 @@ class SqlKnowledgeRepository:
                 )
                 node = await self.session.get(NodeModel, row.target_id)
                 snapshot = owner.data.get("snapshot", {})
+                original_claim = await self.session.get(ResearchClaimModel, owner.claim_id)
+                original_type = snapshot.get("type") or (
+                    original_claim.payload.get("type") if original_claim else None
+                )
                 if (
                     node
                     and not incident
+                    and node.universe_id == owner.universe_id
+                    and node.continuity_id == owner.continuity_id
+                    and node.type == original_type
                     and node.title == snapshot.get("name")
                     and node.summary == snapshot.get("description")
                     and node.node_metadata == snapshot.get("metadata", {})
@@ -305,29 +341,67 @@ class SqlKnowledgeRepository:
         await self.session.flush()
         return self.record_data(row)
 
+    async def hidden_targets(self, universe_id: UUID, allowed_sources: list[UUID]) -> set[UUID]:
+        records = list(
+            await self.session.scalars(
+                select(PromotionRecordModel).where(PromotionRecordModel.universe_id == universe_id)
+            )
+        )
+        owned = {r.target_id for r in records if r.created}
+        allowed = {str(value) for value in allowed_sources}
+        visible = {
+            r.target_id
+            for r in records
+            if not r.reversed
+            and bool(r.data.get("evidence"))
+            and all(e["source_id"] in allowed for e in r.data["evidence"])
+        }
+        return owned - visible
+
     async def aliases(
         self, node_id: UUID, allowed_sources: list[UUID] | None
     ) -> list[dict[str, Any]]:
-        query = select(EntityAliasModel).where(
-            EntityAliasModel.node_id == node_id, EntityAliasModel.sensitive.is_(False)
+        rows = list(
+            await self.session.scalars(
+                select(EntityAliasModel)
+                .where(EntityAliasModel.node_id == node_id, EntityAliasModel.sensitive.is_(False))
+                .order_by(EntityAliasModel.name)
+            )
         )
-        if allowed_sources is not None:
-            query = query.where(
-                EntityAliasModel.claim_id.in_(
-                    select(ClaimEvidenceModel.claim_id)
-                    .join(
-                        SourcePassageModel, ClaimEvidenceModel.passage_id == SourcePassageModel.id
-                    )
-                    .where(SourcePassageModel.source_id.in_(allowed_sources))
+        records = list(
+            await self.session.scalars(
+                select(PromotionRecordModel).where(
+                    PromotionRecordModel.target_id == node_id,
+                    PromotionRecordModel.reversed.is_(False),
                 )
             )
-        return [
-            {
-                "id": str(a.id),
-                "node_id": str(a.node_id),
-                "name": a.name,
-                "normalized_name": a.normalized_name,
-                "claim_id": str(a.claim_id),
-            }
-            for a in await self.session.scalars(query.order_by(EntityAliasModel.name))
-        ]
+        )
+        allowed = {str(value) for value in allowed_sources} if allowed_sources is not None else None
+        result = []
+        for row in rows:
+            supporting = [
+                r
+                for r in records
+                if str(row.id) in r.data.get("alias_ids", [])
+                and bool(r.data.get("evidence"))
+                and (
+                    allowed is None
+                    or all(e["source_id"] in allowed for e in r.data.get("evidence", []))
+                )
+            ]
+            if not supporting:
+                continue
+            result.append(
+                {
+                    "id": str(row.id),
+                    "node_id": str(row.node_id),
+                    "name": row.name,
+                    "normalized_name": row.normalized_name,
+                    "claim_id": str(row.claim_id),
+                    "supporting_claim_ids": sorted({str(r.claim_id) for r in supporting}),
+                    "source_ids": sorted(
+                        {e["source_id"] for r in supporting for e in r.data.get("evidence", [])}
+                    ),
+                }
+            )
+        return result

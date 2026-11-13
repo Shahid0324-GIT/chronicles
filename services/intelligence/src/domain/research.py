@@ -29,6 +29,7 @@ class SourceDocument:
     source_scope: str
     public_web: bool
     truncated: bool
+    independence_key: str | None = None
 
 
 @dataclass(frozen=True)

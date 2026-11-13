@@ -48,7 +48,9 @@ class InferenceRouter:
     ) -> InferenceResult:
         async with self.gate:
             eligible = self.mode != "local" and self.cloud_content_allowed and public_source_content
-            prefer_cloud = eligible and (self.mode == "cloud" or task == "verification")
+            prefer_cloud = eligible and (
+                self.mode == "cloud" or task in {"verification", "identity_resolution"}
+            )
             candidates = [self.local]
             if prefer_cloud and self.clock() >= self.cloud_until:
                 candidate = next((p for p in self.cloud if p.credential not in self.disabled), None)

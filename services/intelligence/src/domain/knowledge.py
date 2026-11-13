@@ -74,7 +74,17 @@ def explicit_name_bridge(left: str, right: str, text: str) -> bool:
 
 def independent_sources(evidence: list[dict[str, str]]) -> int:
     # Same normalized document and same publisher family never count twice.
-    hashes, publishers = set(), set()
+    hashes = set()
+    parents: dict[str, str] = {}
+    families: list[str] = []
+
+    def root(value: str) -> str:
+        parents.setdefault(value, value)
+        while parents[value] != value:
+            parents[value] = parents[parents[value]]
+            value = parents[value]
+        return value
+
     excerpts: list[str] = []
     for item in evidence:
         fingerprint = item["content_hash"]
@@ -93,37 +103,117 @@ def independent_sources(evidence: list[dict[str, str]]) -> int:
         family = ".".join(
             parts[-3:] if len(parts) > 2 and parts[-2] in {"co", "com", "org"} else parts[-2:]
         )
-        publishers.add(family)
-    return len(publishers)
+        families.append(family)
+        key = (item.get("independence_key") or family).casefold().strip()
+        parents[root(family)] = root(key)
+    return len({root(family) for family in families})
 
 
 def relation_structure(
-    kind: RelationshipType, source: NodeType, target: NodeType, texts: list[str]
+    kind: RelationshipType,
+    source: NodeType,
+    target: NodeType,
+    texts: list[str],
+    source_name: str | None = None,
+    target_name: str | None = None,
 ) -> bool:
     if kind in {RelationshipType.CAUSED, RelationshipType.ENABLED, RelationshipType.PRECEDES}:
         if source != NodeType.EVENT or target != NodeType.EVENT:
             return False
-    if kind == RelationshipType.PARTICIPATED_IN and target != NodeType.EVENT:
+    if kind == RelationshipType.PARTICIPATED_IN and (
+        target != NodeType.EVENT or source not in {NodeType.CHARACTER, NodeType.FACTION}
+    ):
         return False
     if kind == RelationshipType.OCCURRED_AT and (
         source != NodeType.EVENT or target != NodeType.LOCATION
     ):
         return False
-    if kind == RelationshipType.MEMBER_OF and target != NodeType.FACTION:
+    if kind == RelationshipType.MEMBER_OF and (
+        target != NodeType.FACTION or source not in {NodeType.CHARACTER, NodeType.FACTION}
+    ):
+        return False
+    if kind in {RelationshipType.ALLIED_WITH, RelationshipType.OPPOSED} and (
+        source not in {NodeType.CHARACTER, NodeType.FACTION}
+        or target not in {NodeType.CHARACTER, NodeType.FACTION}
+    ):
+        return False
+    if kind == RelationshipType.PRECEDES and not any(
+        re.search(
+            r"\b(before|after|earlier|later|preceded|followed)\b|先|前|後", text, re.IGNORECASE
+        )
+        for text in texts
+    ):
+        return False
+    if kind == RelationshipType.ENABLED and not any(
+        re.search(
+            r"\b(enabled|allowed|made possible|made it possible)\b|可能に|できるよう|おかげ",
+            text,
+            re.IGNORECASE,
+        )
+        for text in texts
+    ):
+        return False
+    if kind == RelationshipType.FORESHADOWS and not any(
+        re.search(r"foreshadow|hint|伏線|暗示", text, re.IGNORECASE) for text in texts
+    ):
+        return False
+    if kind in {RelationshipType.RELATED_TO, RelationshipType.CONNECTED_TO} and not any(
+        re.search(r"related|connected|linked|関係|関連|繋|つなが", text, re.IGNORECASE)
+        for text in texts
+    ):
         return False
     if kind == RelationshipType.CAUSED:
         markers = (
             r"\b(because|caused|therefore|resulted in|led to|as a result)\b"
             r"|ため|ので|によって|原因|結果"
         )
-        return any(re.search(markers, text, re.IGNORECASE) for text in texts)
+        for text in texts:
+            if not re.search(markers, text, re.IGNORECASE):
+                continue
+            if re.search(r"\b(not|never|didn't)\b|ではない|なかった|否定", text, re.IGNORECASE):
+                continue
+            if source_name is None or target_name is None:
+                return True
+            value = name_key(text)
+            a, b = value.find(name_key(source_name)), value.find(name_key(target_name))
+            if a < 0 or b < 0:
+                continue  # Strong claims need literal event anchors, not guessed translations.
+            forward = re.search(
+                r"caused|therefore|resulted in|led to|ため|ので|によって|原因|結果", value
+            )
+            because = value.find("because")
+            if forward and a < forward.start() < b:
+                return True
+            if because >= 0 and (because < a < b or b < because < a):
+                return True
+        return False
     return True
+
+
+def in_world_structure(payload: dict[str, str], quotes: list[str]) -> bool:
+    name = payload.get("name", "")
+    description = payload.get("description", "")
+    if payload.get("type") == "EVENT" and re.fullmatch(
+        r"(?:第[0-9０-９一二三四五六七八九十]+話|episode\s*\d+|#\d+)", name.strip(), re.IGNORECASE
+    ):
+        return False
+    # These describe the publication/marketing of a work, not events in its fictional world.
+    return not re.search(
+        r"コラボカフェ|開催決定|TVアニメ初イベント|放送開始|声優|作画監督|脚本："
+        r"|\b(voice actor|collaboration cafe|broadcast date|blu-ray|merchandise)\b",
+        description,
+        re.IGNORECASE,
+    )
 
 
 @dataclass(frozen=True)
 class PromotionPolicy:
     minimum_sources: int = 1
     strong_sources: int = 2
+
+    def __post_init__(self) -> None:
+        if self.minimum_sources < 1 or self.strong_sources < 2:
+            raise ValueError("Publication needs positive ordinary and at least two strong sources")
 
     def decide(
         self,

@@ -36,6 +36,7 @@ class EvidenceResponse(BaseModel):
     permission_basis: str
     public_web: bool
     truncated: bool
+    independence_key: str | None = None
 
 
 class FindingResponse(BaseModel):
@@ -63,6 +64,8 @@ class AliasResponse(BaseModel):
     name: str
     normalized_name: str
     claim_id: UUID
+    supporting_claim_ids: list[UUID]
+    source_ids: list[UUID]
 
 
 class PromotionResponse(BaseModel):

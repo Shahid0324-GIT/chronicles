@@ -2,7 +2,7 @@
 
 import json
 from contextlib import asynccontextmanager
-from uuid import uuid4
+from uuid import UUID, uuid4
 
 import pytest
 from httpx import ASGITransport, AsyncClient
@@ -12,6 +12,7 @@ from src.application.inference import InferenceRouter
 from src.application.research import FetchedDocument, ResearchRequest, SourceInput
 from src.application.research_contracts import (
     Extraction,
+    InferenceFailure,
     InferenceResult,
     InferenceUsage,
     ResearchPlan,
@@ -151,6 +152,32 @@ async def prepare(factory, fake=None, search=None, sources=None, allow_search=Fa
     router = InferenceRouter(provider, [], mode="local")
     workflow = ResearchWorkflow(transaction, router, fetcher, search, **limits)
     return identifier, workflow, provider, fetcher, transaction
+
+
+async def test_unavailable_verifier_does_not_block_other_claims(factory):
+    class OneUnavailableClaim(FakeInference):
+        def __init__(self):
+            super().__init__()
+            self.failed_claim = None
+
+        async def generate(self, system, prompt, schema, task):
+            if task == "verification":
+                data = json.loads(prompt[prompt.index("{") :])
+                claim_id = data["candidates"][0]["claim_id"]
+                if self.failed_claim is None:
+                    self.failed_claim = claim_id
+                if claim_id == self.failed_claim:
+                    raise InferenceFailure("model_unavailable")
+            return await super().generate(system, prompt, schema, task)
+
+    identifier, workflow, _, _, tx = await prepare(factory, fake=OneUnavailableClaim())
+    state = await workflow.run(identifier, {})
+    assert state["verified"] == 2
+    async with tx() as archive:
+        findings = await archive.findings(identifier)
+    failed = [f for f in findings if f["decision"] == "insufficient"]
+    assert len(failed) == 1
+    assert "Verifier inference unavailable" in failed[0]["reason"]
 
 
 async def test_workflow_persists_source_evidence_and_keeps_canonical_graph_unchanged(factory):
@@ -334,4 +361,38 @@ def test_structured_outputs_reject_unknown_types_and_invented_passage_ids():
                     }
                 ]
             }
+        )
+
+
+async def test_import_reference_sections_and_source_groups_preserve_provenance(factory):
+    source = SourceInput(
+        text="Owned preface. " + TEXT + " Owned footer.",
+        start_at="Mira entered",
+        end_before="Owned footer.",
+        reference_url="https://example.org/owned-story",
+        source_group="owned-editorial-family",
+        permission_basis="Owned synthetic fixture with attributed reference",
+        source_scope="Test continuity",
+    )
+    identifier, workflow, _, fetcher, tx = await prepare(factory, sources=[source])
+    state = await workflow.planner({"job_id": str(identifier)})
+    state = await workflow.researcher(state)
+    async with tx() as archive:
+        passages = await archive.get_passages([UUID(value) for value in state["source_ids"]])
+    assert passages[0].text == TEXT
+    assert not state["public_only"] and fetcher.calls == 0
+    async with factory() as session:
+        document = await session.scalar(select(SourceDocumentModel))
+        assert document.url.startswith("https://example.org/owned-story#")
+        assert document.independence_key == "owned-editorial-family"
+        assert document.public_web is False
+
+
+def test_import_references_are_attribution_only_and_reject_active_url_schemes():
+    with pytest.raises(ValueError):
+        SourceInput(
+            text=TEXT,
+            reference_url="javascript:alert(1)",
+            permission_basis="Owned test fixture",
+            source_scope="Test continuity",
         )

@@ -4,6 +4,7 @@ from uuid import UUID
 from pydantic import Field, model_validator
 
 from src.application.research_contracts import (
+    Assessment,
     CandidateEntity,
     CandidateRelationship,
     Citation,
@@ -15,13 +16,19 @@ from src.domain.value_objects import NodeType
 class IdentityComparison(StructuredModel):
     decision: Literal["SAME_ENTITY", "DIFFERENT_ENTITY", "AMBIGUOUS", "NEW_ENTITY"]
     target_id: UUID | None = None
+    target_index: int | None = Field(default=None, ge=0, le=7)
+    entity_type_valid: bool
     reason: str = Field(min_length=3, max_length=600)
     evidence: list[Citation] = Field(min_length=1, max_length=3)
     hidden_identity: bool = False
 
     @model_validator(mode="after")
     def target_required(self) -> "IdentityComparison":
-        if self.decision in {"SAME_ENTITY", "DIFFERENT_ENTITY"} and self.target_id is None:
+        if (
+            self.decision in {"SAME_ENTITY", "DIFFERENT_ENTITY"}
+            and self.target_id is None
+            and self.target_index is None
+        ):
             raise ValueError("A compared target UUID is required")
         return self
 
@@ -83,3 +90,12 @@ FOCUSED_SCHEMAS: dict[NodeType, type[StructuredModel]] = {
     NodeType.STORY_ARC: EntityBatch[ArcEntity],
     NodeType.MYSTERY: EntityBatch[MysteryEntity],
 }
+
+
+class KnowledgeAssessment(Assessment):
+    in_universe: bool
+    entity_type_valid: bool
+
+
+class KnowledgeVerification(StructuredModel):
+    assessments: list[KnowledgeAssessment] = Field(min_length=1, max_length=1)

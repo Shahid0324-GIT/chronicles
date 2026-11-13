@@ -4,8 +4,10 @@ from typing import Annotated
 from fastapi import Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.application.knowledge_visibility import PublicationVisibility
 from src.application.ports import GraphRepository, UniverseRepository
 from src.application.use_cases import GetNodeDetails, GetUniverse, GetUniverseGraph, ListUniverses
+from src.infrastructure.persistence.knowledge_repository import SqlKnowledgeRepository
 from src.infrastructure.persistence.repositories import SqlGraphRepository, SqlUniverseRepository
 
 
@@ -44,3 +46,7 @@ def get_graph(universes: Universes, graph: Graph) -> GetUniverseGraph:
 
 def get_node(graph: Graph) -> GetNodeDetails:
     return GetNodeDetails(graph)
+
+
+def publication_visibility(session: Session) -> PublicationVisibility:
+    return PublicationVisibility(SqlKnowledgeRepository(session))

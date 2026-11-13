@@ -69,9 +69,17 @@ class LangChainProvider:
     ) -> InferenceResult:
         start = time.monotonic()
         try:
-            runnable = self.client.with_structured_output(
-                schema, method=self.method, include_raw=True
-            )
+            client = self.client
+            if self.name == "ollama":
+                budgets = {
+                    "planning": 600,
+                    "identity_resolution": 1100,
+                    "extraction": 3000,
+                    "relationship_analysis": 2500,
+                    "verification": 900,
+                }
+                client = self.client.model_copy(update={"num_predict": budgets[task]})
+            runnable = client.with_structured_output(schema, method=self.method, include_raw=True)
             # Environment-enabled tracing must never bypass the local-content boundary.
             with tracing_context(enabled=False):
                 result = await runnable.ainvoke(
@@ -118,7 +126,7 @@ def create_inference(settings: Settings) -> InferenceRouter:
             temperature=0,
             reasoning=False,
             num_ctx=8192,
-            num_predict=3000,
+            num_predict=4500,
             client_kwargs={"timeout": settings.ai_timeout_seconds, "trust_env": False},
         ),
         "ollama",

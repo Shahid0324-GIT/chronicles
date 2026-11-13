@@ -1,9 +1,10 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy import text
 
+from src.application.knowledge_visibility import PublicationVisibility
 from src.application.use_cases import GetNodeDetails, GetUniverse, GetUniverseGraph, ListUniverses
 from src.presentation.api.schemas import (
     GraphResponse,
@@ -17,6 +18,7 @@ from src.presentation.dependencies import (
     get_node,
     get_universe,
     list_universes,
+    publication_visibility,
 )
 
 router = APIRouter(prefix="/api")
@@ -44,13 +46,27 @@ async def universe(
 
 @router.get("/universes/{slug}/graph", response_model=GraphResponse)
 async def graph(
-    slug: str, use_case: Annotated[GetUniverseGraph, Depends(get_graph)]
+    slug: str,
+    use_case: Annotated[GetUniverseGraph, Depends(get_graph)],
+    visibility: Annotated[PublicationVisibility, Depends(publication_visibility)],
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    curated_only: bool = False,
 ) -> GraphResponse:
-    return GraphResponse.from_dto(await use_case.execute(slug))
+    result = await use_case.execute(slug)
+    if curated_only or allowed_source_id is not None:
+        result = await visibility.graph(result, [] if curated_only else allowed_source_id or [])
+    return GraphResponse.from_dto(result)
 
 
 @router.get("/nodes/{node_id}", response_model=NodeDetailsResponse)
 async def node(
-    node_id: UUID, use_case: Annotated[GetNodeDetails, Depends(get_node)]
+    node_id: UUID,
+    use_case: Annotated[GetNodeDetails, Depends(get_node)],
+    visibility: Annotated[PublicationVisibility, Depends(publication_visibility)],
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    curated_only: bool = False,
 ) -> NodeDetailsResponse:
-    return NodeDetailsResponse.from_dto(await use_case.execute(node_id))
+    result = await use_case.execute(node_id)
+    if curated_only or allowed_source_id is not None:
+        result = await visibility.node(result, [] if curated_only else allowed_source_id or [])
+    return NodeDetailsResponse.from_dto(result)

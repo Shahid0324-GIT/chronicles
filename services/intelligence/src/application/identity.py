@@ -1,4 +1,5 @@
 import json
+import re
 from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID, uuid5
@@ -37,7 +38,12 @@ class IdentityResolver:
         choices = sorted(eligible, key=rank)[:8]
         prompt = """Resolve the candidate identity against the supplied scoped records only.
 Names, surnames, titles, co-occurrence or similar descriptions alone do not prove identity.
-Return SAME_ENTITY only with source evidence and a specific target_id from matches.
+First check entity_type_valid: does the name identify an entity of the asserted type?
+EVENT means an action or occurrence, including arrival, disappearance or loss of a resource.
+It need not be a formally named event. A person name alone is not an event label.
+entity_type_valid checks the source and requested class, NOT whether a canonical match exists.
+A genuinely NEW_ENTITY may and should have entity_type_valid=true when its type is grounded.
+Return SAME_ENTITY only with source evidence and target_index from the numbered matches.
 For different scripts or translations, cite an explicit bilingual/alias annotation where possible.
 NEW_ENTITY means none of the proposed records matches.
 DIFFERENT_ENTITY must name the compared target.
@@ -50,12 +56,13 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 "matches": [
                     {
                         **n,
+                        "index": index,
                         "description": n.get("description", "")[:240],
                         "aliases": sorted(n.get("aliases", []), key=lambda a: name_key(a) != key)[
                             :4
                         ],
                     }
-                    for n in choices
+                    for index, n in enumerate(choices)
                 ],
                 "passages": [
                     {"id": c["passage_id"], "text": c["quote"]} for c in payload["evidence"]
@@ -72,14 +79,35 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             if passage and quotation_exists(citation.quote, passage):
                 cited.append(normalize(citation.quote))
         target = next((n for n in choices if str(response.target_id) == n["id"]), None)
+        if response.target_index is not None and response.target_index < len(choices):
+            indexed = choices[response.target_index]
+            if response.target_id is not None and str(response.target_id) != indexed["id"]:
+                target = None
+            else:
+                target = indexed
         result: dict[str, Any] = {
             **response.model_dump(mode="json"),
             "accepted": False,
             "canonical_id": None,
             "proof": "unresolved",
+            "model_reason": response.reason,
         }
+        if not response.entity_type_valid:
+            result["reason"] = "Source does not establish the asserted entity type."
+            return result
         if len(cited) != len(response.evidence) or not cited:
             result["reason"] = "Identity comparison lacked valid exact evidence."
+            return result
+        reusable_title = key in {"king", "queen", "lord", "captain", "王", "王様", "女王"}
+        if reusable_title and not any(
+            re.search(
+                r"(?:named|name is)\s+" + re.escape(key) + r"\b|という名",
+                name_key(q),
+                re.IGNORECASE,
+            )
+            for q in cited
+        ):
+            result["reason"] = "A reusable title alone does not establish a permanent identity."
             return result
         if response.decision == "SAME_ENTITY" and target:
             names = [target["name"], *target.get("aliases", [])]
@@ -111,7 +139,21 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 for name in [node["name"], *node.get("aliases", [])]
                 for quote in cited
             )
-            if not collisions and not contradicts_bridge and len(eligible) <= 8:
+            partial_reference = (
+                payload["type"] != "EVENT"
+                and len(key.split()) == 1
+                and any(
+                    key in name_key(n).split() and name_key(n) != key
+                    for node in eligible
+                    for n in [node["name"], *node.get("aliases", [])]
+                )
+            )
+            if (
+                not collisions
+                and not contradicts_bridge
+                and not partial_reference
+                and len(eligible) <= 8
+            ):
                 result.update(
                     accepted=True,
                     canonical_id=str(uuid5(continuity, "entity:" + claim["id"])),
