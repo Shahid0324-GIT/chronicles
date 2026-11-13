@@ -1,6 +1,6 @@
 import asyncio
 import json
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import replace
 from time import monotonic
 
@@ -47,6 +47,7 @@ class InferenceRouter:
         self.cache, self.max_calls, self.stage_limits = cache, max_calls, stage_limits or {}
         self.total_used = 0
         self.stage_used: dict[str, int] = {}
+        self.before_call: Callable[[str, str, str, int], Awaitable[str]] | None = None
 
     def restore_budget(self, usage: list[dict[str, object]]) -> None:
         self.total_used = sum(
@@ -86,6 +87,7 @@ class InferenceRouter:
                 for attempt in range(self.attempts):
                     start = self.clock()
                     attempted = False
+                    reservation_id = None
                     try:
                         async with asyncio.timeout(self.timeout):
                             if not await provider.available():
@@ -139,9 +141,15 @@ class InferenceRouter:
                             self.total_used += 1
                             self.stage_used[task] = self.stage_used.get(task, 0) + 1
                             attempted = True
+                            if self.before_call:
+                                reservation_id = await self.before_call(
+                                    provider.name, provider.model, task, attempt
+                                )
                             result = await provider.generate(system, repair_prompt, schema, task)
                             schema.model_validate(result.value.model_dump())
-                        self.usage.append(replace(result.usage, retry=attempt))
+                        self.usage.append(
+                            replace(result.usage, retry=attempt, reservation_id=reservation_id)
+                        )
                         if cacheable and self.cache:
                             await self.cache.save(key, result.value.model_dump(mode="json"))
                         return result
@@ -172,6 +180,7 @@ class InferenceRouter:
                                 retry=attempt,
                                 validation_errors=issues if code == "invalid_output" else (),
                                 model_call=attempted,
+                                reservation_id=reservation_id,
                             )
                         )
                         if provider is not self.local and code == "rate_limited":
@@ -191,8 +200,12 @@ class InferenceRouter:
                                 + json.dumps(issues)
                                 + ". Required top-level fields: "
                                 + json.dumps(contract.get("required", []))
-                                + ". Use target_index for compared identities and integer "
-                                "evidence_indices."
+                                + (
+                                    ". Use target_index for compared identities and integer "
+                                    "evidence_indices."
+                                    if task == "identity_resolution"
+                                    else ". Respect nested fields and enum values."
+                                )
                             )
                         elif code not in {"timeout", "inference_failed", "provider_http_error"}:
                             break

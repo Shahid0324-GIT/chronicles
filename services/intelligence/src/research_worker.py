@@ -2,6 +2,7 @@
 
 import argparse
 import asyncio
+import time
 from uuid import UUID
 
 from sqlalchemy import select, text
@@ -55,6 +56,10 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         checkpoint = dict(row.checkpoint) if row else {}
                         if row:
                             row.status = "running"
+                            checkpoint.setdefault(
+                                "deadline_at", time.time() + settings.agent_max_job_seconds
+                            )
+                            row.checkpoint = checkpoint
                             row.updated_at = now()
                     if selected_id is None:
                         if once:
@@ -63,7 +68,7 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         continue
                     status, error = "completed", None
                     try:
-                        async with asyncio.timeout(settings.agent_max_job_seconds):
+                        async with asyncio.timeout(max(0, checkpoint["deadline_at"] - time.time())):
                             state = await workflow.run(selected_id, checkpoint)
                         if (
                             not state.get("verified")
@@ -77,7 +82,12 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         status = "cancelled"
                     except InferenceFailure as failure:
                         status, error = (
-                            ("partial" if "budget" in failure.code else "failed"),
+                            (
+                                "partial"
+                                if "budget" in failure.code
+                                or failure.code == "job_duration_exceeded"
+                                else "failed"
+                            ),
                             failure.code,
                         )
                     except TimeoutError:

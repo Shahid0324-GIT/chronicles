@@ -78,6 +78,7 @@ class InferenceUsage:
     retry: int = 0
     validation_errors: tuple[str, ...] = ()
     model_call: bool = True
+    reservation_id: str | None = None
 
 
 @dataclass(frozen=True)

@@ -7,7 +7,7 @@ from dataclasses import asdict
 from datetime import timedelta
 from typing import Any, TypedDict, cast
 from urllib.parse import urlsplit
-from uuid import NAMESPACE_URL, UUID, uuid5
+from uuid import NAMESPACE_URL, UUID, uuid4, uuid5
 
 from langgraph.graph import END, START, StateGraph
 from langsmith import tracing_context
@@ -64,6 +64,7 @@ are available to you; acquisition is performed by the Researcher through approve
 
 
 class ResearchState(TypedDict, total=False):
+    deadline_at: float
     active_stage: str | None
     telemetry: dict[str, Any]
     source_retrievals: int
@@ -218,6 +219,8 @@ class ResearchWorkflow:
         return "end"
 
     async def check(self, state: ResearchState) -> ResearchRequest:
+        if state.get("deadline_at") is not None and time.time() >= state["deadline_at"]:
+            raise InferenceFailure("job_duration_exceeded")
         async with self.transactions() as archive:
             job = await archive.get_job(UUID(state["job_id"]))
         if not job or job["cancel_requested"]:
@@ -294,8 +297,34 @@ class ResearchWorkflow:
         if isinstance(self.inference, InferenceRouter):
             async with self.transactions() as archive:
                 job = await archive.get_job(UUID(state["job_id"]))
+                events = await archive.events(UUID(state["job_id"]))
             if job:
-                self.inference.restore_budget(job["provider_usage"])
+                closed = {u.get("reservation_id") for u in job["provider_usage"]}
+                pending = [
+                    {"task": e["detail"]["task"], "status": "inflight", "model_call": True}
+                    for e in events
+                    if e["stage"] == "inference.started"
+                    and e["detail"]["reservation_id"] not in closed
+                ]
+                self.inference.restore_budget([*job["provider_usage"], *pending])
+
+            async def reserve(provider: str, model: str, role: str, retry: int) -> str:
+                identifier = str(uuid4())
+                async with self.transactions() as archive:
+                    await archive.event(
+                        UUID(state["job_id"]),
+                        "inference.started",
+                        {
+                            "reservation_id": identifier,
+                            "provider": provider,
+                            "model": model,
+                            "task": role,
+                            "retry": retry,
+                        },
+                    )
+                return identifier
+
+            self.inference.before_call = reserve
         start = len(self.inference.usage)
         try:
             result = await self.inference.generate(

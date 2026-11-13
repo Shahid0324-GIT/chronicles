@@ -201,3 +201,57 @@ async def test_stage_telemetry_and_summary_are_persisted(factory, app):
     summary = response.json()
     assert summary["model_calls"] == 5 and summary["candidate_entities"] == 2
     assert summary["accepted_relationships"] == 0 and len(summary["stage_elapsed_ms"]) == 4
+
+
+async def test_interrupted_call_reservation_survives_worker_restart_budget(factory, app):
+    from httpx import ASGITransport, AsyncClient
+
+    job, workflow, provider, _, tx = await prepare(factory)
+    workflow.inference.max_calls = 1
+    async with tx() as archive:
+        await archive.event(
+            job,
+            "inference.started",
+            {"reservation_id": "owned-interrupted-call", "task": "planning"},
+        )
+    with pytest.raises(InferenceFailure, match="job_model_budget_exhausted"):
+        await workflow.run(job, {})
+    assert not provider.tasks
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
+        summary = (await client.get(f"/api/research/jobs/{job}/summary")).json()
+    assert summary["model_calls"] == 1 and summary["incomplete_call_reservations"] == 1
+
+
+async def test_persisted_deadline_stops_restarted_execution_before_any_model_call(factory):
+    job, workflow, provider, _, _ = await prepare(factory)
+    with pytest.raises(InferenceFailure, match="job_duration_exceeded"):
+        await workflow.run(job, {"deadline_at": 1.0})
+    assert not provider.tasks
+
+
+def test_summary_discoveries_deduplicate_support_records_and_use_readable_labels():
+    from src.application.research_summary import research_summary
+
+    job = {
+        "id": "owned-job",
+        "status": "partial",
+        "error": None,
+        "checkpoint": {},
+        "provider_usage": [],
+        "created_at": "2026-11-13T10:00:00+00:00",
+        "updated_at": "2026-11-13T10:01:00+00:00",
+    }
+    fact = {
+        "id": "owned-claim",
+        "canonical": True,
+        "canonical_id": "owned-edge",
+        "kind": "relationship",
+        "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "Mira Vale",
+            "target_name": "Arrival",
+        },
+    }
+    summary = research_summary(job, [fact, {**fact, "id": "second-support"}])
+    assert summary["accepted_relationships"] == 1 and len(summary["discoveries"]) == 1
+    assert summary["discoveries"][0]["label"] == "Mira Vale → Arrival · participated in"

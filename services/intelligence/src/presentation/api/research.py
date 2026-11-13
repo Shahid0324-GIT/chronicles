@@ -72,7 +72,7 @@ async def inspect_summary(job_id: UUID, archive: Archive) -> dict[str, Any]:
     job = await archive.get_job(job_id)
     if not job:
         raise NotFoundError("Research job not found")
-    return research_summary(job, await archive.findings(job_id))
+    return research_summary(job, await archive.findings(job_id), await archive.events(job_id))
 
 
 @router.post("/research/jobs/{job_id}/retry", response_model=JobResponse, status_code=202)
