@@ -45,6 +45,7 @@ class SourceInput(StructuredModel):
 
 
 class ResearchRequest(StructuredModel):
+    refresh: bool = False
     narrative_research: bool = False
     use_registry: bool = False
     spoiler_position: int | None = Field(default=None, ge=1, le=100000)

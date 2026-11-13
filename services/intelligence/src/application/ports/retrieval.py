@@ -30,6 +30,9 @@ class EvidenceHit:
 
 
 class EvidenceIndex(Protocol):
+    async def cached_vector(
+        self, universe: UUID, continuity: UUID, model: EmbeddingIdentity, content_hash: str
+    ) -> list[float] | None: ...
     async def passages(
         self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
     ) -> list[EvidenceHit]: ...

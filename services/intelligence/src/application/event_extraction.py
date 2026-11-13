@@ -13,8 +13,6 @@ from src.domain.research import SourcePassage, digest
 
 class EventFrame(StructuredModel):
     trigger: str = Field(min_length=2, max_length=100)
-    title: str = Field(min_length=3, max_length=150)
-    description: str = Field(min_length=5, max_length=500)
     participants: list[str] = Field(default_factory=list, max_length=5)
     location: str | None = None
     arc: str | None = None
@@ -61,6 +59,7 @@ async def extract_events(
     units = evidence_units(passages)
     entities: dict[tuple[str, str], dict[str, Any]] = {}
     relationships = []
+    batches: list[tuple[SourcePassage, list[dict[str, Any]], list[EventFrame]]] = []
     # Each call sees neighboring sentences from one passage, never a whole long article.
     for p in passages[:4]:
         local = [u for u in units if u["passage_id"] == str(p.id)]
@@ -68,9 +67,10 @@ async def extract_events(
             continue
         prompt = (
             "Extract up to three concrete story occurrences from these sentences. "
-            "Each event needs a short action title, a literal description and the actual named "
+            "Each event needs the actual named participants/location and the "
             "trigger phrase copied exactly from a sentence (for example its action verb phrase), "
-            "participants/location if stated. Use source-language names. Copy sentence IDs, NOT "
+            "participants/location only if stated as proper names. Use source-language names. "
+            "Copy sentence IDs, NOT "
             "quotations. Event title cannot be a person or episode label. Do not infer causes, "
             "outcomes, dates, arc names or numerical positions. Null positions unless explicitly "
             "stated as story chronology or reveal position. Do not treat sentence order as story "
@@ -78,7 +78,13 @@ async def extract_events(
             + json.dumps({"objective": objective, "sentences": local}, ensure_ascii=False)
         )
         frames = EventFrames.model_validate((await infer(prompt, EventFrames)).model_dump())
-        for frame in frames.events:
+        batches.append((p, local, frames.events))
+    # Give each document an event slot before a verbose first document consumes the budget.
+    for ordinal in range(max((len(frames) for _, _, frames in batches), default=0)):
+        for p, local, source_frames in batches:
+            if ordinal >= len(source_frames):
+                continue
+            frame = source_frames[ordinal]
             selected = [u for u in local if u["id"] in frame.sentence_ids]
             if len(selected) != len(set(frame.sentence_ids)):
                 continue
@@ -94,10 +100,17 @@ async def extract_events(
                 f"{p.source_id}:"
                 f"{p.start + anchor['start'] + anchor['text'].find(frame.trigger)}:{frame.trigger}"
             )
-            entities[("EVENT", frame.title)] = {
-                "name": frame.title,
+            metadata["source_id"] = str(p.source_id)
+            metadata["trigger_start"] = (
+                p.start + anchor["start"] + anchor["text"].find(frame.trigger)
+            )
+            metadata["trigger_end"] = metadata["trigger_start"] + len(frame.trigger)
+            label = frame.trigger
+            description = anchor["text"]
+            entities[("EVENT", metadata["identity_anchor"])] = {
+                "name": label,
                 "type": "EVENT",
-                "description": frame.description,
+                "description": description,
                 "evidence": evidence,
                 "event": metadata,
             }
@@ -113,16 +126,16 @@ async def extract_events(
                     {
                         "name": name,
                         "type": kind,
-                        "description": frame.description,
+                        "description": description,
                         "evidence": evidence,
                     },
                 )
                 relationships.append(
                     {
-                        "source_name": frame.title if kind == "LOCATION" else name,
-                        "target_name": name if kind == "LOCATION" else frame.title,
+                        "source_name": label if kind == "LOCATION" else name,
+                        "target_name": name if kind == "LOCATION" else label,
                         "type": relation,
-                        "description": frame.description,
+                        "description": description,
                         "evidence": evidence,
                     }
                 )

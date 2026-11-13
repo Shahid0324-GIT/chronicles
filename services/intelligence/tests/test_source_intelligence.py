@@ -194,3 +194,24 @@ def test_chunking_keeps_exact_offsets_and_prefers_sentence_boundaries():
     assert "".join(c.text for c in chunks) == text
     assert all(source.text[c.start : c.end] == c.text for c in chunks)
     assert chunks[0].text.endswith(". ")
+
+
+def test_explicit_reading_and_bilingual_annotations_form_a_source_bridge():
+    from src.domain.knowledge import same_event_context, source_name_bridge
+
+    assert source_name_bridge(
+        "源名",
+        "Source Person",
+        ["源名（ヨミ）が訪れた。", "ゲン・ヨミ Source Person is named in this owned profile."],
+    )
+    assert not source_name_bridge("源名", "Source Person", ["源名 met Source Person."])
+    left = {
+        "source_id": "owned-source",
+        "trigger_start": 10,
+        "trigger_end": 20,
+        "participants": ["Mira Vale"],
+        "location": "Observatory",
+    }
+    assert same_event_context(left, {**left, "trigger_end": 25})
+    assert not same_event_context(left, {**left, "trigger_start": 30, "trigger_end": 40})
+    assert not same_event_context(left, {**left, "participants": ["Another Vale"]})

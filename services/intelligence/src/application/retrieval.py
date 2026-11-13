@@ -21,6 +21,21 @@ class EvidenceRetrieval:
                 for h in passages
                 if not await repo.indexed(h.passage.id, model, h.passage.content_hash)
             ]
+            rows_added = len(pending)
+            generate = []
+            groups: dict[str, list[EvidenceHit]] = {}
+            for h in pending:
+                cached = await repo.cached_vector(
+                    universe, continuity, model, h.passage.content_hash
+                )
+                if cached is not None:
+                    await repo.store(h, model, cached)
+                else:
+                    group = groups.setdefault(h.passage.content_hash, [])
+                    group.append(h)
+                    if len(group) == 1:
+                        generate.append(h)
+            pending = generate
         # No held transaction during embedding; small sequential batches unload after use.
         for offset in range(0, len(pending), 4):
             batch = pending[offset : offset + 4]
@@ -33,12 +48,14 @@ class EvidenceRetrieval:
                 raise ValueError("Embedding batch count mismatch")
             async with self.transactions() as repo:
                 for h, vector in zip(batch, vectors, strict=True):
-                    await repo.store(h, model, vector)
+                    for duplicate in groups[h.passage.content_hash]:
+                        await repo.store(duplicate, model, vector)
         return {
             "indexed": len(pending),
             "reused": len(passages) - len(pending),
             "model_key": model.key,
             "dimensions": model.dimensions,
+            "rows_added": rows_added,
         }
 
     async def retrieve(
@@ -54,23 +71,31 @@ class EvidenceRetrieval:
         spoiler_position: int | None = None,
     ) -> list[EvidenceHit]:
         limit = min(max(limit, 1), 16)
+        async with self.transactions() as repo:
+            lexical = await repo.passages(universe, continuity, allowed_sources)
+        lexical = [
+            h
+            for h in lexical
+            if (
+                spoiler_position is None
+                or (
+                    isinstance(h.source.provenance.get("presentation_position"), int)
+                    and h.source.provenance["presentation_position"] <= spoiler_position
+                )
+            )
+            and (
+                not authorities or h.source.provenance.get("authority", "unverified") in authorities
+            )
+        ]
+        if not lexical:
+            return []
+        eligible_sources = list({h.source.id for h in lexical})
         model = await self.embeddings.identity()
         vector = (await self.embeddings.embed([query[:2000]]))[0]
         async with self.transactions() as repo:
-            if spoiler_position is not None:
-                permitted = await repo.passages(universe, continuity, allowed_sources)
-                allowed_sources = list(
-                    {
-                        h.source.id
-                        for h in permitted
-                        if isinstance(h.source.provenance.get("presentation_position"), int)
-                        and h.source.provenance["presentation_position"] <= spoiler_position
-                    }
-                )
             semantic = await repo.nearest(
-                universe, continuity, model, vector, 40, allowed_sources, authorities or []
+                universe, continuity, model, vector, 40, eligible_sources, authorities or []
             )
-            lexical = await repo.passages(universe, continuity, allowed_sources)
         words = set(re.findall(r"\w+", query.casefold()))
 
         def lexical_score(h: EvidenceHit) -> int:

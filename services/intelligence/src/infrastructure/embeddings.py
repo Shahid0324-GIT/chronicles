@@ -1,18 +1,21 @@
 import asyncio
 import math
+from contextlib import nullcontext
 
 import httpx
 
+from src.application.ports.model_runtime import ModelLease
 from src.application.ports.retrieval import EmbeddingIdentity
 
 
 class OllamaEmbeddings:
     """Sequential local batches, measured dimensions and a content-addressed model version."""
 
-    def __init__(self, base_url: str, model: str) -> None:
+    def __init__(self, base_url: str, model: str, lease: ModelLease | None = None) -> None:
         self.url, self.model = base_url.rstrip("/"), model
         self.lock = asyncio.Lock()
         self._identity: EmbeddingIdentity | None = None
+        self.lease = lease
 
     async def identity(self) -> EmbeddingIdentity:
         async with httpx.AsyncClient(timeout=180, trust_env=False) as client:
@@ -28,7 +31,11 @@ class OllamaEmbeddings:
     async def embed(self, texts: list[str]) -> list[list[float]]:
         if not texts or len(texts) > 4:
             raise ValueError("Embedding batch must contain one to four passages")
-        async with self.lock, httpx.AsyncClient(timeout=180, trust_env=False) as client:
+        async with (
+            self.lock,
+            self.lease() if self.lease else nullcontext(),
+            httpx.AsyncClient(timeout=180, trust_env=False) as client,
+        ):
             response = await client.post(
                 self.url + "/api/embed",
                 json={"model": self.model, "input": texts, "truncate": False, "keep_alive": 0},

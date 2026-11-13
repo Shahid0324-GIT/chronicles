@@ -1,6 +1,7 @@
 """Official LangChain adapters. SDK exception bodies never leave this module."""
 
 import time
+from contextlib import nullcontext
 from typing import Any
 
 import httpx
@@ -12,6 +13,7 @@ from langsmith import tracing_context
 from pydantic import ValidationError
 
 from src.application.inference import InferenceRouter
+from src.application.ports.model_runtime import ModelLease
 from src.application.research_contracts import (
     InferenceFailure,
     InferenceResult,
@@ -33,9 +35,11 @@ class LangChainProvider:
         health_url: str,
         api_key: str | None = None,
         method: str = "json_schema",
+        lease: ModelLease | None = None,
     ) -> None:
         self.client, self.name, self.model, self.credential = client, name, model, credential
         self.health_url, self.api_key, self.method = health_url, api_key, method
+        self.lease = lease
 
     async def available(self) -> bool:
         try:
@@ -82,9 +86,10 @@ class LangChainProvider:
             runnable = client.with_structured_output(schema, method=self.method, include_raw=True)
             # Environment-enabled tracing must never bypass the local-content boundary.
             with tracing_context(enabled=False):
-                result = await runnable.ainvoke(
-                    [SystemMessage(content=system), HumanMessage(content=prompt)]
-                )
+                async with self.lease() if self.lease and self.name == "ollama" else nullcontext():
+                    result = await runnable.ainvoke(
+                        [SystemMessage(content=system), HumanMessage(content=prompt)]
+                    )
             if not isinstance(result, dict):
                 raise InferenceFailure("invalid_output")
             parsed = result.get("parsed")
@@ -118,7 +123,7 @@ class LangChainProvider:
             raise InferenceFailure("inference_failed") from None
 
 
-def create_inference(settings: Settings) -> InferenceRouter:
+def create_inference(settings: Settings, lease: ModelLease | None = None) -> InferenceRouter:
     local = LangChainProvider(
         ChatOllama(
             model=settings.ollama_chat_model,
@@ -134,6 +139,7 @@ def create_inference(settings: Settings) -> InferenceRouter:
         settings.ollama_chat_model,
         "local",
         health_url=settings.ollama_base_url + "/api/tags",
+        lease=lease,
     )
     cloud: list[LangChainProvider] = []
     if settings.groq_model:

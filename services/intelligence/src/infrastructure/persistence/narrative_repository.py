@@ -6,7 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.ports.narrative import NarrativeKnowledge
 from src.domain.entities import now
-from src.infrastructure.persistence.models import NodeModel, RelationshipModel
+from src.domain.exceptions import NotFoundError
+from src.infrastructure.persistence.models import ContinuityModel, NodeModel, RelationshipModel
 from src.infrastructure.persistence.models.knowledge import (
     PromotionEvidenceModel,
     PromotionRecordModel,
@@ -25,6 +26,9 @@ class SqlNarrativeRepository:
         self.session = session
 
     async def knowledge(self, universe: UUID, continuity: UUID) -> NarrativeKnowledge:
+        scope = await self.session.get(ContinuityModel, continuity)
+        if not scope or scope.universe_id != universe:
+            raise NotFoundError("Narrative continuity does not belong to this universe")
         nodes = [
             node_entity(n)
             for n in await self.session.scalars(

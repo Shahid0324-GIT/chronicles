@@ -49,3 +49,53 @@ class CancelResearch:
     async def execute(self, job_id: UUID) -> None:
         if await self.archive.cancel_job(job_id):
             await self.archive.event(job_id, "research.cancel_requested", {})
+
+
+class ResumeResearch:
+    """Bounded retries of a frozen extraction; new acquisition uses a refreshed job."""
+
+    def __init__(self, archive: ResearchRepository) -> None:
+        self.archive = archive
+
+    async def execute(self, job_id: UUID, stage: str, reason: str) -> None:
+        predecessors = {
+            "identity_resolver": "extractor",
+            "relationship_analyst": "identity_resolver",
+            "verifier": "relationship_analyst",
+            "promotion_policy": "verifier",
+            "narrative_builder": "promotion_policy",
+        }
+        if stage not in predecessors:
+            raise ResearchRequestError("Retry requires an immutable post-extraction boundary")
+        job = await self.archive.lock_job(job_id)
+        if not job:
+            from src.domain.exceptions import NotFoundError
+
+            raise NotFoundError("Research job not found")
+        if job["status"] in {"queued", "running"}:
+            raise ResearchRequestError("An active job cannot be requeued")
+        checkpoint = dict(job["checkpoint"])
+        count = checkpoint.get("resume_count", 0)
+        if count >= 2 or not checkpoint.get("candidates"):
+            raise ResearchRequestError("Retry budget exhausted or no completed extraction exists")
+        clear = {
+            "identity_resolver": [
+                "resolutions",
+                "semantic_assessments",
+                "publication",
+                "narrative",
+            ],
+            "relationship_analyst": ["semantic_assessments", "publication", "narrative"],
+            "verifier": ["semantic_assessments", "publication", "narrative"],
+            "promotion_policy": ["publication", "narrative"],
+            "narrative_builder": ["narrative"],
+        }
+        for field in clear[stage]:
+            checkpoint.pop(field, None)
+        checkpoint.update(stage=predecessors[stage], resume_count=count + 1)
+        await self.archive.update_job(
+            job_id, status="queued", error=None, cancel_requested=False, checkpoint=checkpoint
+        )
+        await self.archive.event(
+            job_id, "research.retry_requested", {"from_stage": stage, "reason": reason}
+        )

@@ -7,7 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.application.ports.retrieval import EmbeddingIdentity, EvidenceHit
 from src.domain.research import SourcePassage
 from src.infrastructure.persistence.models.research import SourceDocumentModel, SourcePassageModel
-from src.infrastructure.persistence.models.source_intelligence import PassageEmbeddingModel
+from src.infrastructure.persistence.models.source_intelligence import (
+    PassageEmbeddingModel,
+    SourceRegistryModel,
+)
 from src.infrastructure.persistence.research_repository import source_entity
 
 
@@ -25,6 +28,22 @@ class SqlEvidenceIndex:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def cached_vector(
+        self, universe: UUID, continuity: UUID, model: EmbeddingIdentity, content_hash: str
+    ) -> list[float] | None:
+        row = await self.session.scalar(
+            select(PassageEmbeddingModel)
+            .where(
+                PassageEmbeddingModel.universe_id == universe,
+                PassageEmbeddingModel.continuity_id == continuity,
+                PassageEmbeddingModel.model_key == model.key,
+                PassageEmbeddingModel.dimensions == model.dimensions,
+                PassageEmbeddingModel.content_hash == content_hash,
+            )
+            .limit(1)
+        )
+        return [float(v) for v in row.vector] if row else None
+
     async def passages(
         self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
     ) -> list[EvidenceHit]:
@@ -38,6 +57,13 @@ class SqlEvidenceIndex:
         )
         if source_ids is not None:
             q = q.where(SourceDocumentModel.id.in_(source_ids))
+        registered = {
+            str(r.id)
+            for r in await self.session.scalars(
+                select(SourceRegistryModel).where(SourceRegistryModel.universe_id == universe)
+            )
+            if r.configuration.get("retrieval_policy") == "permitted"
+        }
         return [
             hit(p, s)
             for p, s in (
@@ -47,6 +73,7 @@ class SqlEvidenceIndex:
                     ).limit(600)
                 )
             ).all()
+            if not s.provenance.get("registry_id") or s.provenance["registry_id"] in registered
         ]
 
     async def indexed(self, passage: UUID, model: EmbeddingIdentity, content_hash: str) -> bool:

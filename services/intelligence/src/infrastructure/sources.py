@@ -169,6 +169,10 @@ class PublicDocumentFetcher:
                 title = data.get("title", data.get("name", url))
                 metadata["page_id"] = str(data.get("id", ""))
                 metadata["revision_id"] = str(data.get("revision", data.get("updated", "")))
+                metadata["attribution_url"] = str(data.get("url", url))
+                if isinstance(data.get("number"), int):
+                    metadata["episode_number"] = str(data["number"])
+                    metadata["season_number"] = str(data.get("season", ""))
             if not isinstance(text, str):
                 raise SourceRejected("source_api_schema_unsupported")
             text = normalize(BeautifulSoup(text, "html.parser").get_text(" ", strip=True))
@@ -238,11 +242,14 @@ class PublicDocumentFetcher:
 
 
 class SearxngSearch:
-    def __init__(self, base_url: str, policy: PublicSourcePolicy) -> None:
+    def __init__(
+        self, base_url: str, policy: PublicSourcePolicy, *, navigation_only: bool = False
+    ) -> None:
         parsed = urlsplit(base_url)
         if parsed.scheme != "http" or parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
             raise ValueError("SearXNG must be a trusted loopback endpoint")
         self.base_url, self.policy = base_url, policy
+        self.navigation_only = navigation_only
 
     async def search(self, query: str, limit: int) -> list[str]:
         async with httpx.AsyncClient(timeout=15, trust_env=False) as client:
@@ -254,7 +261,18 @@ class SearxngSearch:
         accepted = []
         for item in results:
             try:
-                self.policy.validate(item["url"])
+                candidate_policy = self.policy
+                if self.navigation_only:
+                    host = urlsplit(item["url"]).hostname or ""
+                    if host in {"localhost", "localhost.localdomain"}:
+                        continue
+                    try:
+                        if not self.policy.public_ip(host):
+                            continue
+                    except ValueError:
+                        pass
+                    candidate_policy = PublicSourcePolicy([host])
+                candidate_policy.validate(item["url"])
                 accepted.append(str(item["url"]))
             except (SourceRejected, KeyError):
                 continue

@@ -5,12 +5,12 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
 
-from src.application.knowledge_contracts import RollbackRequest
+from src.application.knowledge_contracts import ResearchRetryRequest, RollbackRequest
 from src.application.ports.knowledge import KnowledgeSession
 from src.application.ports.research import ResearchRepository
 from src.application.promotion import CanonicalGraphPromotionService
 from src.application.research import ResearchRequest
-from src.application.research_use_cases import CancelResearch, QueueResearch
+from src.application.research_use_cases import CancelResearch, QueueResearch, ResumeResearch
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import PromotionPolicy
 from src.infrastructure.config.settings import Settings
@@ -63,6 +63,14 @@ async def create_job(command: ResearchRequest, archive: Archive, request: Reques
 
 @router.get("/research/jobs/{job_id}", response_model=JobResponse)
 async def inspect_job(job_id: UUID, archive: Archive) -> JobResponse:
+    return await job_response(archive, job_id)
+
+
+@router.post("/research/jobs/{job_id}/retry", response_model=JobResponse, status_code=202)
+async def retry_research(
+    job_id: UUID, command: ResearchRetryRequest, archive: Archive
+) -> JobResponse:
+    await ResumeResearch(archive).execute(job_id, command.from_stage, command.reason)
     return await job_response(archive, job_id)
 
 

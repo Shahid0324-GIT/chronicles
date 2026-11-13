@@ -8,11 +8,14 @@ from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import (
     PromotionPolicy,
-    explicit_name_bridge,
     in_world_structure,
     independent_sources,
     name_key,
     relation_structure,
+    same_event_context,
+    same_full_name_order,
+    short_name_bridge,
+    source_name_bridge,
 )
 from src.domain.research import digest
 from src.domain.value_objects import NodeType, RelationshipType
@@ -45,7 +48,15 @@ class CanonicalGraphPromotionService:
             catalog = await unit.graph.catalog(universe, continuity)
             records = await unit.graph.records()
             by_claim = {r["claim_id"]: r for r in records}
-            bound: dict[str, UUID] = {}
+            bound: dict[str, set[UUID]] = {}
+
+            def endpoint(payload: dict[str, Any], side: str) -> UUID | None:
+                choices = bound.get(payload[side + "_name"], set())
+                selected = payload.get(side + "_id")
+                if selected:
+                    return UUID(selected) if UUID(selected) in choices else None
+                return next(iter(choices)) if len(choices) == 1 else None
+
             withdrawals: list[dict[str, Any]] = []
             result: dict[str, Any] = {"promoted": [], "unresolved": []}
             ordered = sorted(findings, key=lambda c: (c["kind"] != "entity", c["id"]))
@@ -53,6 +64,7 @@ class CanonicalGraphPromotionService:
             ordered.sort(
                 key=lambda c: (
                     c["kind"] != "entity",
+                    c["payload"].get("type") == "EVENT",
                     resolutions.get(c["id"], {}).get("decision") == "SAME_ENTITY",
                 )
             )
@@ -88,14 +100,16 @@ class CanonicalGraphPromotionService:
                         and assessment.get("entity_type_valid", True)
                         and (
                             claim["kind"] == "entity"
-                            or payload["source_name"] in bound
-                            and payload["target_name"] in bound
+                            or endpoint(payload, "source") is not None
+                            and endpoint(payload, "target") is not None
                         )
                     )
                     if still_valid:
                         result["promoted"].append(previous)
                         if claim["kind"] == "entity":
-                            bound[payload["name"]] = UUID(previous["target_id"])
+                            bound.setdefault(payload["name"], set()).add(
+                                UUID(previous["target_id"])
+                            )
                         continue
                     withdrawals.append(previous)
                     outcome = "RESEARCH_FURTHER" if budget_available else "KEEP_UNRESOLVED"
@@ -191,9 +205,8 @@ class CanonicalGraphPromotionService:
                         names = [node.title, *current.get("aliases", [])]
                         exact_name = any(name_key(payload["name"]) == name_key(n) for n in names)
                         bridge = any(
-                            explicit_name_bridge(payload["name"], n, e["quote"])
+                            source_name_bridge(payload["name"], n, [e["quote"] for e in evidence])
                             for n in names
-                            for e in evidence
                         )
                         node_event = node.metadata.get("event")
                         node_anchor = (
@@ -201,9 +214,68 @@ class CanonicalGraphPromotionService:
                             if isinstance(node_event, dict)
                             else None
                         )
-                        same_event = bool(anchor and anchor == node_anchor)
-                        accepted = accepted and (exact_name or bridge or same_event)
-                        if anchor and node_anchor and not same_event:
+                        same_event = bool(anchor and anchor == node_anchor) or same_event_context(
+                            event, node_event if isinstance(node_event, dict) else {}
+                        )
+                        context = resolution.get("event_context", {})
+                        source_roles = {
+                            str(i)
+                            for name in event.get("participants", [])
+                            for i in bound.get(name, set())
+                        }
+                        target_roles = {
+                            r["source"]
+                            for r in current.get("relationships", [])
+                            if r["target"] == str(node.id) and r["type"] == "PARTICIPATED_IN"
+                        }
+                        event_context = (
+                            resolution.get("proof") == "verified_event_context"
+                            and all(
+                                context.get(k) is True
+                                for k in [
+                                    "same_occurrence",
+                                    "same_granularity",
+                                    "repeated_occurrence_excluded",
+                                ]
+                            )
+                            and set(context.get("participant_ids", [])) <= source_roles
+                            and bool(source_roles & target_roles)
+                            and bool(anchor)
+                        )
+                        contextual_name = (
+                            payload["type"] == "CHARACTER"
+                            and any(
+                                same_full_name_order(payload["name"], n)
+                                or short_name_bridge(
+                                    payload["name"], n, [e["quote"] for e in evidence]
+                                )
+                                for n in names
+                            )
+                            and len(
+                                [
+                                    item
+                                    for item in catalog
+                                    if item["type"] == "CHARACTER"
+                                    and any(
+                                        same_full_name_order(payload["name"], a)
+                                        or name_key(payload["name"]) in name_key(a).split()
+                                        for a in [item["name"], *item.get("aliases", [])]
+                                    )
+                                ]
+                            )
+                            == 1
+                        )
+                        accepted = accepted and (
+                            exact_name or bridge or same_event or contextual_name or event_context
+                        )
+                        cross_source_event = (
+                            event_context
+                            and isinstance(node_event, dict)
+                            and node_event.get("source_id") != event.get("source_id")
+                            and event.get("source_position") is not None
+                            and event.get("source_position") == node_event.get("source_position")
+                        )
+                        if anchor and node_anchor and not same_event and not cross_source_event:
                             accepted = False
                     if node and (
                         node.universe_id != universe
@@ -242,8 +314,8 @@ class CanonicalGraphPromotionService:
                         snapshot["metadata"]["event"] = payload["event"]
                 else:
                     source, dest = (
-                        bound.get(payload["source_name"]),
-                        bound.get(payload["target_name"]),
+                        endpoint(payload, "source"),
+                        endpoint(payload, "target"),
                     )
                     source_node = await unit.graph.node(source) if source else None
                     target_node = await unit.graph.node(dest) if dest else None
@@ -395,7 +467,7 @@ class CanonicalGraphPromotionService:
                                 )
                             )
                         )
-                    bound[payload["name"]] = target
+                    bound.setdefault(payload["name"], set()).add(target)
                 else:
                     assert source_node and target_node
                     kind = RelationshipType(payload["type"])

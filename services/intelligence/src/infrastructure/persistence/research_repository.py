@@ -93,7 +93,7 @@ class SqlResearchRepository:
             )
             .order_by(ResearchJobModel.created_at.desc())
         )
-        if existing:
+        if existing and not request.refresh:
             return existing.id
         identifier = uuid4()
         self.session.add(

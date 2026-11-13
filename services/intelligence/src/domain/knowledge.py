@@ -2,6 +2,7 @@
 
 import re
 import unicodedata
+from collections.abc import Mapping
 from dataclasses import dataclass
 from difflib import SequenceMatcher
 from urllib.parse import urlsplit
@@ -36,6 +37,35 @@ def order_key(name: str) -> str:
     return " ".join(sorted(value.split())) if script(name) == "latin" else value
 
 
+def same_event_context(left: Mapping[str, object], right: Mapping[str, object]) -> bool:
+    if not left.get("source_id") or left.get("source_id") != right.get("source_id"):
+        return False
+    bounds = [
+        left.get("trigger_start"),
+        left.get("trigger_end"),
+        right.get("trigger_start"),
+        right.get("trigger_end"),
+    ]
+    if not all(isinstance(v, int) for v in bounds):
+        return False
+    a, b, c, d = (int(v) for v in bounds if isinstance(v, int))
+    if max(a, c) >= min(b, d):
+        return False
+
+    def participants(value: object) -> set[str]:
+        return {name_key(str(v)) for v in value} if isinstance(value, list) else set()
+
+    if participants(left.get("participants")) != participants(right.get("participants")):
+        return False
+    if (
+        left.get("location")
+        and right.get("location")
+        and name_key(str(left["location"])) != name_key(str(right["location"]))
+    ):
+        return False
+    return True
+
+
 def explicit_name_bridge(left: str, right: str, text: str) -> bool:
     """An adjacent bilingual/name annotation or explicit alias phrase, not mere co-occurrence."""
     value = name_key(text)
@@ -58,7 +88,7 @@ def explicit_name_bridge(left: str, right: str, text: str) -> bool:
                 continue
             for x, y in ((a, b), (b, a)):
                 start, end = value.find(x), value.find(y)
-                if start < 0 or end < 0:
+                if start < 0 or end < start + len(x):
                     continue
                 gap = value[start + len(x) : end]
                 if 0 <= len(gap) <= 55 and (
@@ -69,6 +99,49 @@ def explicit_name_bridge(left: str, right: str, text: str) -> bool:
                     or (not gap.strip() and script(x) != script(y))
                 ):
                     return True
+    return False
+
+
+def source_name_bridge(left: str, right: str, texts: list[str]) -> bool:
+    if any(explicit_name_bridge(left, right, text) for text in texts):
+        return True
+    # Preserve parenthetical readings before punctuation normalization, then follow
+    # a separately evidenced bilingual annotation. Co-occurrence is not a bridge.
+    pattern = re.compile(re.escape(left) + r"\s*[（(]([^）)\s]{1,60})[）)]")
+    return any(
+        explicit_name_bridge(match.group(1), right, other)
+        for text in texts
+        for match in pattern.finditer(text)
+        for other in texts
+    )
+
+
+def same_full_name_order(left: str, right: str) -> bool:
+    return (
+        script(left) == script(right) == "latin"
+        and len(name_key(left).split()) == 2
+        and order_key(left) == order_key(right)
+    )
+
+
+def short_name_bridge(short: str, full: str, texts: list[str]) -> bool:
+    key = name_key(short)
+    parts = name_key(full).split()
+    if script(short) != "latin" or len(key.split()) != 1 or len(parts) != 2 or key not in parts:
+        return False
+    for text in texts:
+        value = name_key(text)
+        for fullname in (" ".join(parts), " ".join(reversed(parts))):
+            at = value.find(fullname)
+            if at < 0:
+                continue
+            remainder = value[:at] + value[at + len(fullname) :]
+            if re.search(r"\b" + re.escape(key) + r"\b", remainder) or any(
+                re.search(r"\b" + re.escape(key) + r"\b", name_key(other))
+                for other in texts
+                if other != text
+            ):
+                return True
     return False
 
 

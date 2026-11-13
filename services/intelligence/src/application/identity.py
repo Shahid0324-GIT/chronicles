@@ -6,8 +6,19 @@ from uuid import UUID, uuid5
 
 from pydantic import BaseModel
 
-from src.application.knowledge_contracts import IdentityComparison
-from src.domain.knowledge import explicit_name_bridge, name_key, order_key
+from src.application.knowledge_contracts import (
+    EventIdentityComparison,
+    IdentityComparison,
+    IndexedIdentityComparison,
+)
+from src.domain.knowledge import (
+    name_key,
+    order_key,
+    same_event_context,
+    same_full_name_order,
+    short_name_bridge,
+    source_name_bridge,
+)
 from src.domain.research import SourcePassage, normalize, quotation_exists
 
 InferIdentity = Callable[[str, type[BaseModel]], Awaitable[BaseModel]]
@@ -23,11 +34,21 @@ class IdentityResolver:
         passages: list[SourcePassage],
         infer: InferIdentity,
         continuity: UUID,
+        indexed_evidence: bool = False,
+        participant_ids: list[str] | None = None,
     ) -> dict[str, Any]:
         payload = claim["payload"]
         key = name_key(payload["name"])
         eligible = [n for n in catalog if n["type"] == payload["type"]]
         event_anchor = (payload.get("event") or {}).get("identity_anchor")
+        participant_ids = participant_ids or []
+
+        def participants(node: dict[str, Any]) -> set[str]:
+            return {
+                r["source"]
+                for r in node.get("relationships", [])
+                if r["type"] == "PARTICIPATED_IN" and r["target"] == node["id"]
+            }
 
         def rank(node: dict[str, Any]) -> tuple[int, str]:
             names = [node["name"], *node.get("aliases", [])]
@@ -36,6 +57,7 @@ class IdentityResolver:
             score += len(set(key.split()) & set(name_key(node["name"]).split()))
             if event_anchor and (node.get("event") or {}).get("identity_anchor") == event_anchor:
                 score += 100
+            score += 3 * len(set(participant_ids) & participants(node))
             return -score, node["id"]
 
         choices = sorted(eligible, key=rank)[:8]
@@ -56,10 +78,18 @@ NEW_ENTITY means none of the proposed records matches.
 DIFFERENT_ENTITY must name the compared target.
 AMBIGUOUS means preserve uncertainty. Hidden identities require hidden_identity=true.
 Never use remembered fictional lore or a confidence score.
+Give a single short reason, at most 160 characters. Do not repeat the source or every record.
 Copy citations from candidate.evidence; do not cite unrelated passages.
 """ + json.dumps(
             {
-                "candidate": payload,
+                "candidate": (
+                    {
+                        **payload,
+                        "evidence": [{**e, "index": i} for i, e in enumerate(payload["evidence"])],
+                    }
+                    if indexed_evidence
+                    else payload
+                ),
                 "matches": [
                     {
                         **n,
@@ -67,6 +97,9 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                         "description": n.get("description", "")[:240],
                         "aliases": sorted(n.get("aliases", []), key=lambda a: name_key(a) != key)[
                             :4
+                        ],
+                        "participant_names": [
+                            node["name"] for node in catalog if node["id"] in participants(n)
                         ],
                     }
                     for index, n in enumerate(choices)
@@ -77,9 +110,60 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             },
             ensure_ascii=False,
         )
-        response = IdentityComparison.model_validate(
-            (await infer(prompt, IdentityComparison)).model_dump()
-        )
+        if indexed_evidence:
+            prompt = prompt.replace(
+                "Copy citations from candidate.evidence; do not cite unrelated passages.",
+                "Choose evidence_indices (zero-based indices in candidate.evidence); "
+                "do not copy quotations.",
+            )
+            schema = (
+                EventIdentityComparison if payload["type"] == "EVENT" else IndexedIdentityComparison
+            )
+            if payload["type"] == "EVENT":
+                prompt = (
+                    "For EVENT compare the precise occurrence, NOT a proper-name alias. "
+                    "Return SAME_ENTITY only if same_occurrence, same_granularity and "
+                    "repeated_occurrence_excluded are all true. A broad arc/search task is not "
+                    "the same as a more specific occurrence inside it. Separate time-loop "
+                    "attempts and repeated encounters. Resolved participants are context anchors, "
+                    "not sufficient proof by themselves. Compare actual action and description. "
+                    "Choose NEW_ENTITY for a distinct source-grounded occurrence, AMBIGUOUS "
+                    "when uncertain. Event labels need not be literal aliases of each other.\n"
+                    + prompt
+                )
+            indexed_response = schema.model_validate((await infer(prompt, schema)).model_dump())
+            indices = indexed_response.evidence_indices
+            if any(i < 0 or i >= len(payload["evidence"]) for i in indices) or (
+                indexed_response.decision in {"SAME_ENTITY", "DIFFERENT_ENTITY"}
+                and indexed_response.target_index is None
+            ):
+                return {
+                    "accepted": False,
+                    "decision": "AMBIGUOUS",
+                    "canonical_id": None,
+                    "proof": "unresolved",
+                    "reason": "Invalid identity evidence or target index.",
+                    "model_response": indexed_response.model_dump(mode="json"),
+                }
+            response = IdentityComparison.model_validate(
+                {
+                    **indexed_response.model_dump(
+                        exclude={
+                            "evidence_indices",
+                            "same_occurrence",
+                            "same_granularity",
+                            "repeated_occurrence_excluded",
+                        }
+                    ),
+                    # Keep the complete grounded candidate context, including both halves of
+                    # a bilingual bridge; model-selected indices remain separately inspectable.
+                    "evidence": payload["evidence"],
+                }
+            )
+        else:
+            response = IdentityComparison.model_validate(
+                (await infer(prompt, IdentityComparison)).model_dump()
+            )
         cited = []
         for citation in response.evidence:
             passage = next((p for p in passages if p.id == citation.passage_id), None)
@@ -99,11 +183,27 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             "proof": "unresolved",
             "model_reason": response.reason,
         }
+        if indexed_evidence:
+            result["model_evidence_indices"] = indices
         if not response.entity_type_valid:
             result["reason"] = "Source does not establish the asserted entity type."
             return result
         if len(cited) != len(response.evidence) or not cited:
             result["reason"] = "Identity comparison lacked valid exact evidence."
+            return result
+        if (
+            indexed_evidence
+            and isinstance(indexed_response, EventIdentityComparison)
+            and response.decision == "SAME_ENTITY"
+            and not (
+                indexed_response.same_occurrence
+                and indexed_response.same_granularity
+                and indexed_response.repeated_occurrence_excluded
+            )
+        ):
+            result.update(
+                decision="AMBIGUOUS", reason="Event occurrence or granularity remains ambiguous."
+            )
             return result
         reusable_title = key in {"king", "queen", "lord", "captain", "王", "王様", "女王"}
         if reusable_title and not any(
@@ -120,16 +220,56 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             names = [target["name"], *target.get("aliases", [])]
             exact = any(name_key(n) == key for n in names)
             title_only = key in {"king", "queen", "lord", "captain", "王", "王様", "女王"}
-            bridge = any(explicit_name_bridge(payload["name"], n, q) for n in names for q in cited)
+            bridge = any(source_name_bridge(payload["name"], n, cited) for n in names)
+            order_match = any(same_full_name_order(payload["name"], n) for n in names)
+            short_match = any(short_name_bridge(payload["name"], n, cited) for n in names)
+            possible = [
+                n
+                for n in eligible
+                if any(
+                    same_full_name_order(payload["name"], a)
+                    or name_key(payload["name"]) in name_key(a).split()
+                    for a in [n["name"], *n.get("aliases", [])]
+                )
+            ]
+            contextual_name = (
+                payload["type"] == "CHARACTER"
+                and (order_match or short_match)
+                and len(possible) == 1
+            )
+            event_context = (
+                indexed_evidence
+                and isinstance(indexed_response, EventIdentityComparison)
+                and indexed_response.same_occurrence
+                and indexed_response.same_granularity
+                and indexed_response.repeated_occurrence_excluded
+                and bool(set(participant_ids) & participants(target))
+                and bool(event_anchor)
+            )
             same_event = bool(
                 event_anchor and event_anchor == (target.get("event") or {}).get("identity_anchor")
-            )
+            ) or same_event_context(payload.get("event") or {}, target.get("event") or {})
             different_event = bool(
                 event_anchor
                 and (target.get("event") or {}).get("identity_anchor")
                 and not same_event
             )
-            if not different_event and ((exact and not title_only) or bridge or same_event):
+            old_event = target.get("event") or {}
+            new_event = payload.get("event") or {}
+            if (
+                event_context
+                and old_event.get("source_id") != new_event.get("source_id")
+                and new_event.get("source_position") is not None
+                and new_event.get("source_position") == old_event.get("source_position")
+            ):
+                different_event = False
+            if not different_event and (
+                (exact and not title_only)
+                or bridge
+                or same_event
+                or contextual_name
+                or event_context
+            ):
                 result.update(
                     accepted=True,
                     canonical_id=target["id"],
@@ -137,8 +277,19 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                     if same_event
                     else "exact_scoped_name"
                     if exact
+                    else "scoped_name_order_or_short_reference"
+                    if contextual_name
+                    else "verified_event_context"
+                    if event_context
                     else "explicit_name_bridge",
                 )
+                if event_context:
+                    result["event_context"] = {
+                        "participant_ids": participant_ids,
+                        "same_occurrence": True,
+                        "same_granularity": True,
+                        "repeated_occurrence_excluded": True,
+                    }
             else:
                 result.update(
                     decision="AMBIGUOUS",
@@ -150,7 +301,11 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             collisions = [
                 n
                 for n in eligible
-                if any(name_key(a) == key for a in [n["name"], *n.get("aliases", [])])
+                if any(
+                    name_key(a) == key
+                    or (payload["type"] == "CHARACTER" and same_full_name_order(payload["name"], a))
+                    for a in [n["name"], *n.get("aliases", [])]
+                )
                 and not (
                     event_anchor
                     and (n.get("event") or {}).get("identity_anchor")
@@ -158,10 +313,9 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 )
             ]
             contradicts_bridge = any(
-                explicit_name_bridge(payload["name"], name, quote)
+                source_name_bridge(payload["name"], name, cited)
                 for node in eligible
                 for name in [node["name"], *node.get("aliases", [])]
-                for quote in cited
             )
             partial_reference = (
                 payload["type"] != "EVENT"
@@ -177,6 +331,10 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 and not contradicts_bridge
                 and not partial_reference
                 and (len(eligible) <= 8 or event_anchor)
+                and not any(
+                    same_event_context(payload.get("event") or {}, n.get("event") or {})
+                    for n in eligible
+                )
             ):
                 result.update(
                     accepted=True,

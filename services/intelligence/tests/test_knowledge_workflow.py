@@ -95,7 +95,11 @@ class SyntheticInference:
                             "claim_id": data["candidates"][0]["claim_id"],
                             "decision": "supported",
                             "reason": "Synthetic excerpt supports fixture.",
-                            "in_universe": True,
+                            **(
+                                {"content_kind": "fictional-story"}
+                                if schema.__name__ == "NarrativeVerification"
+                                else {"in_universe": True}
+                            ),
                             "entity_type_valid": True,
                         }
                     ]

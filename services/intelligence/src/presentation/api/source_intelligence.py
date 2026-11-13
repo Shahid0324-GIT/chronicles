@@ -56,32 +56,16 @@ async def discover_sources(command: SourceDiscovery, request: Request) -> list[S
     settings = request.app.state.settings
     search = (
         SearxngSearch(
-            settings.searxng_base_url, PublicSourcePolicy(settings.research_allowed_hosts)
+            settings.searxng_base_url,
+            PublicSourcePolicy(settings.research_allowed_hosts),
+            navigation_only=True,
         )
         if settings.searxng_base_url
         else None
     )
-    tx = registry_transactions(request.app.state.session_factory)
-    async with tx() as registry:
-        existing = await registry.entries(command.universe_id)
-    if existing or search is None:
-        return existing
-
-    # Discovery collects bounded URLs before opening a write transaction.
-    class CollectedSearch:
-        def __init__(self, values: list[str]) -> None:
-            self.values = values
-
-        async def search(self, query: str, limit: int) -> list[str]:
-            return self.values[:limit]
-
-    urls = []
-    for suffix in ("official episode guide", "dedicated wiki"):
-        urls.extend(await search.search(command.universe_name + " " + suffix, 4))
-    async with tx() as registry:
-        return await SourceDiscoveryService(CollectedSearch(list(dict.fromkeys(urls)))).discover(
-            command, registry
-        )
+    return await SourceDiscoveryService(
+        search, registry_transactions(request.app.state.session_factory)
+    ).discover(command)
 
 
 class RetrievalQuery(StructuredModel):

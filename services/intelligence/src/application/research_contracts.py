@@ -37,6 +37,8 @@ class CandidateEntity(StructuredModel):
 
 
 class CandidateRelationship(StructuredModel):
+    source_id: UUID | None = None
+    target_id: UUID | None = None
     source_name: str = Field(min_length=1, max_length=200)
     target_name: str = Field(min_length=1, max_length=200)
     type: RelationshipType

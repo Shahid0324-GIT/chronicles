@@ -29,8 +29,6 @@ async def test_event_frame_materializes_evidenced_endpoints_and_typed_edges():
                 "events": [
                     {
                         "trigger": "entered",
-                        "title": "Observatory arrival",
-                        "description": "Mira Vale entered the observatory.",
                         "participants": ["Mira Vale"],
                         "location": "observatory",
                         "sentence_ids": [0],
@@ -56,8 +54,6 @@ async def test_missing_trigger_or_sentence_does_not_manufacture_event_evidence()
                 "events": [
                     {
                         "trigger": "invented action",
-                        "title": "Unknown occurrence",
-                        "description": "An invented action happened.",
                         "sentence_ids": [0],
                     }
                 ]

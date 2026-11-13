@@ -69,6 +69,7 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                             or state["verified"] < len(state.get("candidates", []))
                             or state.get("errors")
                             or state.get("publication", {}).get("unresolved")
+                            or state.get("narrative", {}).get("partial")
                         ):
                             status = "partial"
                     except ResearchCancelled:

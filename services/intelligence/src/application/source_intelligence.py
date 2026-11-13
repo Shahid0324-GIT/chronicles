@@ -2,7 +2,7 @@ from typing import Literal, cast
 from urllib.parse import urlsplit
 
 from src.application.ports.research import SearchProvider
-from src.application.ports.source_intelligence import SourceRegistry
+from src.application.ports.source_intelligence import SourceRegistryTransaction
 from src.application.research import SourceInput
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
 
@@ -52,24 +52,39 @@ class SourceSelector:
 
 
 class SourceDiscoveryService:
-    def __init__(self, search: SearchProvider | None) -> None:
-        self.search = search
+    def __init__(
+        self, search: SearchProvider | None, transactions: SourceRegistryTransaction
+    ) -> None:
+        self.search, self.transactions = search, transactions
 
     async def discover(
-        self, request: SourceDiscovery, registry: SourceRegistry
+        self,
+        request: SourceDiscovery,
+        *,
+        max_queries: int = 2,
+        used_queries: list[str] | None = None,
     ) -> list[SourceEntry]:
-        existing = await registry.entries(request.universe_id)
+        async with self.transactions() as registry:
+            existing = await registry.entries(request.universe_id)
         # Previously inspected domains are not repeatedly searched for this universe.
         if existing or self.search is None:
             return existing
         seen: set[str] = set()
-        for suffix in ("official story episode guide", "dedicated wiki"):
-            for url in (await self.search.search(request.universe_name + " " + suffix, 4))[:4]:
+        references = []
+        for suffix in ("official story episode guide", "dedicated wiki")[
+            : max(0, min(max_queries, 2))
+        ]:
+            query = request.universe_name + " " + suffix
+            if used_queries is not None:
+                if query in used_queries:
+                    continue
+                used_queries.append(query)
+            for url in (await self.search.search(query, 4))[:4]:
                 host = urlsplit(url).hostname or ""
                 if host in seen:
                     continue
                 seen.add(host)
-                await registry.register(
+                references.append(
                     SourceRegistration(
                         universe_id=request.universe_id,
                         name=host,
@@ -84,4 +99,7 @@ class SourceDiscoveryService:
                         attribution="Discovered URL; verify site terms before ingestion",
                     )
                 )
-        return await registry.entries(request.universe_id)
+        async with self.transactions() as registry:
+            for reference in references:
+                await registry.register(reference)
+            return await registry.entries(request.universe_id)

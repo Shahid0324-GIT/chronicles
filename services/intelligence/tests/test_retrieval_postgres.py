@@ -1,8 +1,9 @@
 """Actual pgvector SQL execution, owned text and fake embeddings; no external inference."""
 
 import pytest
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 
+from src.infrastructure.model_runtime import LocalModelLease
 from src.infrastructure.persistence.models.source_intelligence import PassageEmbeddingModel
 
 from .test_promotion_postgres import postgres_factory  # noqa: F401
@@ -22,3 +23,19 @@ async def test_real_pgvector_index_retrieval_and_dimension_isolation(postgres_fa
     assert (await service.index(scope.universe_id, scope.id))["indexed"] == 0
     embedding.revision = "other-version"
     assert (await service.index(scope.universe_id, scope.id))["indexed"] == 2
+
+
+@pytest.mark.postgres
+async def test_local_model_lease_coordinates_sessions_and_releases(postgres_factory):  # noqa: F811
+    lease = LocalModelLease(postgres_factory)
+    values = {"namespace": lease.namespace, "resource": lease.resource}
+    async with lease():
+        async with lease.engine.connect() as connection:
+            assert not await connection.scalar(
+                text("SELECT pg_try_advisory_lock(:namespace,:resource)"), values
+            )
+    async with lease.engine.connect() as connection:
+        assert await connection.scalar(
+            text("SELECT pg_try_advisory_lock(:namespace,:resource)"), values
+        )
+        await connection.execute(text("SELECT pg_advisory_unlock(:namespace,:resource)"), values)

@@ -16,6 +16,7 @@ from src.domain.knowledge import PromotionPolicy
 from src.infrastructure.config.settings import Settings
 from src.infrastructure.embeddings import OllamaEmbeddings
 from src.infrastructure.inference import create_inference
+from src.infrastructure.model_runtime import LocalModelLease
 from src.infrastructure.persistence.evidence_index import SqlEvidenceIndex
 from src.infrastructure.persistence.knowledge_repository import SqlKnowledgeRepository
 from src.infrastructure.persistence.narrative_repository import SqlNarrativeRepository
@@ -53,7 +54,7 @@ def build_workflow(
     policy = PublicSourcePolicy(settings.research_allowed_hosts)
     return ResearchWorkflow(
         transaction,
-        inference or create_inference(settings),
+        inference or create_inference(settings, LocalModelLease(factory)),
         PublicDocumentFetcher(
             policy, settings.research_max_source_bytes, settings.research_max_source_chars
         ),
@@ -67,6 +68,11 @@ def build_workflow(
         retrieval=build_retrieval(settings, factory),
         narratives=NarrativeBuilder(narrative_transactions(factory)),
         registry=registry_transactions(factory),
+        discovery_search=(
+            SearxngSearch(settings.searxng_base_url, policy, navigation_only=True)
+            if settings.searxng_base_url
+            else None
+        ),
     )
 
 
@@ -102,5 +108,7 @@ def build_retrieval(
 ) -> EvidenceRetrieval:
     return EvidenceRetrieval(
         index_transactions(factory),
-        OllamaEmbeddings(settings.ollama_base_url, settings.ollama_embedding_model),
+        OllamaEmbeddings(
+            settings.ollama_base_url, settings.ollama_embedding_model, LocalModelLease(factory)
+        ),
     )

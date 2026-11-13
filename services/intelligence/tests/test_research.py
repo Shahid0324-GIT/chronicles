@@ -396,3 +396,43 @@ def test_import_references_are_attribution_only_and_reject_active_url_schemes():
             permission_basis="Owned test fixture",
             source_scope="Test continuity",
         )
+
+
+async def test_terminal_retry_keeps_frozen_evidence_and_is_bounded(factory):
+    from src.application.research_use_cases import ResearchRequestError, ResumeResearch
+
+    identifier, workflow, _, _, tx = await prepare(factory)
+    state = await workflow.run(identifier, {})
+    async with tx() as archive:
+        await archive.update_job(identifier, status="partial")
+        await ResumeResearch(archive).execute(
+            identifier, "identity_resolver", "Retry owned frozen extraction after a tested fix"
+        )
+        job = await archive.get_job(identifier)
+        assert job["status"] == "queued" and job["checkpoint"]["stage"] == "extractor"
+        assert job["checkpoint"]["candidates"] == state["candidates"]
+        assert job["checkpoint"]["source_ids"] == state["source_ids"]
+        with pytest.raises(ResearchRequestError, match="active"):
+            await ResumeResearch(archive).execute(
+                identifier, "identity_resolver", "An active job must not be requeued"
+            )
+        await archive.update_job(identifier, status="partial")
+        await ResumeResearch(archive).execute(
+            identifier, "verifier", "Second bounded retry of owned evidence"
+        )
+        await archive.update_job(identifier, status="partial")
+        with pytest.raises(ResearchRequestError, match="budget"):
+            await ResumeResearch(archive).execute(
+                identifier, "verifier", "A third retry exceeds the allowed budget"
+            )
+
+
+async def test_explicit_refresh_creates_new_job_without_erasing_old_archive(factory):
+    identifier, _, _, _, tx = await prepare(factory)
+    async with tx() as archive:
+        job = await archive.get_job(identifier)
+        request = ResearchRequest.model_validate({**job["request"], "refresh": True})
+        second = await archive.create_job(request)
+        third = await archive.create_job(request)
+        assert len({identifier, second, third}) == 3
+        assert await archive.get_job(identifier)
