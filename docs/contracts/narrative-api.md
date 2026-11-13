@@ -1,6 +1,8 @@
-# Future narrative API requirements — not implemented
+# Narrative API status and future requirements
 
-The current provider is local. These proposed routes are not working endpoints. Existing FastAPI graph/node routes remain unchanged.
+The current frontend provider remains local. Increment 3 implements `GET /api/universes/{slug}/narrative?continuity_id=…`, returning a schema-version-1 compatible catalog plus revision, partial status, unordered milestones, explicit gaps and accepted relations. Optional `spoiler_position` and repeated `allowed_source_id` filter supporting assertions. Stable IDs reference the actual graph; active publication evidence supplies source locators. The existing TypeScript resolver was exercised against the real returned catalog. Automatic frontend fetching and runtime decoding remain unimplemented.
+
+Generated steps use supporting broadcast episode boundaries, not inferred in-world chronology or a guarantee of first reveal. Ambiguous episode groups retain unordered milestones and gaps. See [implementation and limits](../phase-3-increment-3.md). The individually addressed routes below remain proposed, not implemented. Existing FastAPI graph/node routes remain unchanged.
 
 | Proposed read contract | Required response |
 | --- | --- |

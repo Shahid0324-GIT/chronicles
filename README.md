@@ -1,8 +1,8 @@
 # Chronicles · Universe Atlas
 
-A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed graph API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. Phase 3 increment 2 adds evidence-gated identity resolution, relationship analysis and reversible automatic graph publication to the Ollama/optional Groq research worker. The frontend is preserved; default graph reads include accepted research. No authentication, cloud storage or deployment is included.
+A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed graph API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. Phase 3 adds source-backed research, identity resolution, relationship analysis, local retrieval and reversible graph publication to the Ollama/optional Groq worker. The frontend is preserved; default graph reads include accepted research. No authentication, cloud storage or deployment is included.
 
-See [increment 2 architecture and runbook](docs/phase-3-increment-2.md) and [executed tests and honest live-research limits](docs/phase-3-increment-2-verification.md). The real small-model demonstration remains partial: identity reuse and entity publication worked; reliable relationship discovery still needs improvement.
+Phase 3 increment 3 adds a scoped source registry, local embeddinggemma/pgvector hybrid retrieval, source-anchored event extraction and a generated narrative catalog API. See [architecture and runbook](docs/phase-3-increment-3.md), [executed checks and live-research limits](docs/phase-3-increment-3-verification.md), and the [quotation-free actual audit](docs/phase-3-increment-3-demo.json). Connected participation and partial journeys work; uncertain identities, chronology and causality remain explicit limitations. The frontend provider is preserved and does not automatically fetch the new catalog yet.
 
 ## Prerequisites
 

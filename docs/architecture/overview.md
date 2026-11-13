@@ -1,5 +1,7 @@
 # Architecture overview
 
+Phase 3 increment 3 adds a source registry, local embeddinggemma/pgvector hybrid evidence retrieval and a persisted narrative projection around the existing research/publication workflow. Constructor-injected application ports keep model calls, source adapters and database transactions separate. The [increment 3 architecture](../phase-3-increment-3.md) describes the working graph, source permissions, event identity, model resource lease, evidence gates, partial-order semantics and current limits. The existing frontend provider remains unchanged; generated catalogs are available through a backend read endpoint.
+
 The continuous atlas flows from a Next.js server component to the local FastAPI API, through a constructor-injected application use case, through repository Protocols implemented by SQLAlchemy adapters, and into PostgreSQL. API schemas map domain values explicitly. Browser interaction uses the graph already retrieved from the backend.
 
 ```mermaid
