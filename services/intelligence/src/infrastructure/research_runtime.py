@@ -4,7 +4,9 @@ from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.inference import InferenceRouter
+from src.application.inference_cache import StoredInferenceCache
 from src.application.narrative import NarrativeBuilder
+from src.application.ports.inference_cache import InferenceCache
 from src.application.ports.knowledge import KnowledgeSession, KnowledgeTransaction
 from src.application.ports.narrative import NarrativeRepository, NarrativeTransaction
 from src.application.ports.research import ResearchRepository
@@ -56,7 +58,7 @@ def build_workflow(
     return ResearchWorkflow(
         transaction,
         inference
-        or create_inference(settings, LocalModelLease(factory), SqlInferenceCache(factory)),
+        or create_inference(settings, LocalModelLease(factory), build_inference_cache(factory)),
         PublicDocumentFetcher(
             policy, settings.research_max_source_bytes, settings.research_max_source_chars
         ),
@@ -85,6 +87,15 @@ def index_transactions(factory: async_sessionmaker[AsyncSession]) -> EvidenceInd
             yield SqlEvidenceIndex(session)
 
     return transaction
+
+
+def build_inference_cache(factory: async_sessionmaker[AsyncSession]) -> StoredInferenceCache:
+    @asynccontextmanager
+    async def transaction() -> AsyncIterator[InferenceCache]:
+        async with factory() as session, session.begin():
+            yield SqlInferenceCache(session)
+
+    return StoredInferenceCache(transaction)
 
 
 def registry_transactions(factory: async_sessionmaker[AsyncSession]) -> SourceRegistryTransaction:

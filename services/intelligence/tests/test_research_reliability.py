@@ -6,7 +6,7 @@ from pydantic import RootModel, ValidationError
 from src.application.event_extraction import EventFrames, extract_events
 from src.application.inference import InferenceRouter
 from src.application.research_contracts import InferenceFailure, ResearchPlan, validation_issues
-from src.infrastructure.persistence.inference_cache import SqlInferenceCache
+from src.infrastructure.research_runtime import build_inference_cache
 
 from .test_event_narrative import passage
 from .test_inference import Provider
@@ -155,7 +155,7 @@ async def test_incompatible_root_contract_fails_without_provider_call():
 
 async def test_persistent_exact_context_cache_validates_and_separates_revision(factory):
     provider = RecordingProvider()
-    router = InferenceRouter(provider, [], cache=SqlInferenceCache(factory))
+    router = InferenceRouter(provider, [], cache=build_inference_cache(factory))
     await router.generate("Owned", "Unchanged source evidence", ResearchPlan, "extraction")
     await router.generate("Owned", "Unchanged source evidence", ResearchPlan, "extraction")
     assert provider.calls == 1 and router.usage[-1].status == "cache_hit"

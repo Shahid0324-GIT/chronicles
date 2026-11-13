@@ -6,11 +6,11 @@ import pytest
 from sqlalchemy import func, select, text
 
 from src.infrastructure.model_runtime import LocalModelLease
-from src.infrastructure.persistence.inference_cache import SqlInferenceCache
 from src.infrastructure.persistence.models.source_intelligence import (
     InferenceCacheModel,
     PassageEmbeddingModel,
 )
+from src.infrastructure.research_runtime import build_inference_cache
 
 from .test_promotion_postgres import postgres_factory  # noqa: F401
 from .test_source_intelligence import prepare_index
@@ -18,7 +18,7 @@ from .test_source_intelligence import prepare_index
 
 @pytest.mark.postgres
 async def test_inference_cache_concurrent_writes_are_idempotent(postgres_factory):  # noqa: F811
-    cache = SqlInferenceCache(postgres_factory)
+    cache = build_inference_cache(postgres_factory)
     await asyncio.gather(
         cache.save("a" * 64, {"owned": True}), cache.save("a" * 64, {"owned": True})
     )
