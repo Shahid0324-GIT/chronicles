@@ -2,7 +2,7 @@ import json
 from typing import Any
 from uuid import UUID, uuid5
 
-from src.application.ports.narrative import NarrativeTransaction
+from src.application.ports.narrative import NarrativeKnowledge, NarrativeTransaction
 from src.domain.research import digest
 from src.domain.value_objects import NodeType, RelationshipType
 
@@ -18,9 +18,11 @@ class NarrativeBuilder:
         *,
         allowed_sources: list[UUID] | None = None,
         spoiler_position: int | None = None,
+        knowledge: NarrativeKnowledge | None = None,
     ) -> dict[str, Any]:
-        async with self.transactions() as repo:
-            knowledge = await repo.knowledge(universe, continuity)
+        if knowledge is None:
+            async with self.transactions() as repo:
+                knowledge = await repo.knowledge(universe, continuity)
         allowed = set(map(str, allowed_sources)) if allowed_sources is not None else None
         source_map: dict[str, dict[str, Any]] = {}
         source_locators: dict[str, set[str]] = {}

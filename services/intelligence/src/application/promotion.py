@@ -138,6 +138,14 @@ class CanonicalGraphPromotionService:
                 source_node: GraphNode | None = None
                 target_node: GraphNode | None = None
                 structural = exact and in_world_structure(payload, [e["quote"] for e in evidence])
+                structural = (
+                    structural
+                    and payload.get(
+                        "classification",
+                        (payload.get("knowledge") or {}).get("classification", "ESTABLISHED_CANON"),
+                    )
+                    == "ESTABLISHED_CANON"
+                )
                 accepted = (
                     resolution.get("accepted", False)
                     and resolution.get("entity_type_valid") is True
@@ -316,6 +324,8 @@ class CanonicalGraphPromotionService:
                     }
                     if payload.get("event"):
                         snapshot["metadata"]["event"] = payload["event"]
+                    if payload.get("knowledge"):
+                        snapshot["metadata"]["knowledge"] = payload["knowledge"]
                 else:
                     source, dest = (
                         endpoint(payload, "source"),

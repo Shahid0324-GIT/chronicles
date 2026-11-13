@@ -5,10 +5,12 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.application.inference import InferenceRouter
 from src.application.inference_cache import StoredInferenceCache
+from src.application.knowledge_presentation import KnowledgeAtlas
 from src.application.narrative import NarrativeBuilder
 from src.application.ports.inference_cache import InferenceCache
 from src.application.ports.knowledge import KnowledgeSession, KnowledgeTransaction
 from src.application.ports.narrative import NarrativeRepository, NarrativeTransaction
+from src.application.ports.presentation import PresentationRepository, PresentationTransaction
 from src.application.ports.research import ResearchRepository
 from src.application.ports.retrieval import EvidenceIndex, EvidenceIndexTransaction
 from src.application.ports.source_intelligence import SourceRegistry, SourceRegistryTransaction
@@ -23,6 +25,7 @@ from src.infrastructure.persistence.evidence_index import SqlEvidenceIndex
 from src.infrastructure.persistence.inference_cache import SqlInferenceCache
 from src.infrastructure.persistence.knowledge_repository import SqlKnowledgeRepository
 from src.infrastructure.persistence.narrative_repository import SqlNarrativeRepository
+from src.infrastructure.persistence.presentation_repository import SqlPresentationRepository
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.infrastructure.persistence.source_registry import SqlSourceRegistry
 from src.infrastructure.sources import PublicDocumentFetcher, PublicSourcePolicy, SearxngSearch
@@ -71,6 +74,7 @@ def build_workflow(
         knowledge=KnowledgePipeline(knowledge_tx, publication),
         retrieval=build_retrieval(settings, factory),
         narratives=NarrativeBuilder(narrative_transactions(factory)),
+        atlas=build_atlas(factory),
         registry=registry_transactions(factory),
         discovery_search=(
             SearxngSearch(settings.searxng_base_url, policy, navigation_only=True)
@@ -125,3 +129,13 @@ def build_retrieval(
             settings.ollama_base_url, settings.ollama_embedding_model, LocalModelLease(factory)
         ),
     )
+
+
+def build_atlas(factory: async_sessionmaker[AsyncSession]) -> KnowledgeAtlas:
+    @asynccontextmanager
+    async def transaction() -> AsyncIterator[PresentationRepository]:
+        async with factory() as session, session.begin():
+            yield SqlPresentationRepository(session)
+
+    presentations: PresentationTransaction = transaction
+    return KnowledgeAtlas(narrative_transactions(factory), presentations)

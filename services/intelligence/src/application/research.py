@@ -45,6 +45,11 @@ class SourceInput(StructuredModel):
 
 
 class ResearchRequest(StructuredModel):
+    presentation_only: bool = False
+    presentation_resource_ids: list[UUID] = Field(default_factory=list, max_length=20)
+    retry_withheld_presentations: bool = False
+    compose_presentations: bool = False
+    research_focus: Literal["story", "encyclopedia"] = "story"
     refresh: bool = False
     narrative_research: bool = False
     use_registry: bool = False

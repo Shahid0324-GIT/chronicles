@@ -1,5 +1,5 @@
 from contextlib import AbstractAsyncContextManager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Protocol
 from uuid import UUID
 
@@ -11,6 +11,7 @@ class NarrativeKnowledge:
     nodes: list[GraphNode]
     edges: list[GraphRelationship]
     facts: list[dict[str, Any]]
+    interpretations: list[dict[str, Any]] = field(default_factory=list)
 
 
 class NarrativeRepository(Protocol):

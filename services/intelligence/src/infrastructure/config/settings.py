@@ -37,6 +37,8 @@ class Settings(BaseSettings):
             "identity_resolution": 16,
             "relationship_analysis": 3,
             "verification": 24,
+            "presentation": 16,
+            "presentation_verification": 16,
         }
     )
     agent_max_job_seconds: int = Field(default=900, ge=10, le=3600)
@@ -59,6 +61,8 @@ class Settings(BaseSettings):
             "identity_resolution",
             "relationship_analysis",
             "verification",
+            "presentation",
+            "presentation_verification",
         } or any(not 1 <= v <= 200 for v in value.values()):
             raise ValueError("Stage budgets require known inference tasks and limits from 1 to 200")
         return value

@@ -4,14 +4,17 @@ from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
+from pydantic import Field
 
 from src.application.knowledge_contracts import ResearchRetryRequest, RollbackRequest
 from src.application.ports.knowledge import KnowledgeSession
 from src.application.ports.research import ResearchRepository
 from src.application.promotion import CanonicalGraphPromotionService
 from src.application.research import ResearchRequest
+from src.application.research_contracts import StructuredModel
 from src.application.research_summary import research_summary
 from src.application.research_use_cases import CancelResearch, QueueResearch, ResumeResearch
+from src.application.use_cases import GetUniverse
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import PromotionPolicy
 from src.infrastructure.config.settings import Settings
@@ -28,7 +31,7 @@ from src.presentation.api.schemas.research import (
     PromotionResponse,
     ResearchSummaryResponse,
 )
-from src.presentation.dependencies import Session
+from src.presentation.dependencies import Session, get_universe
 
 router = APIRouter(prefix="/api")
 
@@ -61,6 +64,40 @@ async def create_job(command: ResearchRequest, archive: Archive, request: Reques
         bool(settings.searxng_base_url),
     )
     return await job_response(archive, await use_case.execute(command))
+
+
+class PresentationRebuild(StructuredModel):
+    continuity_id: UUID
+    spoiler_position: int | None = Field(default=None, ge=1, le=100000)
+    resource_ids: list[UUID] = Field(default_factory=list, max_length=20)
+    retry_withheld: bool = False
+
+
+@router.post("/universes/{slug}/presentations/rebuild", response_model=JobResponse, status_code=202)
+async def rebuild_presentations(
+    slug: str,
+    command: PresentationRebuild,
+    archive: Archive,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+) -> JobResponse:
+    universe = await use_case.execute(slug)
+    return await create_job(
+        ResearchRequest(
+            universe_id=universe.id,
+            continuity_id=command.continuity_id,
+            objective="Rebuild English encyclopedia entries and recaps from accepted evidence.",
+            presentation_only=True,
+            presentation_resource_ids=command.resource_ids,
+            retry_withheld_presentations=command.retry_withheld,
+            refresh=True,
+            compose_presentations=True,
+            use_registry=True,
+            spoiler_position=command.spoiler_position,
+        ),
+        archive,
+        request,
+    )
 
 
 @router.get("/research/jobs/{job_id}", response_model=JobResponse)

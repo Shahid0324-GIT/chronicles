@@ -87,6 +87,8 @@ class LangChainProvider:
                     "extraction": 3000,
                     "relationship_analysis": 2500,
                     "verification": 900,
+                    "presentation": 1300,
+                    "presentation_verification": 700,
                 }
                 client = self.client.model_copy(update={"num_predict": budgets[task]})
             runnable = client.with_structured_output(schema, method=self.method, include_raw=True)
@@ -122,6 +124,7 @@ class LangChainProvider:
                     int((time.monotonic() - start) * 1000),
                     int(tokens.get("input_tokens", 0)),
                     int(tokens.get("output_tokens", 0)),
+                    model_digest=self.revision,
                 ),
             )
         except InferenceFailure:

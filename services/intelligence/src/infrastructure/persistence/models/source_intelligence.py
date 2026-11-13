@@ -78,3 +78,33 @@ class NarrativeProjectionModel(Base):
     revision: Mapped[str] = mapped_column(String(64))
     catalog: Mapped[dict[str, Any]] = mapped_column(JSON_TYPE)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class KnowledgePresentationModel(Base):
+    __tablename__ = "knowledge_presentations"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["continuity_id", "universe_id"], ["continuities.id", "continuities.universe_id"]
+        ),
+        Index(
+            "ix_knowledge_presentation_scope",
+            "universe_id",
+            "continuity_id",
+            "kind",
+            "boundary_key",
+        ),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    universe_id: Mapped[UUID]
+    continuity_id: Mapped[UUID]
+    resource_id: Mapped[UUID]
+    kind: Mapped[str] = mapped_column(String(40))
+    boundary_key: Mapped[str] = mapped_column(String(64))
+    knowledge_revision: Mapped[str] = mapped_column(String(64))
+    evidence_fingerprint: Mapped[str] = mapped_column(String(64))
+    language: Mapped[str] = mapped_column(String(20))
+    policy_version: Mapped[str] = mapped_column(String(40))
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON_TYPE)
+    grounding_status: Mapped[str] = mapped_column(String(40))
+    provider_metadata: Mapped[list[dict[str, Any]]] = mapped_column(JSON_TYPE)
+    generated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))

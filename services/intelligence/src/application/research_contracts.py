@@ -4,13 +4,20 @@ from dataclasses import dataclass
 from typing import Literal, Protocol, TypeVar
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from src.application.knowledge_types import EpistemicClass, KnowledgeMetadata
 from src.domain.value_objects import NodeType, RelationshipType
 
 T = TypeVar("T", bound=BaseModel)
 Task = Literal[
-    "planning", "extraction", "verification", "identity_resolution", "relationship_analysis"
+    "planning",
+    "extraction",
+    "verification",
+    "identity_resolution",
+    "relationship_analysis",
+    "presentation",
+    "presentation_verification",
 ]
 
 
@@ -29,14 +36,72 @@ class Citation(StructuredModel):
 
 
 class CandidateEntity(StructuredModel):
+    knowledge: KnowledgeMetadata | None = None
     event: dict[str, object] | None = None
     name: str = Field(min_length=1, max_length=200)
     type: NodeType
     description: str = Field(min_length=5, max_length=600)
     evidence: list[Citation] = Field(min_length=1, max_length=3)
 
+    @model_validator(mode="after")
+    def category_matches_graph_type(self) -> "CandidateEntity":
+        categories = {
+            NodeType.CHARACTER: {"character"},
+            NodeType.LOCATION: {"place", "region", "nation"},
+            NodeType.FACTION: {"organization", "faction", "civilization"},
+            NodeType.OBJECT: {
+                "object",
+                "book",
+                "document",
+                "letter",
+                "diary",
+                "artifact",
+                "weapon",
+                "item",
+                "inscription",
+                "record",
+                "newspaper",
+            },
+            NodeType.LORE: {
+                "lore",
+                "ability",
+                "mythology",
+                "religion",
+                "culture",
+                "species",
+                "race",
+                "prophecy",
+                "hidden-lore",
+                "foreshadowing",
+            },
+            NodeType.EVENT: {
+                "event",
+                "historical-event",
+                "turning-point",
+                "minor-event",
+                "major-event",
+                "flashback",
+            },
+            NodeType.STORY_ARC: {
+                "arc",
+                "episode",
+                "chapter",
+                "quest",
+                "subquest",
+                "sequence",
+                "alternate-route",
+                "time-loop",
+                "historical-era",
+            },
+            NodeType.MYSTERY: {"mystery"},
+        }
+        if self.knowledge and self.knowledge.category not in categories[self.type]:
+            raise ValueError("Knowledge category does not match graph type")
+        return self
+
 
 class CandidateRelationship(StructuredModel):
+    classification: EpistemicClass = "ESTABLISHED_CANON"
     source_id: UUID | None = None
     target_id: UUID | None = None
     source_name: str = Field(min_length=1, max_length=200)
@@ -79,6 +144,7 @@ class InferenceUsage:
     validation_errors: tuple[str, ...] = ()
     model_call: bool = True
     reservation_id: str | None = None
+    model_digest: str | None = None
 
 
 @dataclass(frozen=True)

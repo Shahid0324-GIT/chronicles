@@ -13,11 +13,15 @@ from src.infrastructure.persistence.models.knowledge import (
     PromotionRecordModel,
 )
 from src.infrastructure.persistence.models.research import (
+    ClaimEvidenceModel,
     ResearchClaimModel,
     SourceDocumentModel,
     SourcePassageModel,
 )
-from src.infrastructure.persistence.models.source_intelligence import NarrativeProjectionModel
+from src.infrastructure.persistence.models.source_intelligence import (
+    NarrativeProjectionModel,
+    SourceRegistryModel,
+)
 from src.infrastructure.persistence.repositories import edge_entity, node_entity
 
 
@@ -48,7 +52,11 @@ class SqlNarrativeRepository:
         ]
         rows = await self.session.execute(
             select(
-                PromotionRecordModel, ResearchClaimModel, SourcePassageModel, SourceDocumentModel
+                PromotionRecordModel,
+                ResearchClaimModel,
+                SourcePassageModel,
+                SourceDocumentModel,
+                PromotionEvidenceModel,
             )
             .join(ResearchClaimModel, ResearchClaimModel.id == PromotionRecordModel.claim_id)
             .join(
@@ -64,12 +72,28 @@ class SqlNarrativeRepository:
             )
         )
         facts: dict[UUID, dict[str, Any]] = {}
-        for promotion, claim, passage, source in rows:
+        registry = {
+            str(r.id): r.configuration
+            for r in await self.session.scalars(
+                select(SourceRegistryModel).where(SourceRegistryModel.universe_id == universe)
+            )
+        }
+        ineligible: set[UUID] = set()
+        for promotion, claim, passage, source, evidence in rows:
             if promotion.data.get("resolution", {}).get("hidden_identity"):
                 continue  # Ordinary narrative reads must not become a sensitive-alias side channel.
+            registry_id = (source.provenance or {}).get("registry_id")
+            if registry_id:
+                config = registry.get(registry_id, {})
+                if config.get("retrieval_policy") != "permitted" or str(
+                    continuity
+                ) not in config.get("continuity_ids", []):
+                    ineligible.add(promotion.id)
+                    continue
             fact = facts.setdefault(
                 promotion.id,
                 {
+                    "id": str(claim.id),
                     "target_id": str(promotion.target_id),
                     "kind": promotion.kind,
                     "payload": claim.payload,
@@ -82,12 +106,70 @@ class SqlNarrativeRepository:
                     "url": (source.provenance or {}).get("attribution_url") or source.url,
                     "title": source.title + " — " + source.publisher,
                     "provenance": source.provenance or {},
+                    "quote": evidence.quote,
+                    "quote_start": evidence.quote_start,
+                    "quote_end": evidence.quote_end,
+                    "content_hash": evidence.source_hash,
+                    "passage_id": str(passage.id),
                     "locator": (
                         f"passage {passage.id}; normalized offsets {passage.start}:{passage.end}"
                     ),
                 }
             )
-        return NarrativeKnowledge(nodes, edges, list(facts.values()))
+        interpretations: dict[UUID, dict[str, Any]] = {}
+        claim_rows = await self.session.execute(
+            select(ResearchClaimModel, ClaimEvidenceModel, SourcePassageModel, SourceDocumentModel)
+            .join(ClaimEvidenceModel, ClaimEvidenceModel.claim_id == ResearchClaimModel.id)
+            .join(SourcePassageModel, SourcePassageModel.id == ClaimEvidenceModel.passage_id)
+            .join(SourceDocumentModel, SourceDocumentModel.id == SourcePassageModel.source_id)
+            .where(
+                ResearchClaimModel.universe_id == universe,
+                ResearchClaimModel.continuity_id == continuity,
+            )
+        )
+        for claim, claim_evidence, passage, source in claim_rows:
+            classification = claim.payload.get(
+                "classification", (claim.payload.get("knowledge") or {}).get("classification")
+            )
+            if not classification or classification == "ESTABLISHED_CANON":
+                continue
+            registry_id = (source.provenance or {}).get("registry_id")
+            if registry_id and registry.get(registry_id, {}).get("retrieval_policy") != "permitted":
+                continue
+            if (
+                passage.text[claim_evidence.quote_start : claim_evidence.quote_end]
+                != claim_evidence.quote
+            ):
+                continue
+            record = interpretations.setdefault(
+                claim.id,
+                {
+                    "id": str(claim.id),
+                    "classification": classification,
+                    "operational_status": claim.decision,
+                    "original_statement": claim.payload.get("description", ""),
+                    "sources": [],
+                },
+            )
+            record["sources"].append(
+                {
+                    "id": str(source.id),
+                    "url": source.url,
+                    "title": source.title,
+                    "locator": (
+                        f"passage {passage.id}; normalized offsets "
+                        f"{claim_evidence.quote_start}:{claim_evidence.quote_end}"
+                    ),
+                    "quote": claim_evidence.quote,
+                    "provenance": source.provenance or {},
+                }
+            )
+        return NarrativeKnowledge(
+            nodes,
+            edges,
+            [f for identifier, f in facts.items() if identifier not in ineligible],
+            list(interpretations.values()),
+        )
 
     async def save(
         self,

@@ -13,6 +13,7 @@ from langgraph.graph import END, START, StateGraph
 from langsmith import tracing_context
 from pydantic import BaseModel
 
+from src.application.encyclopedia_extraction import extract_encyclopedia
 from src.application.event_extraction import extract_events
 from src.application.inference import InferenceRouter
 from src.application.knowledge_contracts import (
@@ -21,6 +22,7 @@ from src.application.knowledge_contracts import (
     KnowledgeVerification,
     NarrativeVerification,
 )
+from src.application.knowledge_presentation import KnowledgeAtlas
 from src.application.narrative import NarrativeBuilder
 from src.application.ports.research import (
     ApiDocumentFetcher,
@@ -112,6 +114,7 @@ class ResearchWorkflow:
         knowledge: KnowledgePipeline | None = None,
         retrieval: EvidenceRetrieval | None = None,
         narratives: NarrativeBuilder | None = None,
+        atlas: KnowledgeAtlas | None = None,
         registry: SourceRegistryTransaction | None = None,
         discovery_search: SearchProvider | None = None,
     ) -> None:
@@ -130,6 +133,7 @@ class ResearchWorkflow:
         self.knowledge = knowledge
         self.retrieval, self.narratives, self.registry = retrieval, narratives, registry
         self.discovery_search = discovery_search
+        self.atlas = atlas
         graph = StateGraph(ResearchState)
         graph.add_node("planner", cast(Any, self.observed("planner", self.planner)))
         graph.add_node("researcher", cast(Any, self.observed("researcher", self.researcher)))
@@ -697,6 +701,10 @@ class ResearchWorkflow:
             "Write descriptions in the source language to avoid translation ambiguity. "
             "Each description is a single literal fact, without idioms or inferred causes. "
             "Stay strictly within the requested objective. Omit unrelated details. "
+            "Use knowledge metadata for a precise category and supported section. "
+            "Keep epistemic classification separate from verification: explicit source facts "
+            "are ESTABLISHED_CANON; sourced speculation is FAN_THEORY or "
+            "SUPPORTED_INTERPRETATION, unresolved questions UNRESOLVED. Never invent theories. "
             "Attach exact short quotations and their passage UUIDs. Do not invent UUIDs. "
             "Copy a contiguous source sentence; never insert ellipses or shorten it with dots. "
             "Do not infer CAUSE from sequence, participation or coincidence. "
@@ -713,7 +721,17 @@ class ResearchWorkflow:
                 ensure_ascii=False,
             )
         )
-        if self.knowledge and request.narrative_research:
+        if self.knowledge and request.research_focus == "encyclopedia":
+
+            async def entry_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
+                return await self.infer(
+                    state, prompt, schema, "extraction", state.get("public_only", False)
+                )
+
+            extraction = await extract_encyclopedia(
+                passages, request.objective, entry_infer, request.extraction_types
+            )
+        elif self.knowledge and request.narrative_research and request.research_focus == "story":
 
             async def event_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return await self.infer(
@@ -747,7 +765,12 @@ class ResearchWorkflow:
                         "A LOCATION must be a physical place actually mentioned in the source. "
                         "For CHARACTER copy the bilingual heading in evidence when available. "
                         "Use one short source-language sentence per description. "
+                        "For LORE extract only explicitly NAMED concepts or powers relevant to "
+                        "the objective; ordinal phrases and generic states are not lore entities. "
+                        "Include knowledge category, section and epistemic classification. "
                         "Quotes must be contiguous exact text with the supplied passage UUID. "
+                        "Copy a COMPLETE source sentence including its original punctuation. "
+                        "Do not add enclosing quotation marks to quote values. "
                         "Never invent quotes or use episode numbers as event entities. "
                         "Do not repeat already_extracted names. "
                         "Return entities=[] if nothing remains.\n"
@@ -1097,6 +1120,11 @@ class ResearchWorkflow:
 
     async def run(self, job_id: UUID, checkpoint: dict[str, Any]) -> ResearchState:
         state = cast(ResearchState, {**checkpoint, "job_id": str(job_id)})
+        request = await self.check(state)
+        if request.presentation_only:
+            if state.get("stage") == "narrative_builder":
+                return state
+            return await self.observed("narrative_builder", self.narrative_builder)(state)
         with tracing_context(enabled=False):
             result = await self.graph.ainvoke(
                 state, {"recursion_limit": self.max_iterations * 9 + 4}
@@ -1165,6 +1193,25 @@ class ResearchWorkflow:
 
     async def narrative_builder(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
+        if (request.compose_presentations or request.presentation_only) and self.atlas:
+
+            async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+                return await self.infer(state, prompt, schema, task)
+
+            start = len(self.inference.usage)
+            counts = await self.atlas.rebuild(
+                request.universe_id,
+                request.continuity_id,
+                infer,
+                spoiler_position=request.spoiler_position,
+                provider_metadata=lambda: [asdict(u) for u in self.inference.usage[start:]],
+                resource_ids=request.presentation_resource_ids,
+                retry_withheld=request.retry_withheld_presentations,
+            )
+            if request.presentation_only:
+                state["verified"] = 1
+            state = {**state, "narrative": counts}
+            return await self.snapshot("narrative_builder", state)
         if request.narrative_research and self.narratives:
             catalog = await self.narratives.build(
                 request.universe_id,

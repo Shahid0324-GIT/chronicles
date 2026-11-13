@@ -1,19 +1,20 @@
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query, Request
 from pydantic import Field
 
-from src.application.narrative import NarrativeBuilder
+from src.application.encyclopedia_contracts import EncyclopediaEntry
 from src.application.research_contracts import StructuredModel
 from src.application.research_use_cases import ResearchRequestError
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
 from src.application.source_intelligence import SourceDiscoveryService, SourceSelector
 from src.application.use_cases import GetUniverse
+from src.domain.exceptions import NotFoundError
 from src.infrastructure.persistence.source_registry import SqlSourceRegistry
 from src.infrastructure.research_runtime import (
+    build_atlas,
     build_retrieval,
-    narrative_transactions,
     registry_transactions,
 )
 from src.infrastructure.sources import PublicSourcePolicy, SearxngSearch
@@ -127,9 +128,167 @@ async def narrative(
     continuity_id: UUID,
     allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
     spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
 ) -> dict[str, Any]:
     universe = await use_case.execute(slug)
-    return await NarrativeBuilder(narrative_transactions(request.app.state.session_factory)).build(
+    return await build_atlas(request.app.state.session_factory).catalog(
+        universe.id,
+        continuity_id,
+        allowed_sources=allowed_source_id,
+        spoiler_position=spoiler_position,
+    )
+
+
+@router.get("/universes/{slug}/encyclopedia", response_model=list[EncyclopediaEntry])
+async def encyclopedia(
+    slug: str,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    category: str | None = None,
+    language: Literal["en"] = "en",
+) -> list[dict[str, Any]]:
+    universe = await use_case.execute(slug)
+    entries = await build_atlas(request.app.state.session_factory).entries(
+        universe.id,
+        continuity_id,
+        allowed_sources=allowed_source_id,
+        spoiler_position=spoiler_position,
+    )
+    return [e for e in entries if category is None or e["entry_type"] == category]
+
+
+@router.get("/universes/{slug}/entries/{entry_id}", response_model=EncyclopediaEntry)
+async def encyclopedia_entry(
+    slug: str,
+    entry_id: UUID,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
+) -> dict[str, Any]:
+    entries = await encyclopedia(
+        slug, request, use_case, continuity_id, allowed_source_id, spoiler_position
+    )
+    entry = next((e for e in entries if e["id"] == str(entry_id)), None)
+    if not entry:
+        raise NotFoundError("No eligible entry at this story boundary")
+    return entry
+
+
+@router.get("/universes/{slug}/entries/{entry_id}/connections")
+async def encyclopedia_connections(
+    slug: str,
+    entry_id: UUID,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
+) -> list[dict[str, str]]:
+    entry = await encyclopedia_entry(
+        slug, entry_id, request, use_case, continuity_id, allowed_source_id, spoiler_position
+    )
+    return list(entry["connections"])
+
+
+@router.get("/universes/{slug}/story-arcs")
+async def story_arcs(
+    slug: str,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
+) -> list[dict[str, Any]]:
+    catalog = await narrative(
+        slug, request, use_case, continuity_id, allowed_source_id, spoiler_position
+    )
+    return [
+        {
+            "id": j["id"],
+            "display_title": j["title"],
+            "overview": j.get("overview", j["introduction"]),
+            "major_milestones": j["steps"],
+            "continuity": str(continuity_id),
+            "source_references": [
+                s for s in catalog["sources"] if s["id"] in j["ordering"]["sourceIds"]
+            ],
+            "partial": catalog["partial"],
+            "ordering": j["ordering"],
+            "organization_kind": "partial-source-guide",
+        }
+        for j in catalog["journeys"]
+    ]
+
+
+@router.get("/universes/{slug}/journeys/{journey_id}")
+async def journey(
+    slug: str,
+    journey_id: UUID,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
+) -> dict[str, Any]:
+    catalog = await narrative(
+        slug, request, use_case, continuity_id, allowed_source_id, spoiler_position
+    )
+    found = next((j for j in catalog["journeys"] if j["id"] == str(journey_id)), None)
+    if not found:
+        raise NotFoundError("Journey is unavailable at this story boundary")
+    return dict(found)
+
+
+@router.get("/universes/{slug}/lore", response_model=list[EncyclopediaEntry])
+async def lore_entries(
+    slug: str,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
+) -> list[dict[str, Any]]:
+    return await encyclopedia(
+        slug, request, use_case, continuity_id, allowed_source_id, spoiler_position, "lore"
+    )
+
+
+@router.get("/universes/{slug}/mysteries", response_model=list[EncyclopediaEntry])
+async def mystery_entries(
+    slug: str,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+    language: Literal["en"] = "en",
+) -> list[dict[str, Any]]:
+    return await encyclopedia(
+        slug, request, use_case, continuity_id, allowed_source_id, spoiler_position, "mystery"
+    )
+
+
+@router.get("/universes/{slug}/interpretations")
+async def interpretations(
+    slug: str,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+) -> list[dict[str, Any]]:
+    universe = await use_case.execute(slug)
+    return await build_atlas(request.app.state.session_factory).interpretations(
         universe.id,
         continuity_id,
         allowed_sources=allowed_source_id,
