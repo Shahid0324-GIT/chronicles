@@ -1,6 +1,8 @@
 # Chronicles · Universe Atlas
 
-A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed, read-only API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. Phase 3 increment 1 adds a local source-backed research worker with Ollama, optional Groq, LangGraph and a persistent evidence archive. The existing frontend still uses the curated graph; research does not automatically update canon. No authentication, cloud storage or deployment is included.
+A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed graph API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. Phase 3 increment 2 adds evidence-gated identity resolution, relationship analysis and reversible automatic graph publication to the Ollama/optional Groq research worker. The frontend is preserved; default graph reads include accepted research. No authentication, cloud storage or deployment is included.
+
+See [increment 2 architecture and runbook](docs/phase-3-increment-2.md) and [executed tests and honest live-research limits](docs/phase-3-increment-2-verification.md). The real small-model demonstration remains partial: identity reuse and entity publication worked; reliable relationship discovery still needs improvement.
 
 ## Prerequisites
 

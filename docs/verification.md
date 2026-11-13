@@ -1,6 +1,6 @@
 # Current verification
 
-The latest backend increment is **Phase 3, increment 1**: see [executed checks and real findings](phase-3-verification.md), [research architecture/runbook](phase-3-research.md), and [real-run audit](phase-3-demo.json). Frontend source is unchanged; its 42 unit tests and 8 real-service browser tests passed against the updated API.
+The latest backend implementation is **Phase 3, increment 2**: see [executed checks and partial live demonstration](phase-3-increment-2-verification.md), [architecture/runbook](phase-3-increment-2.md), and [quotation-free audit](phase-3-increment-2-demo.json). The previous [increment 1 report](phase-3-verification.md) remains a historical record. Frontend design is preserved.
 
 The latest visual implementation is **Phase 2.5B Pass 1**. See [its executed checks, browser evidence and limitations](phase-2-5b-verification.md), [architecture](phase-2-5b-pass-1.md), and [changed-file manifest](phase-2-5b-files.txt). The sections below are historical records.
 

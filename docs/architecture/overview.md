@@ -44,6 +44,10 @@ App Router server components fetch fresh local API data with a timeout and no pe
 
 Domain and application tests run with pure values and fakes. API and repository tests use a fresh in-memory SQLite database with foreign keys enabled, proving serialization and DI without touching a developer database. An opt-in PostgreSQL test requires a clearly named test database, creates a random schema, applies actual Alembic migrations, seeds twice, exercises API retrieval, downgrades and removes the schema. Type checks and lint cover both languages; the frontend production build checks the App Router compilation.
 
-## Deferred work
+## Autonomous research publication
+
+Phase 3 increment 2 adds an injected identity resolver, relationship analyst and evidence-gated publication service to the existing LangGraph. Candidate claims remain separate until policy accepts them. `CanonicalGraphPromotionService` repeats current-state, scope, source and endpoint checks inside one transaction and records immutable provenance. Aliases, decisions and reversible publication history use additive PostgreSQL migrations. Source-fenced graph reads and correction APIs expose the result without a frontend redesign. See [architecture, policy, DI examples and limits](../phase-3-increment-2.md) and [executed live results](../phase-3-increment-2-verification.md).
+
+## Historical increment 1 boundary
 
 Phase 3 increment 1 implements injected Ollama/Groq inference, approved sources, persistent claim/evidence storage, a four-role LangGraph and an independent local PostgreSQL worker. Its archive is separate from the read-only canonical graph; a model-supported claim is not automatically canon. See [the research architecture and transaction/checkpoint boundaries](../phase-3-research.md). Embeddings, SSE, native LangGraph checkpointers, human promotion and frontend research integration remain deferred. No future-agent placeholder classes or fabricated production research results are included.

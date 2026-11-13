@@ -1,0 +1,2484 @@
+{
+  "observed_on": "2026-11-13",
+  "kind": "actual local model research; not synthetic test output",
+  "cloud_inference_used": false,
+  "source_body_and_model_prose_omitted": true,
+  "jobs": [
+    {
+      "id": "79ba4a1c-d10d-4eb9-93e6-8278e8d64fe4",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "657d3475-5dc3-5752-b87d-d395e521ff78",
+        "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+        "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 8
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 4
+        }
+      ],
+      "findings": [
+        {
+          "id": "13c49eb7-377b-51e0-a958-20ccf4ee41ae",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "マナ",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "2d61e9a9-11bc-5389-9bcc-634b39d7ace1",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "菜月昴",
+            "target_name": "エミリア"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "3209ce65-565f-57ab-a83d-fcb6bf91e965",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "菜月昴",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "34bbb9d4-eb17-5d06-803b-ea716b72abd4",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エルザ",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 0,
+              "quote_end": 146,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "8e498a71-3d01-5fa3-96ca-abeee68623a7",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "サテラ",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "ac920960-79ee-5618-b534-e3e7d3d02074",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "フェルト",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 0,
+              "quote_end": 237,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "b92413c1-f8e7-59d2-9030-cf46dd133fa9",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "promotion_id": "309df1f2-8314-5948-9fe3-575f14b79cdb",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "explicit_name_bridge",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 0,
+              "quote_end": 128,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "c8d0a427-6948-5f67-b0b9-ffb278f9fe99",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "菜月昴",
+            "target_name": "第1話"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "d49caf3b-47ae-5807-baa6-48d0233ea792",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ロム",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "e06392ea-6429-5faa-9c2c-45c613e3b0f0",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エミリア",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 129,
+              "quote_end": 257,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "e0b77161-8ab9-56d8-8ee7-be7c60ac8674",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "菜月昴",
+            "target_name": "第3話"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        }
+      ],
+      "publications": [
+        {
+          "id": "309df1f2-8314-5948-9fe3-575f14b79cdb",
+          "claim_id": "b92413c1-f8e7-59d2-9030-cf46dd133fa9",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T14:37:06.353818+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        }
+      ]
+    },
+    {
+      "id": "19df704a-39a4-403b-9834-1d9a05fc62a5",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "657d3475-5dc3-5752-b87d-d395e521ff78",
+        "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+        "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "invalid_output",
+          "calls": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 8
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 8
+        }
+      ],
+      "findings": [
+        {
+          "id": "14a087a5-7705-55c1-b16b-0669d9c81e6b",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "EVENT"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "AMBIGUOUS",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 11,
+              "quote_end": 65,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "353960fd-3eee-5033-81aa-7534e1117b65",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "フェルト",
+            "type": "EVENT"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "d518ee29-9a53-502e-9c6f-5945fc3c19cb"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 186,
+              "quote_end": 237,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "7f62fc7b-58f7-5ae5-a7e8-ff5371408e9d",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エルザ",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "ac4e763d-af45-59ac-9190-36ede27092f0",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "LOCATION"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "93c238bc-df45-5e59-9f23-a0b831789746"
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 0,
+              "quote_end": 128,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "afd0b2e7-140e-5699-bc1d-93b03d9d4fc4",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エミリア",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "AMBIGUOUS",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 129,
+              "quote_end": 257,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "afff04f7-966b-5389-8869-51d024e72a83",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ゼロから始まる 異世界生活",
+            "type": "LOCATION"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "AMBIGUOUS",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 0,
+              "quote_end": 65,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "c8b6e1cc-9c6b-5bb7-8e93-34014aed16cc",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 0,
+              "quote_end": 128,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "d5716d55-7481-597b-9fe1-bdf662f1ff13",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エミリア",
+            "type": "LOCATION"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "38de521b-0dd9-5799-852e-b53f3ee924ef"
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 129,
+              "quote_end": 257,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "fe9de7da-a58b-50a1-84b7-eda2d0c1ec9f",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エミリア",
+            "type": "EVENT"
+          },
+          "assessment": "disputed",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "1dd05e34-7296-5d49-9042-311b1b19bebc"
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 98,
+              "quote_end": 146,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "73ecd913-7d1e-5d1f-8e77-5d3c4521cf6e",
+          "claim_id": "353960fd-3eee-5033-81aa-7534e1117b65",
+          "target_id": "d518ee29-9a53-502e-9c6f-5945fc3c19cb",
+          "kind": "entity",
+          "created": true,
+          "reversed": true,
+          "created_at": "2026-11-12T14:46:03.894609+00:00",
+          "reversed_at": "2026-11-12T14:49:51.583644+00:00",
+          "correction_reason": "Autonomous correction: the model mislabeled Felt as an EVENT. Withdraw this run and preserve the full audit while tightening type validation."
+        },
+        {
+          "id": "e1370a76-5030-5566-8c79-decb639c0cc4",
+          "claim_id": "c8b6e1cc-9c6b-5bb7-8e93-34014aed16cc",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": true,
+          "created_at": "2026-11-12T14:46:03.953830+00:00",
+          "reversed_at": "2026-11-12T14:49:51.593537+00:00",
+          "correction_reason": "Autonomous correction: the model mislabeled Felt as an EVENT. Withdraw this run and preserve the full audit while tightening type validation."
+        }
+      ]
+    },
+    {
+      "id": "2f1b7dad-df2c-4991-acba-9825f780917a",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "657d3475-5dc3-5752-b87d-d395e521ff78",
+        "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+        "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "invalid_output",
+          "calls": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 8
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 7
+        }
+      ],
+      "findings": [
+        {
+          "id": "6f70e0ab-e466-5112-8f3e-43ee4a7ebed0",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "7f54e016-5cd3-5618-bb99-c99fdd925204",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "スバル",
+            "target_name": "エルザ"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "8ae56354-0485-5a06-b46f-64691b92b3d8",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "第1話",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "DIFFERENT_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "900cbe2e-c33b-51f9-a4a7-8f8ad6934371",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "OCCURRED_AT",
+            "source_name": "エルザ",
+            "target_name": "渋谷"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "0b7cb235-f642-5494-b732-7a76b5464f25",
+              "source_id": "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d",
+              "quote_start": 111,
+              "quote_end": 161,
+              "url": "https://www.tv-tokyo.co.jp/anime/re-zero/story/",
+              "content_hash": "319a549836c6500e2c0069083fc3683c43d8a9a7345b86ea52e50fb576b9181e",
+              "retrieved_at": "2026-11-12T13:19:41.156703+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "94e1157c-e68b-58c8-b1ba-3d0de7378bb9",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エルザ",
+            "type": "CHARACTER"
+          },
+          "assessment": "disputed",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "30daabdd-1484-5a1d-9103-ad0ccd015d87",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 297,
+              "quote_end": 363,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "9eb746ff-979c-5c48-8f5a-8a8e77355ef4",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "第2話",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "a17cd8de-3e0a-5616-a57a-62580e5b4585",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "異世界",
+            "type": "LOCATION"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "483c811c-8ec4-5618-8a63-cb180bdf45a2",
+          "promotion_id": "725c9044-fda7-5285-b90c-57108aaf7dee",
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "483c811c-8ec4-5618-8a63-cb180bdf45a2",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 2
+          },
+          "evidence": [
+            {
+              "passage_id": "0b7cb235-f642-5494-b732-7a76b5464f25",
+              "source_id": "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d",
+              "quote_start": 549,
+              "quote_end": 601,
+              "url": "https://www.tv-tokyo.co.jp/anime/re-zero/story/",
+              "content_hash": "319a549836c6500e2c0069083fc3683c43d8a9a7345b86ea52e50fb576b9181e",
+              "retrieved_at": "2026-11-12T13:19:41.156703+00:00",
+              "independence_key": null
+            },
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 375,
+              "quote_end": 396,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "a80f3b77-82ff-52eb-b908-a9aba69075c3",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "スバル",
+            "target_name": "異世界"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "b4fb390d-c83c-5fad-b7f8-012282e4e82a",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エミリア",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "AMBIGUOUS",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 149,
+              "quote_end": 195,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "c657e1e9-dc04-52ef-9672-257851a684d1",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "第3話",
+            "type": "EVENT"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": false
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 98,
+              "quote_end": 146,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "dd02d71e-94f3-5e40-aa59-a4ceda2c689b",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "渋谷",
+            "type": "LOCATION"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "2a64792c-57f8-5b89-b901-3bffec77680f",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "0b7cb235-f642-5494-b732-7a76b5464f25",
+              "source_id": "8d6cf6bf-0c23-5b0c-b873-cb1c136b974d",
+              "quote_start": 111,
+              "quote_end": 161,
+              "url": "https://www.tv-tokyo.co.jp/anime/re-zero/story/",
+              "content_hash": "319a549836c6500e2c0069083fc3683c43d8a9a7345b86ea52e50fb576b9181e",
+              "retrieved_at": "2026-11-12T13:19:41.156703+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "e7b4ac13-b2d8-5d80-9178-af7abf4fe243",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "コンビニ",
+            "type": "LOCATION"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "AMBIGUOUS",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 574,
+              "quote_end": 611,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "725c9044-fda7-5285-b90c-57108aaf7dee",
+          "claim_id": "a17cd8de-3e0a-5616-a57a-62580e5b4585",
+          "target_id": "483c811c-8ec4-5618-8a63-cb180bdf45a2",
+          "kind": "entity",
+          "created": true,
+          "reversed": false,
+          "created_at": "2026-11-12T14:54:14.933436+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "53022ed9-c10d-5a9e-b254-5d80f3bb51ae",
+          "claim_id": "dd02d71e-94f3-5e40-aa59-a4ceda2c689b",
+          "target_id": "2a64792c-57f8-5b89-b901-3bffec77680f",
+          "kind": "entity",
+          "created": true,
+          "reversed": true,
+          "created_at": "2026-11-12T14:54:14.967254+00:00",
+          "reversed_at": "2026-11-12T17:00:19.539292+00:00",
+          "correction_reason": "Autonomous scope correction: this is a real-world promotional cafe location, not an in-universe story location. Preserve the audit; withdraw this publication only."
+        }
+      ]
+    },
+    {
+      "id": "a5a6d60d-e41e-48c9-9eee-e80e131d120b",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "657d3475-5dc3-5752-b87d-d395e521ff78",
+        "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+        "a3703b09-f674-5930-99f0-a260aaa97d52"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 3
+        }
+      ],
+      "findings": [
+        {
+          "id": "8b1cd330-a9bb-5be9-9dc7-c5ac7e13feb1",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "promotion_id": "8dca652b-8dce-5211-98d5-45928605a7ac",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 0,
+              "quote_end": 128,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "8e89d75b-cd47-5645-95df-5f2674e5d3ba",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エミリア",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+          "promotion_id": "3019c7a0-60e0-5276-a476-b6669398700e",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "explicit_name_bridge",
+            "accepted": true,
+            "canonical_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "f62af60f-b510-5f3f-afd8-85d893f8bf08",
+              "source_id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+              "quote_start": 129,
+              "quote_end": 257,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T14:35:31.116896+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "b5554380-7628-57e6-afce-e8def637ea63",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "エルザ",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": false
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "178081ea-aec0-5f12-afef-1ec0a2793ff8",
+              "source_id": "b4ec04d9-7751-5dfc-ab5e-273d9336310f",
+              "quote_start": 25,
+              "quote_end": 98,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-d3eebe2f52744084",
+              "content_hash": "575a95ef8fcb4862bc09b66cad59b18f15ada7a903c771067bc10378905fff71",
+              "retrieved_at": "2026-11-12T14:35:33.113713+00:00",
+              "independence_key": null
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "8dca652b-8dce-5211-98d5-45928605a7ac",
+          "claim_id": "8b1cd330-a9bb-5be9-9dc7-c5ac7e13feb1",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T17:07:42.182624+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "3019c7a0-60e0-5276-a476-b6669398700e",
+          "claim_id": "8e89d75b-cd47-5645-95df-5f2674e5d3ba",
+          "target_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T17:07:42.221413+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        }
+      ]
+    },
+    {
+      "id": "4718a3c7-8433-46bd-9c17-50b638890b97",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "a8047f00-d215-5812-afd5-11779d8a9083"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 1
+        }
+      ],
+      "findings": [
+        {
+          "id": "84bd9fb0-352f-53e5-8bfb-44032c31515b",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Mana exhaustion",
+            "type": "EVENT"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": false
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "a06b58a0-20df-56cd-bf72-61f5ef48af09",
+              "source_id": "a8047f00-d215-5812-afd5-11779d8a9083",
+              "quote_start": 32,
+              "quote_end": 48,
+              "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-875bba93a205bd87",
+              "content_hash": "4fb34f980cbe325a1257bef90632354dd99f499198dedcb2741ae81696fce58f",
+              "retrieved_at": "2026-11-12T17:19:22.633276+00:00",
+              "independence_key": null
+            }
+          ]
+        }
+      ],
+      "publications": []
+    },
+    {
+      "id": "aaab831f-8fd5-4e9f-87f8-e7651e0c7315",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "e00d6b30-d5ee-5f56-8abd-495669e13635",
+        "40671cf3-3477-5f0a-89a4-a065ed542558"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 4
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 5
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 4
+        }
+      ],
+      "findings": [
+        {
+          "id": "108c2c5f-880a-5929-ba30-6873bfcb4fd1",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Subaru Natsuki",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "promotion_id": "a66bd192-a802-5510-afa4-22349314462a",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "09c39028-63a0-56ba-80d4-ad04c2e5fbb2",
+              "source_id": "e00d6b30-d5ee-5f56-8abd-495669e13635",
+              "quote_start": 0,
+              "quote_end": 128,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-9b57cfd93394e415",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T17:46:03.719218+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "15f41c0e-b8a8-5848-9176-7598013d9ae5",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Emilia",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+          "promotion_id": "fb1cfebf-0d87-5721-b4d2-e86654fc01f9",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "09c39028-63a0-56ba-80d4-ad04c2e5fbb2",
+              "source_id": "e00d6b30-d5ee-5f56-8abd-495669e13635",
+              "quote_start": 129,
+              "quote_end": 257,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-9b57cfd93394e415",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T17:46:03.719218+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "6d24a33d-cf36-5bc0-96a2-ec783afc9629",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Satella",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "abfffd72-975b-5eb8-8c49-32b34910d2c1",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "235c7f44-6967-580e-8486-13cd12b311e6",
+              "source_id": "40671cf3-3477-5f0a-89a4-a065ed542558",
+              "quote_start": 53,
+              "quote_end": 135,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-b4cb0f2199a3485c",
+              "content_hash": "7f80e3b77d9b5b637edcba5a921c0f08bc1504a4ad20c7f173303dde6371f2c4",
+              "retrieved_at": "2026-11-12T17:46:03.768090+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "a77c1a6e-8e3e-58f4-868a-e68b15555cb6",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "arrival",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "f47e1e3e-9c04-5130-baef-6f6bcab26d69",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "attack",
+            "type": "EVENT"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+          "promotion_id": "25b96aeb-61a0-5399-9991-aa277d6dec85",
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "235c7f44-6967-580e-8486-13cd12b311e6",
+              "source_id": "40671cf3-3477-5f0a-89a4-a065ed542558",
+              "quote_start": 53,
+              "quote_end": 135,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-b4cb0f2199a3485c",
+              "content_hash": "7f80e3b77d9b5b637edcba5a921c0f08bc1504a4ad20c7f173303dde6371f2c4",
+              "retrieved_at": "2026-11-12T17:46:03.768090+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "332f3432-f998-5b10-8e6d-2cda0cef5fd2",
+          "claim_id": "6d24a33d-cf36-5bc0-96a2-ec783afc9629",
+          "target_id": "abfffd72-975b-5eb8-8c49-32b34910d2c1",
+          "kind": "entity",
+          "created": true,
+          "reversed": true,
+          "created_at": "2026-11-12T17:48:48.607933+00:00",
+          "reversed_at": "2026-11-12T18:05:56.858419+00:00",
+          "correction_reason": "Autonomous identity correction: a single named reference does not establish a distinct new person. Require independent corroboration; do not infer any hidden identity connection."
+        },
+        {
+          "id": "25b96aeb-61a0-5399-9991-aa277d6dec85",
+          "claim_id": "f47e1e3e-9c04-5130-baef-6f6bcab26d69",
+          "target_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+          "kind": "entity",
+          "created": true,
+          "reversed": false,
+          "created_at": "2026-11-12T17:48:48.638117+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "a66bd192-a802-5510-afa4-22349314462a",
+          "claim_id": "108c2c5f-880a-5929-ba30-6873bfcb4fd1",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T17:48:48.655715+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "fb1cfebf-0d87-5721-b4d2-e86654fc01f9",
+          "claim_id": "15f41c0e-b8a8-5848-9176-7598013d9ae5",
+          "target_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T17:48:48.673240+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        }
+      ]
+    },
+    {
+      "id": "57ab3dea-db19-4666-a366-6ae37b7f73c9",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "e00d6b30-d5ee-5f56-8abd-495669e13635",
+        "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a"
+      ],
+      "acquisition_or_extraction_errors": [],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 6
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 4
+        }
+      ],
+      "findings": [
+        {
+          "id": "0e99dae3-07e9-53c4-990a-a1074508f583",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "attack",
+            "type": "EVENT"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+          "promotion_id": "7b95b155-7560-5243-8aa7-676c524d0b52",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 158,
+              "quote_end": 182,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "3109cdbc-ced1-5088-8197-af4474776827",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Subaru Natsuki",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "promotion_id": "f2ae107b-b0cb-5393-8a56-7c73ee0d7e00",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "09c39028-63a0-56ba-80d4-ad04c2e5fbb2",
+              "source_id": "e00d6b30-d5ee-5f56-8abd-495669e13635",
+              "quote_start": 0,
+              "quote_end": 128,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-9b57cfd93394e415",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T17:46:03.719218+00:00",
+              "independence_key": null
+            }
+          ]
+        },
+        {
+          "id": "4d649c0e-7346-545b-88dc-dad863309644",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "arrival",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "74d9f4ed-6d8e-52f0-a7d5-edefa89430b4",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Felt",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "4dd188d1-64a3-5cc7-a76c-ce4ae222a8f7",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 12,
+              "quote_end": 57,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "77a32b28-beb0-53be-bec6-f2d7cb36a574",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "purchase attempt",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 0
+          },
+          "evidence": []
+        },
+        {
+          "id": "bce7787e-84db-5d20-bbd4-f594f8de1434",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Emilia",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+          "promotion_id": "36d6cee6-8434-57ed-b4a8-5a3d5a5bc452",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "09c39028-63a0-56ba-80d4-ad04c2e5fbb2",
+              "source_id": "e00d6b30-d5ee-5f56-8abd-495669e13635",
+              "quote_start": 129,
+              "quote_end": 257,
+              "url": "https://re-zero-anime.jp/tv/character/#scope-9b57cfd93394e415",
+              "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+              "retrieved_at": "2026-11-12T17:46:03.719218+00:00",
+              "independence_key": null
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "7b95b155-7560-5243-8aa7-676c524d0b52",
+          "claim_id": "0e99dae3-07e9-53c4-990a-a1074508f583",
+          "target_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T18:10:05.884238+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "f2ae107b-b0cb-5393-8a56-7c73ee0d7e00",
+          "claim_id": "3109cdbc-ced1-5088-8197-af4474776827",
+          "target_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T18:10:05.904847+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "36d6cee6-8434-57ed-b4a8-5a3d5a5bc452",
+          "claim_id": "bce7787e-84db-5d20-bbd4-f594f8de1434",
+          "target_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-12T18:10:05.932059+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        }
+      ]
+    },
+    {
+      "id": "a898e47c-f77d-43cc-a981-3b21cced376e",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a"
+      ],
+      "acquisition_or_extraction_errors": [
+        "source_unavailable"
+      ],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 5
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 6
+        }
+      ],
+      "findings": [
+        {
+          "id": "06b5adf0-6be8-5a5c-b7e9-25ae2cd00194",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Felt",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": true,
+          "canonical_id": "4dd188d1-64a3-5cc7-a76c-ce4ae222a8f7",
+          "promotion_id": "5aa43e8f-8f6a-518f-8b35-51fc12c9539b",
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "4dd188d1-64a3-5cc7-a76c-ce4ae222a8f7",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 12,
+              "quote_end": 57,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "102c67ae-0115-5f43-ad06-a4fd4413b124",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Satella",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "4ff84cb5-a2fc-510c-9418-4da3aa75be94",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 100,
+              "quote_end": 152,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "14106350-6e59-5792-a610-f3d63e95c441",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Loot House",
+            "type": "LOCATION"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "6ec78abf-27e1-5521-bad3-929e0740c917",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "AUTO_PROMOTE",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 70,
+              "quote_end": 87,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "2847240c-a314-57a7-94d6-4cd94b36abf8",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Subaru Natsuki",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 12,
+              "quote_end": 57,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "6dd60590-017b-52a4-81cd-89f99f6da247",
+          "kind": "relationship",
+          "assertion_labels": {
+            "type": "PARTICIPATED_IN",
+            "source_name": "Subaru Natsuki",
+            "target_name": "Felt"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {},
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 12,
+              "quote_end": 57,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "89747fa4-accf-5ffc-b36d-85a9f9880efe",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "Elsa",
+            "type": "CHARACTER"
+          },
+          "assessment": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "NEW_ENTITY",
+            "proof": "new_scoped_entity",
+            "accepted": true,
+            "canonical_id": "afb82606-87b7-54ae-8d06-19f9e16fa84c",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 154,
+              "quote_end": 181,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "id": "5aa43e8f-8f6a-518f-8b35-51fc12c9539b",
+          "claim_id": "06b5adf0-6be8-5a5c-b7e9-25ae2cd00194",
+          "target_id": "4dd188d1-64a3-5cc7-a76c-ce4ae222a8f7",
+          "kind": "entity",
+          "created": false,
+          "reversed": false,
+          "created_at": "2026-11-13T05:02:24.905297+00:00",
+          "reversed_at": null,
+          "correction_reason": null
+        },
+        {
+          "id": "857d4b1f-e51f-5c4b-b1c5-b9b999173633",
+          "claim_id": "14106350-6e59-5792-a610-f3d63e95c441",
+          "target_id": "6ec78abf-27e1-5521-bad3-929e0740c917",
+          "kind": "entity",
+          "created": false,
+          "reversed": true,
+          "created_at": "2026-11-13T05:02:24.939459+00:00",
+          "reversed_at": "2026-11-13T05:05:01.129981+00:00",
+          "correction_reason": "The isolated place excerpt does not establish the purchase attempt location; withdraw this unsupported description without changing the curated place."
+        }
+      ]
+    },
+    {
+      "id": "7cc042e9-63d7-48b6-9919-3727bbd89bc4",
+      "status": "partial",
+      "stage": "promotion_policy",
+      "error": null,
+      "source_ids": [
+        "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a"
+      ],
+      "acquisition_or_extraction_errors": [
+        "source_unavailable"
+      ],
+      "provider_usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "calls": 4
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "calls": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "relationship_analysis",
+          "status": "ok",
+          "calls": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "calls": 3
+        }
+      ],
+      "findings": [
+        {
+          "id": "92ea092d-bc14-5350-8bde-a5ad2ca2fbe6",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "ナツキ・スバル",
+            "type": "CHARACTER"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 0,
+              "quote_end": 182,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "9aa59152-b2ce-5b23-9dea-ee1d8f076617",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "purchase attempt",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "AMBIGUOUS",
+            "proof": "unresolved",
+            "accepted": false,
+            "canonical_id": null,
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 0,
+              "quote_end": 182,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        },
+        {
+          "id": "d6fdb3f0-8472-5cd6-bdae-fa5b0f9729e8",
+          "kind": "entity",
+          "assertion_labels": {
+            "name": "attack",
+            "type": "EVENT"
+          },
+          "assessment": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "promotion_id": null,
+          "resolution": {
+            "decision": "SAME_ENTITY",
+            "proof": "exact_scoped_name",
+            "accepted": true,
+            "canonical_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+            "entity_type_valid": true
+          },
+          "policy": {
+            "outcome": "KEEP_UNRESOLVED",
+            "version": "2.0",
+            "independent_sources": 1
+          },
+          "evidence": [
+            {
+              "passage_id": "63a76420-fc88-56c3-bc43-78cf5ccd88ff",
+              "source_id": "37bfd2cf-ba9c-537c-92d4-dcbe366cd46a",
+              "quote_start": 0,
+              "quote_end": 182,
+              "url": "https://www.tvmaze.com/seasons/38865/rezero-starting-life-in-another-world-season-1/episodeguide#scope-46c3fec77d0503d4",
+              "content_hash": "dfe1e2df0a33f25d05c4ec1041c54ab14e0d3f9064968416fe86df1e8cb853ae",
+              "retrieved_at": "2026-11-12T18:07:19.023360+00:00",
+              "independence_key": "re-zero-anime.jp"
+            }
+          ]
+        }
+      ],
+      "publications": []
+    }
+  ],
+  "graph": {
+    "current_nodes": 17,
+    "current_edges": 25,
+    "original_nodes": 15,
+    "original_edges": 25,
+    "changed_or_missing_original_ids": {
+      "nodes": [],
+      "edges": []
+    }
+  },
+  "publication_replay": {
+    "job_id": "57ab3dea-db19-4666-a366-6ae37b7f73c9",
+    "before": {
+      "nodes": 17,
+      "edges": 25
+    },
+    "after": {
+      "nodes": 17,
+      "edges": 25
+    },
+    "same_records": true,
+    "replayed_publications": 3,
+    "original_ids_preserved": {
+      "nodes": true,
+      "edges": true
+    },
+    "baseline_field_differences": {
+      "nodes": [],
+      "edges": []
+    },
+    "api_request_replay_same_job_id": true
+  }
+}
