@@ -1,0 +1,87 @@
+from typing import Literal, cast
+from urllib.parse import urlsplit
+
+from src.application.ports.research import SearchProvider
+from src.application.ports.source_intelligence import SourceRegistry
+from src.application.research import SourceInput
+from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
+
+
+class SourceSelector:
+    """Discovery priority breaks ties; it never becomes factual authority."""
+
+    def select(
+        self, entries: list[SourceEntry], continuity: str, topic: str, limit: int = 6
+    ) -> list[SourceEntry]:
+        terms = set(topic.casefold().split())
+        eligible = [
+            e
+            for e in entries
+            if continuity in {str(c) for c in e.continuity_ids}
+            and e.retrieval_policy == "permitted"
+            and e.access_method not in {"navigation", "import"}
+        ]
+        authority = {"primary": 0, "secondary": 1, "unverified": 2}
+        return sorted(
+            eligible,
+            key=lambda e: (
+                -len(terms & set(" ".join(e.topics).casefold().split())),
+                authority[e.authority],
+                e.health == "failed",
+                -e.discovery_priority,
+                str(e.id),
+            ),
+        )[:limit]
+
+    @staticmethod
+    def input(entry: SourceEntry) -> SourceInput:
+        if entry.access_method not in {"html", "mediawiki", "official-api"}:
+            raise ValueError("Registry entry is not ingestible through a network adapter")
+        return SourceInput(
+            access_method=cast(Literal["html", "mediawiki", "official-api"], entry.access_method),
+            url=entry.url,
+            title=entry.name,
+            permission_basis=entry.permission_basis,
+            source_scope="Registry continuity: " + ",".join(map(str, entry.continuity_ids)),
+            source_group=entry.derived_from,
+            registry_id=entry.id,
+            presentation_position=entry.presentation_position,
+            position_basis=entry.position_basis,
+            **entry.selectors,
+        )
+
+
+class SourceDiscoveryService:
+    def __init__(self, search: SearchProvider | None) -> None:
+        self.search = search
+
+    async def discover(
+        self, request: SourceDiscovery, registry: SourceRegistry
+    ) -> list[SourceEntry]:
+        existing = await registry.entries(request.universe_id)
+        # Previously inspected domains are not repeatedly searched for this universe.
+        if existing or self.search is None:
+            return existing
+        seen: set[str] = set()
+        for suffix in ("official story episode guide", "dedicated wiki"):
+            for url in (await self.search.search(request.universe_name + " " + suffix, 4))[:4]:
+                host = urlsplit(url).hostname or ""
+                if host in seen:
+                    continue
+                seen.add(host)
+                await registry.register(
+                    SourceRegistration(
+                        universe_id=request.universe_id,
+                        name=host,
+                        url=url,
+                        category="reference",
+                        media=["unknown"],
+                        continuity_ids=[request.continuity_id],
+                        access_method="navigation",
+                        authority="unverified",
+                        topics=request.topics,
+                        permission_basis="Discovery only; ingestion permission not established",
+                        attribution="Discovered URL; verify site terms before ingestion",
+                    )
+                )
+        return await registry.entries(request.universe_id)

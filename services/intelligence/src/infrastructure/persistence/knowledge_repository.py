@@ -58,6 +58,7 @@ class SqlKnowledgeRepository:
                 "name": n.title,
                 "type": n.type,
                 "description": n.summary,
+                "event": n.node_metadata.get("event"),
                 "aliases": [a.name for a in aliases if a.node_id == n.id],
                 "relationships": [
                     {

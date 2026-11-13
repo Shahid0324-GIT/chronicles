@@ -160,8 +160,32 @@ class CanonicalGraphPromotionService:
                         for item in own_citations
                     )
                     accepted = accepted and identity_grounded
+                    event = payload.get("event") or {}
+                    anchor = event.get("identity_anchor")
+                    if anchor:
+                        trigger = event.get("trigger", "")
+                        accepted = (
+                            accepted
+                            and bool(trigger)
+                            and any(
+                                trigger in e["quote"]
+                                and anchor
+                                == digest(
+                                    "{}:{}:{}".format(
+                                        e["source_id"],
+                                        e["passage_start"]
+                                        + e["quote_start"]
+                                        + e["quote"].find(trigger),
+                                        trigger,
+                                    )
+                                )
+                                for e in evidence
+                            )
+                        )
                     if resolution.get("decision") in {"NEW_ENTITY", "DIFFERENT_ENTITY"}:
-                        accepted = accepted and target == uuid5(continuity, "entity:" + cid)
+                        accepted = accepted and target == uuid5(
+                            continuity, "event:" + anchor if anchor else "entity:" + cid
+                        )
                     if node and resolution.get("decision") == "SAME_ENTITY":
                         current = next((n for n in catalog if n["id"] == str(node.id)), {})
                         names = [node.title, *current.get("aliases", [])]
@@ -171,7 +195,16 @@ class CanonicalGraphPromotionService:
                             for n in names
                             for e in evidence
                         )
-                        accepted = accepted and (exact_name or bridge)
+                        node_event = node.metadata.get("event")
+                        node_anchor = (
+                            node_event.get("identity_anchor")
+                            if isinstance(node_event, dict)
+                            else None
+                        )
+                        same_event = bool(anchor and anchor == node_anchor)
+                        accepted = accepted and (exact_name or bridge or same_event)
+                        if anchor and node_anchor and not same_event:
+                            accepted = False
                     if node and (
                         node.universe_id != universe
                         or node.continuity_id != continuity
@@ -185,6 +218,11 @@ class CanonicalGraphPromotionService:
                             name_key(payload["name"]) == name_key(n)
                             for item in catalog
                             if item["type"] == payload["type"]
+                            and not (
+                                anchor
+                                and (item.get("event") or {}).get("identity_anchor")
+                                and (item.get("event") or {}).get("identity_anchor") != anchor
+                            )
                             for n in [item["name"], *item["aliases"]]
                         ):
                             accepted = (
@@ -200,6 +238,8 @@ class CanonicalGraphPromotionService:
                         "description": payload["description"],
                         "metadata": {"research_owned": True, "research_first_job": str(job_id)},
                     }
+                    if payload.get("event"):
+                        snapshot["metadata"]["event"] = payload["event"]
                 else:
                     source, dest = (
                         bound.get(payload["source_name"]),
@@ -326,7 +366,7 @@ class CanonicalGraphPromotionService:
                             type=NodeType(payload["type"]),
                             title=payload["name"],
                             summary=payload["description"],
-                            metadata={"research_owned": True, "research_first_job": str(job_id)},
+                            metadata=snapshot["metadata"],
                         )
                         await unit.graph.add_node(node)
                         created = True

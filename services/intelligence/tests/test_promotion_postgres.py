@@ -27,7 +27,9 @@ async def postgres_factory():
     if parsed.drivername != "postgresql+asyncpg" or not (parsed.database or "").endswith("_test"):
         pytest.fail("Only explicit asyncpg _test databases are allowed")
     schema = "knowledge_test_" + uuid4().hex
-    engine = create_async_engine(url, connect_args={"server_settings": {"search_path": schema}})
+    engine = create_async_engine(
+        url, connect_args={"server_settings": {"search_path": schema + ",public"}}
+    )
     config = Config(str(Path(__file__).parents[1] / "alembic.ini"))
     try:
         async with engine.begin() as connection:

@@ -1,7 +1,7 @@
 name: universe-atlas
 services:
   postgres:
-    image: postgres:18
+    image: pgvector/pgvector:0.8.7-pg18-trixie
     environment:
       POSTGRES_USER: atlas
       POSTGRES_PASSWORD: atlas_local

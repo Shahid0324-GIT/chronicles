@@ -39,6 +39,7 @@ def source_entity(row: SourceDocumentModel) -> SourceDocument:
         row.public_web,
         row.truncated,
         row.independence_key,
+        row.provenance or {},
     )
 
 
@@ -212,6 +213,7 @@ class SqlResearchRepository:
                 public_web=source.public_web,
                 truncated=source.truncated,
                 independence_key=source.independence_key,
+                provenance=source.provenance,
             )
         )
         await self.session.flush()
@@ -352,6 +354,7 @@ class SqlResearchRepository:
                             "public_web": s.public_web,
                             "truncated": s.truncated,
                             "independence_key": s.independence_key,
+                            "provenance": s.provenance or {},
                         }
                         for e, p, s in evidence
                     ],

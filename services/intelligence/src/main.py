@@ -15,6 +15,7 @@ from src.infrastructure.persistence.database import create_database
 from src.presentation.api.research import router as research_router
 from src.presentation.api.routers import router
 from src.presentation.api.schemas import ErrorResponse
+from src.presentation.api.source_intelligence import router as source_router
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         },
     )
     app.state.settings = config
+    app.include_router(source_router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=config.cors_origins,

@@ -1,8 +1,10 @@
 """Source archive identities are separate from canonical graph identities."""
 
-from dataclasses import dataclass
+import re
+from dataclasses import dataclass, field
 from datetime import datetime
 from hashlib import sha256
+from typing import Any
 from uuid import NAMESPACE_URL, UUID, uuid5
 
 
@@ -30,6 +32,7 @@ class SourceDocument:
     public_web: bool
     truncated: bool
     independence_key: str | None = None
+    provenance: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -44,9 +47,16 @@ class SourcePassage:
 
 
 def passages_for(source: SourceDocument, size: int = 1400) -> list[SourcePassage]:
-    passages = []
-    for ordinal, start in enumerate(range(0, len(source.text), size)):
-        text = source.text[start : start + size]
+    passages: list[SourcePassage] = []
+    start = 0
+    while start < len(source.text):
+        end = min(start + size, len(source.text))
+        if end < len(source.text):
+            boundaries = list(re.finditer(r"[.!?。！？](?:\s|$)", source.text[start:end]))
+            if boundaries and boundaries[-1].end() >= size // 2:
+                end = start + boundaries[-1].end()
+        text = source.text[start:end]
+        ordinal = len(passages)
         passages.append(
             SourcePassage(
                 uuid5(NAMESPACE_URL, f"chronicles:passage:{source.id}:{start}:{digest(text)}"),
@@ -58,6 +68,7 @@ def passages_for(source: SourceDocument, size: int = 1400) -> list[SourcePassage
                 digest(text),
             )
         )
+        start = end
     return passages
 
 

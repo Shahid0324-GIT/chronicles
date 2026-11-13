@@ -31,6 +31,11 @@ from .research import (  # noqa: F401 -- register research metadata for Alembic
     SourceDocumentModel,
     SourcePassageModel,
 )
+from .source_intelligence import (  # noqa: F401
+    NarrativeProjectionModel,
+    PassageEmbeddingModel,
+    SourceRegistryModel,
+)
 
 
 class UniverseModel(Base):

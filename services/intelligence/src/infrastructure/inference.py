@@ -127,6 +127,7 @@ def create_inference(settings: Settings) -> InferenceRouter:
             reasoning=False,
             num_ctx=8192,
             num_predict=4500,
+            keep_alive=0,
             client_kwargs={"timeout": settings.ai_timeout_seconds, "trust_env": False},
         ),
         "ollama",

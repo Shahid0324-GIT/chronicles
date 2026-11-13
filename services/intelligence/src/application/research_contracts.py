@@ -29,6 +29,7 @@ class Citation(StructuredModel):
 
 
 class CandidateEntity(StructuredModel):
+    event: dict[str, object] | None = None
     name: str = Field(min_length=1, max_length=200)
     type: NodeType
     description: str = Field(min_length=5, max_length=600)

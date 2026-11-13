@@ -71,6 +71,7 @@ class SourceDocumentModel(Base):
     public_web: Mapped[bool] = mapped_column(Boolean)
     truncated: Mapped[bool] = mapped_column(Boolean)
     independence_key: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    provenance: Mapped[dict[str, Any]] = mapped_column(JSON_TYPE, default=dict)
 
 
 class SourcePassageModel(Base):

@@ -27,15 +27,22 @@ class IdentityResolver:
         payload = claim["payload"]
         key = name_key(payload["name"])
         eligible = [n for n in catalog if n["type"] == payload["type"]]
+        event_anchor = (payload.get("event") or {}).get("identity_anchor")
 
         def rank(node: dict[str, Any]) -> tuple[int, str]:
             names = [node["name"], *node.get("aliases", [])]
             score = 4 if any(name_key(n) == key for n in names) else 0
             score += 2 if any(order_key(n) == order_key(payload["name"]) for n in names) else 0
             score += len(set(key.split()) & set(name_key(node["name"]).split()))
+            if event_anchor and (node.get("event") or {}).get("identity_anchor") == event_anchor:
+                score += 100
             return -score, node["id"]
 
         choices = sorted(eligible, key=rank)[:8]
+        if event_anchor:
+            choices.sort(
+                key=lambda n: (n.get("event") or {}).get("identity_anchor") != event_anchor
+            )
         prompt = """Resolve the candidate identity against the supplied scoped records only.
 Names, surnames, titles, co-occurrence or similar descriptions alone do not prove identity.
 First check entity_type_valid: does the name identify an entity of the asserted type?
@@ -114,11 +121,23 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             exact = any(name_key(n) == key for n in names)
             title_only = key in {"king", "queen", "lord", "captain", "王", "王様", "女王"}
             bridge = any(explicit_name_bridge(payload["name"], n, q) for n in names for q in cited)
-            if (exact and not title_only) or bridge:
+            same_event = bool(
+                event_anchor and event_anchor == (target.get("event") or {}).get("identity_anchor")
+            )
+            different_event = bool(
+                event_anchor
+                and (target.get("event") or {}).get("identity_anchor")
+                and not same_event
+            )
+            if not different_event and ((exact and not title_only) or bridge or same_event):
                 result.update(
                     accepted=True,
                     canonical_id=target["id"],
-                    proof="exact_scoped_name" if exact else "explicit_name_bridge",
+                    proof="same_evidence_event_anchor"
+                    if same_event
+                    else "exact_scoped_name"
+                    if exact
+                    else "explicit_name_bridge",
                 )
             else:
                 result.update(
@@ -132,6 +151,11 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 n
                 for n in eligible
                 if any(name_key(a) == key for a in [n["name"], *n.get("aliases", [])])
+                and not (
+                    event_anchor
+                    and (n.get("event") or {}).get("identity_anchor")
+                    and (n.get("event") or {}).get("identity_anchor") != event_anchor
+                )
             ]
             contradicts_bridge = any(
                 explicit_name_bridge(payload["name"], name, quote)
@@ -152,11 +176,16 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 not collisions
                 and not contradicts_bridge
                 and not partial_reference
-                and len(eligible) <= 8
+                and (len(eligible) <= 8 or event_anchor)
             ):
                 result.update(
                     accepted=True,
-                    canonical_id=str(uuid5(continuity, "entity:" + claim["id"])),
+                    canonical_id=str(
+                        uuid5(
+                            continuity,
+                            "event:" + event_anchor if event_anchor else "entity:" + claim["id"],
+                        )
+                    ),
                     proof="new_scoped_entity",
                 )
             else:

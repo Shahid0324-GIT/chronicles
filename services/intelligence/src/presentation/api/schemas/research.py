@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from src.application.research_contracts import CandidateEntity, CandidateRelationship
 
@@ -37,6 +37,7 @@ class EvidenceResponse(BaseModel):
     public_web: bool
     truncated: bool
     independence_key: str | None = None
+    provenance: dict[str, Any] = Field(default_factory=dict)
 
 
 class FindingResponse(BaseModel):

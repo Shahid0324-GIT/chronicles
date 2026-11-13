@@ -1,6 +1,6 @@
 from contextlib import AbstractAsyncContextManager
 from datetime import datetime
-from typing import Any, Protocol
+from typing import Any, Protocol, runtime_checkable
 from uuid import UUID
 
 from src.application.research import FetchedDocument, ResearchRequest
@@ -39,6 +39,16 @@ class ResearchTransaction(Protocol):
 
 class DocumentFetcher(Protocol):
     async def fetch(self, url: str) -> FetchedDocument: ...
+
+
+@runtime_checkable
+class CompleteDocumentFetcher(Protocol):
+    async def fetch_complete(self, url: str) -> FetchedDocument: ...
+
+
+@runtime_checkable
+class ApiDocumentFetcher(Protocol):
+    async def fetch_api(self, url: str, method: str) -> FetchedDocument: ...
 
 
 class SearchProvider(Protocol):

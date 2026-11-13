@@ -11,9 +11,18 @@ from langgraph.graph import END, START, StateGraph
 from langsmith import tracing_context
 from pydantic import BaseModel
 
+from src.application.event_extraction import extract_events
 from src.application.knowledge_contracts import FOCUSED_SCHEMAS, KnowledgeVerification
-from src.application.ports.research import DocumentFetcher, ResearchTransaction, SearchProvider
-from src.application.research import ResearchRequest, SourceInput
+from src.application.narrative import NarrativeBuilder
+from src.application.ports.research import (
+    ApiDocumentFetcher,
+    CompleteDocumentFetcher,
+    DocumentFetcher,
+    ResearchTransaction,
+    SearchProvider,
+)
+from src.application.ports.source_intelligence import SourceRegistryTransaction
+from src.application.research import ResearchRequest, SourceInput, SourceRejected
 from src.application.research_contracts import (
     CandidateEntity,
     Extraction,
@@ -23,6 +32,8 @@ from src.application.research_contracts import (
     Task,
     Verification,
 )
+from src.application.retrieval import EvidenceRetrieval
+from src.application.source_intelligence import SourceSelector
 from src.domain.entities import GraphNode, GraphRelationship, now
 from src.domain.research import (
     SourceDocument,
@@ -44,6 +55,10 @@ are available to you; acquisition is performed by the Researcher through approve
 
 
 class ResearchState(TypedDict, total=False):
+    retrieved_passage_ids: list[str]
+    archive_source_ids: list[str]
+    indexing: dict[str, Any]
+    narrative: dict[str, Any]
     job_id: str
     stage: str
     iteration: int
@@ -79,6 +94,9 @@ class ResearchWorkflow:
         cache_hours: int = 24,
         source_chars: int = 12000,
         knowledge: KnowledgePipeline | None = None,
+        retrieval: EvidenceRetrieval | None = None,
+        narratives: NarrativeBuilder | None = None,
+        registry: SourceRegistryTransaction | None = None,
     ) -> None:
         self.transactions, self.inference, self.fetcher, self.search = (
             transactions,
@@ -93,6 +111,7 @@ class ResearchWorkflow:
         )
         self.cache_hours, self.source_chars = cache_hours, source_chars
         self.knowledge = knowledge
+        self.retrieval, self.narratives, self.registry = retrieval, narratives, registry
         graph = StateGraph(ResearchState)
         graph.add_node("planner", self.planner)
         graph.add_node("researcher", self.researcher)
@@ -102,6 +121,8 @@ class ResearchWorkflow:
             graph.add_node("identity_resolver", self.identity_resolver)
             graph.add_node("relationship_analyst", self.relationship_analyst)
             graph.add_node("promotion_policy", self.promotion_policy)
+            graph.add_node("research_context", self.research_context)
+            graph.add_node("narrative_builder", self.narrative_builder)
         graph.add_conditional_edges(
             START,
             self.resume_stage,
@@ -116,6 +137,8 @@ class ResearchWorkflow:
                         "identity_resolver",
                         "relationship_analyst",
                         "promotion_policy",
+                        "research_context",
+                        "narrative_builder",
                     ]
                     if knowledge or name in {"planner", "researcher", "extractor", "verifier"}
                 },
@@ -123,8 +146,9 @@ class ResearchWorkflow:
             },
         )
         graph.add_edge("planner", "researcher")
-        graph.add_edge("researcher", "extractor")
+        graph.add_edge("researcher", "research_context" if knowledge else "extractor")
         if knowledge:
+            graph.add_edge("research_context", "extractor")
             graph.add_edge("extractor", "identity_resolver")
             graph.add_edge("identity_resolver", "relationship_analyst")
             graph.add_edge("relationship_analyst", "verifier")
@@ -134,8 +158,10 @@ class ResearchWorkflow:
         graph.add_conditional_edges(
             "promotion_policy" if knowledge else "verifier",
             self.after_verification,
-            {"refine": "planner", "end": END},
+            {"refine": "planner", "end": "narrative_builder" if knowledge else END},
         )
+        if knowledge:
+            graph.add_edge("narrative_builder", END)
         self.graph = graph.compile(
             name="chronicles-research-v2" if knowledge else "chronicles-research-v1"
         )
@@ -143,10 +169,11 @@ class ResearchWorkflow:
     def resume_stage(self, state: ResearchState) -> str:
         stages = ["planner", "researcher", "extractor"]
         if self.knowledge:
+            stages.insert(2, "research_context")
             stages += ["identity_resolver", "relationship_analyst"]
         stages += ["verifier"]
         if self.knowledge:
-            stages += ["promotion_policy"]
+            stages += ["promotion_policy", "narrative_builder"]
         stage = state.get("stage", "")
         if stage not in stages:
             return "planner"
@@ -249,6 +276,16 @@ class ResearchWorkflow:
     async def researcher(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
         sources = list(request.sources)
+        registry_entries = []
+        if request.use_registry and self.registry:
+            async with self.registry() as registry:
+                registry_entries = SourceSelector().select(
+                    await registry.entries(request.universe_id),
+                    str(request.continuity_id),
+                    request.objective,
+                    self.max_sources,
+                )
+            sources.extend(SourceSelector.input(e) for e in registry_entries)
         used = list(state.get("used_queries", []))
         errors = list(state.get("errors", []))
         if request.allow_search and self.search:
@@ -278,7 +315,14 @@ class ResearchWorkflow:
             locator = spec.url or "local:" + digest(spec.text or "")
             if spec.text and spec.reference_url:
                 locator = spec.reference_url.partition("#")[0] + "#import-" + digest(spec.text)[:16]
-            if spec.start_at or spec.end_before or spec.source_group:
+            if (
+                spec.start_at
+                or spec.end_before
+                or spec.source_group
+                or spec.registry_id
+                or spec.presentation_position is not None
+                or spec.access_method != "html"
+            ):
                 locator = (
                     locator.partition("#")[0]
                     + "#scope-"
@@ -289,6 +333,10 @@ class ResearchWorkflow:
                                 spec.end_before,
                                 spec.source_group,
                                 digest(spec.text) if spec.text else None,
+                                str(spec.registry_id) if spec.registry_id else None,
+                                spec.presentation_position,
+                                spec.position_basis,
+                                spec.access_method,
                             ],
                             ensure_ascii=False,
                         )
@@ -312,7 +360,19 @@ class ResearchWorkflow:
             else:
                 try:
                     if spec.url:
-                        document = await self.fetcher.fetch(spec.url)
+                        if spec.access_method != "html" and not isinstance(
+                            self.fetcher, ApiDocumentFetcher
+                        ):
+                            raise SourceRejected("source_api_adapter_unavailable")
+                        document = (
+                            await self.fetcher.fetch_api(spec.url, spec.access_method)
+                            if spec.access_method != "html"
+                            and isinstance(self.fetcher, ApiDocumentFetcher)
+                            else await self.fetcher.fetch_complete(spec.url)
+                            if (spec.start_at or spec.end_before)
+                            and isinstance(self.fetcher, CompleteDocumentFetcher)
+                            else await self.fetcher.fetch(spec.url)
+                        )
                         text, title, publisher, url, truncated = (
                             document.text,
                             document.title,
@@ -321,7 +381,7 @@ class ResearchWorkflow:
                             document.truncated,
                         )
                     else:
-                        text = normalize(spec.text or "")[: self.source_chars]
+                        text = normalize(spec.text or "")
                         title, publisher, url, truncated = (
                             spec.title or "Imported document",
                             (urlsplit(spec.reference_url).hostname or "Imported reference")
@@ -339,14 +399,21 @@ class ResearchWorkflow:
                             else len(text)
                         )
                         if begin < 0 or finish <= begin:
-                            raise ValueError("Requested source section was not found")
+                            raise SourceRejected("source_selection_not_found")
                         text = normalize(text[begin:finish])
                         if len(text) < 30:
-                            raise ValueError("Requested source section is too short")
+                            raise SourceRejected("source_selection_too_short")
                         url = url.partition("#")[0] + "#" + locator.partition("#")[2]
                         scope_note += f" [selection: {spec.start_at!r} to {spec.end_before!r}]"
-                    if spec.source_group and not (spec.start_at or spec.end_before):
+                    if (
+                        spec.source_group
+                        or spec.registry_id
+                        or spec.presentation_position is not None
+                        or spec.access_method != "html"
+                    ) and not (spec.start_at or spec.end_before):
                         url = url.partition("#")[0] + "#" + locator.partition("#")[2]
+                    truncated = truncated or len(text) > self.source_chars
+                    text = text[: self.source_chars]
                     fingerprint = digest(text)
                     source_id = uuid5(
                         NAMESPACE_URL,
@@ -367,14 +434,55 @@ class ResearchWorkflow:
                         bool(spec.url),
                         truncated,
                         spec.source_group,
+                        {
+                            "extraction_version": "normalized-html-v2",
+                            "canonical_url": (spec.url or spec.reference_url or "").partition("#")[
+                                0
+                            ],
+                            "registry_id": str(spec.registry_id) if spec.registry_id else None,
+                            "job_id": state["job_id"],
+                            "presentation_position": spec.presentation_position,
+                            "position_basis": spec.position_basis,
+                            **(document.metadata if spec.url else {}),
+                            **next(
+                                (
+                                    {
+                                        "category": e.category,
+                                        "authority": e.authority,
+                                        "revision_id": e.revision,
+                                    }
+                                    for e in registry_entries
+                                    if e.id == spec.registry_id
+                                ),
+                                {},
+                            ),
+                        },
                     )
                     async with self.transactions() as archive:
                         await archive.save_source(source, passages_for(source))
                     identifier = str(source_id)
                     public_only = public_only and bool(spec.url)
+                except SourceRejected as failure:
+                    if self.registry and spec.registry_id:
+                        async with self.registry() as registry:
+                            await registry.health(spec.registry_id, str(failure))
+                    errors.append(str(failure))
+                    async with self.transactions() as archive:
+                        await archive.event(
+                            UUID(state["job_id"]),
+                            "research.source_rejected",
+                            {"url": spec.url, "code": str(failure)},
+                        )
+                    continue
                 except Exception:
+                    if self.registry and spec.registry_id:
+                        async with self.registry() as registry:
+                            await registry.health(spec.registry_id, "source_unavailable")
                     errors.append("source_unavailable")
                     continue
+            if self.registry and spec.registry_id:
+                async with self.registry() as registry:
+                    await registry.health(spec.registry_id, None)
             if identifier not in identifiers:
                 identifiers.append(identifier)
         return await self.snapshot(
@@ -391,9 +499,17 @@ class ResearchWorkflow:
     async def selected_passages(self, state: ResearchState) -> list[SourcePassage]:
         async with self.transactions() as archive:
             values = await archive.get_passages(
-                [UUID(value) for value in state.get("source_ids", [])]
+                [
+                    UUID(value)
+                    for value in dict.fromkeys(
+                        [*state.get("source_ids", []), *state.get("archive_source_ids", [])]
+                    )
+                ]
             )
         # Round-robin source coverage within a character budget; no semantic RAG claim.
+        if "retrieved_passage_ids" in state:
+            by_id = {str(p.id): p for p in values}
+            return [by_id[i] for i in state["retrieved_passage_ids"] if i in by_id]
         buckets = [
             [p for p in values if str(p.source_id) == identifier]
             for identifier in state.get("source_ids", [])
@@ -439,7 +555,15 @@ class ResearchWorkflow:
                 ensure_ascii=False,
             )
         )
-        if self.knowledge and request.extraction_types:
+        if self.knowledge and request.narrative_research:
+
+            async def event_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
+                return await self.infer(
+                    state, prompt, schema, "extraction", state.get("public_only", False)
+                )
+
+            extraction = await extract_events(passages, request.objective, event_infer)
+        elif self.knowledge and request.extraction_types:
             entities: list[CandidateEntity] = []
             seen = set()
             for focus_kind in dict.fromkeys(request.extraction_types):
@@ -734,6 +858,59 @@ class ResearchWorkflow:
         state = cast(ResearchState, {**checkpoint, "job_id": str(job_id)})
         with tracing_context(enabled=False):
             result = await self.graph.ainvoke(
-                state, {"recursion_limit": self.max_iterations * 7 + 4}
+                state, {"recursion_limit": self.max_iterations * 9 + 4}
             )
         return cast(ResearchState, result)
+
+    async def research_context(self, state: ResearchState) -> ResearchState:
+        request = await self.check(state)
+        if not request.narrative_research or not self.retrieval:
+            return await self.snapshot("research_context", state)
+        indexed = await self.retrieval.index(
+            request.universe_id,
+            request.continuity_id,
+            [UUID(i) for i in state.get("source_ids", [])],
+        )
+        await self.check(state)
+        hits = await self.retrieval.retrieve(
+            request.universe_id,
+            request.continuity_id,
+            request.objective,
+            spoiler_position=request.spoiler_position,
+            limit=8,
+        )
+        selected = []
+        size = 0
+        for h in hits:
+            if size + len(h.passage.text) <= 6000:
+                selected.append(h)
+                size += len(h.passage.text)
+        return await self.snapshot(
+            "research_context",
+            {
+                **state,
+                "indexing": indexed,
+                "archive_source_ids": list(dict.fromkeys(str(h.source.id) for h in selected)),
+                "retrieved_passage_ids": [str(h.passage.id) for h in selected],
+                "public_only": state.get("public_only", False)
+                and all(h.source.public_web for h in selected),
+            },
+        )
+
+    async def narrative_builder(self, state: ResearchState) -> ResearchState:
+        request = await self.check(state)
+        if request.narrative_research and self.narratives:
+            catalog = await self.narratives.build(
+                request.universe_id,
+                request.continuity_id,
+                spoiler_position=request.spoiler_position,
+            )
+            state = {
+                **state,
+                "narrative": {
+                    "revision": catalog["revision"],
+                    "journeys": len(catalog["journeys"]),
+                    "unordered": len(catalog["unorderedMilestones"]),
+                },
+            }
+        return await self.snapshot("narrative_builder", state)

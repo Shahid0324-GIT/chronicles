@@ -1,3 +1,4 @@
+from typing import Literal
 from urllib.parse import urlsplit
 from uuid import UUID
 
@@ -7,7 +8,15 @@ from src.application.research_contracts import StructuredModel
 from src.domain.value_objects import NodeType
 
 
+class SourceRejected(Exception):
+    """Sanitized acquisition/policy failure shared by source adapters."""
+
+
 class SourceInput(StructuredModel):
+    access_method: Literal["html", "mediawiki", "official-api"] = "html"
+    registry_id: UUID | None = None
+    presentation_position: int | None = Field(default=None, ge=1, le=100000)
+    position_basis: str | None = Field(default=None, max_length=80)
     url: str | None = Field(default=None, max_length=2000)
     text: str | None = Field(default=None, min_length=30, max_length=30_000)
     title: str = Field(default="", max_length=300)
@@ -36,6 +45,9 @@ class SourceInput(StructuredModel):
 
 
 class ResearchRequest(StructuredModel):
+    narrative_research: bool = False
+    use_registry: bool = False
+    spoiler_position: int | None = Field(default=None, ge=1, le=100000)
     universe_id: UUID
     continuity_id: UUID
     objective: str = Field(min_length=10, max_length=1500)
@@ -45,6 +57,7 @@ class ResearchRequest(StructuredModel):
 
 
 class FetchedDocument(StructuredModel):
+    metadata: dict[str, str] = Field(default_factory=dict)
     url: str
     title: str
     publisher: str

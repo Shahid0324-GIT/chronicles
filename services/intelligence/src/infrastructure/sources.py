@@ -3,6 +3,7 @@
 import asyncio
 import http.client
 import ipaddress
+import json
 import socket
 import ssl
 import time
@@ -12,14 +13,10 @@ from urllib.robotparser import RobotFileParser
 import httpx
 from bs4 import BeautifulSoup
 
-from src.application.research import FetchedDocument
+from src.application.research import FetchedDocument, SourceRejected
 from src.domain.research import normalize
 
 USER_AGENT = "ChroniclesResearch/0.1"
-
-
-class SourceRejected(Exception):
-    pass
 
 
 class PublicSourcePolicy:
@@ -82,7 +79,7 @@ def pinned_request(
                 "Host": host,
                 "User-Agent": USER_AGENT,
                 "Accept-Encoding": "identity",
-                "Accept": "text/html,text/plain",
+                "Accept": "text/html,text/plain,application/json",
             },
         )
         response = connection.getresponse()
@@ -137,6 +134,60 @@ class PublicDocumentFetcher:
             raise SourceRejected("robots_disallowed")
 
     async def fetch(self, url: str) -> FetchedDocument:
+        return await self._fetch(url, True)
+
+    async def fetch_api(self, url: str, method: str) -> FetchedDocument:
+        if method not in {"mediawiki", "official-api"}:
+            raise SourceRejected("source_api_method_not_allowed")
+        for _ in range(4):
+            self.policy.validate(url)
+            await self._robots(url)
+            code, headers, body = await self._request(url)
+            if code in {301, 302, 303, 307, 308}:
+                url = urljoin(url, headers.get("location", ""))
+                continue
+            if code == 429:
+                raise SourceRejected("source_rate_limited")
+            if code != 200 or "json" not in headers.get("content-type", ""):
+                raise SourceRejected("source_api_response_rejected")
+            data = json.loads(body)
+            metadata = {"extraction_version": "api-text-v1"}
+            if method == "mediawiki":
+                pages = data.get("query", {}).get("pages", {})
+                values = list(pages.values()) if isinstance(pages, dict) else pages
+                if len(values) != 1:
+                    raise SourceRejected("source_api_requires_one_page")
+                page = values[0]
+                text = page.get("extract", "")
+                title = page.get("title", url)
+                metadata["page_id"] = str(page.get("pageid", ""))
+                revisions = page.get("revisions", [])
+                if revisions:
+                    metadata["revision_id"] = str(revisions[0].get("revid", ""))
+            else:
+                text = data.get("summary", data.get("description", data.get("text", "")))
+                title = data.get("title", data.get("name", url))
+                metadata["page_id"] = str(data.get("id", ""))
+                metadata["revision_id"] = str(data.get("revision", data.get("updated", "")))
+            if not isinstance(text, str):
+                raise SourceRejected("source_api_schema_unsupported")
+            text = normalize(BeautifulSoup(text, "html.parser").get_text(" ", strip=True))
+            if len(text) < 30:
+                raise SourceRejected("source_has_no_usable_text")
+            return FetchedDocument(
+                url=url,
+                title=str(title)[:300],
+                publisher=urlsplit(url).hostname or "",
+                text=text,
+                truncated=False,
+                metadata=metadata,
+            )
+        raise SourceRejected("too_many_source_redirects")
+
+    async def fetch_complete(self, url: str) -> FetchedDocument:
+        return await self._fetch(url, False)
+
+    async def _fetch(self, url: str, cap: bool) -> FetchedDocument:
         try:
             for _ in range(4):
                 self.policy.validate(url)
@@ -172,12 +223,16 @@ class PublicDocumentFetcher:
                     url=url,
                     title=title[:300],
                     publisher=urlsplit(url).hostname or "",
-                    text=text[: self.max_chars],
-                    truncated=len(text) > self.max_chars,
+                    # The byte limit bounds memory. Select sections before the workflow's
+                    # character cap, otherwise reverse-ordered pages lose their opening arc.
+                    text=text[: self.max_chars] if cap else text,
+                    truncated=cap and len(text) > self.max_chars,
                 )
             raise SourceRejected("too_many_source_redirects")
         except SourceRejected:
             raise
+        except ssl.SSLCertVerificationError:
+            raise SourceRejected("source_tls_validation_failed") from None
         except Exception:
             raise SourceRejected("source_fetch_failed") from None
 
