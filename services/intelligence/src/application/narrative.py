@@ -77,6 +77,30 @@ class NarrativeBuilder:
                 facts[identifier], key=lambda f: json.dumps(f["payload"], sort_keys=True)
             )[0]["payload"]
             citations = sorted({s["id"] for f in facts[identifier] for s in f["sources"]})
+            participant_roles = []
+            for edge in adjacent:
+                if (
+                    edge.relationship_type != RelationshipType.PARTICIPATED_IN
+                    or edge.target_node_id != node.id
+                ):
+                    continue
+                names = {
+                    f["payload"].get("name", "").casefold()
+                    for f in facts.get(str(edge.source_node_id), [])
+                }
+                roles = {
+                    role
+                    for fact in facts[identifier]
+                    for name, role in (fact["payload"].get("event") or {})
+                    .get("participant_roles", {})
+                    .items()
+                    if name.casefold() in names
+                    and role in {"actor", "recipient", "witness", "opponent"}
+                }
+                if len(roles) == 1:
+                    participant_roles.append(
+                        {"nodeId": str(edge.source_node_id), "role": next(iter(roles))}
+                    )
             step = {
                 "id": str(uuid5(node.id, "narrative-milestone")),
                 "eventNodeId": identifier,
@@ -87,6 +111,7 @@ class NarrativeBuilder:
                 else "Order unknown",
                 "sourceIds": citations,
                 "loreThreadIds": [],
+                "participantRoles": participant_roles,
                 "presentation": {
                     "relatedNodeIds": related,
                     "relationshipIds": [str(e.id) for e in adjacent],
@@ -209,6 +234,17 @@ class NarrativeBuilder:
             )
         catalog: dict[str, Any] = {
             "schemaVersion": 1,
+            "identities": [
+                {
+                    "id": identifier,
+                    "type": nodes[identifier].type.value,
+                    "names": sorted(
+                        {f["payload"]["name"] for f in eligible if f["payload"].get("name")}
+                    ),
+                }
+                for identifier, eligible in sorted(facts.items())
+                if identifier in nodes
+            ],
             "journeys": [
                 {
                     "id": journey_id,

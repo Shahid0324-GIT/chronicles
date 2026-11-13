@@ -3,6 +3,7 @@
 from typing import Any
 from uuid import UUID, uuid5
 
+from src.application.event_identity import same_scoped_occurrence
 from src.application.ports.knowledge import KnowledgeTransaction
 from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.exceptions import NotFoundError
@@ -12,7 +13,6 @@ from src.domain.knowledge import (
     independent_sources,
     name_key,
     relation_structure,
-    same_event_context,
     same_full_name_order,
     short_name_bridge,
     source_name_bridge,
@@ -216,8 +216,10 @@ class CanonicalGraphPromotionService:
                             if isinstance(node_event, dict)
                             else None
                         )
-                        same_event = bool(anchor and anchor == node_anchor) or same_event_context(
-                            event, node_event if isinstance(node_event, dict) else {}
+                        same_event = bool(
+                            anchor and anchor == node_anchor
+                        ) or same_scoped_occurrence(
+                            event, node_event if isinstance(node_event, dict) else {}, catalog
                         )
                         context = resolution.get("event_context", {})
                         source_roles = {
@@ -329,6 +331,42 @@ class CanonicalGraphPromotionService:
                         RelationshipType.REVEALED,
                     }
                     if source_node and target_node:
+                        if kind == RelationshipType.PARTICIPATED_IN:
+                            target_event = target_node.metadata.get("event")
+                            frames = [target_event] if isinstance(target_event, dict) else []
+                            frames += [
+                                c["payload"]["event"]
+                                for c in findings
+                                if c["kind"] == "entity"
+                                and c["payload"].get("event")
+                                and resolutions.get(c["id"], {}).get("accepted")
+                                and resolutions[c["id"]].get("canonical_id") == str(target_node.id)
+                            ]
+                            constrained: list[dict[str, Any]] = []
+                            for frame in frames:
+                                roles = frame.get("participant_roles")
+                                if isinstance(roles, dict):
+                                    constrained.append(roles)
+                            if constrained:
+                                role_names = {
+                                    name
+                                    for roles in constrained
+                                    for name, role in roles.items()
+                                    if role in {"actor", "recipient", "witness", "opponent"}
+                                }
+                                permitted_ids = {
+                                    str(i) for name in role_names for i in bound.get(name, set())
+                                }
+                                permitted_ids.update(
+                                    item["id"]
+                                    for item in catalog
+                                    if any(
+                                        name_key(name) == name_key(alias)
+                                        for name in role_names
+                                        for alias in [item["name"], *item.get("aliases", [])]
+                                    )
+                                )
+                                structural = structural and str(source_node.id) in permitted_ids
                         structural = (
                             structural
                             and source_node.id != target_node.id

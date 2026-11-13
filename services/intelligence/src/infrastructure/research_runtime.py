@@ -18,6 +18,7 @@ from src.infrastructure.embeddings import OllamaEmbeddings
 from src.infrastructure.inference import create_inference
 from src.infrastructure.model_runtime import LocalModelLease
 from src.infrastructure.persistence.evidence_index import SqlEvidenceIndex
+from src.infrastructure.persistence.inference_cache import SqlInferenceCache
 from src.infrastructure.persistence.knowledge_repository import SqlKnowledgeRepository
 from src.infrastructure.persistence.narrative_repository import SqlNarrativeRepository
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
@@ -54,7 +55,8 @@ def build_workflow(
     policy = PublicSourcePolicy(settings.research_allowed_hosts)
     return ResearchWorkflow(
         transaction,
-        inference or create_inference(settings, LocalModelLease(factory)),
+        inference
+        or create_inference(settings, LocalModelLease(factory), SqlInferenceCache(factory)),
         PublicDocumentFetcher(
             policy, settings.research_max_source_bytes, settings.research_max_source_chars
         ),

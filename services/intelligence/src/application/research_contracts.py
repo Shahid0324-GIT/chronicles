@@ -75,6 +75,9 @@ class InferenceUsage:
     elapsed_ms: int
     input_tokens: int = 0
     output_tokens: int = 0
+    retry: int = 0
+    validation_errors: tuple[str, ...] = ()
+    model_call: bool = True
 
 
 @dataclass(frozen=True)
@@ -86,10 +89,29 @@ class InferenceResult:
 class InferenceFailure(Exception):
     """Only sanitized codes cross the infrastructure boundary."""
 
-    def __init__(self, code: str, retry_after: float = 0) -> None:
+    def __init__(self, code: str, retry_after: float = 0, issues: tuple[str, ...] = ()) -> None:
         super().__init__(code)
         self.code = code
         self.retry_after = retry_after
+        self.issues = issues
+
+
+def validation_issues(error: Exception, schema: type[BaseModel] | None = None) -> tuple[str, ...]:
+    """Only schema locations and error types; never input values or exception prose."""
+    from pydantic import ValidationError
+
+    if isinstance(error, ValidationError):
+        contract = schema.model_json_schema() if schema else {}
+        fields = set(contract.get("properties", {}))
+        for definition in contract.get("$defs", {}).values():
+            fields.update(definition.get("properties", {}))
+        return tuple(
+            ".".join(str(p) if isinstance(p, int) or p in fields else "*" for p in e["loc"])[:100]
+            + ":"
+            + e["type"]
+            for e in error.errors(include_input=False, include_url=False)[:6]
+        )
+    return ("response:invalid_json_or_contract",)
 
 
 class InferenceProvider(Protocol):

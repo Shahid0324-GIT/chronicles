@@ -29,6 +29,17 @@ class Settings(BaseSettings):
     agent_max_iterations: int = Field(default=3, ge=1, le=5)
     agent_max_search_queries: int = Field(default=10, ge=0, le=20)
     agent_max_sources: int = Field(default=20, ge=1, le=20)
+    agent_max_model_calls: int = Field(default=48, ge=1, le=200)
+    agent_stage_model_calls: dict[str, int] = Field(
+        default_factory=lambda: {
+            "planning": 3,
+            "extraction": 8,
+            "identity_resolution": 16,
+            "relationship_analysis": 3,
+            "verification": 24,
+        }
+    )
+    agent_max_job_seconds: int = Field(default=900, ge=10, le=3600)
     research_max_source_bytes: int = Field(default=500_000, ge=1024, le=2_000_000)
     research_max_source_chars: int = Field(default=12_000, ge=500, le=30_000)
     research_source_cache_hours: int = Field(default=24, ge=0, le=168)
@@ -38,6 +49,19 @@ class Settings(BaseSettings):
         "www.gutenberg.org",
     ]
     searxng_base_url: str | None = None
+
+    @field_validator("agent_stage_model_calls")
+    @classmethod
+    def valid_stage_budgets(cls, value: dict[str, int]) -> dict[str, int]:
+        if set(value) - {
+            "planning",
+            "extraction",
+            "identity_resolution",
+            "relationship_analysis",
+            "verification",
+        } or any(not 1 <= v <= 200 for v in value.values()):
+            raise ValueError("Stage budgets require known inference tasks and limits from 1 to 200")
+        return value
 
     @field_validator("ollama_base_url")
     @classmethod

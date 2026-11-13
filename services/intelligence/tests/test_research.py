@@ -194,7 +194,7 @@ async def test_workflow_persists_source_evidence_and_keeps_canonical_graph_uncha
     assert all(
         row["decision"] == "supported" and row["evidence"][0]["quote"] == TEXT for row in findings
     )
-    assert [row["stage"] for row in events] == [
+    assert [row["stage"] for row in events if row["stage"].startswith("research.")] == [
         "research.queued",
         "research.planner",
         "research.researcher",

@@ -20,6 +20,7 @@ from src.application.research_contracts import (
     InferenceUsage,
     T,
     Task,
+    validation_issues,
 )
 from src.infrastructure.config.settings import Settings
 
@@ -40,6 +41,7 @@ class LangChainProvider:
         self.client, self.name, self.model, self.credential = client, name, model, credential
         self.health_url, self.api_key, self.method = health_url, api_key, method
         self.lease = lease
+        self.revision: str | None = None
 
     async def available(self) -> bool:
         try:
@@ -49,7 +51,11 @@ class LangChainProvider:
             self._check_status(response.status_code, response.headers)
             payload = response.json()
             models = payload.get("models", []) if self.name == "ollama" else payload.get("data", [])
-            return any(item.get("name", item.get("id")) == self.model for item in models)
+            match = next(
+                (item for item in models if item.get("name", item.get("id")) == self.model), None
+            )
+            self.revision = match.get("digest") if match and self.name == "ollama" else None
+            return match is not None
         except InferenceFailure:
             raise
         except Exception:
@@ -94,7 +100,14 @@ class LangChainProvider:
                 raise InferenceFailure("invalid_output")
             parsed = result.get("parsed")
             if parsed is None or result.get("parsing_error"):
-                raise InferenceFailure("invalid_output")
+                error = result.get("parsing_error")
+                while (
+                    error is not None and not isinstance(error, ValidationError) and error.__cause__
+                ):
+                    error = error.__cause__
+                raise InferenceFailure(
+                    "invalid_output", issues=validation_issues(error or ValueError(), schema)
+                )
             value = schema.model_validate(parsed)
             raw = result["raw"]
             tokens = raw.usage_metadata or {}
@@ -113,8 +126,10 @@ class LangChainProvider:
             )
         except InferenceFailure:
             raise
-        except ValidationError:
-            raise InferenceFailure("invalid_output") from None
+        except ValidationError as error:
+            raise InferenceFailure(
+                "invalid_output", issues=validation_issues(error, schema)
+            ) from None
         except Exception as error:
             response = getattr(error, "response", None)
             code = getattr(error, "status_code", 0)
@@ -123,7 +138,9 @@ class LangChainProvider:
             raise InferenceFailure("inference_failed") from None
 
 
-def create_inference(settings: Settings, lease: ModelLease | None = None) -> InferenceRouter:
+def create_inference(
+    settings: Settings, lease: ModelLease | None = None, cache: Any = None
+) -> InferenceRouter:
     local = LangChainProvider(
         ChatOllama(
             model=settings.ollama_chat_model,
@@ -174,4 +191,7 @@ def create_inference(settings: Settings, lease: ModelLease | None = None) -> Inf
         attempts=settings.ai_max_attempts,
         timeout=settings.ai_timeout_seconds,
         concurrency=settings.ai_max_concurrent_inferences,
+        cache=cache,
+        max_calls=settings.agent_max_model_calls,
+        stage_limits=settings.agent_stage_model_calls,
     )

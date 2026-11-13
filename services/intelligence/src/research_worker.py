@@ -63,7 +63,8 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         continue
                     status, error = "completed", None
                     try:
-                        state = await workflow.run(selected_id, checkpoint)
+                        async with asyncio.timeout(settings.agent_max_job_seconds):
+                            state = await workflow.run(selected_id, checkpoint)
                         if (
                             not state.get("verified")
                             or state["verified"] < len(state.get("candidates", []))
@@ -75,7 +76,12 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                     except ResearchCancelled:
                         status = "cancelled"
                     except InferenceFailure as failure:
-                        status, error = "failed", failure.code
+                        status, error = (
+                            ("partial" if "budget" in failure.code else "failed"),
+                            failure.code,
+                        )
+                    except TimeoutError:
+                        status, error = "partial", "job_duration_exceeded"
                     except Exception:
                         status, error = "failed", "research_execution_failed"
                     async with factory() as session, session.begin():

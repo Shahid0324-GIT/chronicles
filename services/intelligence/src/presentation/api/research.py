@@ -10,6 +10,7 @@ from src.application.ports.knowledge import KnowledgeSession
 from src.application.ports.research import ResearchRepository
 from src.application.promotion import CanonicalGraphPromotionService
 from src.application.research import ResearchRequest
+from src.application.research_summary import research_summary
 from src.application.research_use_cases import CancelResearch, QueueResearch, ResumeResearch
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import PromotionPolicy
@@ -44,7 +45,7 @@ async def job_response(archive: ResearchRepository, job_id: UUID) -> JobResponse
         raise NotFoundError("Research job not found")
     return JobResponse(
         **{key: job[key] for key in JobResponse.model_fields if key not in {"stage", "iteration"}},
-        stage=job["checkpoint"].get("stage", "queued"),
+        stage=job["checkpoint"].get("active_stage") or job["checkpoint"].get("stage", "queued"),
         iteration=job["checkpoint"].get("iteration", 0),
     )
 
@@ -64,6 +65,14 @@ async def create_job(command: ResearchRequest, archive: Archive, request: Reques
 @router.get("/research/jobs/{job_id}", response_model=JobResponse)
 async def inspect_job(job_id: UUID, archive: Archive) -> JobResponse:
     return await job_response(archive, job_id)
+
+
+@router.get("/research/jobs/{job_id}/summary")
+async def inspect_summary(job_id: UUID, archive: Archive) -> dict[str, Any]:
+    job = await archive.get_job(job_id)
+    if not job:
+        raise NotFoundError("Research job not found")
+    return research_summary(job, await archive.findings(job_id))
 
 
 @router.post("/research/jobs/{job_id}/retry", response_model=JobResponse, status_code=202)

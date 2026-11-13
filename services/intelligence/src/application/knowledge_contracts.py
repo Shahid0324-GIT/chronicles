@@ -41,11 +41,8 @@ class IndexedIdentityComparison(StructuredModel):
     evidence_indices: list[int] = Field(min_length=1, max_length=3)
     hidden_identity: bool = False
 
-    @model_validator(mode="after")
-    def target_required(self) -> "IndexedIdentityComparison":
-        if self.decision in {"SAME_ENTITY", "DIFFERENT_ENTITY"} and self.target_index is None:
-            raise ValueError("Compared identity requires the supplied target index")
-        return self
+    # Cross-field target requirements are enforced once by IdentityResolver. They
+    # cannot be expressed in this provider's JSON schema; retrying them is wasteful.
 
 
 class EventIdentityComparison(IndexedIdentityComparison):

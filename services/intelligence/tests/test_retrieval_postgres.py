@@ -1,13 +1,30 @@
 """Actual pgvector SQL execution, owned text and fake embeddings; no external inference."""
 
+import asyncio
+
 import pytest
 from sqlalchemy import func, select, text
 
 from src.infrastructure.model_runtime import LocalModelLease
-from src.infrastructure.persistence.models.source_intelligence import PassageEmbeddingModel
+from src.infrastructure.persistence.inference_cache import SqlInferenceCache
+from src.infrastructure.persistence.models.source_intelligence import (
+    InferenceCacheModel,
+    PassageEmbeddingModel,
+)
 
 from .test_promotion_postgres import postgres_factory  # noqa: F401
 from .test_source_intelligence import prepare_index
+
+
+@pytest.mark.postgres
+async def test_inference_cache_concurrent_writes_are_idempotent(postgres_factory):  # noqa: F811
+    cache = SqlInferenceCache(postgres_factory)
+    await asyncio.gather(
+        cache.save("a" * 64, {"owned": True}), cache.save("a" * 64, {"owned": True})
+    )
+    assert await cache.get("a" * 64) == {"owned": True}
+    async with postgres_factory() as session:
+        assert await session.scalar(select(func.count()).select_from(InferenceCacheModel)) == 1
 
 
 @pytest.mark.postgres

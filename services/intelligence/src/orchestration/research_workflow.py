@@ -1,6 +1,8 @@
 """Bounded research StateGraph with optional evidence-gated canonical publication."""
 
 import json
+import time
+from collections.abc import Awaitable, Callable
 from dataclasses import asdict
 from datetime import timedelta
 from typing import Any, TypedDict, cast
@@ -12,6 +14,7 @@ from langsmith import tracing_context
 from pydantic import BaseModel
 
 from src.application.event_extraction import extract_events
+from src.application.inference import InferenceRouter
 from src.application.knowledge_contracts import (
     FOCUSED_SCHEMAS,
     KnowledgeAssessment,
@@ -61,6 +64,9 @@ are available to you; acquisition is performed by the Researcher through approve
 
 
 class ResearchState(TypedDict, total=False):
+    active_stage: str | None
+    telemetry: dict[str, Any]
+    source_retrievals: int
     resume_count: int
     retrieved_passage_ids: list[str]
     extraction_passage_ids: list[str]
@@ -124,16 +130,19 @@ class ResearchWorkflow:
         self.retrieval, self.narratives, self.registry = retrieval, narratives, registry
         self.discovery_search = discovery_search
         graph = StateGraph(ResearchState)
-        graph.add_node("planner", self.planner)
-        graph.add_node("researcher", self.researcher)
-        graph.add_node("extractor", self.extractor)
-        graph.add_node("verifier", self.verifier)
+        graph.add_node("planner", cast(Any, self.observed("planner", self.planner)))
+        graph.add_node("researcher", cast(Any, self.observed("researcher", self.researcher)))
+        graph.add_node("extractor", cast(Any, self.observed("extractor", self.extractor)))
+        graph.add_node("verifier", cast(Any, self.observed("verifier", self.verifier)))
         if knowledge:
-            graph.add_node("identity_resolver", self.identity_resolver)
-            graph.add_node("relationship_analyst", self.relationship_analyst)
-            graph.add_node("promotion_policy", self.promotion_policy)
-            graph.add_node("research_context", self.research_context)
-            graph.add_node("narrative_builder", self.narrative_builder)
+            for name in [
+                "identity_resolver",
+                "relationship_analyst",
+                "promotion_policy",
+                "research_context",
+                "narrative_builder",
+            ]:
+                graph.add_node(name, cast(Any, self.observed(name, getattr(self, name))))
         graph.add_conditional_edges(
             START,
             self.resume_stage,
@@ -215,6 +224,47 @@ class ResearchWorkflow:
             raise ResearchCancelled()
         return ResearchRequest.model_validate(job["request"])
 
+    def observed(
+        self, name: str, action: Callable[[ResearchState], Awaitable[ResearchState]]
+    ) -> Callable[[ResearchState], Awaitable[ResearchState]]:
+        async def execute(state: ResearchState) -> ResearchState:
+            started = time.monotonic()
+            state = {**state, "active_stage": name}
+            async with self.transactions() as archive:
+                await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
+                await archive.event(UUID(state["job_id"]), "stage.started", {"stage": name})
+            try:
+                result = await action(state)
+            except Exception as error:
+                async with self.transactions() as archive:
+                    await archive.event(
+                        UUID(state["job_id"]),
+                        "stage.failed",
+                        {
+                            "stage": name,
+                            "elapsed_ms": int((time.monotonic() - started) * 1000),
+                            "error": error.code
+                            if isinstance(error, InferenceFailure)
+                            else "stage_interrupted",
+                        },
+                    )
+                raise
+            telemetry = dict(result.get("telemetry", {}))
+            stages = dict(telemetry.get("stages", {}))
+            stages[name] = stages.get(name, 0) + int((time.monotonic() - started) * 1000)
+            telemetry["stages"] = stages
+            result = {**result, "telemetry": telemetry, "active_stage": None}
+            async with self.transactions() as archive:
+                await archive.update_job(UUID(state["job_id"]), checkpoint=dict(result))
+                await archive.event(
+                    UUID(state["job_id"]),
+                    "stage.completed",
+                    {"stage": name, "elapsed_ms": stages[name]},
+                )
+            return result
+
+        return execute
+
     async def snapshot(self, stage: str, state: ResearchState) -> ResearchState:
         await self.check(state)
         state = {**state, "stage": stage}
@@ -241,12 +291,27 @@ class ResearchWorkflow:
         public: bool = False,
     ) -> BaseModel:
         await self.check(state)
+        if isinstance(self.inference, InferenceRouter):
+            async with self.transactions() as archive:
+                job = await archive.get_job(UUID(state["job_id"]))
+            if job:
+                self.inference.restore_budget(job["provider_usage"])
         start = len(self.inference.usage)
         try:
             result = await self.inference.generate(
                 RULES, prompt, schema, task, public_source_content=public
             )
             return result.value
+        except InferenceFailure as failure:
+            if "budget" in failure.code:
+                state["errors"] = list(dict.fromkeys([*state.get("errors", []), failure.code]))
+                async with self.transactions() as archive:
+                    await archive.event(
+                        UUID(state["job_id"]),
+                        "inference.blocked",
+                        {"task": task, "code": failure.code},
+                    )
+            raise
         finally:
             async with self.transactions() as archive:
                 await archive.usage(
@@ -293,6 +358,13 @@ class ResearchWorkflow:
         if request.use_registry and self.registry:
             async with self.registry() as registry:
                 available = await registry.entries(request.universe_id)
+            if request.spoiler_position is not None:
+                available = [
+                    e
+                    for e in available
+                    if e.presentation_position is not None
+                    and e.presentation_position <= request.spoiler_position
+                ]
             if not available and request.allow_search and self.discovery_search:
                 try:
                     available = await SourceDiscoveryService(
@@ -397,6 +469,10 @@ class ResearchWorkflow:
                 identifier = str(cached.id)
                 public_only = public_only and cached.public_web
             else:
+                if state.get("source_retrievals", 0) >= self.max_sources:
+                    errors.append("source_retrieval_budget_exhausted")
+                    break
+                state["source_retrievals"] = state.get("source_retrievals", 0) + 1
                 try:
                     if spec.url:
                         if spec.access_method != "html" and not isinstance(
@@ -802,6 +878,13 @@ class ResearchWorkflow:
         # Small local models reliably assess one atomic claim at a time.
         for current in state.get("candidates", []):
             if current["id"] not in valid:
+                continue
+            if (current["payload"].get("event") or {}).get(
+                "occurrence_status", "actual"
+            ) != "actual":
+                reasons[current["id"]] = (
+                    "Nonactual or unconfirmed reported event requires actual supporting evidence."
+                )
                 continue
             content_instruction = (
                 "For content_kind choose fictional-story for people or occurrences INSIDE THE "

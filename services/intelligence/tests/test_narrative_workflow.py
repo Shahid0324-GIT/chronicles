@@ -33,8 +33,7 @@ class NarrativeInference(SyntheticInference):
                         {
                             "trigger": "entered",
                             "occurrence_status": "actual",
-                            "participants": ["Mira Vale"],
-                            "participant_roles": {"Mira Vale": "actor"},
+                            "participants": [{"name": "Mira Vale", "role": "actor"}],
                             "location": "observatory",
                             "sentence_ids": [sentence["id"]],
                         }

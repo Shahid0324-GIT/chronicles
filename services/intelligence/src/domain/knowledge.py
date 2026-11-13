@@ -266,6 +266,13 @@ def relation_structure(
 def in_world_structure(payload: dict[str, str], quotes: list[str]) -> bool:
     name = payload.get("name", "")
     description = payload.get("description", "")
+    if payload.get("type") in {"EVENT", "LOCATION", "OCCURRED_AT"} and re.search(
+        r"\b(publisher.s address|press conference|advertisement|promotional event|launch event)\b"
+        r"|出版社の住所|宣伝イベント|広告イベント|舞台挨拶",
+        " ".join([description, *quotes]),
+        re.IGNORECASE,
+    ):
+        return False
     if payload.get("type") == "EVENT" and re.fullmatch(
         r"(?:第[0-9０-９一二三四五六七八九十]+話|episode\s*\d+|#\d+)", name.strip(), re.IGNORECASE
     ):

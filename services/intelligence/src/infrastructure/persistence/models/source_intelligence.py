@@ -34,6 +34,14 @@ class SourceRegistryModel(Base):
     last_error: Mapped[str | None] = mapped_column(String(100))
 
 
+class InferenceCacheModel(Base):
+    __tablename__ = "research_inference_cache"
+    __table_args__ = (Index("ix_inference_cache_created", "created_at"),)
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON_TYPE)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class PassageEmbeddingModel(Base):
     __tablename__ = "passage_embeddings"
     __table_args__ = (

@@ -30,8 +30,7 @@ async def test_event_frame_materializes_evidenced_endpoints_and_typed_edges():
                     {
                         "trigger": "entered",
                         "occurrence_status": "actual",
-                        "participants": ["Mira Vale"],
-                        "participant_roles": {"Mira Vale": "actor"},
+                        "participants": [{"name": "Mira Vale", "role": "actor"}],
                         "location": "observatory",
                         "sentence_ids": [0],
                     }
@@ -89,7 +88,9 @@ async def test_intended_outcome_is_not_an_event_and_beneficiary_is_not_a_partici
             }
         )
 
-    assert not (await extract_events([p], "Research actual occurrences", intended)).entities
+    intended_result = await extract_events([p], "Research actual occurrences", intended)
+    assert intended_result.entities[0].event["occurrence_status"] == "intended"
+    assert not intended_result.relationships
 
     async def actual(prompt, schema):
         return EventFrames.model_validate(
@@ -99,8 +100,10 @@ async def test_intended_outcome_is_not_an_event_and_beneficiary_is_not_a_partici
                         "trigger": "runs",
                         "occurrence_status": "actual",
                         "sentence_ids": [0],
-                        "participants": ["Mira", "Corin"],
-                        "participant_roles": {"Mira": "actor", "Corin": "mentioned"},
+                        "participants": [
+                            {"name": "Mira", "role": "actor"},
+                            {"name": "Corin", "role": "mentioned"},
+                        ],
                     }
                 ]
             }

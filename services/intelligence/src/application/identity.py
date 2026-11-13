@@ -6,6 +6,7 @@ from uuid import UUID, uuid5
 
 from pydantic import BaseModel
 
+from src.application.event_identity import same_scoped_occurrence
 from src.application.knowledge_contracts import (
     EventIdentityComparison,
     IdentityComparison,
@@ -14,12 +15,11 @@ from src.application.knowledge_contracts import (
 from src.domain.knowledge import (
     name_key,
     order_key,
-    same_event_context,
     same_full_name_order,
     short_name_bridge,
     source_name_bridge,
 )
-from src.domain.research import SourcePassage, normalize, quotation_exists
+from src.domain.research import SourcePassage, digest, normalize, quotation_exists
 
 InferIdentity = Callable[[str, type[BaseModel]], Awaitable[BaseModel]]
 
@@ -38,10 +38,79 @@ class IdentityResolver:
         participant_ids: list[str] | None = None,
     ) -> dict[str, Any]:
         payload = claim["payload"]
+        if (payload.get("event") or {}).get("occurrence_status", "actual") != "actual":
+            return {
+                "accepted": False,
+                "decision": "AMBIGUOUS",
+                "canonical_id": None,
+                "entity_type_valid": True,
+                "proof": "nonactual_event",
+                "reason": "Nonactual or unconfirmed reported event needs actual evidence.",
+            }
         key = name_key(payload["name"])
         eligible = [n for n in catalog if n["type"] == payload["type"]]
         event_anchor = (payload.get("event") or {}).get("identity_anchor")
         participant_ids = participant_ids or []
+        citations = payload.get("evidence", [])
+        valid = all(
+            any(str(p.id) == c["passage_id"] and quotation_exists(c["quote"], p) for p in passages)
+            for c in citations
+        ) and bool(citations)
+        reusable = key in {"king", "queen", "lord", "captain", "王", "王様", "女王"}
+        exact_matches = [
+            n for n in eligible if key in {name_key(a) for a in [n["name"], *n.get("aliases", [])]}
+        ]
+        event = payload.get("event") or {}
+        anchored = [
+            n
+            for n in eligible
+            if event_anchor
+            and (
+                (n.get("event") or {}).get("identity_anchor") == event_anchor
+                or (
+                    bool(event.get("participants"))
+                    and same_scoped_occurrence(event, n.get("event") or {}, catalog)
+                )
+            )
+        ]
+        anchor_valid = (
+            any(
+                p.source_id
+                and str(p.id) == c["passage_id"]
+                and event.get("trigger") in c["quote"]
+                and event_anchor
+                == digest(
+                    f"{p.source_id}:"
+                    f"{p.start + p.text.find(c['quote']) + c['quote'].find(event['trigger'])}:"
+                    f"{event['trigger']}"
+                )
+                for p in passages
+                for c in citations
+            )
+            if event.get("trigger")
+            else False
+        )
+        match = (
+            anchored[0]
+            if len(anchored) == 1 and anchor_valid
+            else exact_matches[0]
+            if len(exact_matches) == 1
+            and payload["type"] != "EVENT"
+            and not reusable
+            and any(key in name_key(c["quote"]) for c in citations)
+            else None
+        )
+        if indexed_evidence and valid and match:
+            return {
+                "decision": "SAME_ENTITY",
+                "accepted": True,
+                "canonical_id": match["id"],
+                "entity_type_valid": True,
+                "proof": "same_evidence_event_anchor" if event_anchor else "exact_scoped_name",
+                "evidence": citations,
+                "hidden_identity": False,
+                "reason": "Unique existing scoped identity and exact source evidence reused.",
+            }
 
         def participants(node: dict[str, Any]) -> set[str]:
             return {
@@ -248,7 +317,9 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
             )
             same_event = bool(
                 event_anchor and event_anchor == (target.get("event") or {}).get("identity_anchor")
-            ) or same_event_context(payload.get("event") or {}, target.get("event") or {})
+            ) or same_scoped_occurrence(
+                payload.get("event") or {}, target.get("event") or {}, catalog
+            )
             different_event = bool(
                 event_anchor
                 and (target.get("event") or {}).get("identity_anchor")
@@ -332,7 +403,9 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 and not partial_reference
                 and (len(eligible) <= 8 or event_anchor)
                 and not any(
-                    same_event_context(payload.get("event") or {}, n.get("event") or {})
+                    same_scoped_occurrence(
+                        payload.get("event") or {}, n.get("event") or {}, catalog
+                    )
                     for n in eligible
                 )
             ):

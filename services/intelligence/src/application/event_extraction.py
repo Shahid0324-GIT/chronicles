@@ -11,13 +11,17 @@ from src.application.research_contracts import Citation, Extraction, StructuredM
 from src.domain.research import SourcePassage, digest
 
 
+class EventParticipant(StructuredModel):
+    name: str = Field(min_length=1, max_length=100)
+    role: Literal["actor", "recipient", "witness", "opponent", "mentioned"]
+
+
 class EventFrame(StructuredModel):
     trigger: str = Field(min_length=2, max_length=100)
-    occurrence_status: Literal["actual", "intended", "hypothetical", "uncertain"]
-    participants: list[str] = Field(default_factory=list, max_length=5)
-    participant_roles: dict[str, Literal["actor", "recipient", "witness", "mentioned"]] = Field(
-        default_factory=dict, max_length=5
-    )
+    occurrence_status: Literal[
+        "actual", "intended", "hypothetical", "denied", "reported", "uncertain"
+    ]
+    participants: list[EventParticipant] = Field(default_factory=list, max_length=5)
     location: str | None = None
     arc: str | None = None
     chronological_position: int | None = Field(default=None, ge=0)
@@ -73,9 +77,13 @@ async def extract_events(
             "Extract up to three concrete story occurrences from these sentences. "
             "Each event needs the actual named participants/location and the "
             "occurrence_status: actual for an action that happened, intended for a future goal, "
-            "hypothetical or uncertain otherwise. A purpose clause is not a completed occurrence. "
-            "For each participant specify participant_roles: actor performs this precise action, "
-            "recipient is acted on, witness is present, mentioned is merely referenced. People "
+            "hypothetical for speculation, denied for a negated event, reported for somebody's "
+            "unconfirmed assertion, uncertain otherwise. A report is not automatic proof. "
+            "A purpose clause is not a completed occurrence. "
+            "Each participants entry MUST contain name and role together. "
+            "Actor performs this precise action, "
+            "recipient is acted on, witness is present, opponent acts against another participant, "
+            "mentioned is merely referenced. People "
             "whose future fate someone hopes to change are mentioned, not actors in that action. "
             "trigger phrase copied exactly from a sentence (for example its action verb phrase), "
             "participants/location only if stated as proper names. Use source-language names. "
@@ -94,8 +102,6 @@ async def extract_events(
             if ordinal >= len(source_frames):
                 continue
             frame = source_frames[ordinal]
-            if frame.occurrence_status != "actual":
-                continue
             selected = [u for u in local if u["id"] in frame.sentence_ids]
             if len(selected) != len(set(frame.sentence_ids)):
                 continue
@@ -108,10 +114,11 @@ async def extract_events(
             ]
             metadata = frame.model_dump(exclude={"sentence_ids", "title", "description"})
             metadata["participants"] = [
-                n
+                n.name
                 for n in frame.participants
-                if frame.participant_roles.get(n) in {"actor", "recipient", "witness"}
+                if n.role in {"actor", "recipient", "witness", "opponent"}
             ]
+            metadata["participant_roles"] = {n.name: n.role for n in frame.participants}
             metadata["identity_anchor"] = digest(
                 f"{p.source_id}:"
                 f"{p.start + anchor['start'] + anchor['text'].find(frame.trigger)}:{frame.trigger}"
@@ -130,11 +137,13 @@ async def extract_events(
                 "evidence": evidence,
                 "event": metadata,
             }
+            if frame.occurrence_status != "actual":
+                continue  # Preserve classified candidates, never infer participation from them.
             for name, kind, relation in [
                 *(
-                    (n, "CHARACTER", "PARTICIPATED_IN")
+                    (n.name, "CHARACTER", "PARTICIPATED_IN")
                     for n in frame.participants
-                    if frame.participant_roles.get(n) in {"actor", "recipient", "witness"}
+                    if n.role in {"actor", "recipient", "witness", "opponent"}
                 ),
                 *(([(frame.location, "LOCATION", "OCCURRED_AT")]) if frame.location else []),
             ]:
