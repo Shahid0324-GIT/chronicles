@@ -5,6 +5,7 @@ import type {
 } from "./contracts";
 import { RE_ZERO_NARRATIVE } from "./fixtures/re-zero";
 import { decodeNarrative } from "./decode";
+import { emptyNarrativeCatalog } from "./contracts";
 
 /** Explicitly curated local narrative, not agent output or an invented backend. */
 export class LocalNarrativeDataProvider implements NarrativeDataProvider {
@@ -50,7 +51,7 @@ export class BackendNarrativeDataProvider implements NarrativeDataProvider {
     if (scope.universeSlug && scope.continuityId) {
       try {
         const response = await this.request(
-          `/api/atlas/universes/${encodeURIComponent(scope.universeSlug)}/narrative?continuity_id=${encodeURIComponent(scope.continuityId)}`,
+          `/api/atlas/universes/${encodeURIComponent(scope.universeSlug)}/narrative?continuity_id=${encodeURIComponent(scope.continuityId)}${scope.spoilerPosition ? `&spoiler_position=${scope.spoilerPosition}` : ""}`,
           {
             cache: "no-store",
             signal: signal
@@ -62,7 +63,10 @@ export class BackendNarrativeDataProvider implements NarrativeDataProvider {
           throw new Error("Generated stories are temporarily unavailable.");
         const raw: unknown = await response.json();
         const catalog = decodeNarrative(raw);
-        if (catalog.journeys.some((j) => j.steps.length >= 2)) {
+        if (
+          catalog.journeys.some((j) => j.steps.length >= 2) ||
+          scope.spoilerPosition
+        ) {
           const metadata = raw as Record<string, unknown>;
           return {
             ...catalog,
@@ -88,6 +92,11 @@ export class BackendNarrativeDataProvider implements NarrativeDataProvider {
             : "Generated stories are unavailable.";
       }
     }
+    if (scope.spoilerPosition)
+      return {
+        ...emptyNarrativeCatalog(),
+        availability: { kind: "generated", reason },
+      };
     const curated = await this.fallback.load(scope, signal);
     return { ...curated, availability: { kind: "curated", reason } };
   }

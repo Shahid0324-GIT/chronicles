@@ -19,6 +19,8 @@ import Search from "./Search";
 import MapControls from "./MapControls";
 import LayerControls from "./LayerControls";
 import ResearchControls from "@/features/research/ResearchControls";
+import { readerGraph } from "@/features/narrative/reader-graph";
+import ReaderControls from "@/features/narrative/ReaderControls";
 const GraphCanvas = dynamic(() => import("@/features/graph/GraphCanvas"), {
   ssr: false,
   loading: () => (
@@ -42,7 +44,7 @@ export default function AtlasExperience({
 }
 function Experience({ universes }: { universes: Universe[] }) {
   const root = useRef<HTMLElement>(null);
-  const graph = useExploration((s) => s.graph),
+  const canonicalGraph = useExploration((s) => s.graph),
     active = useExploration((s) => s.activeUniverse),
     status = useExploration((s) => s.status),
     error = useExploration((s) => s.error),
@@ -55,6 +57,13 @@ function Experience({ universes }: { universes: Universe[] }) {
     resetFilters = useExploration((s) => s.resetFilters),
     layout = useExploration((s) => s.layoutKind),
     narrativeStatus = useExploration((s) => s.narrativeStatus);
+  const catalog = useExploration((s) => s.narrative),
+    boundary = useExploration((s) => s.spoilerPosition);
+  const graph = useMemo(
+    () =>
+      canonicalGraph ? readerGraph(canonicalGraph, catalog, boundary) : null,
+    [canonicalGraph, catalog, boundary],
+  );
   const store = useExplorationApi(),
     load = useUniverseLoader();
   const visible = useMemo(
@@ -160,6 +169,7 @@ function Experience({ universes }: { universes: Universe[] }) {
         <Search />
         <ResearchControls />
       </header>
+      {graph && status === "ready" && <ReaderControls />}
       {graph &&
         status === "ready" &&
         (story ? <StoryCanvas /> : <GraphCanvas data={graph} />)}

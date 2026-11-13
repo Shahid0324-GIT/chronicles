@@ -54,6 +54,16 @@ export function eventRegion(
   const related = [...ids]
     .map((id) => nodes.get(id))
     .filter((n): n is GraphNode => Boolean(n))
+    .map((node) =>
+      catalog.availability?.kind === "generated"
+        ? {
+            ...node,
+            title:
+              catalog.entryIndex?.find((entry) => entry.id === node.id)
+                ?.displayTitle ?? "Related entry",
+          }
+        : node,
+    )
     .sort((a, b) => a.title.localeCompare(b.title));
   const connections = (incoming: boolean): EventConnection[] =>
     direct
@@ -67,7 +77,23 @@ export function eventRegion(
       )
       .flatMap((edge) => {
         const node = nodes.get(incoming ? edge.source : edge.target);
-        return node ? [{ node, edge }] : [];
+        return node
+          ? [
+              {
+                node:
+                  catalog.availability?.kind === "generated"
+                    ? {
+                        ...node,
+                        title:
+                          catalog.entryIndex?.find(
+                            (entry) => entry.id === node.id,
+                          )?.displayTitle ?? "Related entry",
+                      }
+                    : node,
+                edge,
+              },
+            ]
+          : [];
       });
   return {
     causes: connections(true),

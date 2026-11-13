@@ -130,7 +130,11 @@ export default function StoryBranches() {
                 <button
                   key={node.id}
                   onClick={() => select(node.id)}
-                  aria-label={"Inspect " + node.title}
+                  aria-label={
+                    "Inspect " +
+                    (catalog.entryIndex?.find((e) => e.id === node.id)
+                      ?.displayTitle ?? node.title)
+                  }
                 >
                   <MediaArtwork
                     asset={resolveMedia(node.id, node.type)}
@@ -141,7 +145,10 @@ export default function StoryBranches() {
                     }
                   />
                   <span>
-                    <strong>{node.title}</strong>
+                    <strong>
+                      {catalog.entryIndex?.find((e) => e.id === node.id)
+                        ?.displayTitle ?? node.title}
+                    </strong>
                     <small>
                       {node.type.toLowerCase()}
                       {step.participantRoles?.find((r) => r.nodeId === node.id)

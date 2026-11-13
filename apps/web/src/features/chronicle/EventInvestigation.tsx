@@ -68,6 +68,7 @@ export default function EventInvestigation() {
         {expanded && (
           <CausalWing
             kind="causes"
+            generated={catalog.availability?.kind === "generated"}
             connections={region.causes}
             adjacent={journey.steps[index - 1]}
             openAdjacent={() => select(index - 1)}
@@ -92,7 +93,9 @@ export default function EventInvestigation() {
           <div className="event-prose">
             <p className="folio-eyebrow">{step.episodeLabel}</p>
             <h2>{step.title}</h2>
-            <p>{step.body}</p>
+            <p>
+              {expanded && step.detailedRecap ? step.detailedRecap : step.body}
+            </p>
             <div className="event-text-actions">
               <button onClick={() => expand(!expanded)}>
                 {expanded ? "Return to overview ↑" : "Explore this moment ↓"}
@@ -104,6 +107,7 @@ export default function EventInvestigation() {
         {expanded && (
           <CausalWing
             kind="consequences"
+            generated={catalog.availability?.kind === "generated"}
             connections={region.consequences}
             adjacent={upcoming ? journey.steps[index + 1] : undefined}
             openAdjacent={() => select(index + 1)}
@@ -137,12 +141,14 @@ export default function EventInvestigation() {
 }
 function CausalWing({
   kind,
+  generated,
   connections,
   adjacent,
   openAdjacent,
   inspect,
 }: {
   kind: "causes" | "consequences";
+  generated: boolean;
   connections: EventConnection[];
   adjacent?: JourneyStep;
   openAdjacent: () => void;
@@ -168,7 +174,7 @@ function CausalWing({
             {edge.relationship_type === "ENABLED" && (
               <small>Enabling condition</small>
             )}
-            <span>{edge.description}</span>
+            {!generated && <span>{edge.description}</span>}
           </button>
         ))
       ) : (

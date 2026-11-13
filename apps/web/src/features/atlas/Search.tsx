@@ -2,14 +2,20 @@
 import { useId, useState } from "react";
 import { useExploration } from "@/stores/ExplorationProvider";
 import { NODE_IDENTITIES } from "@/features/graph/identity";
+import { readerGraph } from "@/features/narrative/reader-graph";
 export default function Search() {
   const query = useExploration((s) => s.query),
     setQuery = useExploration((s) => s.setQuery),
-    graph = useExploration((s) => s.graph),
+    canonicalGraph = useExploration((s) => s.graph),
     continuity = useExploration((s) => s.continuityId),
     types = useExploration((s) => s.types),
     select = useExploration((s) => s.selectNode);
   const [index, setIndex] = useState(0);
+  const catalog = useExploration((s) => s.narrative),
+    boundary = useExploration((s) => s.spoilerPosition);
+  const graph = canonicalGraph
+    ? readerGraph(canonicalGraph, catalog, boundary)
+    : null;
   const listId = useId();
   const results = (graph?.nodes ?? [])
     .filter(

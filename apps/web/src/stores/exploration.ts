@@ -57,7 +57,7 @@ export interface ExplorationState extends NarrativeState {
   beginUniverse: (universe: Universe) => number;
   completeUniverse: (token: number, graph: UniverseGraph) => void;
   failUniverse: (token: number, message: string) => void;
-  selectNode: (id: string, source?: "journey") => void;
+  selectNode: (id: string, source?: "journey" | "inspection") => void;
   selectEdge: (id: string) => void;
   clearSelection: () => void;
   minimizePanel: () => void;
@@ -171,6 +171,11 @@ export function createExplorationStore(
     },
     selectNode: (id, source) => {
       const state = get();
+      if (
+        state.spoilerPosition !== null &&
+        !state.narrative.entryIndex?.some((entry) => entry.id === id)
+      )
+        return;
       if (!source) {
         const thread = state.narrative.loreThreads.find(
           (t) => t.conceptNodeId === id,
@@ -207,6 +212,11 @@ export function createExplorationStore(
     },
     selectEdge: (id) => {
       const state = get();
+      if (
+        state.spoilerPosition !== null &&
+        !state.narrative.relations?.some((edge) => edge.id === id)
+      )
+        return;
       if (!state.graph) return;
       const edge = filterGraph(
         state.graph,

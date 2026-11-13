@@ -28,6 +28,10 @@ export async function POST(request: Request, context: Context) {
       objective: data.objective,
       use_registry: true,
       narrative_research: true,
+      compose_presentations: true,
+      research_focus:
+        data.research_focus === "encyclopedia" ? "encyclopedia" : "story",
+      presentation_only: data.presentation_only === true,
       allow_search: false,
       sources: [],
       refresh: true,

@@ -54,6 +54,7 @@ function ResearchPanel({
   const [open, setOpen] = useState(false),
     [objective, setObjective] = useState(""),
     [position, setPosition] = useState(""),
+    [focus, setFocus] = useState<"story" | "encyclopedia">("story"),
     [jobOverride, setJobOverride] = useState<string | null>(null),
     [summary, setSummary] = useState<ResearchSummary | null>(null),
     [error, setError] = useState<string | null>(null),
@@ -156,6 +157,7 @@ function ResearchPanel({
                     continuity,
                     objective.trim(),
                     position ? Number(position) : undefined,
+                    focus,
                   ),
                 );
                 setSummary(null);
@@ -179,6 +181,23 @@ function ResearchPanel({
                 maxLength={1500}
                 rows={3}
               />
+            </label>
+            <label>
+              Research focus{" "}
+              <select
+                aria-label="Research focus"
+                value={focus}
+                onChange={(e) =>
+                  setFocus(
+                    e.target.value === "encyclopedia"
+                      ? "encyclopedia"
+                      : "story",
+                  )
+                }
+              >
+                <option value="story">Story moments</option>
+                <option value="encyclopedia">Encyclopedia topic</option>
+              </select>
             </label>
             <label>
               Through episode source (optional)

@@ -34,6 +34,8 @@ export interface FocusFrame {
   eventExpanded: boolean;
 }
 export interface NarrativeState {
+  spoilerPosition: number | null;
+  setSpoilerPosition: (position: number | null) => void;
   expandedBranch: BranchKind | null;
   eventExpanded: boolean;
   showUpcoming: boolean;
@@ -106,6 +108,25 @@ export function createNarrativeState(
     });
   };
   return {
+    spoilerPosition: null,
+    setSpoilerPosition: (spoilerPosition) => {
+      if (
+        spoilerPosition !== null &&
+        (!Number.isInteger(spoilerPosition) ||
+          spoilerPosition < 1 ||
+          spoilerPosition > 100000)
+      )
+        return;
+      set({
+        spoilerPosition,
+        narrative: emptyNarrativeCatalog(),
+        selectedId: null,
+        selectedEdgeId: null,
+        focusHistory: [],
+        journeyBookmark: null,
+      });
+      void get().loadNarrative();
+    },
     expandedBranch: null,
     eventExpanded: false,
     showUpcoming: true,
@@ -176,6 +197,7 @@ export function createNarrativeState(
             universeId: graph.universe.id,
             universeSlug: graph.universe.slug,
             continuityId: continuity,
+            spoilerPosition: initial.spoilerPosition,
           },
           signal,
         );

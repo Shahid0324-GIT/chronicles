@@ -27,6 +27,8 @@ export async function startResearch(
   continuity: string,
   objective: string,
   position?: number,
+  focus: "story" | "encyclopedia" = "story",
+  presentationOnly = false,
 ): Promise<string> {
   const response = await fetch("/api/atlas/research/jobs", {
     method: "POST",
@@ -36,6 +38,8 @@ export async function startResearch(
       continuity_id: continuity,
       objective,
       spoiler_position: position,
+      research_focus: focus,
+      presentation_only: presentationOnly,
     }),
     signal: AbortSignal.timeout(15000),
   });

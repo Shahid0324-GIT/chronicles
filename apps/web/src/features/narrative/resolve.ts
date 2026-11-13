@@ -85,6 +85,11 @@ export function resolveNarrative(
   });
   const threadIds = new Set(loreThreads.map((t) => t.id));
   const resolved: NarrativeCatalog = {
+    relations: catalog.relations?.filter(
+      (edge) =>
+        edges.has(edge.id) && nodes.has(edge.source) && nodes.has(edge.target),
+    ),
+    entryIndex: catalog.entryIndex?.filter((entry) => nodes.has(entry.id)),
     availability: catalog.availability,
     schemaVersion: 1,
     sources: catalog.sources.filter((s) => sources.has(s.id)),

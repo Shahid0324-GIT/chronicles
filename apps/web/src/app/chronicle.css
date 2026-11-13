@@ -1477,3 +1477,20 @@
     width: min(340px, calc(100vw - 16px));
   }
 }
+.story-scope-controls {
+  position: absolute;
+  top: 80px;
+  right: 28px;
+  z-index: 25;
+  display: flex;
+  gap: 1.5rem;
+  justify-content: flex-end;
+  padding: 0.25rem 0;
+  font-size: 0.75rem;
+}
+.story-scope-controls input {
+  width: 5rem;
+}
+.story-scope-controls select {
+  max-width: 18rem;
+}

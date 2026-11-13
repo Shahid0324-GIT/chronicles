@@ -12,6 +12,9 @@ export interface PresentationHint {
   focusRatio?: number;
 }
 export interface JourneyStep {
+  detailedRecap?: string;
+  presentationStatus?: "validated" | "unavailable";
+  underlyingEventIds?: string[];
   participantRoles?: {
     nodeId: string;
     role: "actor" | "recipient" | "witness" | "opponent";
@@ -63,6 +66,8 @@ export interface Discovery {
   presentation: PresentationHint;
 }
 export interface NarrativeCatalog {
+  relations?: { id: string; source: string; target: string; type: string }[];
+  entryIndex?: { id: string; displayTitle: string }[];
   availability?: {
     kind: "generated" | "curated";
     reason: string;
@@ -77,6 +82,7 @@ export interface NarrativeCatalog {
   sources: SourceCitation[];
 }
 export interface NarrativeScope {
+  spoilerPosition?: number | null;
   universeSlug?: string;
   universeId: string;
   continuityId: string | null;

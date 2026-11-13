@@ -26,6 +26,10 @@ const step = (v: unknown) =>
   id(v.eventNodeId) &&
   text(v.title) &&
   text(v.body) &&
+  (v.detailedRecap === undefined || text(v.detailedRecap)) &&
+  (v.underlyingEventIds === undefined || ids(v.underlyingEventIds)) &&
+  (v.presentationStatus === undefined ||
+    ["validated", "unavailable"].includes(String(v.presentationStatus))) &&
   text(v.episodeLabel) &&
   ids(v.sourceIds) &&
   ids(v.loreThreadIds) &&
@@ -43,6 +47,21 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
   if (
     !object(value) ||
     value.schemaVersion !== 1 ||
+    (value.relations !== undefined &&
+      !list(
+        value.relations,
+        (edge) =>
+          object(edge) &&
+          id(edge.id) &&
+          id(edge.source) &&
+          id(edge.target) &&
+          text(edge.type),
+      )) ||
+    (value.entryIndex !== undefined &&
+      !list(
+        value.entryIndex,
+        (e) => object(e) && id(e.id) && text(e.displayTitle),
+      )) ||
     !list(
       value.sources,
       (s) =>
