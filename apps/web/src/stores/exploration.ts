@@ -32,6 +32,7 @@ export type CameraCommand =
   | "pan-up"
   | "pan-down";
 export interface ExplorationState extends NarrativeState {
+  refreshAtlas: () => Promise<void>;
   graph: UniverseGraph | null;
   activeUniverse: Universe | null;
   status: "ready" | "loading" | "error";
@@ -99,6 +100,37 @@ export function createExplorationStore(
     journeyIndex: 0,
     discoveredIds: [],
     researchProgress: null,
+    refreshAtlas: async () => {
+      const initial = get();
+      if (!initial.activeUniverse) return;
+      const response = await fetch(
+        `/api/atlas/universes/${encodeURIComponent(initial.activeUniverse.slug)}/graph`,
+        { cache: "no-store", signal: AbortSignal.timeout(15000) },
+      );
+      if (!response.ok) throw new Error("The atlas could not be refreshed.");
+      const graph: UniverseGraph = await response.json();
+      if (
+        get().activeUniverse?.id !== initial.activeUniverse.id ||
+        get().continuityId !== initial.continuityId
+      )
+        return;
+      if (
+        graph.universe.id !== initial.activeUniverse.id ||
+        !Array.isArray(graph.nodes) ||
+        !Array.isArray(graph.edges)
+      )
+        throw new Error("Invalid atlas response.");
+      const current = get();
+      set({
+        graph,
+        selectedId: graph.nodes.some((n) => n.id === current.selectedId)
+          ? current.selectedId
+          : null,
+        selectedEdgeId: graph.edges.some((e) => e.id === current.selectedEdgeId)
+          ? current.selectedEdgeId
+          : null,
+      });
+    },
     beginUniverse: (universe) => {
       get().resetNarrativeScope();
       const token = get().loadVersion + 1;

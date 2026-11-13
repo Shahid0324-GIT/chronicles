@@ -85,6 +85,7 @@ export function resolveNarrative(
   });
   const threadIds = new Set(loreThreads.map((t) => t.id));
   const resolved: NarrativeCatalog = {
+    availability: catalog.availability,
     schemaVersion: 1,
     sources: catalog.sources.filter((s) => sources.has(s.id)),
     journeys,

@@ -18,6 +18,7 @@ import { filterGraph } from "@/features/graph/filter";
 import Search from "./Search";
 import MapControls from "./MapControls";
 import LayerControls from "./LayerControls";
+import ResearchControls from "@/features/research/ResearchControls";
 const GraphCanvas = dynamic(() => import("@/features/graph/GraphCanvas"), {
   ssr: false,
   loading: () => (
@@ -157,6 +158,7 @@ function Experience({ universes }: { universes: Universe[] }) {
           </button>
         </nav>
         <Search />
+        <ResearchControls />
       </header>
       {graph &&
         status === "ready" &&

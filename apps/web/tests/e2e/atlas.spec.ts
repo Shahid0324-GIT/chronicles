@@ -1,4 +1,10 @@
 import { expect, test } from "@playwright/test";
+// Legacy UI cases explicitly exercise the curated fallback; live integration is separate.
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/atlas/universes/*/narrative?*", (route) =>
+    route.fulfill({ status: 503, json: { error: "Owned fallback test" } }),
+  );
+});
 test("fits a narrow viewport and keeps keyboard selection on the same page", async ({
   page,
 }) => {

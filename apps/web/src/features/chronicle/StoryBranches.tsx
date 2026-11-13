@@ -142,7 +142,16 @@ export default function StoryBranches() {
                   />
                   <span>
                     <strong>{node.title}</strong>
-                    <small>{node.type.toLowerCase()}</small>
+                    <small>
+                      {node.type.toLowerCase()}
+                      {step.participantRoles?.find((r) => r.nodeId === node.id)
+                        ?.role
+                        ? " · " +
+                          step.participantRoles.find(
+                            (r) => r.nodeId === node.id,
+                          )?.role
+                        : ""}
+                    </small>
                   </span>
                   <span aria-hidden="true">↗</span>
                 </button>

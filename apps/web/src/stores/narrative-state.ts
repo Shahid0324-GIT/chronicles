@@ -172,7 +172,11 @@ export function createNarrativeState(
       });
       try {
         const response = await provider.load(
-          { universeId: graph.universe.id, continuityId: continuity },
+          {
+            universeId: graph.universe.id,
+            universeSlug: graph.universe.slug,
+            continuityId: continuity,
+          },
           signal,
         );
         const current = get();
@@ -183,16 +187,48 @@ export function createNarrativeState(
           current.continuityId !== continuity
         )
           return;
-        const result = resolveNarrative(response, graph, continuity);
+        const result = resolveNarrative(
+          response,
+          current.graph ?? graph,
+          continuity,
+        );
         const journey =
           result.catalog.journeys.find(
             (j) => j.id === current.activeJourneyId,
           ) ?? result.catalog.journeys[0];
+        const oldJourney = current.narrative.journeys.find(
+          (j) => j.id === current.activeJourneyId,
+        );
+        const selectedStep = oldJourney?.steps[current.journeyIndex];
+        const preservedIndex = selectedStep
+          ? (journey?.steps.findIndex((s) => s.id === selectedStep.id) ?? -1)
+          : -1;
+        const nextIndex =
+          preservedIndex >= 0
+            ? preservedIndex
+            : Math.max(
+                0,
+                Math.min(
+                  current.journeyIndex,
+                  (journey?.steps.length ?? 1) - 1,
+                ),
+              );
         set({
           narrative: result.catalog,
           narrativeIssues: result.issues,
           narrativeStatus: "ready",
           activeJourneyId: journey?.id ?? null,
+          journeyIndex: nextIndex,
+          ...(current.mode === "guided" && journey && selectedStep
+            ? { selectedId: journey.steps[nextIndex].eventNodeId }
+            : {}),
+          journeyBookmark:
+            current.journeyBookmark &&
+            result.catalog.journeys.some(
+              (j) => j.id === current.journeyBookmark?.journeyId,
+            )
+              ? current.journeyBookmark
+              : null,
           layoutKind:
             journey && current.layoutKind === "free" && !current.selectedId
               ? "narrative"

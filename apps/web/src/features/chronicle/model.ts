@@ -41,7 +41,10 @@ export function eventRegion(
       nodes.has(e.target),
   );
   const direct = edges.filter(
-    (e) => e.source === step.eventNodeId || e.target === step.eventNodeId,
+    (e) =>
+      (e.source === step.eventNodeId || e.target === step.eventNodeId) &&
+      (catalog.availability?.kind !== "generated" ||
+        step.presentation.relationshipIds.includes(e.id)),
   );
   const ids = new Set([
     ...step.presentation.relatedNodeIds,
@@ -56,7 +59,8 @@ export function eventRegion(
     direct
       .filter(
         (e) =>
-          e.relationship_type === "CAUSED" &&
+          (e.relationship_type === "CAUSED" ||
+            e.relationship_type === "ENABLED") &&
           (incoming
             ? e.target === step.eventNodeId
             : e.source === step.eventNodeId),

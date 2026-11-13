@@ -14,6 +14,7 @@ export default function StoryCanvas() {
     back = useExploration((s) => s.backFocus),
     history = useExploration((s) => s.focusHistory.length),
     status = useExploration((s) => s.narrativeStatus),
+    availability = useExploration((s) => s.narrative.availability),
     setMode = useExploration((s) => s.setMode);
   return (
     <section
@@ -28,13 +29,26 @@ export default function StoryCanvas() {
           <header className="story-intro">
             <div>
               <p className="folio-eyebrow">
-                <span>CHRONICLE</span> A CURATED JOURNEY
+                <span>CHRONICLE</span>{" "}
+                {availability?.kind === "generated"
+                  ? "RESEARCHED JOURNEY"
+                  : "A CURATED JOURNEY"}
               </p>
               <h1>{journey.title}</h1>
               <p>{journey.introduction}</p>
             </div>
             <div className="story-orientation">
-              <span>ORIGINAL BROADCAST PRESENTATION</span>
+              <span>
+                {availability?.kind === "generated"
+                  ? "SUPPORTING EPISODE SOURCES · PARTIAL ORDER"
+                  : "ORIGINAL BROADCAST PRESENTATION"}
+              </span>
+              {availability?.kind === "generated" && availability.partial && (
+                <small>
+                  Incomplete knowledge · {availability.gapCount ?? 0} ordering
+                  gaps
+                </small>
+              )}
               <p>
                 <span>Earlier</span>
                 <b>Moment {String(index + 1).padStart(2, "0")}</b>

@@ -11,6 +11,9 @@ export default function NarrativeDock() {
     resume = useExploration((s) => s.resumeJourney),
     begin = useExploration((s) => s.beginJourney),
     status = useExploration((s) => s.narrativeStatus),
+    generated = useExploration(
+      (s) => s.narrative.availability?.kind === "generated",
+    ),
     setMode = useExploration((s) => s.setMode),
     continuity = useExploration((s) => s.continuityId);
   const journey = useExploration(activeJourney),
@@ -38,7 +41,7 @@ export default function NarrativeDock() {
               ? "Choose a continuity to follow its story."
               : status === "error"
                 ? "The narrative notes could not be opened. The map remains available."
-                : "This map does not contain all the entries needed for the curated introduction."}
+                : "This map does not contain all the entries needed for an available journey."}
           </p>
         </div>
         <button onClick={() => setMode("explore")}>Explore freely ↗</button>
@@ -61,8 +64,12 @@ export default function NarrativeDock() {
           {paused
             ? "JOURNEY PAUSED"
             : completed
-              ? "INTRODUCTION COMPLETE"
-              : "ORIGINAL BROADCAST · A CURATED INTRODUCTION"}
+              ? generated
+                ? "END OF AVAILABLE MILESTONES"
+                : "INTRODUCTION COMPLETE"
+              : generated
+                ? "RESEARCH ARCHIVE · PARTIAL JOURNEY"
+                : "ORIGINAL BROADCAST · A CURATED INTRODUCTION"}
         </p>
         <h2>{step?.title}</h2>
         <progress

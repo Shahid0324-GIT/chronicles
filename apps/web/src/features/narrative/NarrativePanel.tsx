@@ -174,7 +174,11 @@ export default function NarrativePanel() {
                   ? journey?.spoilerScope
                   : thread?.spoilerScope}
               </p>
-              <p>Manually curated introductory notes. No automated research.</p>
+              <p>
+                {narrative.availability?.kind === "generated"
+                  ? "Source-backed model research. Assessments are not independent verification."
+                  : "Manually curated introductory notes. No automated research."}
+              </p>
               {narrative.sources
                 .filter((s) => sourceIds.includes(s.id))
                 .map((source) => (

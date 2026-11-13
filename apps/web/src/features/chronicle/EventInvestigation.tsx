@@ -165,6 +165,9 @@ function CausalWing({
             onClick={() => inspect(node.id)}
           >
             <strong>{node.title}</strong>
+            {edge.relationship_type === "ENABLED" && (
+              <small>Enabling condition</small>
+            )}
             <span>{edge.description}</span>
           </button>
         ))

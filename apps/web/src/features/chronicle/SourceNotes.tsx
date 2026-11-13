@@ -55,7 +55,11 @@ export default function SourceNotes() {
       </header>
       <h2>Notes behind the story</h2>
       <p>{mode === "lore" ? thread?.spoilerScope : journey?.spoilerScope}</p>
-      <p>Manually curated introductory notes. No automated research.</p>
+      <p>
+        {catalog.availability?.kind === "generated"
+          ? "Source-backed model research with evidence-gated publication. Assessments are not independent verification."
+          : "Manually curated introductory notes. No automated research."}
+      </p>
       {mode !== "lore" && <p>{journey?.ordering.explanation}</p>}
       <ol>
         {catalog.sources

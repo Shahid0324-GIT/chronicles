@@ -4,6 +4,7 @@ import type {
   NarrativeScope,
 } from "./contracts";
 import { RE_ZERO_NARRATIVE } from "./fixtures/re-zero";
+import { decodeNarrative } from "./decode";
 
 /** Explicitly curated local narrative, not agent output or an invented backend. */
 export class LocalNarrativeDataProvider implements NarrativeDataProvider {
@@ -32,5 +33,62 @@ export class LocalNarrativeDataProvider implements NarrativeDataProvider {
         threadIds.has(d.threadId),
       ),
     });
+  }
+}
+
+/** Uses one complete catalog at a time; fallback never merges fixture relationships. */
+export class BackendNarrativeDataProvider implements NarrativeDataProvider {
+  constructor(
+    private readonly fallback: NarrativeDataProvider = new LocalNarrativeDataProvider(),
+    private readonly request: typeof fetch = (...args) => fetch(...args),
+  ) {}
+  async load(
+    scope: NarrativeScope,
+    signal?: AbortSignal,
+  ): Promise<NarrativeCatalog> {
+    let reason = "No generated journey is available for this continuity.";
+    if (scope.universeSlug && scope.continuityId) {
+      try {
+        const response = await this.request(
+          `/api/atlas/universes/${encodeURIComponent(scope.universeSlug)}/narrative?continuity_id=${encodeURIComponent(scope.continuityId)}`,
+          {
+            cache: "no-store",
+            signal: signal
+              ? AbortSignal.any([signal, AbortSignal.timeout(15000)])
+              : AbortSignal.timeout(15000),
+          },
+        );
+        if (!response.ok)
+          throw new Error("Generated stories are temporarily unavailable.");
+        const raw: unknown = await response.json();
+        const catalog = decodeNarrative(raw);
+        if (catalog.journeys.some((j) => j.steps.length >= 2)) {
+          const metadata = raw as Record<string, unknown>;
+          return {
+            ...catalog,
+            availability: {
+              kind: "generated",
+              reason: "Source-backed research from the local archive.",
+              revision:
+                typeof metadata.revision === "string"
+                  ? metadata.revision
+                  : undefined,
+              partial: metadata.partial === true,
+              gapCount: Array.isArray(metadata.orderingGaps)
+                ? metadata.orderingGaps.length
+                : 0,
+            },
+          };
+        }
+      } catch (error) {
+        signal?.throwIfAborted();
+        reason =
+          error instanceof Error
+            ? error.message
+            : "Generated stories are unavailable.";
+      }
+    }
+    const curated = await this.fallback.load(scope, signal);
+    return { ...curated, availability: { kind: "curated", reason } };
   }
 }

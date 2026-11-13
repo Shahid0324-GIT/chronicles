@@ -12,6 +12,10 @@ export interface PresentationHint {
   focusRatio?: number;
 }
 export interface JourneyStep {
+  participantRoles?: {
+    nodeId: string;
+    role: "actor" | "recipient" | "witness" | "opponent";
+  }[];
   id: string;
   eventNodeId: string;
   title: string;
@@ -59,6 +63,13 @@ export interface Discovery {
   presentation: PresentationHint;
 }
 export interface NarrativeCatalog {
+  availability?: {
+    kind: "generated" | "curated";
+    reason: string;
+    revision?: string;
+    partial?: boolean;
+    gapCount?: number;
+  };
   schemaVersion: 1;
   journeys: NarrativeJourney[];
   loreThreads: LoreThread[];
@@ -66,6 +77,7 @@ export interface NarrativeCatalog {
   sources: SourceCitation[];
 }
 export interface NarrativeScope {
+  universeSlug?: string;
   universeId: string;
   continuityId: string | null;
 }

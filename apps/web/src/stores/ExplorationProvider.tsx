@@ -8,6 +8,7 @@ import {
 } from "react";
 import { useStore } from "zustand";
 import type { NarrativeDataProvider } from "@/features/narrative/contracts";
+import { BackendNarrativeDataProvider } from "@/features/narrative/provider";
 import type { UniverseGraph } from "@/lib/contracts";
 import { createExplorationStore, type ExplorationStore } from "./exploration";
 const Context = createContext<ExplorationStore | null>(null);
@@ -20,7 +21,12 @@ export function ExplorationProvider({
   children: ReactNode;
   provider?: NarrativeDataProvider;
 }) {
-  const [store] = useState(() => createExplorationStore(graph, provider));
+  const [store] = useState(() =>
+    createExplorationStore(
+      graph,
+      provider ?? new BackendNarrativeDataProvider(),
+    ),
+  );
   return (
     <Context.Provider value={store}>
       <NarrativeLoader store={store} />
