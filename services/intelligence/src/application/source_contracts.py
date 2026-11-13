@@ -43,6 +43,8 @@ class SourceRegistration(StructuredModel):
             raise ValueError("Registry requires a public HTTP(S) reference without credentials")
         if set(self.selectors) - {"start_at", "end_before"}:
             raise ValueError("Only explicit section markers are supported")
+        if any(not value or len(value) > 200 for value in self.selectors.values()):
+            raise ValueError("Section markers must contain one to 200 characters")
         if self.access_method == "navigation" and self.retrieval_policy != "navigation-only":
             raise ValueError("Navigational references cannot authorize ingestion")
         return self

@@ -313,6 +313,7 @@ class ResearchWorkflow:
                 str(request.continuity_id),
                 request.objective,
                 self.max_sources,
+                universe=request.universe_id,
             )
             sources.extend(SourceSelector.input(e) for e in registry_entries)
             if not registry_entries:
@@ -617,10 +618,12 @@ class ResearchWorkflow:
             extraction = await extract_events(
                 [
                     p
+                    for identifier in state.get("extraction_passage_ids", [])
                     for p in passages
-                    if not state.get("extraction_passage_ids")
-                    or str(p.id) in state["extraction_passage_ids"]
-                ],
+                    if str(p.id) == identifier
+                ]
+                if "extraction_passage_ids" in state
+                else passages,
                 request.objective,
                 event_infer,
             )
@@ -1009,6 +1012,26 @@ class ResearchWorkflow:
             if size + len(h.passage.text) <= 6000:
                 selected.append(h)
                 size += len(h.passage.text)
+        # Preserve registry relevance priority for the bounded event-call budget;
+        # semantic rank still chooses the evidence set used by all later roles.
+        source_order = {s: i for i, s in enumerate(state.get("source_ids", []))}
+        extraction_hits = sorted(
+            (
+                h
+                for h in selected
+                if h.source.provenance.get("category") not in {"official", "discussion"}
+            ),
+            key=lambda h: (
+                source_order.get(str(h.source.id), len(source_order)),
+                h.passage.ordinal,
+            ),
+        )
+        first: list[str] = []
+        remaining: list[str] = []
+        seen_sources: set[UUID] = set()
+        for h in extraction_hits:
+            (remaining if h.source.id in seen_sources else first).append(str(h.passage.id))
+            seen_sources.add(h.source.id)
         return await self.snapshot(
             "research_context",
             {
@@ -1016,11 +1039,7 @@ class ResearchWorkflow:
                 "indexing": indexed,
                 "archive_source_ids": list(dict.fromkeys(str(h.source.id) for h in selected)),
                 "retrieved_passage_ids": [str(h.passage.id) for h in selected],
-                "extraction_passage_ids": [
-                    str(h.passage.id)
-                    for h in selected
-                    if h.source.provenance.get("category") not in {"official", "discussion"}
-                ],
+                "extraction_passage_ids": first + remaining,
                 "passage_context": {
                     str(h.passage.id): {"source_id": str(h.source.id), **h.source.provenance}
                     for h in selected

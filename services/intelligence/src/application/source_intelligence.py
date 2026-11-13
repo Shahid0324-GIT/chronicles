@@ -1,5 +1,6 @@
 from typing import Literal, cast
 from urllib.parse import urlsplit
+from uuid import UUID
 
 from src.application.ports.research import SearchProvider
 from src.application.ports.source_intelligence import SourceRegistryTransaction
@@ -11,13 +12,19 @@ class SourceSelector:
     """Discovery priority breaks ties; it never becomes factual authority."""
 
     def select(
-        self, entries: list[SourceEntry], continuity: str, topic: str, limit: int = 6
+        self,
+        entries: list[SourceEntry],
+        continuity: str,
+        topic: str,
+        limit: int = 6,
+        universe: UUID | None = None,
     ) -> list[SourceEntry]:
         terms = set(topic.casefold().split())
         eligible = [
             e
             for e in entries
-            if continuity in {str(c) for c in e.continuity_ids}
+            if (universe is None or e.universe_id == universe)
+            and continuity in {str(c) for c in e.continuity_ids}
             and e.retrieval_policy == "permitted"
             and e.access_method not in {"navigation", "import"}
         ]

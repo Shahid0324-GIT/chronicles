@@ -77,8 +77,8 @@ class SqlNarrativeRepository:
             fact["sources"].append(
                 {
                     "id": str(source.id),
-                    "url": source.url,
-                    "title": source.title,
+                    "url": (source.provenance or {}).get("attribution_url") or source.url,
+                    "title": source.title + " — " + source.publisher,
                     "provenance": source.provenance or {},
                     "locator": (
                         f"passage {passage.id}; normalized offsets {passage.start}:{passage.end}"

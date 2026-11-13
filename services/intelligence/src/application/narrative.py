@@ -41,19 +41,25 @@ class NarrativeBuilder:
                 continue
             facts.setdefault(f["target_id"], []).append(f)
             for s in sources:
-                source_map[s["id"]] = s
+                previous = source_map.get(s["id"])
+                locators = set(previous["locator"].split("; ")) if previous else set()
+                locators.add(s["locator"])
+                source_map[s["id"]] = {**s, "locator": "; ".join(sorted(locators))}
                 if s["provenance"].get("position_basis") == "broadcast-presentation":
                     pos = s["provenance"].get("presentation_position")
                     if isinstance(pos, int):
                         positions[f["target_id"]] = min(positions.get(f["target_id"], pos), pos)
         nodes = {str(n.id): n for n in knowledge.nodes}
-        edges = [
-            e
-            for e in knowledge.edges
-            if str(e.id) in facts
-            and str(e.source_node_id) in facts
-            and str(e.target_node_id) in facts
-        ]
+        edges = sorted(
+            [
+                e
+                for e in knowledge.edges
+                if str(e.id) in facts
+                and str(e.source_node_id) in facts
+                and str(e.target_node_id) in facts
+            ],
+            key=lambda e: str(e.id),
+        )
         steps: list[dict[str, Any]] = []
         unordered: list[dict[str, Any]] = []
         journey_id = str(uuid5(continuity, "accepted-broadcast-journey"))
@@ -76,7 +82,7 @@ class NarrativeBuilder:
                 "eventNodeId": identifier,
                 "title": assertion.get("name", node.title),
                 "body": assertion["description"],
-                "episodeLabel": f"Episode {positions[identifier]}"
+                "episodeLabel": f"By episode {positions[identifier]}"
                 if identifier in positions
                 else "Order unknown",
                 "sourceIds": citations,
@@ -140,6 +146,14 @@ class NarrativeBuilder:
                             "eventNodeIds": sorted(pending),
                         }
                     )
+                    # One representative at this source boundary is useful without
+                    # pretending to order competing events inside the episode.
+                    if len(pending) == len(group):
+                        representative = min(
+                            pending,
+                            key=lambda i: (-len(pending[i]["presentation"]["relationshipIds"]), i),
+                        )
+                        ordered.append(pending.pop(representative))
                     unordered += list(pending.values())
                     break
                 key = ready[0]
@@ -152,7 +166,7 @@ class NarrativeBuilder:
                 }
             )
         threads, discoveries = [], []
-        for identifier, node in nodes.items():
+        for identifier, node in sorted(nodes.items()):
             if identifier not in facts or node.type not in {NodeType.LORE, NodeType.MYSTERY}:
                 continue
             thread_id, discovery_id = (
@@ -198,13 +212,16 @@ class NarrativeBuilder:
                     "universeId": str(universe),
                     "continuityId": str(continuity),
                     "title": "Accepted story milestones",
-                    "introduction": "Partial journey from source-backed graph records.",
+                    "introduction": "Partial journey across supporting episode sources.",
                     "spoilerScope": "Accepted source boundary",
                     "ordering": {
                         "basis": "broadcast-presentation",
                         "explanation": (
-                            "Explicit source broadcast positions; within-episode order requires "
-                            "accepted PRECEDES evidence."
+                            "Earliest supporting episode source in this archive, not proof of "
+                            "first reveal or in-world chronology. Synopses may recap earlier "
+                            "events. "
+                            "Ambiguous episode groups show one representative; other events remain "
+                            "unordered. Within-episode order requires accepted PRECEDES evidence."
                         ),
                         "sourceIds": sorted({s for step in ordered for s in step["sourceIds"]}),
                     },

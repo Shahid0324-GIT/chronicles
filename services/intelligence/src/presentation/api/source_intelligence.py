@@ -48,7 +48,11 @@ async def registry_sources(
 ) -> list[SourceEntry]:
     universe = await use_case.execute(slug)
     entries = await SqlSourceRegistry(session).entries(universe.id)
-    return SourceSelector().select(entries, str(continuity_id), topic) if continuity_id else entries
+    return (
+        SourceSelector().select(entries, str(continuity_id), topic, universe=universe.id)
+        if continuity_id
+        else entries
+    )
 
 
 @router.post("/research/sources/discover", response_model=list[SourceEntry])

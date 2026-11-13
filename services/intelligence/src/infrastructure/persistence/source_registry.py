@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.source_contracts import SourceEntry, SourceRegistration
 from src.domain.entities import now
-from src.domain.exceptions import NotFoundError
+from src.domain.exceptions import DomainError, NotFoundError
 from src.domain.research import digest
 from src.infrastructure.persistence.models import ContinuityModel
 from src.infrastructure.persistence.models.source_intelligence import SourceRegistryModel
@@ -39,6 +39,10 @@ class SqlSourceRegistry:
         )
         if {s.id for s in scopes} != set(entry.continuity_ids):
             raise NotFoundError("Registry continuity does not belong to the universe")
+        if entry.retrieval_policy == "permitted" and any(
+            s.medium.casefold() not in {medium.casefold() for medium in entry.media} for s in scopes
+        ):
+            raise DomainError("Declared source media do not cover the requested continuities")
         p = urlsplit(entry.url)
         url = urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path or "/", p.query, ""))
         if entry.selectors:

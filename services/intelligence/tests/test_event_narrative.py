@@ -135,3 +135,56 @@ async def test_narrative_api_keeps_existing_catalog_shape(factory, app):
         catalog = response.json()
         assert catalog["schemaVersion"] == 1
         assert all(k in catalog for k in ["journeys", "loreThreads", "discoveries", "sources"])
+
+
+async def test_ambiguous_episode_keeps_representative_and_explicit_gap(factory):
+    from contextlib import asynccontextmanager
+    from dataclasses import replace
+    from uuid import UUID
+
+    from src.application.ports.narrative import NarrativeKnowledge
+    from src.domain.value_objects import NodeType
+
+    _, _, saved = await accepted_fixture(factory)
+    universe, continuity = UUID(saved["universe_id"]), UUID(saved["continuity_id"])
+    async with narrative_transactions(factory)() as repo:
+        knowledge = await repo.knowledge(universe, continuity)
+    event = next(
+        n
+        for n in knowledge.nodes
+        if n.type == NodeType.EVENT and any(f["target_id"] == str(n.id) for f in knowledge.facts)
+    )
+    fact = next(f for f in knowledge.facts if f["target_id"] == str(event.id))
+    others = [replace(event, id=uuid4()) for _ in range(2)]
+    extra = [
+        {
+            **fact,
+            "target_id": str(n.id),
+            "sources": [
+                {**s, "provenance": {**s["provenance"], "presentation_position": position}}
+                for s in fact["sources"]
+            ],
+        }
+        for n, position in zip(others, [1, 2], strict=True)
+    ]
+
+    class Memory:
+        async def knowledge(self, *_):
+            return NarrativeKnowledge(
+                knowledge.nodes + others, knowledge.edges, knowledge.facts + extra
+            )
+
+        async def save(self, *_):
+            pass
+
+    @asynccontextmanager
+    async def tx():
+        yield Memory()
+
+    builder = NarrativeBuilder(tx)
+    catalog = await builder.build(universe, continuity)
+    assert len(catalog["journeys"][0]["steps"]) == 2
+    assert len(catalog["unorderedMilestones"]) == 1 and catalog["partial"]
+    assert catalog["orderingGaps"][0]["kind"] == "ambiguous-within-episode-order"
+    assert catalog["journeys"][0]["steps"][0]["episodeLabel"] == "By episode 1"
+    assert catalog == await builder.build(universe, continuity)

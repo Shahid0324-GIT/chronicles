@@ -104,6 +104,47 @@ async def test_invalid_vector_dimensions_do_not_persist(factory):
             await repo.store(hit, await model.identity(), [1.0, 0.0])
 
 
+async def test_unchanged_revision_reuses_vector_and_revoked_registry_blocks_retrieval(factory):
+    from dataclasses import replace
+
+    from src.infrastructure.persistence.models.research import SourceDocumentModel
+
+    scope, ids, service, model = await prepare_index(factory)
+    await service.index(scope.universe_id, scope.id)
+    async with service.transactions() as repo:
+        original = (await repo.passages(scope.universe_id, scope.id, [ids[0]]))[0].source
+    duplicate = replace(original, id=uuid4(), url=original.url + "/revision-v2")
+    async with factory() as session, session.begin():
+        await SqlResearchRepository(session).save_source(duplicate, passages_for(duplicate))
+        config = SourceRegistration(
+            universe_id=scope.universe_id,
+            name="Owned revision",
+            url=duplicate.url,
+            category="reference",
+            media=["anime"],
+            continuity_ids=[scope.id],
+            access_method="html",
+            authority="primary",
+            retrieval_policy="permitted",
+            permission_basis="Owned test permission",
+            attribution="Owned synthetic source",
+        )
+        entry = await SqlSourceRegistry(session).register(config)
+        row = await session.get(SourceDocumentModel, duplicate.id)
+        row.provenance = {**row.provenance, "registry_id": str(entry.id)}
+    calls = model.calls
+    result = await service.index(scope.universe_id, scope.id, [duplicate.id])
+    assert result["indexed"] == 0 and result["reused"] == 1 and model.calls == calls
+    async with factory() as session, session.begin():
+        await SqlSourceRegistry(session).register(
+            config.model_copy(update={"retrieval_policy": "navigation-only"})
+        )
+    assert not await service.retrieve(
+        scope.universe_id, scope.id, "arrival", allowed_sources=[duplicate.id]
+    )
+    assert model.calls == calls
+
+
 async def test_registry_preserves_access_authority_dedup_and_health(factory):
     async with factory() as session, session.begin():
         scope = await session.scalar(select(ContinuityModel))

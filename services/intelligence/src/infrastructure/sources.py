@@ -169,7 +169,16 @@ class PublicDocumentFetcher:
                 title = data.get("title", data.get("name", url))
                 metadata["page_id"] = str(data.get("id", ""))
                 metadata["revision_id"] = str(data.get("revision", data.get("updated", "")))
-                metadata["attribution_url"] = str(data.get("url", url))
+                attribution = str(data.get("url", url))
+                parsed_attribution = urlsplit(attribution)
+                metadata["attribution_url"] = (
+                    attribution
+                    if parsed_attribution.scheme in {"http", "https"}
+                    and parsed_attribution.hostname
+                    and not parsed_attribution.username
+                    and not parsed_attribution.password
+                    else url
+                )
                 if isinstance(data.get("number"), int):
                     metadata["episode_number"] = str(data["number"])
                     metadata["season_number"] = str(data.get("season", ""))
