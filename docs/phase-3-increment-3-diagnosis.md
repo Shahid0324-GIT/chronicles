@@ -1,0 +1,21 @@
+# Increment 3: diagnosis before implementation
+
+Inspected on 13 November 2026 before implementing this increment: research orchestration, inference router, source fetcher, archive models/adapters, identity resolver, relationship pipeline, publication policy, narrative TypeScript contracts and increment 2's real-run audit.
+
+## Observed bottlenecks
+
+1. **Acquisition failures were indistinguishable.** The Researcher catches every source exception as `source_unavailable`. The final two live jobs acquired only an isolated English import; the requested bilingual profile was absent. Neither downstream prompts nor a successful job status can repair missing evidence. Section selection also happens after the fetcher's character truncation, so a relevant section beyond the cap can never be selected.
+2. **Retrieval was positional.** `selected_passages` round-robins the first passages within 4,000 characters. It does not query older documents or rank by objective, entities or supporting assertions. Long reverse-ordered summaries can select the wrong episode. The archive has no embeddings or source authority metadata.
+3. **Chunk boundaries split context.** `passages_for` cuts every 1,400 characters regardless of sentence boundaries. Event participants or antecedents can be in a neighboring chunk, and small models repeatedly alter quoted text when asked to copy it.
+4. **Extraction has no event frame.** `CandidateEntity` contains a description and type but no participants, location, order or outcomes. Separate type-focused calls may discover people without discovering the events they participate in. The analyst cannot reconstruct endpoints that were never extracted.
+5. **Endpoints are restricted to the current batch.** `KnowledgePipeline.relationships` supplies only currently resolved extracted entities. The verifier builds temporary nodes from that same batch, and publication binds names only as claims are processed. Existing canonical entities cannot simply be mentioned as dangling endpoints: they need grounded, resolved references in the batch. Fix the extraction/reconciliation flow rather than weakening endpoint checks.
+6. **Identity and publication protect against real observed errors.** A person-as-event, publicity location, unsupported location description and an insufficiently established new identity were published in earlier runs and later withdrawn. Stronger evidence gates and rollback must remain. The new-character two-source policy is deliberate; it is not the cause of missing event endpoints.
+7. **Canonical connectivity does not encode narrative order.** The frontend `NarrativeDataProvider` consumes explicit broadcast-ordered journeys with citations and graph UUIDs. There is no backend builder. Traversal, article order and temporal adjacency cannot supply presentation order or causality.
+
+## Implementation decisions
+
+Add a persistent, scoped source registry with explicit access declarations and retrieval health, preserve navigational references when ingestion is not permitted, and keep discovery bounded. Extend source metadata rather than duplicating documents. Add local versioned passage embeddings and hybrid, continuity-filtered retrieval. Verified local `embeddinggemma:latest` returns **768 dimensions**; existing PostgreSQL 18 has no vector extension installed. Provision the compatible extension without resetting the volume, and use dimension-flexible vector storage with per-model dimension checks.
+
+Introduce opt-in narrative research using small evidence units and event frames. Reference supplied sentence IDs, then attach exact quotations/offsets deterministically rather than trusting a model to copy text. Materialize participant/place endpoints as grounded candidates and subject all relationships to existing semantic and transactional policy. Keep chronological and presentation positions distinct and source-backed. Generate partial narrative projections from active accepted records, with explicit gaps and source/spoiler boundaries. Preserve archive-only workflows and the current frontend.
+
+Every new pass needs fake-provider unit coverage and separate real PostgreSQL/Ollama/network verification. A successful status is not evidence of connected story knowledge. The live run must inspect accepted edges and generated milestones, not just extracted entity counts.
