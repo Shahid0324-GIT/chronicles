@@ -41,6 +41,8 @@ class SourceRegistration(StructuredModel):
     revision: str | None = None
     discovery_origin: str | None = Field(default=None, max_length=1500)
     discovery_summary: str = Field(default="", max_length=1000)
+    discovery_parent_url: str | None = Field(default=None, max_length=2000)
+    discovery_depth: int = Field(default=0, ge=0, le=10)
     discovery_path_prefix: str | None = Field(default=None, max_length=1000)
     cloud_content_allowed: bool = False
     derived_from: str | None = None

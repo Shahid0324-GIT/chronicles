@@ -54,7 +54,13 @@ def evidence_units(passages: list[SourcePassage]) -> list[dict[str, Any]]:
                 text = text[advance:]
             if len(text) >= 12:
                 units.append(
-                    {"id": len(units), "passage_id": str(p.id), "text": text, "start": start}
+                    {
+                        "id": len(units),
+                        "passage_id": str(p.id),
+                        "text": text,
+                        "start": start,
+                        "section": p.section_title,
+                    }
                 )
     return units
 

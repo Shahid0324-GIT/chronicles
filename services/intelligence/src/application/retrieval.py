@@ -1,7 +1,9 @@
+import json
 import re
 from dataclasses import replace
 from uuid import UUID
 
+from src.application.evidence_dossier import token_estimate
 from src.application.ports.retrieval import EmbeddingProvider, EvidenceHit, EvidenceIndexTransaction
 
 
@@ -70,8 +72,9 @@ class EvidenceRetrieval:
         authorities: list[str] | None = None,
         limit: int = 8,
         spoiler_position: int | None = None,
+        token_budget: int | None = None,
     ) -> list[EvidenceHit]:
-        limit = min(max(limit, 1), 16)
+        limit = min(max(limit, 1), 64)
         async with self.transactions() as repo:
             metadata = await repo.source_metadata(universe, continuity, allowed_sources)
         metadata = {
@@ -97,7 +100,13 @@ class EvidenceRetrieval:
         vector = (await self.embeddings.embed([query[:2000]]))[0]
         async with self.transactions() as repo:
             semantic = await repo.nearest(
-                universe, continuity, model, vector, 40, eligible_sources, authorities or []
+                universe,
+                continuity,
+                model,
+                vector,
+                max(40, limit * 2),
+                eligible_sources,
+                authorities or [],
             )
         semantic = [
             replace(h, source=replace(h.source, provenance=metadata[h.source.id]))
@@ -107,7 +116,12 @@ class EvidenceRetrieval:
         words = set(re.findall(r"\w+", query.casefold()))
 
         def lexical_score(h: EvidenceHit) -> int:
-            text = h.passage.text.casefold()
+            headings = " ".join(
+                s["title"]
+                for s in json.loads(h.source.provenance.get("sections_json", "[]"))
+                if s["start"] <= h.passage.start < s["end"]
+            )
+            text = (h.passage.text + " " + headings).casefold()
             return 5 * sum(n.casefold() in text for n in (names or [])) + sum(
                 w in text for w in words
             )
@@ -123,7 +137,7 @@ class EvidenceRetrieval:
                 )
             ],
             key=lambda h: (-lexical_score(h), str(h.passage.id)),
-        )[:40]
+        )[: max(40, limit * 2)]
         # Reciprocal rank fusion gives exact names their own route into the evidence set.
         scores: dict[UUID, float] = {}
         values: dict[UUID, EvidenceHit] = {}
@@ -131,16 +145,45 @@ class EvidenceRetrieval:
             for rank, h in enumerate(ranking):
                 scores[h.passage.id] = scores.get(h.passage.id, 0) + 1 / (20 + rank)
                 values.setdefault(h.passage.id, h)
+        for identifier, hit in list(values.items()):
+            title = next(
+                (
+                    s["title"]
+                    for s in reversed(json.loads(hit.source.provenance.get("sections_json", "[]")))
+                    if s["start"] <= hit.passage.start < s["end"]
+                ),
+                "",
+            )
+            values[identifier] = replace(hit, passage=replace(hit.passage, section_title=title))
         ordered = sorted(values.values(), key=lambda h: (-scores[h.passage.id], str(h.passage.id)))
         chosen: list[EvidenceHit] = []
         hashes: set[str] = set()
         counts: dict[UUID, int] = {}
-        for h in ordered:
-            if h.passage.content_hash in hashes or counts.get(h.source.id, 0) >= 3:
+        used_tokens = 0
+        seen_families: dict[str, int] = {}
+        while ordered:
+
+            def value(hit: EvidenceHit) -> float:
+                family = hit.source.independence_key or hit.source.publisher
+                return scores[hit.passage.id] / (1 + seen_families.get(family, 0) * 0.25)
+
+            h = max(ordered, key=value)
+            ordered.remove(h)
+            cost = token_estimate(h.passage.text)
+            if (
+                h.passage.content_hash in hashes
+                or token_budget is None
+                and counts.get(h.source.id, 0) >= 3
+                or token_budget is not None
+                and used_tokens + cost > token_budget
+            ):
                 continue
             chosen.append(h)
             hashes.add(h.passage.content_hash)
             counts[h.source.id] = counts.get(h.source.id, 0) + 1
+            used_tokens += cost
+            family = h.source.independence_key or h.source.publisher
+            seen_families[family] = seen_families.get(family, 0) + 1
             if len(chosen) == limit:
                 break
         return chosen

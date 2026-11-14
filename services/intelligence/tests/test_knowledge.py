@@ -260,7 +260,7 @@ def test_policy_requires_stronger_evidence_and_never_publishes_conflicts():
     )
 
 
-async def prepared(factory, supported=True, label=""):
+async def prepared(factory, supported=True, label="", primary=False):
     @asynccontextmanager
     async def tx():
         async with factory() as session, session.begin():
@@ -281,8 +281,9 @@ async def prepared(factory, supported=True, label=""):
         now(),
         "Owned synthetic test source",
         "Test continuity",
+        primary,
         False,
-        False,
+        provenance={"authority": "primary"} if primary else {},
     )
     passage = passages_for(source)[0]
     second_text = (
@@ -311,8 +312,10 @@ async def prepared(factory, supported=True, label=""):
         {
             "name": "Mira Vale",
             "type": "CHARACTER",
-            "description": "Mira Vale entered the square.",
-            "evidence": [citation, second_citation],
+            "description": "Mira Vale participated in the arrival."
+            if primary
+            else "Mira Vale entered the square.",
+            "evidence": [citation] if primary else [citation, second_citation],
         },
         {
             "name": "arrival",
@@ -405,6 +408,22 @@ async def test_atomic_promotion_idempotency_provenance_aliases_and_rollback(fact
         assert await session.scalar(select(func.count()).select_from(NodeModel)) == 15
         assert await session.scalar(select(func.count()).select_from(RelationshipModel)) == 25
         assert await session.scalar(select(func.count()).select_from(PromotionEvidenceModel)) == 4
+
+
+@pytest.mark.parametrize("hidden", [False, True])
+async def test_single_primary_literal_character_claim_keeps_hidden_identity_stronger(
+    factory, hidden
+):
+    job, service, tx, claims, resolutions = await prepared(factory, primary=True)
+    resolutions[claims[0]["id"]]["hidden_identity"] = hidden
+    result = await service.publish(job, resolutions, {}, False)
+    promoted = {r["claim_id"] for r in result["promoted"]}
+    assert (claims[0]["id"] in promoted) is not hidden
+    async with tx() as unit:
+        proof = (await unit.graph.decisions(job))[claims[0]["id"]]["policy"]
+        assert proof["independent_sources"] == 1 and proof["direct_primary_claim"]
+    if not hidden:
+        await service.rollback_job(job, "Owned test rollback preserves the audited correction path")
 
 
 async def test_unsupported_and_contradictory_findings_do_not_block_unrelated_supported_entities(

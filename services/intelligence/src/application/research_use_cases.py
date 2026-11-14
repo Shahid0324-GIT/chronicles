@@ -36,7 +36,8 @@ class QueueResearch:
                 "Search is not configured; supply approved source URLs or text"
             )
         if any(
-            source.url and not self.policy.is_approved(source.url) for source in command.sources
+            source.url and not source.registry_id and not self.policy.is_approved(source.url)
+            for source in command.sources
         ):
             raise ResearchRequestError("Source URL is not permitted by the configured host policy")
         return await self.archive.create_job(command)

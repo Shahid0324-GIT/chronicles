@@ -1,3 +1,4 @@
+import ipaddress
 from collections.abc import Awaitable, Callable
 from typing import Literal, cast
 from urllib.parse import urlsplit
@@ -9,6 +10,43 @@ from src.application.research import SourceInput
 from src.application.research_frontier import terms
 from src.application.research_policy import UniverseResearchProfile
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
+
+
+class DocumentLinkSearch:
+    """Actual links from a retrieved document, ranked as leads rather than search proof."""
+
+    def __init__(self, links: list[SearchResult]) -> None:
+        self.links = links
+
+    async def search(self, query: str, limit: int) -> list[str]:
+        return [item.url for item in await self.search_results(query, limit)]
+
+    async def search_results(self, query: str, limit: int) -> list[SearchResult]:
+        words = terms(query)
+        relevant = []
+        for link in self.links:
+            p = urlsplit(link.url)
+            host = p.hostname or ""
+            try:
+                public = ipaddress.ip_address(host).is_global
+            except ValueError:
+                public = (
+                    bool(host)
+                    and host != "localhost"
+                    and not host.endswith((".local", ".internal", ".localhost"))
+                )
+            if (
+                p.scheme not in {"http", "https"}
+                or p.username
+                or p.password
+                or not public
+                or not words & terms(link.title + " " + link.summary)
+            ):
+                continue
+            relevant.append(link)
+        return sorted(
+            relevant, key=lambda r: (-len(words & terms(r.title + " " + r.summary)), r.url)
+        )[:limit]
 
 
 class SourceSelector:
@@ -144,6 +182,8 @@ class SourceDiscoveryService:
         queries: list[str] | None = None,
         on_query: Callable[[str], Awaitable[None]] | None = None,
         on_results: Callable[[str, list[SearchResult]], Awaitable[None]] | None = None,
+        parent_url: str | None = None,
+        depth: int = 0,
     ) -> list[SourceEntry]:
         async with self.transactions() as registry:
             existing = await registry.entries(request.universe_id)
@@ -183,6 +223,10 @@ class SourceDiscoveryService:
                 seen.add(identity)
                 parsed = urlsplit(url)
                 known = [entry for entry in existing if entry.url.partition("#")[0] == url]
+                if known and (
+                    parent_url or not any(request.continuity_id in e.continuity_ids for e in known)
+                ):
+                    continue  # Persistent URL index: no linked loops or scope overwrites.
                 if any(entry.retrieval_policy == "permitted" for entry in known):
                     continue  # Discovery cannot erase existing permission or source selections.
                 rules = [
@@ -215,6 +259,8 @@ class SourceDiscoveryService:
                             discovery_origin=query,
                             discovery_summary=result.summary,
                             discovery_path_prefix=None,
+                            discovery_parent_url=parent_url,
+                            discovery_depth=depth,
                             permission_basis=(
                                 "Approved discovery rule "
                                 + str(template.id)
@@ -239,6 +285,8 @@ class SourceDiscoveryService:
                         attribution="Discovered URL; verify site terms before ingestion",
                         discovery_origin=query,
                         discovery_summary=result.summary,
+                        discovery_parent_url=parent_url,
+                        discovery_depth=depth,
                     )
                 )
             # Retain successful discoveries even if a later engine request fails.

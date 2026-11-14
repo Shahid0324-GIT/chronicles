@@ -18,13 +18,42 @@ from src.application.ports.research import SearchResult
 from src.application.research import FetchedDocument, SourceRejected
 from src.application.research_contracts import InferenceFailure
 from src.domain.research import normalize
+from src.infrastructure.document_structure import html_document
 
 USER_AGENT = "ChroniclesResearch/0.1"
 
 
 class PublicSourcePolicy:
-    def __init__(self, allowed_hosts: list[str]) -> None:
+    def __init__(self, allowed_hosts: list[str], allowed_urls: list[str] | None = None) -> None:
         self.hosts = {host.lower() for host in allowed_hosts}
+        self.urls = {self.locator(url) for url in (allowed_urls or [])}
+
+    @staticmethod
+    def locator(url: str) -> str:
+        p = urlsplit(url)
+        return urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path or "/", p.query, ""))
+
+    @staticmethod
+    def public_url(url: str) -> bool:
+        try:
+            p = urlsplit(url)
+            host = (p.hostname or "").lower()
+            if (
+                p.scheme not in {"http", "https"}
+                or not host
+                or p.username
+                or p.password
+                or p.port not in {None, 80, 443}
+                or host in {"localhost", "localhost.localdomain"}
+                or host.endswith((".localhost", ".local", ".internal"))
+            ):
+                return False
+            try:
+                return PublicSourcePolicy.public_ip(host)
+            except ValueError:
+                return True  # DNS is resolved and pinned at request time, never here.
+        except ValueError:
+            return False
 
     def is_approved(self, url: str) -> bool:
         try:
@@ -37,8 +66,8 @@ class PublicSourcePolicy:
         parsed = urlsplit(url)
         host = (parsed.hostname or "").lower()
         if (
-            parsed.scheme not in {"http", "https"}
-            or host not in self.hosts
+            not self.public_url(url)
+            or (host not in self.hosts and self.locator(url) not in self.urls)
             or parsed.username
             or parsed.password
             or parsed.port not in {None, 80, 443}
@@ -105,6 +134,12 @@ class PublicDocumentFetcher:
         self.last: dict[str, float] = {}
         self.reserve_bytes: Callable[[int], Awaitable[None]] | None = None
         self.complete_bytes: Callable[[int, int], Awaitable[None]] | None = None
+
+    def authorize_registered(self, urls: list[str]) -> None:
+        """Exact current registry grants; no domain-wide permission inheritance."""
+        approved = [url for url in urls if PublicSourcePolicy.public_url(url)]
+        robots = [urlunsplit((*urlsplit(url)[:2], "/robots.txt", "", "")) for url in approved]
+        self.policy = PublicSourcePolicy(list(self.policy.hosts), [*approved, *robots])
 
     def budget_requests(
         self,
@@ -233,32 +268,26 @@ class PublicDocumentFetcher:
                 kind = headers.get("content-type", "").split(";")[0].lower()
                 if kind not in {"text/html", "application/xhtml+xml", "text/plain"}:
                     raise SourceRejected("source_content_type_not_allowed")
-                soup = BeautifulSoup(body, "html.parser")
-                title = (
-                    normalize(soup.title.get_text())
-                    if soup.title
-                    else urlsplit(url).hostname or "Source"
-                )
                 if kind == "text/plain":
                     text = body.decode("utf-8", errors="replace")
+                    document = FetchedDocument(
+                        url=url,
+                        title=urlsplit(url).hostname or "Source",
+                        publisher=urlsplit(url).hostname or "",
+                        text=text,
+                        truncated=False,
+                    )
                 else:
-                    for item in soup.select(
-                        "script,style,nav,header,footer,aside,form,svg,noscript"
-                    ):
-                        item.decompose()
-                    main = soup.select_one("main,article,#story,.story") or soup.body or soup
-                    text = main.get_text(" ", strip=True)
+                    document = html_document(body, url)
+                    text = document.text
                 text = normalize(text)
                 if len(text) < 30:
                     raise SourceRejected("source_has_no_usable_text")
-                return FetchedDocument(
-                    url=url,
-                    title=title[:300],
-                    publisher=urlsplit(url).hostname or "",
-                    # The byte limit bounds memory. Select sections before the workflow's
-                    # character cap, otherwise reverse-ordered pages lose their opening arc.
-                    text=text[: self.max_chars] if cap else text,
-                    truncated=cap and len(text) > self.max_chars,
+                return document.model_copy(
+                    update={
+                        "text": text[: self.max_chars] if cap else text,
+                        "truncated": cap and len(text) > self.max_chars,
+                    }
                 )
             raise SourceRejected("too_many_source_redirects")
         except (SourceRejected, InferenceFailure):

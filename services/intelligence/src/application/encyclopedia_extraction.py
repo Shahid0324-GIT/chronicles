@@ -64,7 +64,14 @@ async def extract_encyclopedia(
                 {
                     "objective": objective,
                     "types": [t.value for t in types] or [t.value for t in NodeType],
-                    "units": [{"id": u["id"], "text": u["text"]} for u in units],
+                    "units": [
+                        {
+                            "id": u["id"],
+                            "text": u["text"],
+                            "section_context_not_quotation": u.get("section", ""),
+                        }
+                        for u in units
+                    ],
                 },
                 ensure_ascii=False,
             ),

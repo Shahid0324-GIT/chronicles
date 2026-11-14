@@ -45,8 +45,8 @@ class Settings(BaseSettings):
     )
     agent_max_job_seconds: int = Field(default=900, ge=10, le=3600)
     research_focused_policy: ResearchPolicy = Field(default_factory=ResearchPolicy)
-    research_max_source_bytes: int = Field(default=500_000, ge=1024, le=2_000_000)
-    research_max_source_chars: int = Field(default=12_000, ge=500, le=30_000)
+    research_max_source_bytes: int = Field(default=2_000_000, ge=1024, le=10_000_000)
+    research_max_source_chars: int = Field(default=500_000, ge=500, le=2_000_000)
     research_source_cache_hours: int = Field(default=24, ge=0, le=168)
     research_allowed_hosts: list[str] = [
         "www.tv-tokyo.co.jp",

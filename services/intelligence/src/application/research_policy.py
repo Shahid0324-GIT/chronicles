@@ -3,19 +3,22 @@
 from typing import Literal
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from src.application.research_contracts import StructuredModel
 
 
 class ResearchPolicy(StructuredModel):
-    version: Literal["focused-v1"] = "focused-v1"
-    depth: Literal["focused"] = "focused"
+    version: Literal["focused-v1", "adaptive-v2"] = "adaptive-v2"
+    depth: Literal["quick", "focused", "deep"] = "focused"
     max_passes: int = Field(default=3, ge=1, le=20)
     max_follow_up_depth: int = Field(default=2, ge=0, le=10)
     max_queries: int = Field(default=8, ge=0, le=100)
     max_documents: int = Field(default=12, ge=1, le=200)
-    max_bytes: int = Field(default=2_000_000, ge=1024, le=50_000_000)
+    max_bytes: int = Field(default=20_000_000, ge=1024, le=50_000_000)
+    max_requests: int = Field(default=60, ge=1, le=2000)
+    max_document_chars: int = Field(default=500_000, ge=500, le=2_000_000)
+    presentation_requires_coverage: bool = True
     max_model_calls: int = Field(default=48, ge=1, le=200)
     max_tokens: int = Field(default=150_000, ge=1000, le=1_000_000)
     max_seconds: int = Field(default=900, ge=10, le=3600)
@@ -26,6 +29,39 @@ class ResearchPolicy(StructuredModel):
     required_facets: list[str] = Field(
         default_factory=lambda: ["identity", "events", "connections"], min_length=1, max_length=12
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def depth_defaults(cls, value: object) -> object:
+        if not isinstance(value, dict):
+            return value
+        presets = {
+            "quick": dict(
+                max_passes=1,
+                max_follow_up_depth=1,
+                max_queries=3,
+                max_documents=4,
+                max_requests=20,
+                max_bytes=8_000_000,
+                max_model_calls=16,
+                max_tokens=40_000,
+                max_seconds=300,
+                dossier_tokens=2500,
+            ),
+            "deep": dict(
+                max_passes=6,
+                max_follow_up_depth=4,
+                max_queries=20,
+                max_documents=30,
+                max_requests=180,
+                max_bytes=50_000_000,
+                max_model_calls=96,
+                max_tokens=300_000,
+                max_seconds=1800,
+                dossier_tokens=7000,
+            ),
+        }
+        return {**presets.get(value.get("depth", "focused"), {}), **value}
 
 
 class UniverseResearchProfile(StructuredModel):

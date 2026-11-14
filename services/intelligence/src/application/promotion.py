@@ -9,6 +9,7 @@ from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import (
     PromotionPolicy,
+    direct_primary_claim,
     in_world_structure,
     independent_sources,
     name_key,
@@ -168,6 +169,7 @@ class CanonicalGraphPromotionService:
                     strong = strong or (
                         payload["type"] == "CHARACTER"
                         and resolution.get("decision") in {"NEW_ENTITY", "DIFFERENT_ENTITY"}
+                        and not direct_primary_claim(payload, evidence)
                     )
                     accepted = accepted and resolution.get("canonical_id") is not None
                     target = UUID(resolution["canonical_id"]) if accepted else None
@@ -468,7 +470,8 @@ class CanonicalGraphPromotionService:
                     policy={
                         "outcome": outcome,
                         "reason": reason,
-                        "version": "2.0",
+                        "version": "3.0",
+                        "direct_primary_claim": direct_primary_claim(payload, evidence),
                         "independent_sources": independent_sources(evidence),
                     },
                 )

@@ -44,6 +44,11 @@ class DocumentFetcher(Protocol):
 
 
 @runtime_checkable
+class RegisteredDocumentFetcher(Protocol):
+    def authorize_registered(self, urls: list[str]) -> None: ...
+
+
+@runtime_checkable
 class BudgetedDocumentFetcher(Protocol):
     def budget_requests(
         self,

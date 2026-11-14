@@ -5,6 +5,7 @@ import unicodedata
 from collections.abc import Mapping
 from dataclasses import dataclass
 from difflib import SequenceMatcher
+from typing import Any
 from urllib.parse import urlsplit
 
 from src.domain.value_objects import NodeType, RelationshipType
@@ -14,6 +15,27 @@ def name_key(name: str) -> str:
     value = unicodedata.normalize("NFKC", name).casefold()
     return " ".join(
         "".join(" " if unicodedata.category(c)[0] in {"P", "Z"} else c for c in value).split()
+    )
+
+
+def direct_primary_claim(payload: dict[str, Any], evidence: list[dict[str, Any]]) -> bool:
+    """A literal named-subject assertion, not a model's unsupported paraphrase."""
+    description = " ".join(payload.get("description", "").split())
+    name = payload.get("name", "")
+    if not description or not name or name_key(name) not in name_key(description):
+        return False
+    if re.search(
+        r"\b(might|perhaps|hypothetical|reportedly|rumou?r|theory|imagine|because|caused)\b"
+        r"|正体|本名|かもしれ|らしい|=|also known as|secret identity|true identity",
+        description,
+        re.I,
+    ):
+        return False
+    return any(
+        item.get("public_web")
+        and item.get("provenance", {}).get("authority") == "primary"
+        and description in " ".join(item.get("quote", "").split())
+        for item in evidence
     )
 
 

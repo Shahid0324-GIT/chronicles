@@ -71,14 +71,13 @@ async def research_frontier(
 async def register_source(
     command: SourceRegistration, session: Session, request: Request
 ) -> SourceEntry:
-    policy = PublicSourcePolicy(request.app.state.settings.research_allowed_hosts)
     if (
         command.retrieval_policy == "permitted"
         and command.access_method != "import"
-        and not policy.is_approved(command.url)
+        and not PublicSourcePolicy.public_url(command.url)
     ):
         raise ResearchRequestError(
-            "Ingestion requires an explicitly approved host; retain as navigation-only"
+            "Registry permission requires a public HTTP(S) reference; unsafe URLs are excluded"
         )
     return await SqlSourceRegistry(session).register(command)
 

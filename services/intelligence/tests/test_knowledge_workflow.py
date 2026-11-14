@@ -43,7 +43,12 @@ class SyntheticInference:
         if task == "planning":
             value = ResearchPlan(questions=["What does the synthetic source say?"], queries=[])
         elif task == "extraction":
-            evidence = [{"passage_id": data["passages"][0]["id"], "quote": TEXT}]
+            evidence = [
+                {
+                    "passage_id": next(p["id"] for p in data["passages"] if p["text"] == TEXT),
+                    "quote": TEXT,
+                }
+            ]
             value = Extraction.model_validate(
                 {
                     "entities": [
@@ -52,7 +57,16 @@ class SyntheticInference:
                             "type": "CHARACTER",
                             "description": "Mira Vale entered the observatory.",
                             "evidence": evidence
-                            + [{"passage_id": data["passages"][1]["id"], "quote": SECOND_TEXT}],
+                            + [
+                                {
+                                    "passage_id": next(
+                                        p["id"]
+                                        for p in data["passages"]
+                                        if p["text"] == SECOND_TEXT
+                                    ),
+                                    "quote": SECOND_TEXT,
+                                }
+                            ],
                         },
                         {
                             "name": "arrival",
@@ -82,7 +96,14 @@ class SyntheticInference:
                             "target_name": "arrival",
                             "type": "PARTICIPATED_IN",
                             "description": "Mira Vale participated in the arrival.",
-                            "evidence": [{"passage_id": data["passages"][0]["id"], "quote": TEXT}],
+                            "evidence": [
+                                {
+                                    "passage_id": next(
+                                        p["id"] for p in data["passages"] if p["text"] == TEXT
+                                    ),
+                                    "quote": TEXT,
+                                }
+                            ],
                         }
                     ]
                 }

@@ -37,6 +37,7 @@ from src.application.ports.research import (
     BudgetedDocumentFetcher,
     CompleteDocumentFetcher,
     DocumentFetcher,
+    RegisteredDocumentFetcher,
     ResearchTransaction,
     SearchProvider,
 )
@@ -65,6 +66,7 @@ from src.domain.research import (
     normalize,
     passages_for,
     quotation_exists,
+    scope_structure,
 )
 from src.domain.value_objects import NodeType, RelationshipType
 from src.orchestration.knowledge_pipeline import KnowledgePipeline
@@ -100,6 +102,7 @@ class ResearchState(TypedDict, total=False):
     active_stage: str | None
     telemetry: dict[str, Any]
     source_retrievals: int
+    retrieval_requests: int
     resume_count: int
     retrieved_passage_ids: list[str]
     extraction_passage_ids: list[str]
@@ -541,7 +544,9 @@ class ResearchWorkflow:
             "Search queries should contain 3–12 focused keywords, a subject and a missing fact. "
             "Start with a broad subject query within an approved official site. Avoid quoted "
             "phrases and piling constraints into every query; these can hide relevant pages. "
-            "Prefer official/reference sites listed in the profile; never invent domain names. "
+            "Include a broad query without site: restrictions and use grounded original-language "
+            "names where available. Official/reference sites are preferences, not domain fences. "
+            "Never invent domain names or translated aliases. "
             "Existing curated titles are context, NOT newly discovered evidence. "
             + json.dumps(
                 {
@@ -657,16 +662,11 @@ class ResearchWorkflow:
         if request.use_registry and self.registry:
             async with self.registry() as registry:
                 available = await registry.entries(request.universe_id)
-            if self.source_policy:
-                state["source_access_gaps"] = [
-                    {"url": entry.url, "reason": "host_not_approved"}
-                    for entry in available
-                    if entry.retrieval_policy == "permitted"
-                    and not self.source_policy.is_approved(entry.url)
-                ]
-                available = [
-                    entry for entry in available if self.source_policy.is_approved(entry.url)
-                ]
+            state["source_access_gaps"] = [
+                {"url": entry.url, "reason": "retrieval_permission_not_established"}
+                for entry in available
+                if entry.retrieval_policy != "permitted"
+            ][: self.policy(state).max_leads]
             if request.spoiler_position is not None:
                 available = [
                     e
@@ -703,10 +703,6 @@ class ResearchWorkflow:
                             {"reason": "search_unavailable"},
                         )
             # Discovery returns the complete registry: reapply the caller's fences.
-            if self.source_policy:
-                available = [
-                    entry for entry in available if self.source_policy.is_approved(entry.url)
-                ]
             if request.spoiler_position is not None:
                 available = [
                     entry
@@ -776,9 +772,30 @@ class ResearchWorkflow:
                         )
                         await memory.save_lead(lead)
         public_only = state.get("public_only", True)
+        if self.registry and any(spec.registry_id for spec in sources):
+            async with self.registry() as registry:
+                current_entries = await registry.entries(request.universe_id)
+            registry_entries = [
+                e
+                for e in current_entries
+                if e.retrieval_policy == "permitted" and request.continuity_id in e.continuity_ids
+            ]
         seen: set[str] = set()
         for spec in sources:
             await self.check(state)
+            if spec.registry_id:
+                entry = next((e for e in registry_entries if e.id == spec.registry_id), None)
+                if (
+                    entry is None
+                    or not spec.url
+                    or spec.url.partition("#")[0] != entry.url.partition("#")[0]
+                    or spec.start_at != entry.selectors.get("start_at")
+                    or spec.end_before != entry.selectors.get("end_before")
+                ):
+                    errors.append("source_registry_permission_changed")
+                    continue
+                if isinstance(self.fetcher, RegisteredDocumentFetcher):
+                    self.fetcher.authorize_registered([spec.url])
             locator = spec.url or "local:" + digest(spec.text or "")
             if spec.text and spec.reference_url:
                 locator = spec.reference_url.partition("#")[0] + "#import-" + digest(spec.text)[:16]
@@ -869,7 +886,7 @@ class ResearchWorkflow:
                                 if spec.access_method != "html"
                                 and isinstance(self.fetcher, ApiDocumentFetcher)
                                 else await self.fetcher.fetch_complete(spec.url)
-                                if (spec.start_at or spec.end_before)
+                                if (state.get("policy") or spec.start_at or spec.end_before)
                                 and isinstance(self.fetcher, CompleteDocumentFetcher)
                                 else await self.fetcher.fetch(spec.url)
                             )
@@ -899,6 +916,7 @@ class ResearchWorkflow:
                             len(spec.text or "") > self.source_chars,
                         )
                     scope_note = spec.source_scope
+                    fetched_metadata = dict(document.metadata) if spec.url and document else {}
                     if spec.start_at or spec.end_before:
                         begin = text.find(spec.start_at) if spec.start_at else 0
                         finish = (
@@ -908,6 +926,9 @@ class ResearchWorkflow:
                         )
                         if begin < 0 or finish <= begin:
                             raise SourceRejected("source_selection_not_found")
+                        segment = text[begin:finish]
+                        begin += len(segment) - len(segment.lstrip())
+                        fetched_metadata = scope_structure(fetched_metadata, begin, finish)
                         text = normalize(text[begin:finish])
                         if len(text) < 12:
                             raise SourceRejected("source_selection_too_short")
@@ -920,11 +941,14 @@ class ResearchWorkflow:
                         or spec.access_method != "html"
                     ) and not (spec.start_at or spec.end_before):
                         url = url.partition("#")[0] + "#" + locator.partition("#")[2]
-                    truncated = truncated or len(text) > self.source_chars
-                    text = text[: self.source_chars]
-                    fetched_metadata = (
-                        document.metadata if spec.url and document is not None else {}
-                    )
+                    if state.get("policy"):
+                        if len(text) > min(
+                            self.source_chars, self.policy(state).max_document_chars
+                        ):
+                            raise SourceRejected("source_document_character_budget_exhausted")
+                    else:
+                        truncated = truncated or len(text) > self.source_chars
+                        text = text[: self.source_chars]
                     fingerprint = digest(text)
                     source_id = uuid5(
                         NAMESPACE_URL,
@@ -1036,25 +1060,22 @@ class ResearchWorkflow:
                     )
                 ]
             )
-        # Round-robin source coverage within a character budget; no semantic RAG claim.
+        # Explicit lexical fallback for archive-only callers; semantic retrieval is separate.
         if "retrieved_passage_ids" in state:
             by_id = {str(p.id): p for p in values}
             return [by_id[i] for i in state["retrieved_passage_ids"] if i in by_id]
-        buckets = [
-            [p for p in values if str(p.source_id) == identifier]
-            for identifier in state.get("source_ids", [])
-        ]
+        request = await self.check(state)
+        query = terms(
+            request.objective + " " + " ".join(state.get("plan", {}).get("questions", []))
+        )
+        ranked = sorted(values, key=lambda p: (-len(query & terms(p.text)), str(p.id)))
         selected: list[SourcePassage] = []
         size = 0
-        for ordinal in range(max((len(bucket) for bucket in buckets), default=0)):
-            for bucket in buckets:
-                if (
-                    ordinal < len(bucket)
-                    and size + len(bucket[ordinal].text) <= 4000
-                    and len(selected) < 8
-                ):
-                    selected.append(bucket[ordinal])
-                    size += len(bucket[ordinal].text)
+        for passage in ranked:
+            cost = token_estimate(passage.text)
+            if size + cost <= (self.policy(state).dossier_tokens if state.get("policy") else 2000):
+                selected.append(passage)
+                size += cost
         return selected
 
     async def extractor(self, state: ResearchState) -> ResearchState:
@@ -1735,6 +1756,10 @@ class ResearchWorkflow:
                         charge = saved.get("retrieved_bytes", 0) + maximum
                         if charge > policy.max_bytes:
                             raise InferenceFailure("job_byte_budget_exhausted")
+                        requests = saved.get("retrieval_requests", 0) + 1
+                        if requests > policy.max_requests:
+                            raise InferenceFailure("job_request_budget_exhausted")
+                        saved["retrieval_requests"] = state["retrieval_requests"] = requests
                         saved["retrieved_bytes"] = state["retrieved_bytes"] = charge
                         await archive.update_job(job_id, checkpoint=saved)
 
@@ -1774,12 +1799,39 @@ class ResearchWorkflow:
             [UUID(i) for i in state.get("source_ids", [])],
         )
         await self.check(state)
+        names = []
+        if self.atlas:
+            scope = await self.atlas.scope(
+                request.universe_id,
+                request.continuity_id,
+                spoiler_position=request.spoiler_position,
+            )
+            relevant = {
+                target
+                for target, facts in scope.facts.items()
+                if any(
+                    terms(f["payload"].get("name", "")) & terms(request.objective) for f in facts
+                )
+            }
+            for edge in scope.edges():
+                if str(edge.source_node_id) in relevant or str(edge.target_node_id) in relevant:
+                    relevant.update((str(edge.source_node_id), str(edge.target_node_id)))
+            names = list(
+                dict.fromkeys(
+                    f["payload"].get("name", "")
+                    for target in relevant
+                    for f in scope.facts.get(target, [])
+                    if f["payload"].get("name")
+                )
+            )[:16]
         hits = await self.retrieval.retrieve(
             request.universe_id,
             request.continuity_id,
             request.objective + " " + " ".join(state.get("plan", {}).get("questions", [])),
             spoiler_position=request.spoiler_position,
-            limit=16 if state.get("policy") else 8,
+            names=names,
+            limit=64 if state.get("policy") else 8,
+            token_budget=self.policy(state).dossier_tokens if state.get("policy") else None,
         )
         selected = []
         size = 0
@@ -1827,7 +1879,12 @@ class ResearchWorkflow:
 
     async def narrative_builder(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
-        if (request.compose_presentations or request.presentation_only) and self.atlas:
+        enough = (
+            not state.get("policy")
+            or not self.policy(state).presentation_requires_coverage
+            or state.get("coverage", {}).get("outcome") == "SUFFICIENT_FOR_PRESENTATION"
+        )
+        if (request.presentation_only or request.compose_presentations and enough) and self.atlas:
 
             async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
                 public = False
