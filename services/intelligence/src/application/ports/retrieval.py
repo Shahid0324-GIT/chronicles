@@ -1,6 +1,6 @@
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 from uuid import UUID
 
 from src.domain.research import SourceDocument, SourcePassage
@@ -30,11 +30,18 @@ class EvidenceHit:
 
 
 class EvidenceIndex(Protocol):
+    async def source_metadata(
+        self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
+    ) -> dict[UUID, dict[str, Any]]: ...
     async def cached_vector(
         self, universe: UUID, continuity: UUID, model: EmbeddingIdentity, content_hash: str
     ) -> list[float] | None: ...
     async def passages(
-        self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
+        self,
+        universe: UUID,
+        continuity: UUID,
+        source_ids: list[UUID] | None = None,
+        query: str | None = None,
     ) -> list[EvidenceHit]: ...
     async def indexed(self, passage: UUID, model: EmbeddingIdentity, content_hash: str) -> bool: ...
     async def store(

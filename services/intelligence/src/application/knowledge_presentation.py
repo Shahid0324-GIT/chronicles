@@ -274,6 +274,8 @@ class RecapComposer:
 
     @staticmethod
     def requires_article(resource: dict[str, Any]) -> bool:
+        if resource["kind"] == "arc" and resource.get("synthesis"):
+            return True
         if resource["kind"] != "milestone":
             return False
         roles = [
@@ -336,7 +338,15 @@ class RecapComposer:
         facts: list[dict[str, Any]] = resource["facts"]
         if resource.get("synthesis"):
             return EvidenceDossierBuilder().select(
-                facts, "Story events participants connections and outcomes", 3500
+                facts,
+                "Story events participants connections and outcomes",
+                3500,
+                priority_ids={
+                    identifier
+                    for gloss in resource.get("validated_glosses", [])
+                    for statement in gloss["statements"]
+                    for identifier in statement["fact_ids"]
+                },
             )["facts"]
 
         def position(fact: dict[str, Any]) -> int:
@@ -479,6 +489,12 @@ class RecapComposer:
         minimum = 1 if resource["kind"] == "entry" else 3
         if not minimum <= len(draft.display_title.split()) <= 8:
             return draft.model_dump(), "withheld_title"
+        if (
+            resource.get("synthesis")
+            and self.requires_article(resource)
+            and not re.match(r"^(A|The) ", draft.display_title)
+        ):
+            return draft.model_dump(), "withheld_title"
         if any(re.search(r"[\u3040-\u30ff\u3400-\u9fff]", text) for text in texts):
             return draft.model_dump(), "withheld_language"
         if any(not set(s.fact_ids) <= ids for s in draft.statements):
@@ -543,6 +559,7 @@ class RecapComposer:
                 "Attack",
                 "Attempt",
                 "Entering",
+                "Suddenly",
             }
             for index, text in enumerate(texts):
                 if index == 0:

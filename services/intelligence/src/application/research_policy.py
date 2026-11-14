@@ -60,12 +60,14 @@ class ResearchLead(StructuredModel):
     boundary_key: str
     objective_key: str
     question: str = Field(min_length=5, max_length=1500)
+    related_questions: list[str] = Field(default_factory=list)
     topic: str = Field(max_length=300)
     related_entity_ids: list[UUID] = Field(default_factory=list)
     discovery_origin: str = Field(max_length=300)
     priority: int = Field(default=50, ge=0, le=100)
     expected_value: float = Field(default=0.5, ge=0, le=1)
     source_ids: list[UUID] = Field(default_factory=list)
+    available_sources: list[str] = Field(default_factory=list)
     evidence_ids: list[str] = Field(default_factory=list)
     missing_evidence: list[str] = Field(default_factory=list)
     estimated_cost: int = Field(default=1, ge=0)
@@ -74,6 +76,7 @@ class ResearchLead(StructuredModel):
     attempt_count: int = Field(default=0, ge=0)
     last_attempted_at: str | None = None
     last_job_id: UUID | None = None
+    last_stop_reason: str | None = None
 
 
 class CoverageAssessment(StructuredModel):
@@ -94,8 +97,8 @@ class CoverageAssessment(StructuredModel):
 
 
 class LeadAnswer(StructuredModel):
-    lead_id: UUID
-    fact_ids: list[str] = Field(min_length=1, max_length=12)
+    lead_index: int = Field(ge=0)
+    fact_indices: list[int] = Field(min_length=1, max_length=12)
     fully_answered: bool
 
 

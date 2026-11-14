@@ -8,10 +8,12 @@ from uuid import UUID
 from sqlalchemy import select, text
 
 from src.application.research_contracts import InferenceFailure
+from src.application.research_frontier import ResearchFrontierService
 from src.domain.entities import now
 from src.infrastructure.config.settings import Settings
 from src.infrastructure.persistence.database import create_database
 from src.infrastructure.persistence.models.research import ResearchJobModel
+from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.infrastructure.research_runtime import build_workflow
 from src.orchestration.research_workflow import ResearchCancelled
@@ -123,6 +125,23 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                                 coverage.setdefault("outcome", "PARTIAL_COVERAGE")
                             final_state["coverage"] = coverage
                             await archive.update_job(selected_id, checkpoint=final_state)
+                            memory = SqlResearchMemory(session)
+                            leads = await memory.leads(
+                                finished_job.universe_id,
+                                finished_job.continuity_id,
+                                ResearchFrontierService.boundary(
+                                    finished_job.request.get("spoiler_position")
+                                ),
+                            )
+                            for lead in leads:
+                                if lead.last_job_id == selected_id and lead.status != "RESOLVED":
+                                    lead.status = (
+                                        "PARTIALLY_RESOLVED" if lead.evidence_ids else "QUEUED"
+                                    )
+                                    if coverage.get("outcome") == "BLOCKED_BY_SOURCE_ACCESS":
+                                        lead.status = "BLOCKED"
+                                    lead.last_stop_reason = error or str(coverage.get("outcome"))
+                                    await memory.save_lead(lead)
                         await archive.update_job(selected_id, status=status, error=error)
                         await archive.event(selected_id, "research." + status, {"error": error})
                     print(

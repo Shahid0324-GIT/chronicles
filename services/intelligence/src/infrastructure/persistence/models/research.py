@@ -55,6 +55,7 @@ class SourceDocumentModel(Base):
             ["continuity_id", "universe_id"], ["continuities.id", "continuities.universe_id"]
         ),
         Index("ix_source_documents_lookup", "universe_id", "continuity_id", "url_hash"),
+        Index("ix_source_documents_checked", "universe_id", "continuity_id", "last_checked_at"),
     )
     id: Mapped[UUID] = mapped_column(primary_key=True)
     universe_id: Mapped[UUID] = mapped_column(ForeignKey("universes.id"))
@@ -66,6 +67,7 @@ class SourceDocumentModel(Base):
     text: Mapped[str] = mapped_column(Text)
     content_hash: Mapped[str] = mapped_column(String(64))
     retrieved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    last_checked_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     permission_basis: Mapped[str] = mapped_column(Text)
     source_scope: Mapped[str] = mapped_column(Text)
     public_web: Mapped[bool] = mapped_column(Boolean)

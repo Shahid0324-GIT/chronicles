@@ -32,11 +32,19 @@ class SqlResearchMemory:
         await self.lock(profile.universe_id)
         if not await self.session.get(UniverseModel, profile.universe_id):
             raise NotFoundError("Universe not found")
-        scopes = await self.session.scalars(
-            select(ContinuityModel).where(ContinuityModel.universe_id == profile.universe_id)
+        scopes = list(
+            await self.session.scalars(
+                select(ContinuityModel).where(ContinuityModel.universe_id == profile.universe_id)
+            )
         )
         if set(profile.continuity_media) - {s.id for s in scopes}:
             raise NotFoundError("Profile continuity does not belong to universe")
+        if any(
+            profile.continuity_media.get(scope.id, scope.medium).casefold()
+            != scope.medium.casefold()
+            for scope in scopes
+        ):
+            raise ValueError("Profile medium must match the actual continuity")
         row = await self.session.get(ResearchProfileModel, profile.universe_id)
         if row is None:
             row = ResearchProfileModel(universe_id=profile.universe_id)

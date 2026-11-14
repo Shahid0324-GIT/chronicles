@@ -2,8 +2,35 @@
 
 import json
 from typing import Any, TypedDict
+from urllib.parse import urlsplit
 
 from src.application.research_frontier import terms
+
+
+def source_families(sources: list[tuple[str, str, str | None]]) -> dict[str, str]:
+    """Same publisher or explicit derivative links form one connected source family."""
+    components: list[set[str]] = []
+    identities = {}
+    for identifier, url, derivative in sources:
+        keys = {"host:" + (urlsplit(url).hostname or identifier)}
+        if derivative:
+            keys.add("derived:" + derivative)
+        identities[identifier] = keys
+        changed = True
+        while changed:
+            changed = False
+            for component in list(components):
+                if keys & component:
+                    keys |= component
+                    components.remove(component)
+                    changed = True
+        components.append(keys)
+    return {
+        identifier: min(component)
+        for identifier, keys in identities.items()
+        for component in components
+        if keys & component
+    }
 
 
 def token_estimate(value: Any) -> int:
@@ -23,12 +50,17 @@ class EvidenceDossier(TypedDict):
 
 class EvidenceDossierBuilder:
     def select(
-        self, facts: list[dict[str, Any]], objective: str, token_budget: int
+        self,
+        facts: list[dict[str, Any]],
+        objective: str,
+        token_budget: int,
+        priority_ids: set[str] | None = None,
     ) -> EvidenceDossier:
         query = terms(objective)
         ranked = sorted(
             facts,
             key=lambda f: (
+                -int(f["id"] in (priority_ids or set())),
                 -len(query & terms(json.dumps(f["payload"], ensure_ascii=False))),
                 -int(f.get("kind") == "relationship"),
                 str(f["id"]),

@@ -52,6 +52,17 @@ async def test_frontier_survives_jobs_deduplicates_and_fences_boundaries(factory
     )
     assert bounded[0].id != first[0].id
     assert len(await service.discover(*args, depth=9)) == 1
+    deferred = await service.discover(
+        scope.universe_id,
+        scope.id,
+        1,
+        args[3],
+        ["Which older record explains Mira's family?"],
+        "follow-up",
+        args[-1],
+        depth=9,
+    )
+    assert len(deferred) == 2 and any(lead.depth == 9 for lead in deferred)
 
 
 async def test_profile_does_not_grant_source_access_and_validates_continuity(factory):
@@ -174,6 +185,19 @@ def test_dossier_uses_relevance_and_token_budget_not_insertion_order():
     selected = EvidenceDossierBuilder().select(facts, "Mira biography", size)
     assert [f["id"] for f in selected["facts"]] == ["1"]
     assert selected["estimated_tokens"] <= size and selected["omitted_facts"] == 1
+
+
+def test_coverage_source_families_merge_same_publisher_and_derivatives():
+    from src.application.evidence_dossier import source_families
+
+    groups = source_families(
+        [
+            ("a", "https://official.example/one", None),
+            ("b", "https://official.example/two", "shared-production"),
+            ("c", "https://secondary.example/guide", "shared-production"),
+        ]
+    )
+    assert len(set(groups.values())) == 1
 
 
 async def test_budget_failure_retains_root_question_before_planner_inference(factory):
@@ -318,7 +342,15 @@ async def test_dossier_arc_synthesis_has_separate_cache_and_validated_reader_out
 
     universe, continuity, knowledge = fixture_knowledge()
     atlas, saved = memory_atlas(knowledge)
-    inference = FakeInference()
+
+    class SynthesisInference(FakeInference):
+        async def __call__(self, prompt, schema, task):
+            value = await super().__call__(prompt, schema, task)
+            if task == "presentation" and "Resource kind: arc" in prompt:
+                value = value.model_copy(update={"display_title": "A visit to the observatory"})
+            return value
+
+    inference = SynthesisInference()
     await atlas.rebuild(universe, continuity, inference)
     old = len(saved)
     await atlas.rebuild(universe, continuity, inference, cohesive_arc=True)
@@ -328,3 +360,131 @@ async def test_dossier_arc_synthesis_has_separate_cache_and_validated_reader_out
     calls = inference.calls
     await atlas.rebuild(universe, continuity, inference, cohesive_arc=True)
     assert inference.calls == calls
+
+
+async def test_unchanged_refresh_preserves_first_observation_and_renews_cache(factory):
+    from dataclasses import replace
+    from datetime import timedelta
+
+    from src.domain.entities import now
+    from src.domain.research import SourceDocument, digest, passages_for
+    from src.infrastructure.persistence.models.research import SourceDocumentModel
+
+    scope = await scope_of(factory)
+    text = "Owned Mira biography with a precise source statement."
+    first = now() - timedelta(days=2)
+    source = SourceDocument(
+        uuid4(),
+        scope.universe_id,
+        scope.id,
+        "https://owned.example/profile",
+        "Owned profile",
+        "Owned publisher",
+        text,
+        digest(text),
+        first,
+        "Owned test permission",
+        "Owned scope",
+        False,
+        False,
+    )
+    async with factory() as session, session.begin():
+        archive = SqlResearchRepository(session)
+        await archive.save_source(source, passages_for(source))
+    async with factory() as session, session.begin():
+        archive = SqlResearchRepository(session)
+        assert (
+            await archive.cached_source(
+                source.url, scope.universe_id, scope.id, now() - timedelta(hours=24)
+            )
+            is None
+        )
+        await archive.save_source(replace(source, retrieved_at=now()), passages_for(source))
+    async with factory() as session:
+        archive = SqlResearchRepository(session)
+        reused = await archive.cached_source(
+            source.url, scope.universe_id, scope.id, now() - timedelta(hours=24)
+        )
+        assert reused and reused.id == source.id and reused.content_hash == source.content_hash
+        row = await session.get(SourceDocumentModel, source.id)
+        assert row.retrieved_at.replace(tzinfo=None) == first.replace(tzinfo=None)
+
+
+async def test_old_relevant_passage_remains_retrievable_beyond_recent_window(factory):
+    from src.domain.entities import now
+    from src.domain.research import SourceDocument, digest, passages_for
+
+    from .test_source_intelligence import prepare_index
+
+    scope, identifiers, retrieval, _ = await prepare_index(factory)
+    text = "An unrelated mundane archive record. " * 700
+    source = SourceDocument(
+        uuid4(),
+        scope.universe_id,
+        scope.id,
+        "https://owned.example/newer",
+        "Owned filler",
+        "Owned publisher",
+        text,
+        digest(text),
+        now(),
+        "Owned test permission",
+        "Owned scope",
+        False,
+        False,
+    )
+    async with factory() as session, session.begin():
+        await SqlResearchRepository(session).save_source(source, passages_for(source, size=40))
+    hits = await retrieval.retrieve(scope.universe_id, scope.id, "Mira Vale", names=["Mira Vale"])
+    assert hits[0].source.id == identifiers[0]
+
+
+async def test_cached_evidence_uses_current_cloud_policy_and_continuity(factory):
+    from src.application.source_contracts import SourceRegistration
+    from src.infrastructure.persistence.models.research import SourceDocumentModel
+    from src.infrastructure.persistence.models.source_intelligence import SourceRegistryModel
+
+    from .test_source_intelligence import prepare_index
+
+    scope, identifiers, retrieval, _ = await prepare_index(factory)
+    config = SourceRegistration(
+        universe_id=scope.universe_id,
+        name="Owned permitted source",
+        url="https://first.example/",
+        category="reference",
+        media=["anime"],
+        continuity_ids=[scope.id],
+        access_method="html",
+        authority="primary",
+        retrieval_policy="permitted",
+        cloud_content_allowed=True,
+        permission_basis="Owned synthetic permission",
+        attribution="Owned test",
+    )
+    async with factory() as session, session.begin():
+        entry = await SqlSourceRegistry(session).register(config)
+        row = await session.get(SourceDocumentModel, identifiers[0])
+        row.provenance = {
+            **row.provenance,
+            "registry_id": str(entry.id),
+            "cloud_content_allowed": True,
+        }
+        row.public_web = True
+    async with retrieval.transactions() as index:
+        assert (await index.source_metadata(scope.universe_id, scope.id))[identifiers[0]][
+            "cloud_content_allowed"
+        ]
+    async with factory() as session, session.begin():
+        await SqlSourceRegistry(session).register(
+            config.model_copy(update={"cloud_content_allowed": False})
+        )
+    hits = await retrieval.retrieve(
+        scope.universe_id, scope.id, "Mira", allowed_sources=[identifiers[0]]
+    )
+    assert not hits[0].source.provenance["cloud_content_allowed"]
+    async with factory() as session, session.begin():
+        row = await session.get(SourceRegistryModel, entry.id)
+        row.configuration = {**row.configuration, "continuity_ids": []}
+    assert not await retrieval.retrieve(
+        scope.universe_id, scope.id, "Mira", allowed_sources=[identifiers[0]]
+    )

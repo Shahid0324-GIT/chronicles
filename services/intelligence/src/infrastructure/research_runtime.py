@@ -80,6 +80,7 @@ def build_workflow(
         registry=registry_transactions(factory),
         memory=memory_transactions(factory),
         default_policy=settings.research_focused_policy,
+        source_policy=policy,
         discovery_search=(
             SearxngSearch(settings.searxng_base_url, policy, navigation_only=True)
             if settings.searxng_base_url

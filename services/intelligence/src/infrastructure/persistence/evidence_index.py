@@ -1,8 +1,12 @@
 import math
+import re
+from dataclasses import replace
+from typing import Any
 from uuid import UUID, uuid5
 
-from sqlalchemy import select
+from sqlalchemy import case, literal, select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.elements import ColumnElement
 
 from src.application.ports.retrieval import EmbeddingIdentity, EvidenceHit
 from src.domain.research import SourcePassage
@@ -28,6 +32,41 @@ class SqlEvidenceIndex:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def source_metadata(
+        self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
+    ) -> dict[UUID, dict[str, Any]]:
+        registry = {
+            str(row.id): row.configuration
+            for row in await self.session.scalars(
+                select(SourceRegistryModel).where(SourceRegistryModel.universe_id == universe)
+            )
+        }
+        query = select(
+            SourceDocumentModel.id, SourceDocumentModel.provenance, SourceDocumentModel.public_web
+        ).where(
+            SourceDocumentModel.universe_id == universe,
+            SourceDocumentModel.continuity_id == continuity,
+        )
+        if source_ids is not None:
+            query = query.where(SourceDocumentModel.id.in_(source_ids))
+        values = {}
+        for identifier, provenance, public in (await self.session.execute(query)).all():
+            registration = provenance.get("registry_id")
+            policy = registry.get(registration, {})
+            if registration and (
+                policy.get("retrieval_policy") != "permitted"
+                or str(continuity) not in policy.get("continuity_ids", [])
+            ):
+                continue
+            values[identifier] = {
+                **provenance,
+                "public_web": public,
+                "cloud_content_allowed": bool(
+                    public and policy.get("cloud_content_allowed", False)
+                ),
+            }
+        return values
+
     async def cached_vector(
         self, universe: UUID, continuity: UUID, model: EmbeddingIdentity, content_hash: str
     ) -> list[float] | None:
@@ -45,7 +84,11 @@ class SqlEvidenceIndex:
         return [float(v) for v in row.vector] if row else None
 
     async def passages(
-        self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
+        self,
+        universe: UUID,
+        continuity: UUID,
+        source_ids: list[UUID] | None = None,
+        query: str | None = None,
     ) -> list[EvidenceHit]:
         q = (
             select(SourcePassageModel, SourceDocumentModel)
@@ -57,19 +100,45 @@ class SqlEvidenceIndex:
         )
         if source_ids is not None:
             q = q.where(SourceDocumentModel.id.in_(source_ids))
+        score: ColumnElement[int] | None = None
+        if query:
+            words = list(dict.fromkeys(re.findall(r"\w+", query.casefold())))[:20]
+            if words:
+                score = sum(
+                    (
+                        case((SourcePassageModel.text.icontains(word, autoescape=True), 1), else_=0)
+                        for word in words
+                    ),
+                    literal(0),
+                )
+                q = q.where(score > 0)
         registered = {
-            str(r.id)
+            str(r.id): r.configuration
             for r in await self.session.scalars(
                 select(SourceRegistryModel).where(SourceRegistryModel.universe_id == universe)
             )
             if r.configuration.get("retrieval_policy") == "permitted"
+            and str(continuity) in r.configuration.get("continuity_ids", [])
         }
         return [
-            hit(p, s)
+            replace(
+                hit(p, s),
+                source=replace(
+                    source_entity(s),
+                    provenance={
+                        **s.provenance,
+                        "cloud_content_allowed": registered.get(
+                            s.provenance.get("registry_id"), {}
+                        ).get("cloud_content_allowed", False),
+                    },
+                ),
+            )
             for p, s in (
                 await self.session.execute(
                     q.order_by(
-                        SourceDocumentModel.retrieved_at.desc(), SourcePassageModel.ordinal
+                        *([score.desc()] if score is not None else []),
+                        SourceDocumentModel.retrieved_at.desc(),
+                        SourcePassageModel.ordinal,
                     ).limit(600)
                 )
             ).all()

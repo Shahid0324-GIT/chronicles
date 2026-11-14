@@ -1,4 +1,5 @@
 import re
+from dataclasses import replace
 from uuid import UUID
 
 from src.application.ports.retrieval import EmbeddingProvider, EvidenceHit, EvidenceIndexTransaction
@@ -72,30 +73,37 @@ class EvidenceRetrieval:
     ) -> list[EvidenceHit]:
         limit = min(max(limit, 1), 16)
         async with self.transactions() as repo:
-            lexical = await repo.passages(universe, continuity, allowed_sources)
-        lexical = [
-            h
-            for h in lexical
+            metadata = await repo.source_metadata(universe, continuity, allowed_sources)
+        metadata = {
+            identifier: value
+            for identifier, value in metadata.items()
             if (
                 spoiler_position is None
                 or (
-                    isinstance(h.source.provenance.get("presentation_position"), int)
-                    and h.source.provenance["presentation_position"] <= spoiler_position
+                    isinstance(value.get("presentation_position"), int)
+                    and value["presentation_position"] <= spoiler_position
                 )
             )
-            and (
-                not authorities or h.source.provenance.get("authority", "unverified") in authorities
-            )
-        ]
-        if not lexical:
+            and (not authorities or value.get("authority", "unverified") in authorities)
+        }
+        if not metadata:
             return []
-        eligible_sources = list({h.source.id for h in lexical})
+        eligible_sources = list(metadata)
+        async with self.transactions() as repo:
+            lexical = await repo.passages(
+                universe, continuity, eligible_sources, query=" ".join(names or []) + " " + query
+            )
         model = await self.embeddings.identity()
         vector = (await self.embeddings.embed([query[:2000]]))[0]
         async with self.transactions() as repo:
             semantic = await repo.nearest(
                 universe, continuity, model, vector, 40, eligible_sources, authorities or []
             )
+        semantic = [
+            replace(h, source=replace(h.source, provenance=metadata[h.source.id]))
+            for h in semantic
+            if h.source.id in metadata
+        ]
         words = set(re.findall(r"\w+", query.casefold()))
 
         def lexical_score(h: EvidenceHit) -> int:

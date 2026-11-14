@@ -44,6 +44,7 @@ class SourceSelector:
             and continuity in {str(c) for c in e.continuity_ids}
             and e.retrieval_policy == "permitted"
             and e.access_method not in {"navigation", "import"}
+            and (profile is None or e.access_method in profile.retrieval_methods)
         ]
         ranked = []
         for entry in eligible:
@@ -116,6 +117,23 @@ class SourceDiscoveryService:
     ) -> None:
         self.search, self.transactions = search, transactions
 
+    @staticmethod
+    def category(
+        url: str,
+    ) -> Literal[
+        "reference", "dedicated-wiki", "character-profile", "chapter-index", "item-description"
+    ]:
+        path = urlsplit(url).path.casefold()
+        if "/wiki/" in path:
+            return "dedicated-wiki"
+        if "character" in path:
+            return "character-profile"
+        if "chapter" in path:
+            return "chapter-index"
+        if "artifact" in path or "weapon" in path or "item" in path:
+            return "item-description"
+        return "reference"
+
     async def discover(
         self,
         request: SourceDiscovery,
@@ -157,7 +175,7 @@ class SourceDiscoveryService:
                         universe_id=request.universe_id,
                         name=host,
                         url=url,
-                        category="reference",
+                        category=self.category(url),
                         media=["unknown"],
                         continuity_ids=[request.continuity_id],
                         access_method="navigation",

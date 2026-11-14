@@ -169,9 +169,9 @@ class SqlResearchRepository:
                 SourceDocumentModel.url_hash == digest(url),
                 SourceDocumentModel.universe_id == universe_id,
                 SourceDocumentModel.continuity_id == continuity_id,
-                SourceDocumentModel.retrieved_at >= after,
+                SourceDocumentModel.last_checked_at >= after,
             )
-            .order_by(SourceDocumentModel.retrieved_at.desc())
+            .order_by(SourceDocumentModel.last_checked_at.desc(), SourceDocumentModel.id)
         )
         return source_entity(row) if row else None
 
@@ -194,7 +194,17 @@ class SqlResearchRepository:
         return True
 
     async def save_source(self, source: SourceDocument, passages: list[SourcePassage]) -> None:
-        if await self.session.get(SourceDocumentModel, source.id):
+        existing = await self.session.get(SourceDocumentModel, source.id)
+        if existing:
+            if (
+                existing.universe_id,
+                existing.continuity_id,
+                existing.content_hash,
+                existing.url,
+            ) != (source.universe_id, source.continuity_id, source.content_hash, source.url):
+                raise ValueError("Archived source identity cannot change")
+            existing.last_checked_at = source.retrieved_at
+            await self.session.flush()
             return
         self.session.add(
             SourceDocumentModel(
@@ -208,6 +218,7 @@ class SqlResearchRepository:
                 text=source.text,
                 content_hash=source.content_hash,
                 retrieved_at=source.retrieved_at,
+                last_checked_at=source.retrieved_at,
                 permission_basis=source.permission_basis,
                 source_scope=source.source_scope,
                 public_web=source.public_web,

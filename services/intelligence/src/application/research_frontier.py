@@ -41,27 +41,43 @@ class ResearchFrontierService:
         objective_key = digest(" ".join(objective.casefold().split()))
         async with self.transactions() as memory:
             existing = await memory.leads(universe, continuity, boundary)
-            if depth <= policy.max_follow_up_depth:
-                for question in list(dict.fromkeys(questions))[: policy.max_leads]:
-                    key = digest(" ".join(question.casefold().split()))
-                    identifier = uuid5(continuity, boundary + objective_key + key)
-                    if any(lead.id == identifier for lead in existing):
-                        continue
-                    overlap = len(terms(question) & terms(objective))
-                    lead = ResearchLead(
-                        id=identifier,
-                        universe_id=universe,
-                        continuity_id=continuity,
-                        boundary_key=boundary,
-                        objective_key=objective_key,
-                        question=question,
-                        topic=objective[:300],
-                        discovery_origin=origin,
-                        depth=depth,
-                        priority=min(100, 50 + overlap * 5),
-                        missing_evidence=["Source-backed answer not yet established"],
-                    )
-                    existing.append(await memory.save_lead(lead))
+            for question in list(dict.fromkeys(questions))[: policy.max_leads]:
+                key = digest(" ".join(question.casefold().split()))
+                identifier = uuid5(continuity, boundary + objective_key + key)
+                if any(lead.id == identifier for lead in existing):
+                    continue
+                query_terms = terms(question)
+                similar = next(
+                    (
+                        lead
+                        for lead in existing
+                        if lead.objective_key == objective_key
+                        and len(query_terms & terms(lead.question))
+                        / max(1, len(query_terms | terms(lead.question)))
+                        > 0.8
+                    ),
+                    None,
+                )
+                if similar:
+                    if question not in similar.related_questions:
+                        similar.related_questions.append(question)
+                        await memory.save_lead(similar)
+                    continue
+                overlap = len(terms(question) & terms(objective))
+                lead = ResearchLead(
+                    id=identifier,
+                    universe_id=universe,
+                    continuity_id=continuity,
+                    boundary_key=boundary,
+                    objective_key=objective_key,
+                    question=question,
+                    topic=objective[:300],
+                    discovery_origin=origin,
+                    depth=depth,
+                    priority=min(100, 50 + overlap * 5),
+                    missing_evidence=["Source-backed answer not yet established"],
+                )
+                existing.append(await memory.save_lead(lead))
         return sorted(
             [lead for lead in existing if lead.objective_key == objective_key],
             key=lambda lead: (

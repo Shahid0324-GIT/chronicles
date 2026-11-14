@@ -41,7 +41,9 @@ def research_summary(
         "error": job["error"],
         "coverage": state.get("coverage"),
         "research_policy": state.get("policy"),
-        "pending_leads": len(state.get("lead_ids", [])),
+        "pending_leads": state.get("coverage", {}).get(
+            "pending_leads", len(state.get("lead_ids", []))
+        ),
         "retrieved_bytes": state.get("retrieved_bytes", 0),
         "model_calls": len(calls) + len(pending),
         "incomplete_call_reservations": len(pending),
