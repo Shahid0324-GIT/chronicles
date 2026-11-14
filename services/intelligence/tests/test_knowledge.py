@@ -7,7 +7,10 @@ import pytest
 from sqlalchemy import func, select
 
 from src.application.identity import IdentityResolver
-from src.application.knowledge_contracts import IdentityComparison
+from src.application.knowledge_contracts import (
+    EmptyCatalogIdentityComparison,
+    IdentityComparison,
+)
 from src.application.ports.knowledge import KnowledgeSession
 from src.application.promotion import CanonicalGraphPromotionService
 from src.application.research import ResearchRequest, SourceInput
@@ -32,6 +35,55 @@ TEXT = (
     "Mira Vale participated in the arrival. The arrival occurred at the square. "
     "The theft preceded the search."
 )
+
+
+async def test_empty_catalog_cannot_supply_invented_identity_targets():
+    from pydantic import ValidationError
+
+    universe, continuity = uuid4(), uuid4()
+    source = SourceDocument(
+        uuid4(),
+        universe,
+        continuity,
+        "local:test",
+        "Test",
+        "Test",
+        TEXT,
+        digest(TEXT),
+        now(),
+        "Owned test source",
+        "Test scope",
+        False,
+        False,
+    )
+    passage = passages_for(source)[0]
+    claim = {
+        "id": str(uuid4()),
+        "payload": {
+            "name": "Mira Vale",
+            "type": "CHARACTER",
+            "description": "Entered the square.",
+            "evidence": [{"passage_id": str(passage.id), "quote": TEXT}],
+        },
+    }
+
+    async def infer(prompt, schema):
+        assert schema is EmptyCatalogIdentityComparison
+        values = dict(
+            entity_type_valid=True,
+            reason="Owned source identifies a person.",
+            evidence_indices=[0],
+            hidden_identity=False,
+        )
+        with pytest.raises(ValidationError):
+            schema(decision="SAME_ENTITY", target_index=0, **values)
+        return schema(decision="NEW_ENTITY", target_index=None, **values)
+
+    result = await IdentityResolver().resolve(
+        claim, [], [passage], infer, continuity, indexed_evidence=True
+    )
+    assert result["accepted"] and result["proof"] == "new_scoped_entity"
+    assert result["canonical_id"] is not None
 
 
 def test_names_preserve_script_but_normalize_width_punctuation_case_and_order():

@@ -1,6 +1,13 @@
 use_default_settings:
   engines:
-    keep_only: [google, bing, brave, duckduckgo, wikipedia]
+    keep_only: [brave, wikipedia]
+engines:
+  # Google denies access here; Bing returns unrelated single-term results.
+  # DuckDuckGo requires CAPTCHA. Do not retry these engines automatically.
+  - name: brave
+    disabled: false
+  - name: wikipedia
+    disabled: false
 general:
   instance_name: Chronicles local research
 search:

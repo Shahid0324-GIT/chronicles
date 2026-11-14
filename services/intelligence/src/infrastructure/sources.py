@@ -315,6 +315,8 @@ class SearxngSearch:
                 results = payload.get("results", [])
                 if not isinstance(results, list):
                     raise SourceRejected("search_invalid_results")
+                if not results and payload.get("unresponsive_engines"):
+                    raise SourceRejected("search_upstream_unavailable")
             except SourceRejected:
                 raise
             except (httpx.HTTPError, ValueError):

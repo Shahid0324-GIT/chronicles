@@ -539,6 +539,8 @@ class ResearchWorkflow:
             "Choose focus=story for occurrences or encyclopedia for biography, lore, documents "
             "and locations. Adapt to the unanswered questions. "
             "Search queries should contain 3–12 focused keywords, a subject and a missing fact. "
+            "Start with a broad subject query within an approved official site. Avoid quoted "
+            "phrases and piling constraints into every query; these can hide relevant pages. "
             "Prefer official/reference sites listed in the profile; never invent domain names. "
             "Existing curated titles are context, NOT newly discovered evidence. "
             + json.dumps(
@@ -561,6 +563,9 @@ class ResearchWorkflow:
             ResearchPlan,
             "planning",
         )
+        if request.extraction_types:
+            # Explicit typed jobs must retain their requested extraction mode.
+            plan = plan.model_copy(update={"focus": request.research_focus})
         if self.memory and state.get("policy"):
             leads = await ResearchFrontierService(self.memory).discover(
                 request.universe_id,
@@ -689,6 +694,14 @@ class ResearchWorkflow:
                     )
                 except Exception:
                     errors.append("source_discovery_unavailable")
+                    async with self.registry() as registry:
+                        available = await registry.entries(request.universe_id)
+                    async with self.transactions() as archive:
+                        await archive.event(
+                            UUID(state["job_id"]),
+                            "discovery.unavailable",
+                            {"reason": "search_unavailable"},
+                        )
             # Discovery returns the complete registry: reapply the caller's fences.
             if self.source_policy:
                 available = [
@@ -1310,6 +1323,9 @@ class ResearchWorkflow:
             prompt = (
                 "Assess the single candidate using ONLY the supplied excerpts. "
                 "Choose supported when the text entails the claim or its faithful paraphrase; "
+                "EVERY attribute in the claim must be entailed for the named subject. "
+                "If any attribute is unsupported, choose insufficient for the whole claim. "
+                "Do not transfer species, age, history or affiliations between subjects. "
                 "the source need not use a dictionary definition or identical wording. "
                 "Choose disputed for a contradiction, insufficient for missing information, "
                 "review for an adaptation mismatch or unresolved ambiguity. "

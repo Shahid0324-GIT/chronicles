@@ -17,6 +17,35 @@ from src.infrastructure.research_runtime import registry_transactions
 from src.infrastructure.sources import PublicSourcePolicy, SearxngSearch, SourceRejected
 
 
+async def test_discovery_keeps_successful_results_when_later_query_fails(factory):
+    async with factory() as session:
+        scope = await session.scalar(select(ContinuityModel))
+
+    class Search:
+        async def search(self, query, limit):
+            return [r.url for r in await self.search_results(query, limit)]
+
+        async def search_results(self, query, limit):
+            if query == "later":
+                raise SourceRejected("search_upstream_unavailable")
+            return [SearchResult("https://owned.example/discovered", "Owned reference")]
+
+    service = SourceDiscoveryService(Search(), registry_transactions(factory))
+    with pytest.raises(SourceRejected, match="search_upstream_unavailable"):
+        await service.discover(
+            SourceDiscovery(
+                universe_id=scope.universe_id,
+                continuity_id=scope.id,
+                universe_name="Owned universe",
+            ),
+            queries=["first", "later"],
+        )
+    async with factory() as session:
+        entries = await SqlSourceRegistry(session).entries(scope.universe_id)
+        assert any(e.url == "https://owned.example/discovered" for e in entries)
+        assert all(e.retrieval_policy == "navigation-only" for e in entries)
+
+
 async def test_searx_json_results_metadata_dedup_and_private_urls_are_filtered():
     body = {
         "results": [
@@ -77,6 +106,24 @@ async def test_groq_health_uses_id_not_display_name():
     )
     with patch("src.infrastructure.inference.httpx.AsyncClient", client):
         assert await provider.available()
+
+
+async def test_empty_results_with_upstream_errors_are_not_successful_research():
+    real = httpx.AsyncClient
+
+    def client(**kwargs):
+        return real(
+            **kwargs,
+            transport=httpx.MockTransport(
+                lambda r: httpx.Response(
+                    200, json={"results": [], "unresponsive_engines": [["owned", "429"]]}
+                )
+            ),
+        )
+
+    with patch("src.infrastructure.sources.httpx.AsyncClient", client):
+        with pytest.raises(SourceRejected, match="search_upstream_unavailable"):
+            await SearxngSearch("http://127.0.0.1:8080", PublicSourcePolicy([])).search("Owned", 2)
 
 
 async def test_discovery_inherits_only_explicit_matching_rule_and_retains_existing_permission(

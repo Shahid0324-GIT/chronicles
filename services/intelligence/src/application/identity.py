@@ -8,6 +8,7 @@ from pydantic import BaseModel
 
 from src.application.event_identity import same_scoped_occurrence
 from src.application.knowledge_contracts import (
+    EmptyCatalogIdentityComparison,
     EventIdentityComparison,
     IdentityComparison,
     IndexedIdentityComparison,
@@ -185,9 +186,19 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 "Choose evidence_indices (zero-based indices in candidate.evidence); "
                 "do not copy quotations.",
             )
-            schema = (
-                EventIdentityComparison if payload["type"] == "EVENT" else IndexedIdentityComparison
+            schema: type[IndexedIdentityComparison] = (
+                EmptyCatalogIdentityComparison
+                if not choices
+                else EventIdentityComparison
+                if payload["type"] == "EVENT"
+                else IndexedIdentityComparison
             )
+            if not choices:
+                prompt = (
+                    "There are no existing matching records. Classify this as NEW_ENTITY only "
+                    "if its identity and type are grounded, otherwise AMBIGUOUS. A source alias "
+                    "is not an existing catalog record. Do not invent target indices.\n" + prompt
+                )
             if payload["type"] == "EVENT":
                 prompt = (
                     "For EVENT compare the precise occurrence, NOT a proper-name alias. "

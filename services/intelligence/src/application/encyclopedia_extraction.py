@@ -45,6 +45,9 @@ async def extract_encyclopedia(
         await infer(
             "Extract explicitly NAMED encyclopedia entities relevant to the objective. "
             "Use only requested graph types. One literal source-language fact per description. "
+            "Keep every attribute attached to its explicit subject. A guardian's species, "
+            "history or affiliations do not transfer to a child or companion. Split distinct "
+            "supported attributes into separate facts about the same named entity. "
             "Do not treat generic states or ordinal phrases as named lore. "
             "Return integer sentence_ids from supplied units; never generate quotes or UUIDs. "
             "Select enough sentences to resolve pronouns and support the entire fact. "

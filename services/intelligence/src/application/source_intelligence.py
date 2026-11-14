@@ -241,7 +241,10 @@ class SourceDiscoveryService:
                         discovery_summary=result.summary,
                     )
                 )
+            # Retain successful discoveries even if a later engine request fails.
+            async with self.transactions() as registry:
+                for reference in references:
+                    await registry.register(reference)
+            references.clear()
         async with self.transactions() as registry:
-            for reference in references:
-                await registry.register(reference)
             return await registry.entries(request.universe_id)

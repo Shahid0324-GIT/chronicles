@@ -51,6 +51,13 @@ class EventIdentityComparison(IndexedIdentityComparison):
     repeated_occurrence_excluded: bool
 
 
+class EmptyCatalogIdentityComparison(IndexedIdentityComparison):
+    """No existing identity can be selected from an empty candidate catalog."""
+
+    decision: Literal["AMBIGUOUS", "NEW_ENTITY"]
+    target_index: None = None
+
+
 class RelationshipAnalysis(StructuredModel):
     relationships: list[CandidateRelationship] = Field(default_factory=list, max_length=8)
 
