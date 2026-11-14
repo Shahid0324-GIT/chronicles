@@ -6,6 +6,8 @@ from urllib.parse import urlsplit
 from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from src.application.research_policy import ResearchPolicy
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
@@ -26,9 +28,9 @@ class Settings(BaseSettings):
     groq_model: str | None = None
     promotion_minimum_sources: int = Field(default=1, ge=1, le=5)
     promotion_strong_sources: int = Field(default=2, ge=2, le=5)
-    agent_max_iterations: int = Field(default=3, ge=1, le=5)
-    agent_max_search_queries: int = Field(default=10, ge=0, le=20)
-    agent_max_sources: int = Field(default=20, ge=1, le=20)
+    agent_max_iterations: int = Field(default=3, ge=1, le=20)
+    agent_max_search_queries: int = Field(default=10, ge=0, le=100)
+    agent_max_sources: int = Field(default=20, ge=1, le=200)
     agent_max_model_calls: int = Field(default=48, ge=1, le=200)
     agent_stage_model_calls: dict[str, int] = Field(
         default_factory=lambda: {
@@ -42,6 +44,7 @@ class Settings(BaseSettings):
         }
     )
     agent_max_job_seconds: int = Field(default=900, ge=10, le=3600)
+    research_focused_policy: ResearchPolicy = Field(default_factory=ResearchPolicy)
     research_max_source_bytes: int = Field(default=500_000, ge=1024, le=2_000_000)
     research_max_source_chars: int = Field(default=12_000, ge=500, le=30_000)
     research_source_cache_hours: int = Field(default=24, ge=0, le=168)

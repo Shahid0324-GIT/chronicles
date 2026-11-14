@@ -1,3 +1,4 @@
+from collections.abc import Awaitable, Callable
 from contextlib import AbstractAsyncContextManager
 from datetime import datetime
 from typing import Any, Protocol, runtime_checkable
@@ -39,6 +40,15 @@ class ResearchTransaction(Protocol):
 
 class DocumentFetcher(Protocol):
     async def fetch(self, url: str) -> FetchedDocument: ...
+
+
+@runtime_checkable
+class BudgetedDocumentFetcher(Protocol):
+    def budget_requests(
+        self,
+        reserve: Callable[[int], Awaitable[None]] | None,
+        complete: Callable[[int, int], Awaitable[None]] | None,
+    ) -> None: ...
 
 
 @runtime_checkable

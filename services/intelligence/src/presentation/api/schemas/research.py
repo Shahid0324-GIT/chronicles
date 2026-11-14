@@ -68,6 +68,10 @@ class ResearchDiscoveryResponse(BaseModel):
 
 
 class ResearchSummaryResponse(BaseModel):
+    coverage: dict[str, Any] | None = None
+    research_policy: dict[str, Any] | None = None
+    pending_leads: int = 0
+    retrieved_bytes: int = 0
     id: UUID
     status: Literal["queued", "running", "completed", "partial", "failed", "cancelled"]
     stage: str

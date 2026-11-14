@@ -34,6 +34,30 @@ class SourceRegistryModel(Base):
     last_error: Mapped[str | None] = mapped_column(String(100))
 
 
+class ResearchProfileModel(Base):
+    __tablename__ = "universe_research_profiles"
+    universe_id: Mapped[UUID] = mapped_column(ForeignKey("universes.id"), primary_key=True)
+    configuration: Mapped[dict[str, Any]] = mapped_column(JSON_TYPE)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class ResearchLeadModel(Base):
+    __tablename__ = "research_leads"
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["continuity_id", "universe_id"], ["continuities.id", "continuities.universe_id"]
+        ),
+        Index("ix_research_lead_scope", "universe_id", "continuity_id", "boundary_key", "status"),
+    )
+    id: Mapped[UUID] = mapped_column(primary_key=True)
+    universe_id: Mapped[UUID]
+    continuity_id: Mapped[UUID]
+    boundary_key: Mapped[str] = mapped_column(String(64))
+    status: Mapped[str] = mapped_column(String(40))
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON_TYPE)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
 class InferenceCacheModel(Base):
     __tablename__ = "research_inference_cache"
     __table_args__ = (Index("ix_inference_cache_created", "created_at"),)

@@ -1,5 +1,6 @@
 """Official LangChain adapters. SDK exception bodies never leave this module."""
 
+import re
 import time
 from contextlib import nullcontext
 from typing import Any
@@ -68,6 +69,14 @@ class LangChainProvider:
                 delay = float(headers.get("retry-after", "60"))
             except (TypeError, ValueError):
                 delay = 60
+            for unit in ("requests", "tokens"):
+                if str(headers.get("x-ratelimit-remaining-" + unit, "")) == "0":
+                    value = str(headers.get("x-ratelimit-reset-" + unit, ""))
+                    duration = sum(
+                        float(n) * {"h": 3600, "m": 60, "s": 1}[suffix]
+                        for n, suffix in re.findall(r"([\d.]+)([hms])", value)
+                    )
+                    delay = max(delay, duration)
             raise InferenceFailure("rate_limited", delay)
         if code in (401, 403):
             raise InferenceFailure("authentication")
@@ -176,6 +185,7 @@ def create_inference(
                             api_key=secret,
                             temperature=0,
                             max_retries=0,
+                            max_tokens=3000,
                             timeout=settings.ai_timeout_seconds,
                         ),
                         "groq",

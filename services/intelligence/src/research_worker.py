@@ -57,7 +57,14 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         if row:
                             row.status = "running"
                             checkpoint.setdefault(
-                                "deadline_at", time.time() + settings.agent_max_job_seconds
+                                "deadline_at",
+                                time.time()
+                                + min(
+                                    settings.agent_max_job_seconds,
+                                    (row.request.get("research_policy") or {}).get(
+                                        "max_seconds", settings.agent_max_job_seconds
+                                    ),
+                                ),
                             )
                             row.checkpoint = checkpoint
                             row.updated_at = now()
@@ -76,6 +83,10 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                             or state.get("errors")
                             or state.get("publication", {}).get("unresolved")
                             or state.get("narrative", {}).get("partial")
+                            or (
+                                state.get("coverage")
+                                and state["coverage"]["outcome"] != "SUFFICIENT_FOR_PRESENTATION"
+                            )
                         ):
                             status = "partial"
                     except ResearchCancelled:
@@ -103,6 +114,15 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         )
                         if finished_job and finished_job.cancel_requested:
                             status = "cancelled"
+                        if finished_job and finished_job.checkpoint.get("policy"):
+                            final_state = dict(finished_job.checkpoint)
+                            coverage = dict(final_state.get("coverage", {}))
+                            if error and ("budget" in error or error == "job_duration_exceeded"):
+                                coverage.update(outcome="BUDGET_EXHAUSTED", reason=error)
+                            else:
+                                coverage.setdefault("outcome", "PARTIAL_COVERAGE")
+                            final_state["coverage"] = coverage
+                            await archive.update_job(selected_id, checkpoint=final_state)
                         await archive.update_job(selected_id, status=status, error=error)
                         await archive.event(selected_id, "research." + status, {"error": error})
                     print(

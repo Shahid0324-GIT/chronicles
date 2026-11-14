@@ -5,6 +5,7 @@ from uuid import UUID
 from pydantic import Field, model_validator
 
 from src.application.research_contracts import StructuredModel
+from src.application.research_policy import ResearchPolicy
 from src.domain.value_objects import NodeType
 
 
@@ -45,6 +46,8 @@ class SourceInput(StructuredModel):
 
 
 class ResearchRequest(StructuredModel):
+    adaptive_research: bool = True
+    research_policy: ResearchPolicy | None = None
     presentation_only: bool = False
     presentation_resource_ids: list[UUID] = Field(default_factory=list, max_length=20)
     retry_withheld_presentations: bool = False
@@ -57,7 +60,7 @@ class ResearchRequest(StructuredModel):
     universe_id: UUID
     continuity_id: UUID
     objective: str = Field(min_length=10, max_length=1500)
-    sources: list[SourceInput] = Field(default_factory=list, max_length=20)
+    sources: list[SourceInput] = Field(default_factory=list, max_length=200)
     allow_search: bool = False
     extraction_types: list[NodeType] = Field(default_factory=list, max_length=8)
 

@@ -1,3 +1,4 @@
+from collections.abc import Awaitable, Callable
 from typing import Literal, cast
 from urllib.parse import urlsplit
 from uuid import UUID
@@ -5,6 +6,8 @@ from uuid import UUID
 from src.application.ports.research import SearchProvider
 from src.application.ports.source_intelligence import SourceRegistryTransaction
 from src.application.research import SourceInput
+from src.application.research_frontier import terms
+from src.application.research_policy import UniverseResearchProfile
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
 
 
@@ -18,8 +21,22 @@ class SourceSelector:
         topic: str,
         limit: int = 6,
         universe: UUID | None = None,
+        profile: UniverseResearchProfile | None = None,
     ) -> list[SourceEntry]:
-        terms = set(topic.casefold().split())
+        return [entry for entry, _, _ in self.rank(entries, continuity, topic, universe, profile)][
+            :limit
+        ]
+
+    def rank(
+        self,
+        entries: list[SourceEntry],
+        continuity: str,
+        topic: str,
+        universe: UUID | None = None,
+        profile: UniverseResearchProfile | None = None,
+    ) -> list[tuple[SourceEntry, float, list[str]]]:
+        """Permission is a gate. Continuity authority, relevance and novelty are distinct."""
+        query_terms = terms(topic)
         eligible = [
             e
             for e in entries
@@ -28,17 +45,52 @@ class SourceSelector:
             and e.retrieval_policy == "permitted"
             and e.access_method not in {"navigation", "import"}
         ]
-        authority = {"primary": 0, "secondary": 1, "unverified": 2}
-        return sorted(
-            eligible,
-            key=lambda e: (
-                -len(terms & set(" ".join(e.topics).casefold().split())),
-                authority[e.authority],
-                e.health == "failed",
-                -e.discovery_priority,
-                str(e.id),
-            ),
-        )[:limit]
+        ranked = []
+        for entry in eligible:
+            relevance = len(query_terms & terms(entry.name + " " + " ".join(entry.topics)))
+            authority = {"primary": 8, "secondary": 4, "unverified": 0}[entry.authority]
+            priority = (profile.source_priorities.get(entry.category, 0) if profile else 0) / 10
+            score = relevance * 10 + authority + priority + entry.discovery_priority / 100
+            if entry.health == "failed":
+                score -= 20
+            ranked.append(
+                (
+                    entry,
+                    score,
+                    [
+                        f"relevance:{relevance}",
+                        f"authority:{entry.authority}",
+                        "continuity-compatible",
+                        "retrieval-permitted",
+                        f"profile-priority:{priority}",
+                    ],
+                )
+            )
+        # Diversify source families; derivative publishers cannot inflate corroboration.
+        ordered = []
+        groups: set[str] = set()
+        while ranked:
+            selected = max(
+                ranked,
+                key=lambda item: (
+                    item[1] - (6 if (item[0].derived_from or item[0].domain) in groups else 0),
+                    str(item[0].id),
+                ),
+            )
+            ranked.remove(selected)
+            group = selected[0].derived_from or selected[0].domain
+            ordered.append(
+                (
+                    selected[0],
+                    selected[1],
+                    [
+                        *selected[2],
+                        "repeated-source-family" if group in groups else "new-source-family",
+                    ],
+                )
+            )
+            groups.add(group)
+        return ordered
 
     @staticmethod
     def input(entry: SourceEntry) -> SourceInput:
@@ -70,22 +122,31 @@ class SourceDiscoveryService:
         *,
         max_queries: int = 2,
         used_queries: list[str] | None = None,
+        queries: list[str] | None = None,
+        on_query: Callable[[str], Awaitable[None]] | None = None,
     ) -> list[SourceEntry]:
         async with self.transactions() as registry:
             existing = await registry.entries(request.universe_id)
         # Previously inspected domains are not repeatedly searched for this universe.
-        if existing or self.search is None:
+        if self.search is None or (existing and queries is None):
             return existing
         seen: set[str] = set()
         references = []
-        for suffix in ("official story episode guide", "dedicated wiki")[
-            : max(0, min(max_queries, 2))
-        ]:
-            query = request.universe_name + " " + suffix
+        candidates = (
+            queries
+            if queries is not None
+            else [
+                request.universe_name + " official source material",
+                request.universe_name + " dedicated encyclopedia references",
+            ]
+        )
+        for query in candidates[: max(0, max_queries)]:
             if used_queries is not None:
                 if query in used_queries:
                     continue
                 used_queries.append(query)
+            if on_query:
+                await on_query(query)
             for url in (await self.search.search(query, 4))[:4]:
                 host = urlsplit(url).hostname or ""
                 if host in seen:
@@ -104,6 +165,7 @@ class SourceDiscoveryService:
                         topics=request.topics,
                         permission_basis="Discovery only; ingestion permission not established",
                         attribution="Discovered URL; verify site terms before ingestion",
+                        discovery_origin=query,
                     )
                 )
         async with self.transactions() as registry:

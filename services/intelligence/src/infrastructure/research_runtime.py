@@ -7,6 +7,7 @@ from src.application.inference import InferenceRouter
 from src.application.inference_cache import StoredInferenceCache
 from src.application.knowledge_presentation import KnowledgeAtlas
 from src.application.narrative import NarrativeBuilder
+from src.application.ports.frontier import ResearchMemory, ResearchMemoryTransaction
 from src.application.ports.inference_cache import InferenceCache
 from src.application.ports.knowledge import KnowledgeSession, KnowledgeTransaction
 from src.application.ports.narrative import NarrativeRepository, NarrativeTransaction
@@ -26,6 +27,7 @@ from src.infrastructure.persistence.inference_cache import SqlInferenceCache
 from src.infrastructure.persistence.knowledge_repository import SqlKnowledgeRepository
 from src.infrastructure.persistence.narrative_repository import SqlNarrativeRepository
 from src.infrastructure.persistence.presentation_repository import SqlPresentationRepository
+from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.infrastructure.persistence.source_registry import SqlSourceRegistry
 from src.infrastructure.sources import PublicDocumentFetcher, PublicSourcePolicy, SearxngSearch
@@ -76,12 +78,23 @@ def build_workflow(
         narratives=NarrativeBuilder(narrative_transactions(factory)),
         atlas=build_atlas(factory),
         registry=registry_transactions(factory),
+        memory=memory_transactions(factory),
+        default_policy=settings.research_focused_policy,
         discovery_search=(
             SearxngSearch(settings.searxng_base_url, policy, navigation_only=True)
             if settings.searxng_base_url
             else None
         ),
     )
+
+
+def memory_transactions(factory: async_sessionmaker[AsyncSession]) -> ResearchMemoryTransaction:
+    @asynccontextmanager
+    async def transaction() -> AsyncIterator[ResearchMemory]:
+        async with factory() as session, session.begin():
+            yield SqlResearchMemory(session)
+
+    return transaction
 
 
 def index_transactions(factory: async_sessionmaker[AsyncSession]) -> EvidenceIndexTransaction:

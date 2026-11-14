@@ -18,6 +18,7 @@ class SqlPresentationRepository:
             return None
         return {
             "knowledge_revision": row.knowledge_revision,
+            "policy_version": row.policy_version,
             "payload": row.payload,
             "grounding_status": row.grounding_status,
             "generated_at": row.generated_at.isoformat(),

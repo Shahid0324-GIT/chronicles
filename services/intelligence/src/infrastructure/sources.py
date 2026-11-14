@@ -7,6 +7,7 @@ import json
 import socket
 import ssl
 import time
+from collections.abc import Awaitable, Callable
 from urllib.parse import urljoin, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 
@@ -14,6 +15,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 from src.application.research import FetchedDocument, SourceRejected
+from src.application.research_contracts import InferenceFailure
 from src.domain.research import normalize
 
 USER_AGENT = "ChroniclesResearch/0.1"
@@ -100,6 +102,15 @@ class PublicDocumentFetcher:
         self.policy, self.max_bytes, self.max_chars = policy, max_bytes, max_chars
         self.lock = asyncio.Lock()
         self.last: dict[str, float] = {}
+        self.reserve_bytes: Callable[[int], Awaitable[None]] | None = None
+        self.complete_bytes: Callable[[int, int], Awaitable[None]] | None = None
+
+    def budget_requests(
+        self,
+        reserve: Callable[[int], Awaitable[None]] | None,
+        complete: Callable[[int, int], Awaitable[None]] | None,
+    ) -> None:
+        self.reserve_bytes, self.complete_bytes = reserve, complete
 
     async def _request(self, url: str) -> tuple[int, dict[str, str], bytes]:
         _, host, _, _ = self.policy.validate(url)
@@ -108,7 +119,14 @@ class PublicDocumentFetcher:
             if delay > 0:
                 await asyncio.sleep(delay)
             try:
-                return await asyncio.to_thread(pinned_request, url, self.policy, self.max_bytes)
+                # Reserve the bounded response read, including its oversize detection byte.
+                # A crash or unknown partial response retains its reservation.
+                if self.reserve_bytes:
+                    await self.reserve_bytes(self.max_bytes + 1)
+                result = await asyncio.to_thread(pinned_request, url, self.policy, self.max_bytes)
+                if self.complete_bytes:
+                    await self.complete_bytes(self.max_bytes + 1, len(result[2]))
+                return result
             finally:
                 self.last[host] = time.monotonic()
 
@@ -242,7 +260,7 @@ class PublicDocumentFetcher:
                     truncated=cap and len(text) > self.max_chars,
                 )
             raise SourceRejected("too_many_source_redirects")
-        except SourceRejected:
+        except (SourceRejected, InferenceFailure):
             raise
         except ssl.SSLCertVerificationError:
             raise SourceRejected("source_tls_validation_failed") from None

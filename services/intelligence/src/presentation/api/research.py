@@ -57,6 +57,8 @@ async def job_response(archive: ResearchRepository, job_id: UUID) -> JobResponse
 @router.post("/research/jobs", response_model=JobResponse, status_code=202)
 async def create_job(command: ResearchRequest, archive: Archive, request: Request) -> JobResponse:
     settings: Settings = request.app.state.settings
+    if command.adaptive_research and command.research_policy is None:
+        command = command.model_copy(update={"research_policy": settings.research_focused_policy})
     use_case = QueueResearch(
         archive,
         PublicSourcePolicy(settings.research_allowed_hosts),

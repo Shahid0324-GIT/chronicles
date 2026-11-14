@@ -6,11 +6,14 @@ from pydantic import Field
 
 from src.application.encyclopedia_contracts import EncyclopediaEntry
 from src.application.research_contracts import StructuredModel
+from src.application.research_frontier import ResearchFrontierService
+from src.application.research_policy import ResearchLead, UniverseResearchProfile
 from src.application.research_use_cases import ResearchRequestError
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
 from src.application.source_intelligence import SourceDiscoveryService, SourceSelector
 from src.application.use_cases import GetUniverse
 from src.domain.exceptions import NotFoundError
+from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.source_registry import SqlSourceRegistry
 from src.infrastructure.research_runtime import (
     build_atlas,
@@ -21,6 +24,47 @@ from src.infrastructure.sources import PublicSourcePolicy, SearxngSearch
 from src.presentation.dependencies import Session, get_universe
 
 router = APIRouter(prefix="/api")
+
+
+@router.put("/universes/{slug}/research/profile", response_model=UniverseResearchProfile)
+async def update_research_profile(
+    slug: str,
+    command: UniverseResearchProfile,
+    session: Session,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+) -> UniverseResearchProfile:
+    universe = await use_case.execute(slug)
+    if universe.id != command.universe_id:
+        raise ResearchRequestError("Profile universe does not match path")
+    await SqlResearchMemory(session).save_profile(command)
+    return command
+
+
+@router.get("/universes/{slug}/research/profile", response_model=UniverseResearchProfile | None)
+async def research_profile(
+    slug: str, session: Session, use_case: Annotated[GetUniverse, Depends(get_universe)]
+) -> UniverseResearchProfile | None:
+    universe = await use_case.execute(slug)
+    return await SqlResearchMemory(session).profile(universe.id)
+
+
+@router.get("/universes/{slug}/research/frontier", response_model=list[ResearchLead])
+async def research_frontier(
+    slug: str,
+    continuity_id: UUID,
+    session: Session,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    spoiler_position: int | None = Query(default=None, ge=1),
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+) -> list[ResearchLead]:
+    universe = await use_case.execute(slug)
+    leads = await SqlResearchMemory(session).leads(
+        universe.id, continuity_id, ResearchFrontierService.boundary(spoiler_position)
+    )
+    if allowed_source_id is not None:
+        allowed = set(allowed_source_id)
+        leads = [lead for lead in leads if lead.source_ids and set(lead.source_ids) <= allowed]
+    return leads[:200]
 
 
 @router.post("/research/sources", response_model=SourceEntry)

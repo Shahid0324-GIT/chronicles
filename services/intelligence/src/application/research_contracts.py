@@ -26,6 +26,7 @@ class StructuredModel(BaseModel):
 
 
 class ResearchPlan(StructuredModel):
+    focus: Literal["story", "encyclopedia"] | None = None
     questions: list[str] = Field(min_length=1, max_length=5)
     queries: list[str] = Field(default_factory=list, max_length=5)
 

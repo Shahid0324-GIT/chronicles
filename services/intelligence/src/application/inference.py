@@ -74,7 +74,15 @@ class InferenceRouter:
                 raise InferenceFailure("schema_incompatible")
             eligible = self.mode != "local" and self.cloud_content_allowed and public_source_content
             prefer_cloud = eligible and (
-                self.mode == "cloud" or task in {"verification", "identity_resolution"}
+                self.mode == "cloud"
+                or task
+                in {
+                    "verification",
+                    "identity_resolution",
+                    "relationship_analysis",
+                    "presentation",
+                    "presentation_verification",
+                }
             )
             candidates = [self.local]
             last_code = "provider_unavailable"
@@ -138,13 +146,13 @@ class InferenceRouter:
                                 task, self.max_calls
                             ):
                                 raise InferenceFailure("stage_model_budget_exhausted")
-                            self.total_used += 1
-                            self.stage_used[task] = self.stage_used.get(task, 0) + 1
-                            attempted = True
                             if self.before_call:
                                 reservation_id = await self.before_call(
                                     provider.name, provider.model, task, attempt
                                 )
+                            self.total_used += 1
+                            self.stage_used[task] = self.stage_used.get(task, 0) + 1
+                            attempted = True
                             result = await provider.generate(system, repair_prompt, schema, task)
                             schema.model_validate(result.value.model_dump())
                         self.usage.append(
@@ -162,7 +170,7 @@ class InferenceRouter:
                             else "timeout"
                         )
                         last_code = code
-                        if code in {"job_model_budget_exhausted", "stage_model_budget_exhausted"}:
+                        if "budget_exhausted" in code:
                             raise
                         issues = (
                             error.issues

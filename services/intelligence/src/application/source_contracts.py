@@ -13,7 +13,20 @@ class SourceRegistration(StructuredModel):
     name: str = Field(min_length=2, max_length=300)
     url: str = Field(max_length=2000)
     category: Literal[
-        "official", "episode-guide", "game-lore", "dedicated-wiki", "reference", "discussion"
+        "official",
+        "episode-guide",
+        "game-lore",
+        "dedicated-wiki",
+        "reference",
+        "discussion",
+        "novel-excerpt",
+        "chapter-index",
+        "side-story",
+        "character-profile",
+        "item-description",
+        "book",
+        "quest",
+        "creator-qa",
     ]
     media: list[str] = Field(min_length=1, max_length=8)
     continuity_ids: list[UUID] = Field(min_length=1, max_length=10)
@@ -26,6 +39,8 @@ class SourceRegistration(StructuredModel):
     attribution: str = Field(min_length=3, max_length=500)
     selectors: dict[str, str] = Field(default_factory=dict)
     revision: str | None = None
+    discovery_origin: str | None = Field(default=None, max_length=1500)
+    cloud_content_allowed: bool = False
     derived_from: str | None = None
     presentation_position: int | None = Field(default=None, ge=1, le=100000)
     position_basis: str | None = None

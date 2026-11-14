@@ -24,7 +24,10 @@ class NarrativeInference(SyntheticInference):
 
     async def generate(self, system, prompt, schema, task):
         data = json.loads(prompt[prompt.index("{") :])
-        if schema is EventFrames:
+        if schema.__name__ == "CoverageReview":
+            self.tasks.append(task)
+            value = schema.model_validate({"answers": [], "follow_up_questions": []})
+        elif schema is EventFrames:
             self.tasks.append(task)
             sentence = next(s for s in data["sentences"] if "Mira Vale" in s["text"])
             value = EventFrames.model_validate(
