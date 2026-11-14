@@ -1,6 +1,6 @@
 # Current verification
 
-The latest implementation is **Phase 3, increment 5**: see [executed checks, actual research, screenshots and remaining quality gaps](phase-3-increment-5-verification.md), [architecture/runbook](phase-3-increment-5.md), and [actual persisted audit](phase-3-increment-5-demo.json). The pipeline is operational; real narrative coverage remains partial. Earlier increment reports remain historical records.
+The latest implementation is **Phase 3, increment 5.1**: [executed verification and partial benchmark results](phase-3-increment-5-1-verification.md), [focused-policy configuration and architecture](phase-3-increment-5-1.md), and [actual persisted research audit](phase-3-increment-5-1-demo.json). Focused bounded research and unfinished leads are implemented; cohesive recap and deeper source coverage remain incomplete. Earlier reports remain historical.
 
 The latest visual implementation is **Phase 2.5B Pass 1**. See [its executed checks, browser evidence and limitations](phase-2-5b-verification.md), [architecture](phase-2-5b-pass-1.md), and [changed-file manifest](phase-2-5b-files.txt). The sections below are historical records.
 

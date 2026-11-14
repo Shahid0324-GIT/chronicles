@@ -91,3 +91,11 @@ Knowledge categories, shared encyclopedia contracts and persisted grounded Engli
 `StoryStructureOrganizer` groups exact action contexts, retains underlying UUIDs, routes/attempts and ordering gaps. Arc overviews deterministically assemble current grounded child presentations; cache identity includes those children and assembly policy. Do not invent official arcs, chronology, causality or missing English names. Rebuilds run through the independent worker with existing budgets/deadlines. Model entailment assessment is not independent verification.
 
 Reader entries and source controls preserve journey bookmarks and prune graph/search/traversal on bounded reads. Never use broader curated fallback after a bounded failure. See docs/phase-3-increment-5.md and its verification report: real coverage remains sparse, some recaps withheld, and documents/deep lore are not demonstrated real discoveries. Image discovery, visual redesign and advanced choreography remain outside scope.
+
+## Phase 3 research increment 5.1
+
+The default depth is a configurable `ResearchPolicy` (`focused-v1`), not a fixed successful page count. Freeze effective policies, deadlines and reservations per job. Reconcile completed token usage; retain unknown/incomplete reservations. Research profiles configure medium-aware source strategy without granting retrieval, host or cloud permission. Check current source/continuity/cloud policy on archive reuse.
+
+Persist unfinished questions through `ResearchFrontierService`, including beyond-depth discoveries, near-duplicate variants, available sources and stop reasons. New bounded jobs can continue the same objective; resuming an old job does not reset its budget. `last_checked_at` renews unchanged-source freshness while preserving first retrieval time, hashes and evidence. Hybrid retrieval must not restrict semantic eligibility to the newest passage window.
+
+Dossier-based arc synthesis has its own cache and grounding checks; the legacy deterministic assembly path is not evidence of successful cohesive synthesis. GETs perform no inference. See docs/phase-3-increment-5-1.md and its verification report: the actual benchmark remains partial, original-source references are mostly navigation-only, Groq was not exercised, and rejected recaps must stay withheld. No visual redesign or image discovery is authorized by this increment.
