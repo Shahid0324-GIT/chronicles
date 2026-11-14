@@ -43,8 +43,8 @@ class CandidateEntity(StructuredModel):
     description: str = Field(min_length=5, max_length=600)
     evidence: list[Citation] = Field(min_length=1, max_length=3)
 
-    @model_validator(mode="after")
-    def category_matches_graph_type(self) -> "CandidateEntity":
+    @staticmethod
+    def validate_category(node_type: NodeType, knowledge: KnowledgeMetadata | None) -> None:
         categories = {
             NodeType.CHARACTER: {"character"},
             NodeType.LOCATION: {"place", "region", "nation"},
@@ -95,8 +95,12 @@ class CandidateEntity(StructuredModel):
             },
             NodeType.MYSTERY: {"mystery"},
         }
-        if self.knowledge and self.knowledge.category not in categories[self.type]:
+        if knowledge and knowledge.category not in categories[node_type]:
             raise ValueError("Knowledge category does not match graph type")
+
+    @model_validator(mode="after")
+    def category_matches_graph_type(self) -> "CandidateEntity":
+        self.validate_category(self.type, self.knowledge)
         return self
 
 

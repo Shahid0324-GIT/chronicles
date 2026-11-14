@@ -80,6 +80,7 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
         scoped(j) &&
         text(j.title) &&
         text(j.introduction) &&
+        (j.overview === undefined || text(j.overview)) &&
         text(j.spoilerScope) &&
         object(j.ordering) &&
         j.ordering.basis === "broadcast-presentation" &&

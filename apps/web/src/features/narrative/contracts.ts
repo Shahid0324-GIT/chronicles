@@ -29,6 +29,7 @@ export interface JourneyStep {
   presentation: PresentationHint;
 }
 export interface NarrativeJourney {
+  overview?: string;
   id: string;
   universeId: string;
   continuityId: string;

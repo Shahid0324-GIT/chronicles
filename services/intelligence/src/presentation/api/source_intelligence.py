@@ -223,6 +223,7 @@ async def story_arcs(
             "partial": catalog["partial"],
             "ordering": j["ordering"],
             "organization_kind": "partial-source-guide",
+            "presentation": j.get("presentation", {"status": "unavailable"}),
         }
         for j in catalog["journeys"]
     ]

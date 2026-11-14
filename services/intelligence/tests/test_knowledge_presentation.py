@@ -356,3 +356,149 @@ async def test_api_entries_connections_languages_and_rebuild_are_scoped(factory,
         queued = await client.post("/api/universes/re-zero/presentations/rebuild", json=params)
         assert queued.status_code == 202
         assert queued.json()["status"] == "queued"
+
+
+async def test_output_schema_rejects_invented_fact_references_and_wrong_named_subjects():
+    universe, continuity, knowledge = fixture_knowledge()
+    atlas, _ = memory_atlas(knowledge)
+    resource = next(
+        r
+        for r in atlas.resources(await atlas.scope(universe, continuity))
+        if r["kind"] == "milestone"
+    )
+    schema = RecapComposer.draft_schema(resource, ["1"])
+    value = {
+        "display_title": "Mira enters the observatory",
+        "short_summary": "Mira entered the observatory.",
+        "statements": [{"text": "Mira entered the observatory.", "fact_ids": ["2"]}],
+    }
+    with pytest.raises(ValidationError):
+        schema.model_validate(value)
+    value["statements"][0]["fact_ids"] = ["1"]
+    schema.model_validate(value)
+    resource["facts"][0]["payload"]["event"]["participant_roles"] = {"an unnamed visitor": "actor"}
+    schema = RecapComposer.draft_schema(resource, ["1"])
+    with pytest.raises(ValidationError):
+        schema.model_validate(value)
+
+
+async def test_retrieval_job_provenance_and_duplicate_claim_ids_do_not_invalidate_content():
+    universe, continuity, knowledge = fixture_knowledge()
+    atlas, _ = memory_atlas(knowledge)
+    before = atlas.resources(await atlas.scope(universe, continuity))
+    duplicate = deepcopy(knowledge.facts[0])
+    duplicate["id"] = str(uuid4())
+    duplicate["sources"][0]["provenance"]["job_id"] = str(uuid4())
+    knowledge.facts.append(duplicate)
+    after = atlas.resources(await atlas.scope(universe, continuity))
+    assert {r["id"]: r["revision"] for r in before} == {r["id"]: r["revision"] for r in after}
+
+
+def test_arc_glosses_remap_fact_references_to_current_input_order():
+    resource = {
+        "validated_glosses": [
+            {
+                "display_title": "Second moment",
+                "statements": [{"text": "Second statement.", "fact_ids": ["canonical-b"]}],
+            },
+            {
+                "display_title": "First moment",
+                "statements": [{"text": "First statement.", "fact_ids": ["canonical-a"]}],
+            },
+        ]
+    }
+    result = RecapComposer.indexed_glosses(resource, {"1": "canonical-a", "2": "canonical-b"})
+    assert result[0]["display_title"] == "First moment"
+    assert result[0]["statements"][0]["fact_ids"] == ["1"]
+    assert result[1]["statements"][0]["fact_ids"] == ["2"]
+
+
+async def test_unbridged_proper_names_use_neutral_fallback_without_inference():
+    _, _, knowledge = fixture_knowledge()
+    fact = {**knowledge.facts[0], "payload": {**knowledge.facts[0]["payload"], "name": "未知名"}}
+
+    async def forbidden(*_):
+        raise AssertionError("Do not invent a romanization")
+
+    result = await RecapComposer().compose(
+        {
+            "id": fact["target_id"],
+            "kind": "entry",
+            "graph_type": "CHARACTER",
+            "names": [],
+            "facts": [fact],
+        },
+        forbidden,
+    )
+    assert result == ({}, "withheld_name_localization")
+
+
+async def test_shared_nodes_keep_the_explicit_requested_continuity_for_organization():
+    universe, continuity, knowledge = fixture_knowledge()
+    knowledge.nodes[:] = [replace(node, continuity_id=None) for node in knowledge.nodes]
+    atlas, _ = memory_atlas(knowledge)
+    resources = atlas.resources(await atlas.scope(universe, continuity))
+    assert any(resource["kind"] == "arc" for resource in resources)
+    assert len(await atlas.entries(universe, continuity)) == 2
+
+
+async def test_one_malformed_resource_does_not_hide_valid_entries_or_provider_failures():
+    from src.application.research_contracts import InferenceFailure
+
+    universe, continuity, knowledge = fixture_knowledge()
+    atlas, _ = memory_atlas(knowledge)
+
+    class InvalidFirst(FakeInference):
+        first = True
+
+        async def __call__(self, prompt, schema, task):
+            if self.first:
+                self.first = False
+                raise InferenceFailure("structured_output_exhausted")
+            return await super().__call__(prompt, schema, task)
+
+    counts = await atlas.rebuild(universe, continuity, InvalidFirst())
+    assert counts["partial"] and counts["generated"] >= 1
+    other, _ = memory_atlas(knowledge)
+
+    async def offline(*_):
+        raise InferenceFailure("provider_unavailable")
+
+    with pytest.raises(InferenceFailure, match="provider_unavailable"):
+        await other.rebuild(universe, continuity, offline)
+
+
+def test_established_short_name_survives_scoped_schema_and_shared_contract():
+    schema = RecapComposer.draft_schema(
+        {
+            "id": "person",
+            "kind": "entry",
+            "graph_type": "CHARACTER",
+            "names": [{"id": "person", "english": "Mira"}],
+            "facts": [],
+        },
+        ["1"],
+    )
+    value = schema.model_validate(
+        {
+            "display_title": "Mira",
+            "short_summary": "Mira entered the observatory.",
+            "statements": [{"text": "Mira entered the observatory.", "fact_ids": ["1"]}],
+        }
+    )
+    assert PresentationDraft.model_validate(value.model_dump(mode="json")).display_title == "Mira"
+
+
+async def test_arc_assembles_current_grounded_sentences_without_new_inference():
+    universe, continuity, knowledge = fixture_knowledge()
+    atlas, _ = memory_atlas(knowledge)
+    inference = FakeInference()
+    await atlas.rebuild(universe, continuity, inference)
+    before = inference.calls
+    catalog = await atlas.catalog(universe, continuity)
+    journey = catalog["journeys"][0]
+    assert journey["overview"] == "Mira entered the observatory."
+    assert journey["presentation"]["assembly"]["method"] == "deterministic-grounded-milestones"
+    assert journey["presentation"]["assembly"]["source_artifact_ids"]
+    await atlas.rebuild(universe, continuity, inference)
+    assert inference.calls == before

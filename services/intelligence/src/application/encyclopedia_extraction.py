@@ -3,7 +3,7 @@
 import json
 from collections.abc import Awaitable, Callable
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 from src.application.event_extraction import evidence_units
 from src.application.knowledge_types import KnowledgeMetadata
@@ -23,6 +23,11 @@ class IndexedKnowledgeEntity(StructuredModel):
     description: str = Field(min_length=5, max_length=600)
     knowledge: KnowledgeMetadata | None = None
     sentence_ids: list[int] = Field(min_length=1, max_length=3)
+
+    @model_validator(mode="after")
+    def category_matches_graph_type(self) -> "IndexedKnowledgeEntity":
+        CandidateEntity.validate_category(self.type, self.knowledge)
+        return self
 
 
 class EncyclopediaClaims(StructuredModel):

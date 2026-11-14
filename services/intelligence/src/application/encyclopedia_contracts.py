@@ -12,7 +12,7 @@ class PresentedStatement(StructuredModel):
 
 
 class PresentationDraft(StructuredModel):
-    display_title: str = Field(min_length=5, max_length=100)
+    display_title: str = Field(min_length=1, max_length=100)
     short_summary: str = Field(min_length=12, max_length=350)
     statements: list[PresentedStatement] = Field(min_length=1, max_length=4)
 

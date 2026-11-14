@@ -35,7 +35,7 @@ export default function StoryCanvas() {
                   : "A CURATED JOURNEY"}
               </p>
               <h1>{journey.title}</h1>
-              <p>{journey.introduction}</p>
+              <p>{journey.overview ?? journey.introduction}</p>
             </div>
             <div className="story-orientation">
               <span>

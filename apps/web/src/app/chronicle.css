@@ -1479,7 +1479,7 @@
 }
 .story-scope-controls {
   position: absolute;
-  top: 80px;
+  top: calc(var(--header-height) + 4px);
   right: 28px;
   z-index: 25;
   display: flex;

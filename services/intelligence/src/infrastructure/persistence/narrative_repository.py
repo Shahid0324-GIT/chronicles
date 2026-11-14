@@ -1,7 +1,7 @@
 from typing import Any
 from uuid import UUID, uuid5
 
-from sqlalchemy import select, text
+from sqlalchemy import or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.ports.narrative import NarrativeKnowledge
@@ -37,7 +37,8 @@ class SqlNarrativeRepository:
             node_entity(n)
             for n in await self.session.scalars(
                 select(NodeModel).where(
-                    NodeModel.universe_id == universe, NodeModel.continuity_id == continuity
+                    NodeModel.universe_id == universe,
+                    or_(NodeModel.continuity_id == continuity, NodeModel.continuity_id.is_(None)),
                 )
             )
         ]
