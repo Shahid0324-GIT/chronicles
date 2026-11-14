@@ -3,6 +3,7 @@
 import json
 from uuid import UUID
 
+import pytest
 from sqlalchemy import select
 
 from src.application.inference import InferenceRouter
@@ -131,7 +132,10 @@ class SyntheticInference:
         )
 
 
-async def test_extended_workflow_orders_roles_promotes_and_resumes_without_inference(factory):
+@pytest.mark.parametrize("relationship_quota", [True, False])
+async def test_extended_workflow_orders_roles_promotes_and_resumes_without_inference(
+    factory, relationship_quota
+):
     tx = knowledge_transactions(factory)
     async with factory() as session:
         scope = await session.scalar(select(ContinuityModel))
@@ -158,7 +162,13 @@ async def test_extended_workflow_orders_roles_promotes_and_resumes_without_infer
             )
         )
     fake, cloud = SyntheticInference(), SyntheticInference()
-    router = InferenceRouter(fake, [cloud], mode="local", cloud_content_allowed=True)
+    router = InferenceRouter(
+        fake,
+        [cloud],
+        mode="local",
+        cloud_content_allowed=True,
+        stage_limits={"relationship_analysis": int(relationship_quota)},
+    )
     workflow = build_workflow(Settings(_env_file=None), factory, router)
     state = await workflow.run(identifier, {})
     assert fake.tasks == [
@@ -166,13 +176,14 @@ async def test_extended_workflow_orders_roles_promotes_and_resumes_without_infer
         "extraction",
         "identity_resolution",
         "identity_resolution",
-        "relationship_analysis",
-        "verification",
+        *(["relationship_analysis", "verification"] if relationship_quota else []),
         "verification",
         "verification",
     ]
     assert not cloud.tasks
-    assert len(state["publication"]["promoted"]) == 3
+    assert len(state["publication"]["promoted"]) == (3 if relationship_quota else 2)
+    if not relationship_quota:
+        assert "additional_relationship_analysis_budget_exhausted" in state["errors"]
     calls = len(fake.tasks)
     await workflow.run(identifier, dict(state))
     assert len(fake.tasks) == calls
@@ -180,4 +191,4 @@ async def test_extended_workflow_orders_roles_promotes_and_resumes_without_infer
         events = await unit.archive.events(identifier)
         assert "research.identity_resolver" in [event["stage"] for event in events]
         assert "research.relationship_analyst" in [event["stage"] for event in events]
-        assert len(await unit.graph.records(identifier)) == 3
+        assert len(await unit.graph.records(identifier)) == (3 if relationship_quota else 2)

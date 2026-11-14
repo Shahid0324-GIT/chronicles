@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import ColumnElement
 
 from src.application.ports.retrieval import EmbeddingIdentity, EvidenceHit
-from src.domain.research import SourcePassage
+from src.domain.research import SourcePassage, permitted_span
 from src.infrastructure.persistence.models.research import SourceDocumentModel, SourcePassageModel
 from src.infrastructure.persistence.models.source_intelligence import (
     PassageEmbeddingModel,
@@ -158,6 +158,7 @@ class SqlEvidenceIndex:
                 and registered[s.provenance["registry_id"]].get("eligible_section_terms", [])
                 == s.provenance.get("eligible_section_terms", [])
             )
+            and permitted_span(s.provenance, p.start, p.end)
         ]
 
     async def indexed(self, passage: UUID, model: EmbeddingIdentity, content_hash: str) -> bool:
@@ -236,6 +237,8 @@ class SqlEvidenceIndex:
         scored = []
         norm = math.sqrt(sum(x * x for x in vector))
         for embedding, passage, source in rows:
+            if not permitted_span(source.provenance, passage.start, passage.end):
+                continue
             if authorities and source.provenance.get("authority", "unverified") not in authorities:
                 continue
             v = embedding.vector

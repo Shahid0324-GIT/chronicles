@@ -8,8 +8,14 @@ import pytest
 from src.application.evidence_dossier import EvidenceDossierBuilder
 from src.application.research_policy import ResearchPolicy
 from src.domain.entities import now
-from src.domain.knowledge import direct_primary_claim
-from src.domain.research import SourceDocument, digest, passages_for, scope_structure
+from src.domain.knowledge import direct_primary_claim, in_world_structure
+from src.domain.research import (
+    SourceDocument,
+    digest,
+    passages_for,
+    permitted_span,
+    scope_structure,
+)
 from src.infrastructure.document_structure import html_document
 from src.infrastructure.sources import PublicDocumentFetcher, PublicSourcePolicy, SourceRejected
 
@@ -35,6 +41,14 @@ def test_research_dossier_ignores_metadata_words_and_unrelated_facts():
     assert [fact["id"] for fact in dossier["facts"]] == ["b"]
     # A recap whose eligible resources were already explicitly scoped can retain all of them.
     assert len(EvidenceDossierBuilder().select(facts, "recap", 1000)["facts"]) == 2
+
+
+def test_author_production_clause_is_not_a_character_fact():
+    statement = "while I am working on the story of Mira going to rescue Ron,"
+    for kind in ["CHARACTER", "EVENT"]:
+        assert not in_world_structure(
+            {"name": "Mira", "type": kind, "description": statement}, [statement]
+        )
 
 
 async def test_retry_after_stops_repeated_host_requests(monkeypatch):
@@ -136,7 +150,7 @@ def test_mixed_media_archive_preserves_every_section_but_indexes_only_explicit_s
     document = html_document(
         "<main><h1>Author Q&A</h1><p>１．【Anime】 Mira helped Ron in the adaptation.</p>"
         "<p>１６．【Novel – Character】 Mira and Ron became master and knight.</p>"
-        "<p>１７．【Anime】 Ron becomes a different person in the adaptation.</p></main>",
+        "<p>１７【Anime】 Ron becomes a different person in the adaptation.</p></main>",
         "https://owned.example/qa",
     )
     source = SourceDocument(
@@ -159,6 +173,8 @@ def test_mixed_media_archive_preserves_every_section_but_indexes_only_explicit_s
     assert len(passages) == 1 and "became master and knight" in passages[0].text
     assert "adaptation" not in passages[0].text
     assert "adaptation" in source.text
+    assert permitted_span(source.provenance, passages[0].start, passages[0].end)
+    assert not permitted_span(source.provenance, passages[0].start, len(source.text))
     assert source.text[passages[0].start : passages[0].end] == passages[0].text
 
 

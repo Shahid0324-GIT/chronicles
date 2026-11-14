@@ -1,6 +1,6 @@
 # Current verification
 
-The latest implementation is **Phase 3, increment 5.2**: [operational changes, actual verification and remaining blockers](phase-3-increment-5-2.md), [persisted research and real provider comparison](phase-3-increment-5-2-results.json), and [search setup/captures](phase-3-increment-5-2-search.md). Search and Groq were exercised, but reliable autonomous multi-publisher research, canonical relationship publication and a published cohesive recap remain incomplete. Earlier reports remain historical.
+The latest implementation is **Phase 3, increment 5.3**: [deep-source implementation, executed checks, actual findings and remaining acceptance failures](phase-3-increment-5-3.md), [persisted run audit](phase-3-increment-5-3-results.json), and [information-loss audit](phase-3-increment-5-3-audit.md). Deep official documents, link discovery, continuation reuse, a character-profile category and real local/Groq comparison were exercised. The connected-chronicle benchmark remains partial: no retained new novel relationship or published cohesive entry. Invalid novel promotions were audited and retracted; existing graph data is preserved. Earlier reports remain historical.
 
 The latest visual implementation is **Phase 2.5B Pass 1**. See [its executed checks, browser evidence and limitations](phase-2-5b-verification.md), [architecture](phase-2-5b-pass-1.md), and [changed-file manifest](phase-2-5b-files.txt). The sections below are historical records.
 

@@ -484,6 +484,9 @@ class ResearchWorkflow:
         request = await self.check(state)
         async with self.transactions() as archive:
             context = await archive.context(request.universe_id, request.continuity_id)
+        if self.atlas:
+            # Accepted evidence is selected through the scoped relevance dossier below.
+            context = {k: v for k, v in context.items() if k != "previous_published_claims"}
         profile = None
         if self.memory and state.get("policy"):
             async with self.memory() as memory:
@@ -896,7 +899,7 @@ class ResearchWorkflow:
                     state.get("policy", {}).get("version") == "adaptive-v2"
                     and spec.url
                     and cached.provenance.get("extraction_version")
-                    not in {"structured-html-v4", "api-text-v1", "plain-text-v1"}
+                    not in {"structured-html-v5", "api-text-v1", "plain-text-v1"}
                 ):
                     cached = None
             acquired = cached
@@ -1311,9 +1314,32 @@ class ResearchWorkflow:
 
             async def event_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return await self.infer(
-                    state, prompt, schema, "extraction", state.get("public_only", False)
+                    state,
+                    prompt,
+                    schema,
+                    "relationship_analysis"
+                    if self.policy(state).complex_event_reasoning
+                    else "extraction",
+                    state.get("public_only", False),
                 )
 
+            event_calls = self.policy(state).event_extraction_calls if state.get("policy") else 4
+            if self.policy(state).complex_event_reasoning and isinstance(
+                self.inference, InferenceRouter
+            ):
+                # Preserve a call for the downstream relationship analyst under the
+                # existing shared stage quota; do not increase or replenish it.
+                event_calls = min(
+                    event_calls,
+                    max(
+                        0,
+                        self.inference.stage_limits.get(
+                            "relationship_analysis", self.inference.max_calls
+                        )
+                        - self.inference.stage_used.get("relationship_analysis", 0)
+                        - 1,
+                    ),
+                )
             extraction = await extract_events(
                 [
                     p
@@ -1325,12 +1351,11 @@ class ResearchWorkflow:
                 else passages,
                 request.objective,
                 event_infer,
-                max_passages=self.policy(state).event_extraction_calls
-                if state.get("policy")
-                else 4,
+                max_passages=event_calls,
                 max_entities=max(3, self.policy(state).max_candidates_per_pass - 5)
                 if state.get("policy")
                 else 12,
+                subjects=request.subject_names,
             )
             extra_types: list[NodeType] = [
                 kind for kind in request.extraction_types if kind != NodeType.EVENT
@@ -1338,10 +1363,32 @@ class ResearchWorkflow:
             if state.get("policy") and extra_types:
 
                 async def extra_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
-                    return await event_infer(prompt, schema)
+                    return await self.infer(
+                        state, prompt, schema, "extraction", state.get("public_only", False)
+                    )
 
+                # Routine entity extraction gets the most focal evidence first. The
+                # larger multi-source dossier remains available to reconciliation.
+                extra_passages: list[SourcePassage] = []
+                extra_tokens = 0
+                for passage in sorted(
+                    passages,
+                    key=lambda p: (
+                        -sum(n.casefold() in p.text.casefold() for n in request.subject_names),
+                        -len(terms(request.objective) & terms(p.text)),
+                        str(p.id),
+                    ),
+                ):
+                    cost = token_estimate(passage.text)
+                    if extra_tokens + cost <= self.policy(state).dossier_tokens // 2:
+                        extra_passages.append(passage)
+                        extra_tokens += cost
                 extra = await extract_encyclopedia(
-                    passages, request.objective, extra_infer, extra_types, request.subject_names
+                    extra_passages,
+                    request.objective,
+                    extra_infer,
+                    extra_types,
+                    request.subject_names,
                 )
                 extraction = Extraction(
                     entities=[*extraction.entities, *extra.entities],
@@ -1693,14 +1740,32 @@ class ResearchWorkflow:
             # This prompt contains only source-grounded candidate names, IDs and passages.
             return await self.infer(state, prompt, schema, task, state.get("public_only", False))
 
-        candidates = await self.knowledge.relationships(
-            UUID(state["job_id"]),
-            state.get("candidates", []),
-            state.get("resolutions", {}),
-            await self.selected_passages(state),
-            infer,
-            grounded=request.narrative_research,
-        )
+        try:
+            candidates = await self.knowledge.relationships(
+                UUID(state["job_id"]),
+                state.get("candidates", []),
+                state.get("resolutions", {}),
+                await self.selected_passages(state),
+                infer,
+                grounded=request.narrative_research,
+            )
+        except InferenceFailure as failure:
+            if failure.code != "stage_model_budget_exhausted":
+                raise
+            # Optional new edge discovery is withheld. Existing literal event edges
+            # must still pass the verifier and every publication invariant.
+            candidates = state.get("candidates", [])
+            state = {
+                **state,
+                "errors": list(
+                    dict.fromkeys(
+                        [
+                            *state.get("errors", []),
+                            "additional_relationship_analysis_budget_exhausted",
+                        ]
+                    )
+                ),
+            }
         return await self.snapshot("relationship_analyst", {**state, "candidates": candidates})
 
     async def promotion_policy(self, state: ResearchState) -> ResearchState:
@@ -2004,7 +2069,7 @@ class ResearchWorkflow:
             [UUID(i) for i in state.get("source_ids", [])],
         )
         await self.check(state)
-        names = []
+        names = list(request.subject_names)
         if self.atlas:
             scope = await self.atlas.scope(
                 request.universe_id,
@@ -2023,12 +2088,19 @@ class ResearchWorkflow:
                     relevant.update((str(edge.source_node_id), str(edge.target_node_id)))
             names = list(
                 dict.fromkeys(
-                    f["payload"].get("name", "")
-                    for target in relevant
-                    for f in scope.facts.get(target, [])
-                    if f["payload"].get("name")
+                    [
+                        *names,
+                        *list(
+                            dict.fromkeys(
+                                f["payload"].get("name", "")
+                                for target in relevant
+                                for f in scope.facts.get(target, [])
+                                if f["payload"].get("name")
+                            )
+                        ),
+                    ]
                 )
-            )[:16]
+            )[:20]
         hits = await self.retrieval.retrieve(
             request.universe_id,
             request.continuity_id,
@@ -2046,12 +2118,16 @@ class ResearchWorkflow:
             ):
                 selected.append(h)
                 size += token_estimate(h.passage.text)
-        # Preserve registry relevance priority for the bounded event-call budget;
-        # semantic rank still chooses the evidence set used by all later roles.
+        # Rank focal action evidence before source/ordinal tie breaks. A source-first
+        # order otherwise spends all event calls on early, irrelevant Q&A answers.
         source_order = {s: i for i, s in enumerate(state.get("source_ids", []))}
         extraction_hits = sorted(
             (h for h in selected if h.source.provenance.get("category") != "discussion"),
             key=lambda h: (
+                -sum(
+                    name.casefold() in h.passage.text.casefold() for name in request.subject_names
+                ),
+                -len(terms(request.objective) & terms(h.passage.text)),
                 source_order.get(str(h.source.id), len(source_order)),
                 h.passage.ordinal,
             ),

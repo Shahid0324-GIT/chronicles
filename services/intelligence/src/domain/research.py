@@ -54,6 +54,20 @@ def section_at(provenance: dict[str, Any], offset: int) -> str:
     )
 
 
+def permitted_span(provenance: dict[str, Any], start: int, end: int) -> bool:
+    """Old immutable passages must still fit the current structured section boundary."""
+    eligible = provenance.get("eligible_section_terms", [])
+    if not eligible:
+        return True
+    sections = json.loads(provenance.get("sections_json", "[]"))
+    section = next((s for s in reversed(sections) if s["start"] <= start < s["end"]), None)
+    return bool(
+        section
+        and end <= section["end"]
+        and any(term.casefold() in section["title"].casefold() for term in eligible)
+    )
+
+
 @dataclass(frozen=True)
 class SourceDocument:
     id: UUID

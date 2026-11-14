@@ -25,6 +25,8 @@ def direct_primary_claim(payload: dict[str, Any], evidence: list[dict[str, Any]]
     name = payload.get("name", "")
     if not description or not name:
         return False
+    if re.search(r"\b(?:said|says|stated|asked)\s*[,：:]?$", description, re.I):
+        return False
     if re.search(
         r"\b(might|perhaps|hypothetical|reportedly|rumou?r|theory|imagine|because|caused)\b"
         r"|正体|本名|かもしれ|らしい|=|also known as|secret identity|true identity",
@@ -41,7 +43,8 @@ def direct_primary_claim(payload: dict[str, Any], evidence: list[dict[str, Any]]
         ):
             continue
         if re.search(
-            r"\b(I think|probably|perhaps|might|seems|rumou?r)\b|と思|らしい|かもしれ",
+            r"\b(I (?:personally )?(?:think|feel)|probably|perhaps|might|seems|rumou?r)\b"
+            r"|と思|らしい|かもしれ",
             item.get("quote", ""),
             re.I,
         ):
@@ -333,6 +336,13 @@ def relation_structure(
 def in_world_structure(payload: dict[str, str], quotes: list[str]) -> bool:
     name = payload.get("name", "")
     description = payload.get("description", "")
+    if re.search(
+        r"\bI\s+(?:am|was)\s+(?:working on|writing)\s+(?:the|a)\s+story\b"
+        r"|\bI\s+(?:personally\s+)?(?:feel|think)\s+that\s+I\s+wrote\b",
+        description,
+        re.I,
+    ):
+        return False
     if payload.get("type") in {"EVENT", "LOCATION", "OCCURRED_AT"} and re.search(
         r"\b(publisher.s address|press conference|advertisement|promotional event|launch event)\b"
         r"|出版社の住所|宣伝イベント|広告イベント|舞台挨拶",

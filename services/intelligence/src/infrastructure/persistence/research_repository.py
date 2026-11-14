@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.application.research import ResearchRequest
 from src.domain.entities import now
 from src.domain.exceptions import NotFoundError
-from src.domain.research import SourceDocument, SourcePassage, digest, section_at
+from src.domain.research import SourceDocument, SourcePassage, digest, permitted_span, section_at
 from src.infrastructure.persistence.models import ContinuityModel, NodeModel, UniverseModel
 from src.infrastructure.persistence.models.knowledge import PromotionRecordModel
 from src.infrastructure.persistence.models.research import (
@@ -283,6 +283,7 @@ class SqlResearchRepository:
                 section_at(provenance, row.start),
             )
             for row, provenance in rows
+            if permitted_span(provenance, row.start, row.end)
         ]
 
     async def save_claim(

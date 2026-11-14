@@ -132,11 +132,13 @@ class SourceSelector:
         # Diversify source families; derivative publishers cannot inflate corroboration.
         ordered = []
         groups: set[str] = set()
+        categories: dict[str, int] = {}
         while ranked:
             selected = max(
                 ranked,
                 key=lambda item: (
-                    item[1] - (6 if (item[0].derived_from or item[0].domain) in groups else 0),
+                    item[1] / (1 + 0.15 * categories.get(item[0].category, 0))
+                    - (6 if (item[0].derived_from or item[0].domain) in groups else 0),
                     str(item[0].id),
                 ),
             )
@@ -153,6 +155,7 @@ class SourceSelector:
                 )
             )
             groups.add(group)
+            categories[selected[0].category] = categories.get(selected[0].category, 0) + 1
         return ordered
 
     @staticmethod

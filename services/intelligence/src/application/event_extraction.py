@@ -8,6 +8,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, Field
 
 from src.application.research_contracts import Citation, Extraction, StructuredModel
+from src.domain.knowledge import name_key
 from src.domain.research import SourcePassage, digest
 
 
@@ -71,6 +72,7 @@ async def extract_events(
     infer: Callable[[str, type[BaseModel]], Awaitable[BaseModel]],
     max_passages: int = 4,
     max_entities: int = 12,
+    subjects: list[str] | None = None,
 ) -> Extraction:
     units = evidence_units(passages)
     entities: dict[tuple[str, str], dict[str, Any]] = {}
@@ -83,6 +85,10 @@ async def extract_events(
             continue
         prompt = (
             "Extract up to three concrete story occurrences from these sentences. "
+            "Exclude the author's production process, opinions about writing, "
+            "and reader questions. "
+            "Prioritize concrete joint actions and changes of roles answering the objective. "
+            "A character's declaration of intent is not their completion of that action. "
             "Each event needs the actual named participants/location and the "
             "occurrence_status: actual for an action that happened, intended for a future goal, "
             "hypothetical for speculation, denied for a negated event, reported for somebody's "
@@ -110,6 +116,12 @@ async def extract_events(
             if ordinal >= len(source_frames):
                 continue
             frame = source_frames[ordinal]
+            if subjects and not any(
+                name_key(participant.name) in {name_key(name) for name in subjects}
+                and participant.role != "mentioned"
+                for participant in frame.participants
+            ):
+                continue
             selected = [u for u in local if u["id"] in frame.sentence_ids]
             if len(selected) != len(set(frame.sentence_ids)):
                 continue
@@ -167,7 +179,11 @@ async def extract_events(
                             (
                                 part.strip()
                                 for part in re.split(r"(?<=[,;，；])", description)
-                                if name in part and frame.trigger in part
+                                if name in part
+                                and frame.trigger in part
+                                and not re.search(
+                                    r"\b(?:said|says|stated|asked)\s*[,：:]?$", part.strip(), re.I
+                                )
                             ),
                             description,
                         ),

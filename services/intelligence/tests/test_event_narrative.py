@@ -46,6 +46,9 @@ async def test_event_frame_materializes_evidenced_endpoints_and_typed_edges():
     assert event.event["identity_anchor"]
     repeated = await extract_events([p], "Research again", infer)
     assert repeated.entities[0].event["identity_anchor"] == event.event["identity_anchor"]
+    # Focal names constrain relevance, never establish an identity bridge.
+    assert not (await extract_events([p], "Research Ron", infer, subjects=["Ron"])).entities
+    assert (await extract_events([p], "Research Mira", infer, subjects=["Mira Vale"])).entities
 
 
 async def test_missing_trigger_or_sentence_does_not_manufacture_event_evidence():

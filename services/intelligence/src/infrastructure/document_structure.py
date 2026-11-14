@@ -40,7 +40,7 @@ def html_document(body: bytes | str, url: str, *, rendered: bool = False) -> Fet
             level = int(heading.name[1]) if heading.name.startswith("h") else 3
             headings.append({"title": label, "level": level, "start": start})
             cursor = start + len(label)
-    for match in re.finditer(r"[0-9０-９]+[.．]\s*【[^】]+】", text):
+    for match in re.finditer(r"[0-9０-９]+[.．]?\s*【[^】]+】", text):
         if not any(h["start"] == match.start() for h in headings):
             headings.append({"title": match.group(), "level": 3, "start": match.start()})
     headings.sort(key=lambda item: item["start"])
@@ -71,7 +71,7 @@ def html_document(body: bytes | str, url: str, *, rendered: bool = False) -> Fet
         text=text,
         truncated=False,
         metadata={
-            "extraction_version": "structured-html-v4",
+            "extraction_version": "structured-html-v5",
             "language": language,
             "rendered": str(rendered).lower(),
             "structure_text_hash": digest(text),
