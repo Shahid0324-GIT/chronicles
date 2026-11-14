@@ -1,0 +1,2958 @@
+{
+  "status": "PARTIAL: autonomous multi-publisher acceptance benchmark unmet",
+  "jobs": [
+    {
+      "id": "b3d7c6f9-0b2a-42aa-bbfd-914e0fd16843",
+      "status": "partial",
+      "objective": "Investigate Felt and Old Man Rom in the original Re:Zero novel: their background, their caring bond, and their connection to the loot house. Discover official character profiles and creator Q&A on re-zero.com; investigate useful leads and distinguish explicit statements from interpretations. Preserve original names and unresolved cross-language identities. Do not infer biological kinship, anime equivalence, chronology or causality. Exclude unrelated characters and later plot summaries.",
+      "allow_search": true,
+      "questions": [
+        "What is the official character profile for Felt in the Re:Zero light novel?",
+        "What is the official character profile for Old Man Rom in the Re:Zero light novel?",
+        "Does the creator Q&A on re-zero.com explicitly state a caring bond between Felt and Old Man Rom?",
+        "Where does the connection between Felt and Old Man Rom to the loot house first appear in the original novel?",
+        "What are the specific chapter indices detailing Felt's background in the Re:Zero light novel?"
+      ],
+      "sources": [],
+      "errors": [
+        "source_registry_has_no_permitted_sources"
+      ],
+      "coverage": {
+        "facets": [],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BLOCKED_BY_SOURCE_ACCESS",
+        "pending_leads": 6,
+        "source_groups": 0,
+        "contradictions": 0,
+        "missing_facets": [
+          "background",
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 0,
+        "unresolved_findings": 0
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8888,
+          "model_call": true,
+          "input_tokens": 1027,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 224,
+          "reservation_id": "14604bb6-0e53-4b72-ada8-9aff9bf249be",
+          "validation_errors": []
+        }
+      ],
+      "discoveries": [
+        {
+          "query": "site:re-zero.com \"Felt\" character profile"
+        },
+        {
+          "query": "site:re-zero.com \"Felt\" character profile",
+          "results": []
+        },
+        {
+          "query": "site:re-zero.com \"Old Man Rom\" background"
+        },
+        {
+          "query": "site:re-zero.com \"Old Man Rom\" background",
+          "results": []
+        },
+        {
+          "query": "site:re-zero.com Q&A \"Felt\" \"Rom\" relationship"
+        },
+        {
+          "query": "site:re-zero.com Q&A \"Felt\" \"Rom\" relationship",
+          "results": []
+        },
+        {
+          "query": "site:ncode.syosetu.com \"Felt\" \"loot house\" chapter"
+        },
+        {
+          "query": "site:ncode.syosetu.com \"Felt\" \"loot house\" chapter",
+          "results": []
+        },
+        {
+          "query": "site:re-zero.com \"Felt\" \"Rom\" caring bond"
+        },
+        {
+          "query": "site:re-zero.com \"Felt\" \"Rom\" caring bond",
+          "results": []
+        },
+        {
+          "query": "Investigate Felt and Old Man Rom in the original Re:Zero novel: their background, their caring bond,"
+        },
+        {
+          "query": "Investigate Felt and Old Man Rom in the original Re:Zero novel: their background, their caring bond,",
+          "results": []
+        }
+      ],
+      "findings": [],
+      "publication": {
+        "promoted": [],
+        "unresolved": []
+      },
+      "promotions": []
+    },
+    {
+      "id": "df011c72-2cbf-4af0-ab19-b9a264883b3c",
+      "status": "partial",
+      "objective": "Investigate Felt and Old Man Rom in the original Re:Zero novel: their background, their caring bond, and their connection to the loot house. Discover official character profiles and creator Q&A on re-zero.com; investigate useful leads and distinguish explicit statements from interpretations. Preserve original names and unresolved cross-language identities. Do not infer biological kinship, anime equivalence, chronology or causality. Exclude unrelated characters and later plot summaries.",
+      "allow_search": true,
+      "questions": [
+        "Felt Old Man Rom loot house connection original novel chapter index",
+        "Re:Zero creator Q&A Felt Old Man Rom caring bond official statement",
+        "Old Man Rom character profile Re:Zero light novel re-zero.com",
+        "Felt character profile Re:Zero light novel re-zero.com background",
+        "Re:Zero novel loot house first appearance chapter index Felt"
+      ],
+      "sources": [],
+      "errors": [
+        "source_discovery_unavailable",
+        "source_registry_has_no_permitted_sources"
+      ],
+      "coverage": {
+        "facets": [],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BLOCKED_BY_SOURCE_ACCESS",
+        "pending_leads": 11,
+        "source_groups": 0,
+        "contradictions": 0,
+        "missing_facets": [
+          "background",
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 0,
+        "unresolved_findings": 0
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8626,
+          "model_call": true,
+          "input_tokens": 1333,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 203,
+          "reservation_id": "7c5b09b5-389b-4a15-b817-0ed8c9003123",
+          "validation_errors": []
+        }
+      ],
+      "discoveries": [
+        {
+          "query": "site:re-zero.com \"Felt\" \"Old Man Rom\" relationship"
+        }
+      ],
+      "findings": [],
+      "publication": {
+        "promoted": [],
+        "unresolved": []
+      },
+      "promotions": []
+    },
+    {
+      "id": "f2b5f3cb-6b56-41df-a7b9-f03368796715",
+      "status": "partial",
+      "objective": "Investigate Felt and Old Man Rom in the original Re:Zero novel: their background, their caring bond, and their connection to the loot house. Discover official character profiles and creator Q&A on re-zero.com; investigate useful leads and distinguish explicit statements from interpretations. Preserve original names and unresolved cross-language identities. Do not infer biological kinship, anime equivalence, chronology or causality. Exclude unrelated characters and later plot summaries.",
+      "allow_search": false,
+      "questions": [
+        "Felt Old Man Rom caring bond explicit statement creator Q&A re-zero.com",
+        "Old Man Rom character profile Re:Zero light novel re-zero.com official",
+        "Felt character profile Re:Zero light novel re-zero.com background official",
+        "Re:Zero novel loot house connection Felt Old Man Rom first appearance chapter index",
+        "Tappei Nagatsuki Q&A Felt Old Man Rom relationship explicit statement"
+      ],
+      "sources": [
+        "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+        "dcfcc122-bebb-57c9-8841-16ce92807a05",
+        "b39c21cc-92fb-5b53-8726-8d802717f0fc"
+      ],
+      "errors": [
+        "source_registry_has_no_permitted_sources",
+        "job_token_budget_exhausted",
+        "job_model_budget_exhausted"
+      ],
+      "coverage": {
+        "facets": [
+          "events"
+        ],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 16,
+        "source_groups": 1,
+        "contradictions": 0,
+        "missing_facets": [
+          "background",
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 1,
+        "unresolved_findings": 24
+      },
+      "usage": [
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 843,
+          "model_call": true,
+          "input_tokens": 1904,
+          "model_digest": null,
+          "output_tokens": 259,
+          "reservation_id": "87098d16-4460-4026-bfac-cbaaca818fe5",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1497,
+          "model_call": true,
+          "input_tokens": 1955,
+          "model_digest": null,
+          "output_tokens": 440,
+          "reservation_id": "e80b736f-a7a2-4eb1-813f-017b28bbc458",
+          "validation_errors": []
+        },
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6862,
+          "model_call": true,
+          "input_tokens": 1573,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 98,
+          "reservation_id": "c706ef25-9550-4237-b5fa-6134de583355",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 12005,
+          "model_call": true,
+          "input_tokens": 1109,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 317,
+          "reservation_id": "d09a20a7-bf8e-4077-b28e-c4eb5de3e419",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5590,
+          "model_call": true,
+          "input_tokens": 613,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 62,
+          "reservation_id": "40697251-c563-4f92-8e62-4924f50cfd77",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6090,
+          "model_call": true,
+          "input_tokens": 715,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 65,
+          "reservation_id": "45fb769c-75f6-45f3-bc87-f049996522d0",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5936,
+          "model_call": true,
+          "input_tokens": 787,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 75,
+          "reservation_id": "78d19860-3cb8-4408-94a5-0c6c8cc6d811",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 930,
+          "model_call": true,
+          "input_tokens": 1854,
+          "model_digest": null,
+          "output_tokens": 246,
+          "reservation_id": "24b01d50-15ed-420c-9eb4-421dcbf1ef1f",
+          "validation_errors": []
+        },
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9694,
+          "model_call": true,
+          "input_tokens": 2048,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 220,
+          "reservation_id": "391add35-370d-4ef7-b07c-4d2a44a4e419",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9165,
+          "model_call": true,
+          "input_tokens": 1107,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 206,
+          "reservation_id": "6040ad27-2af5-4213-bcc6-553b02ae7660",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8363,
+          "model_call": true,
+          "input_tokens": 920,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 173,
+          "reservation_id": "ee6f317f-7e08-40dc-b811-fe72317e45d2",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8238,
+          "model_call": true,
+          "input_tokens": 1000,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 191,
+          "reservation_id": "d7efdf80-29ba-4db2-b45a-7131b479c027",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5640,
+          "model_call": true,
+          "input_tokens": 644,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 56,
+          "reservation_id": "1d7aa866-026b-4e00-a6e4-ef7b09148831",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5965,
+          "model_call": true,
+          "input_tokens": 756,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 69,
+          "reservation_id": "b18b3df9-d00f-4109-86d8-c5a8ae8c6f93",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6426,
+          "model_call": true,
+          "input_tokens": 765,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 67,
+          "reservation_id": "7a0dba22-5c38-48aa-b3bd-abeb05b114c5",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6354,
+          "model_call": true,
+          "input_tokens": 833,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 71,
+          "reservation_id": "e15723f9-0249-4ccf-8437-b586e2e885b7",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6512,
+          "model_call": true,
+          "input_tokens": 983,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 80,
+          "reservation_id": "ed54d763-535b-47ea-a98d-57c9e717c299",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6637,
+          "model_call": true,
+          "input_tokens": 1282,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 95,
+          "reservation_id": "b728937a-4b16-4538-93c3-d10465cefa3d",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6691,
+          "model_call": true,
+          "input_tokens": 1644,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 86,
+          "reservation_id": "2eb9209f-65aa-4b00-9cd3-9de2048c9bd0",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6813,
+          "model_call": true,
+          "input_tokens": 1744,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 91,
+          "reservation_id": "1269da16-3551-4306-87b4-51945fb49c38",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6970,
+          "model_call": true,
+          "input_tokens": 1649,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 90,
+          "reservation_id": "7320b809-b5eb-42e9-922d-b57c7b9d229e",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7218,
+          "model_call": true,
+          "input_tokens": 1708,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 90,
+          "reservation_id": "561c2661-9a53-4a1a-8c15-15c8d7ba9bdb",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4053,
+          "model_call": true,
+          "input_tokens": 2591,
+          "model_digest": null,
+          "output_tokens": 1634,
+          "reservation_id": "3d11d826-ee11-4352-8e80-f65f24f94e31",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1145,
+          "model_call": true,
+          "input_tokens": 2050,
+          "model_digest": null,
+          "output_tokens": 309,
+          "reservation_id": "7484c227-ee7d-4d31-968c-bc1fd3224945",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1646,
+          "model_call": true,
+          "input_tokens": 1864,
+          "model_digest": null,
+          "output_tokens": 649,
+          "reservation_id": "6d39d5b7-501e-45e9-a30a-c224aaaa6052",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 608,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "d9752d50-a5d4-4981-b1b0-e3f1fafb9a3f",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6663,
+          "model_call": true,
+          "input_tokens": 1410,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 98,
+          "reservation_id": "c4effd71-3024-4dd7-a0e5-df4cc735e9b9",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7023,
+          "model_call": true,
+          "input_tokens": 1227,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 101,
+          "reservation_id": "434cbf38-ceff-4a4f-839c-8c3f8c525331",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6845,
+          "model_call": true,
+          "input_tokens": 1442,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 110,
+          "reservation_id": "3c223673-677b-4254-82cb-b2eb99841f2c",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6713,
+          "model_call": true,
+          "input_tokens": 1233,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 99,
+          "reservation_id": "790e13a1-0274-4ea1-ac1e-171000791062",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7004,
+          "model_call": true,
+          "input_tokens": 1523,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 116,
+          "reservation_id": "dac4e3b2-3c33-4859-bfbf-4629e3d46b9d",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 12732,
+          "model_call": true,
+          "input_tokens": 1156,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 474,
+          "reservation_id": "633d18ae-1262-4026-a11d-c2f39d05c2be",
+          "validation_errors": []
+        }
+      ],
+      "discoveries": [],
+      "findings": [
+        {
+          "id": "0a00e3cf-2308-546d-a656-ce4afc4b689b",
+          "kind": "entity",
+          "payload": {
+            "name": "gets his big thumb squeezed by Felt",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "One day, Rom gets his big thumb squeezed by Felt."
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 667,
+              "quote_end": 716
+            }
+          ]
+        },
+        {
+          "id": "2a1fac95-98c2-5693-816d-7066729845ff",
+          "kind": "entity",
+          "payload": {
+            "name": "\u738b\u90fd\u306e\u8ca7\u6c11\u8857\u80b2\u3061\u3067\u3001\u5e7c\u3055\u306b\u898b\u5408\u308f\u306a\u3044\u30bf\u30d5\u3067\u5f37\u304b\u306a\u6027\u683c\u306e\u6301\u3061\u4e3b\u3002",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u738b\u90fd\u306e\u8ca7\u6c11\u8857\u80b2\u3061\u3067\u3001\u5e7c\u3055\u306b\u898b\u5408\u308f\u306a\u3044\u30bf\u30d5\u3067\u5f37\u304b\u306a\u6027\u683c\u306e\u6301\u3061\u4e3b\u3002"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+              "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+              "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+              "quote_start": 62,
+              "quote_end": 93
+            }
+          ]
+        },
+        {
+          "id": "3eb3aa8a-d292-5b2a-aa9d-0de3fa62c72f",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "a4794d50-e91e-5b7c-8975-c91bb9946ede",
+            "target_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+            "description": "\u201d He had a history of taking Felt and had been with her ever since, but at the time, he still did not like humans at all and thought \u201cIf this little girl dies of malnutrition, it\u2019s none of my business.",
+            "source_name": "Felt",
+            "target_name": "had a history of taking Felt and had been with her ever since",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 298,
+              "quote_end": 499
+            }
+          ]
+        },
+        {
+          "id": "4160edc9-71b1-542f-b270-7d4b8ddf859c",
+          "kind": "entity",
+          "payload": {
+            "name": "Valga Cromwell",
+            "type": "CHARACTER",
+            "knowledge": {
+              "section": "identity",
+              "category": "character",
+              "route_id": null,
+              "attempt_id": null,
+              "classification": "ESTABLISHED_CANON"
+            },
+            "description": "Old Man Rom is Valga Cromwell."
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 788,
+              "quote_end": 846
+            },
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 179,
+              "quote_end": 298
+            }
+          ]
+        },
+        {
+          "id": "46130831-178c-55f2-9f32-5b7457bef3d6",
+          "kind": "entity",
+          "payload": {
+            "name": "\u3084\u3063\u304b\u307e\u3057\u3044\u308f\u3041\uff01",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u30ed\u30e0\u723a \u300c\u3084\u3063\u304b\u307e\u3057\u3044\u308f\u3041\uff01"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 0,
+              "quote_end": 14
+            }
+          ]
+        },
+        {
+          "id": "4bcd8237-d8c3-557e-9572-45c804241026",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "cad6d42d-fa2a-51a4-b980-19ca8d6cdbd5",
+            "target_id": "938f2a08-80f3-572d-8502-8907f0c42a63",
+            "description": "Old Man Rom manages the \u76d7\u54c1\u8535 building",
+            "source_name": "Old Man Rom",
+            "target_name": "\u4e3b\u306b\u30b9\u30ea\u3084\u76d7\u96e3\u3092\u751f\u696d\u306b\u3057\u3066\u304a\u308a\u3001\u76d7\u54c1\u8535\u3068\u3044\u3046\u5efa\u7269\u306b\u65e5\u5e38\u7684\u306b\u51fa\u5165\u308a\u3057\u3066\u3044\u308b\u3002",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 66,
+              "quote_end": 97
+            }
+          ]
+        },
+        {
+          "id": "4d68fa60-9c78-578d-8fc3-57cb8ebe1cbd",
+          "kind": "entity",
+          "payload": {
+            "name": "\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u30d5\u30a7\u30eb\u30c8 \u300c\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+              "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+              "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+              "quote_start": 0,
+              "quote_end": 15
+            }
+          ]
+        },
+        {
+          "id": "555999ce-ca18-500f-b7d3-acc4208b919f",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "a4794d50-e91e-5b7c-8975-c91bb9946ede",
+            "target_id": null,
+            "description": "\u201d I think we can all easily imagine Old Man Rom, who spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard time with her.",
+            "source_name": "Felt",
+            "target_name": "spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 499,
+              "quote_end": 666
+            }
+          ]
+        },
+        {
+          "id": "7ce3fd2b-6501-55cc-abf8-c10c2bdc05f6",
+          "kind": "entity",
+          "payload": {
+            "name": "\u30d5\u30a7\u30eb\u30c8",
+            "type": "CHARACTER",
+            "knowledge": null,
+            "description": "\u30d5\u30a7\u30eb\u30c8 \u300c\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+              "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+              "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+              "quote_start": 0,
+              "quote_end": 15
+            }
+          ]
+        },
+        {
+          "id": "8471aee3-6bf8-5482-b5e9-c127cff1e6b3",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "cad6d42d-fa2a-51a4-b980-19ca8d6cdbd5",
+            "target_id": null,
+            "description": "\u201d I think we can all easily imagine Old Man Rom, who spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard time with her.",
+            "source_name": "Old Man Rom",
+            "target_name": "spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 499,
+              "quote_end": 666
+            }
+          ]
+        },
+        {
+          "id": "8f2762ce-c670-573c-9051-c0dacf27d0bf",
+          "kind": "entity",
+          "payload": {
+            "name": "\u6249\u3092\u3076\u3063\u58ca\u3059\u6c17\u304b\uff01\uff01",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u5408\u56f3\u3068\u5408\u8a00\u8449\u3082\u77e5\u3089\u3093\u3067\u3001\u6249\u3092\u3076\u3063\u58ca\u3059\u6c17\u304b\uff01\uff01"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 15,
+              "quote_end": 37
+            }
+          ]
+        },
+        {
+          "id": "8f710da6-4f40-5e29-a77d-cbf38f6a59d3",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": null,
+            "target_id": null,
+            "description": "\u30ed\u30e0\u723a \u300c\u3084\u3063\u304b\u307e\u3057\u3044\u308f\u3041\uff01",
+            "source_name": "\u30ed\u30e0\u723a",
+            "target_name": "\u3084\u3063\u304b\u307e\u3057\u3044\u308f\u3041\uff01",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 0,
+              "quote_end": 14
+            }
+          ]
+        },
+        {
+          "id": "8fc76be8-7d2a-511f-a600-c53ead1d0a40",
+          "kind": "entity",
+          "payload": {
+            "name": "had a history of taking Felt and had been with her ever since",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u201d He had a history of taking Felt and had been with her ever since, but at the time, he still did not like humans at all and thought \u201cIf this little girl dies of malnutrition, it\u2019s none of my business."
+          },
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 298,
+              "quote_end": 499
+            }
+          ]
+        },
+        {
+          "id": "921b8703-7636-583a-b434-466dcbe0fb13",
+          "kind": "entity",
+          "payload": {
+            "name": "spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u201d I think we can all easily imagine Old Man Rom, who spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard time with her."
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 499,
+              "quote_end": 666
+            }
+          ]
+        },
+        {
+          "id": "932e11af-fe67-5e43-9b41-3ef0e235ceaa",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "a4794d50-e91e-5b7c-8975-c91bb9946ede",
+            "target_id": null,
+            "description": "One day, Rom gets his big thumb squeezed by Felt.",
+            "source_name": "Felt",
+            "target_name": "gets his big thumb squeezed by Felt",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 667,
+              "quote_end": 716
+            }
+          ]
+        },
+        {
+          "id": "94aa2aae-8b3b-5f18-b005-c3dff7b9447b",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "a4794d50-e91e-5b7c-8975-c91bb9946ede",
+            "target_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+            "description": "Felt was taken by Old Man Rom",
+            "source_name": "Felt",
+            "target_name": "had a history of taking Felt and had been with her ever since",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 298,
+              "quote_end": 499
+            }
+          ]
+        },
+        {
+          "id": "9ec96b75-c974-52e5-acaa-7f215c36de42",
+          "kind": "entity",
+          "payload": {
+            "name": "Old Man Rom",
+            "type": "CHARACTER",
+            "knowledge": null,
+            "description": "\u201d I think we can all easily imagine Old Man Rom, who spends his days having to deal with Felt spilling her food, changing her diapers, and having a hard time with her."
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 499,
+              "quote_end": 666
+            }
+          ]
+        },
+        {
+          "id": "c8cd78ec-fe86-526f-aa9a-b8118cc72260",
+          "kind": "entity",
+          "payload": {
+            "name": "\u30ed\u30e0\u723a",
+            "type": "CHARACTER",
+            "knowledge": null,
+            "description": "\u30ed\u30e0\u723a \u300c\u3084\u3063\u304b\u307e\u3057\u3044\u308f\u3041\uff01"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 0,
+              "quote_end": 14
+            }
+          ]
+        },
+        {
+          "id": "cad47fd5-a6e7-57b0-872f-0e1bc8e350c3",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "cad6d42d-fa2a-51a4-b980-19ca8d6cdbd5",
+            "target_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+            "description": "Old Man Rom had a history of taking Felt",
+            "source_name": "Old Man Rom",
+            "target_name": "had a history of taking Felt and had been with her ever since",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 298,
+              "quote_end": 499
+            }
+          ]
+        },
+        {
+          "id": "cd4c1147-041c-5613-ac77-463e37c95e06",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": null,
+            "target_id": "a7db9d94-7c0e-5938-8b8f-86086ded713d",
+            "description": "\u30d5\u30a7\u30eb\u30c8 \u300c\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+            "source_name": "\u30d5\u30a7\u30eb\u30c8",
+            "target_name": "\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+              "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+              "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+              "quote_start": 0,
+              "quote_end": 15
+            }
+          ]
+        },
+        {
+          "id": "d6f3f224-ceba-537d-8ebc-c51df2b8c7d3",
+          "kind": "entity",
+          "payload": {
+            "name": "Felt",
+            "type": "CHARACTER",
+            "knowledge": null,
+            "description": "\u201d He had a history of taking Felt and had been with her ever since, but at the time, he still did not like humans at all and thought \u201cIf this little girl dies of malnutrition, it\u2019s none of my business."
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 298,
+              "quote_end": 499
+            }
+          ]
+        },
+        {
+          "id": "df1993d7-1541-5b10-961f-d39c2b193fc8",
+          "kind": "entity",
+          "payload": {
+            "name": "Felt",
+            "type": "CHARACTER",
+            "knowledge": {
+              "section": "background",
+              "category": "character",
+              "route_id": null,
+              "attempt_id": null,
+              "classification": "ESTABLISHED_CANON"
+            },
+            "description": "A demihuman girl who has been taken care of by Old Man Rom since he took her."
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 139,
+              "quote_end": 185
+            },
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 298,
+              "quote_end": 499
+            }
+          ]
+        },
+        {
+          "id": "ec56e62f-9a7b-5457-ac0a-e90934c7a474",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "a4794d50-e91e-5b7c-8975-c91bb9946ede",
+            "target_id": "a7db9d94-7c0e-5938-8b8f-86086ded713d",
+            "description": "Felt says \"\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01\"",
+            "source_name": "Felt",
+            "target_name": "\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+              "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+              "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+              "quote_start": 0,
+              "quote_end": 15
+            }
+          ]
+        },
+        {
+          "id": "ee334960-49a8-5e27-9b9d-8c4176f0c6e5",
+          "kind": "entity",
+          "payload": {
+            "name": "Old Man Rom",
+            "type": "CHARACTER",
+            "knowledge": {
+              "section": "background",
+              "category": "character",
+              "route_id": null,
+              "attempt_id": null,
+              "classification": "ESTABLISHED_CANON"
+            },
+            "description": "One of the three representatives who led the demihuman side in the Demihuman War."
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 179,
+              "quote_end": 298
+            }
+          ]
+        },
+        {
+          "id": "f7276d5f-7fb0-5ec7-84e3-cbe973983174",
+          "kind": "entity",
+          "payload": {
+            "name": "\u4e3b\u306b\u30b9\u30ea\u3084\u76d7\u96e3\u3092\u751f\u696d\u306b\u3057\u3066\u304a\u308a\u3001\u76d7\u54c1\u8535\u3068\u3044\u3046\u5efa\u7269\u306b\u65e5\u5e38\u7684\u306b\u51fa\u5165\u308a\u3057\u3066\u3044\u308b\u3002",
+            "type": "EVENT",
+            "knowledge": null,
+            "description": "\u4e3b\u306b\u30b9\u30ea\u3084\u76d7\u96e3\u3092\u751f\u696d\u306b\u3057\u3066\u304a\u308a\u3001\u76d7\u54c1\u8535\u3068\u3044\u3046\u5efa\u7269\u306b\u65e5\u5e38\u7684\u306b\u51fa\u5165\u308a\u3057\u3066\u3044\u308b\u3002"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+              "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+              "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+              "quote_start": 94,
+              "quote_end": 131
+            }
+          ]
+        },
+        {
+          "id": "fb709026-58ac-50d2-9b8c-55f9ae266952",
+          "kind": "relationship",
+          "payload": {
+            "type": "PARTICIPATED_IN",
+            "source_id": "a4794d50-e91e-5b7c-8975-c91bb9946ede",
+            "target_id": "938f2a08-80f3-572d-8502-8907f0c42a63",
+            "description": "Felt frequently enters the \u76d7\u54c1\u8535 building",
+            "source_name": "Felt",
+            "target_name": "\u4e3b\u306b\u30b9\u30ea\u3084\u76d7\u96e3\u3092\u751f\u696d\u306b\u3057\u3066\u304a\u308a\u3001\u76d7\u54c1\u8535\u3068\u3044\u3046\u5efa\u7269\u306b\u65e5\u5e38\u7684\u306b\u51fa\u5165\u308a\u3057\u3066\u3044\u308b\u3002",
+            "classification": "ESTABLISHED_CANON"
+          },
+          "decision": "insufficient",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "b39c21cc-92fb-5b53-8726-8d802717f0fc",
+              "url": "https://re-zero.com/character/#scope-24b2b4c199607159",
+              "content_hash": "3640512b4deef6e1857f6472e5b197fd6ffa46c2b71ea44185b9b359f4d1cc39",
+              "quote_start": 139,
+              "quote_end": 185
+            }
+          ]
+        }
+      ],
+      "publication": {
+        "promoted": [
+          {
+            "id": "5413e613-22f0-5f5a-8efc-33d95df10b93",
+            "data": {
+              "evidence": [
+                {
+                  "url": "https://re-zero.com/character/#scope-eb27c20016d8ba75",
+                  "quote": "\u30d5\u30a7\u30eb\u30c8 \u300c\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+                  "title": "\u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u7d39\u4ecb | Re:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b\u539f\u4f5c\u516c\u5f0f\u30b5\u30a4\u30c8",
+                  "publisher": "re-zero.com",
+                  "quote_end": 15,
+                  "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+                  "truncated": false,
+                  "passage_id": "0d1bb12a-db75-5b94-803b-b4e067d4a2a3",
+                  "provenance": {
+                    "job_id": "f2b5f3cb-6b56-41df-a7b9-f03368796715",
+                    "category": "character-profile",
+                    "authority": "primary",
+                    "registry_id": "ade4aff5-25a2-5aef-86f5-4cc80619defe",
+                    "revision_id": null,
+                    "canonical_url": "https://re-zero.com/character/",
+                    "position_basis": null,
+                    "registry_revision": null,
+                    "extraction_version": "normalized-html-v2",
+                    "cloud_content_allowed": true,
+                    "presentation_position": null
+                  },
+                  "public_web": true,
+                  "quote_start": 0,
+                  "content_hash": "564c41e84cd9eaec85954332e07f5896595e1d086a82541560cc3f2151ad03ef",
+                  "retrieved_at": "2026-11-14T10:43:58.562234+00:00",
+                  "source_scope": "Registry continuity: 4bea70af-22a3-57ae-8010-d55be5e15bd3 [selection: '\u30d5\u30a7\u30eb\u30c8' to '\u30e9\u30a4\u30f3\u30cf\u30eb\u30c8']",
+                  "passage_start": 0,
+                  "independence_key": "re-zero.com:official-publisher",
+                  "permission_basis": "Public official small selected benchmark dossier; user explicitly approved cloud inference for these sections. Respect robots and retrieval limits."
+                }
+              ],
+              "snapshot": {
+                "name": "\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+                "type": "EVENT",
+                "metadata": {
+                  "event": {
+                    "arc": null,
+                    "trigger": "\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+                    "location": null,
+                    "outcomes": [],
+                    "source_id": "dcfcc122-bebb-57c9-8841-16ce92807a05",
+                    "trigger_end": 15,
+                    "uncertainty": "",
+                    "participants": [
+                      "\u30d5\u30a7\u30eb\u30c8"
+                    ],
+                    "preconditions": [],
+                    "trigger_start": 6,
+                    "identity_anchor": "a0f4a71a4faf77fe400b05102413cb761bb9dffbf0a75ba81a5a8f9bd192ee10",
+                    "reveal_position": null,
+                    "occurrence_status": "actual",
+                    "participant_roles": {
+                      "\u30d5\u30a7\u30eb\u30c8": "actor"
+                    },
+                    "chronological_position": null
+                  },
+                  "research_owned": true,
+                  "research_first_job": "f2b5f3cb-6b56-41df-a7b9-f03368796715"
+                },
+                "description": "\u30d5\u30a7\u30eb\u30c8 \u300c\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01"
+              },
+              "alias_ids": [
+                "dc201311-7b59-5d8f-afe1-1689b2ac8861"
+              ],
+              "assessment": {
+                "reason": "The text explicitly states Felt says '\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01' as an actual utterance.",
+                "claim_id": "4d68fa60-9c78-578d-8fc3-57cb8ebe1cbd",
+                "decision": "supported",
+                "in_universe": true,
+                "entity_type_valid": true,
+                "material_conflict": false,
+                "continuity_matches": true,
+                "contradiction_evidence": []
+              },
+              "resolution": {
+                "proof": "new_scoped_entity",
+                "reason": "Candidate describes Felt's current state; match describes Old Man Rom's past actions toward her. Distinct actors and temporal contexts.",
+                "accepted": true,
+                "decision": "NEW_ENTITY",
+                "evidence": [
+                  {
+                    "quote": "\u30d5\u30a7\u30eb\u30c8 \u300c\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060\uff01",
+                    "passage_id": "0d1bb12a-db75-5b94-803b-b4e067d4a2a3"
+                  }
+                ],
+                "target_id": null,
+                "canonical_id": "a7db9d94-7c0e-5938-8b8f-86086ded713d",
+                "model_reason": "Candidate describes Felt's current state; match describes Old Man Rom's past actions toward her. Distinct actors and temporal contexts.",
+                "target_index": null,
+                "hidden_identity": false,
+                "entity_type_valid": true,
+                "model_evidence_indices": [
+                  0
+                ]
+              },
+              "semantic_key": "entity:EVENT:\u30a2\u30bf\u30b7\u5fd9\u3057\u3044\u3093\u3060",
+              "policy_version": "2.0"
+            },
+            "kind": "entity",
+            "job_id": "f2b5f3cb-6b56-41df-a7b9-f03368796715",
+            "created": true,
+            "claim_id": "4d68fa60-9c78-578d-8fc3-57cb8ebe1cbd",
+            "reversed": false,
+            "target_id": "a7db9d94-7c0e-5938-8b8f-86086ded713d",
+            "created_at": "2026-11-14T10:47:48.268365+00:00",
+            "reversed_at": null,
+            "universe_id": "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6",
+            "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+            "correction_reason": null
+          },
+          {
+            "id": "4ce16b38-266e-5c8c-ad8a-2330ec15a3b1",
+            "data": {
+              "evidence": [
+                {
+                  "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+                  "quote": "\u201d He had a history of taking Felt and had been with her ever since, but at the time, he still did not like humans at all and thought \u201cIf this little girl dies of malnutrition, it\u2019s none of my business.",
+                  "title": "Q&A Session Published! Commemorating the release of \u201cRe:Life in a different world from zero Volume 40\u201d and the completion of the TV anime Season 3 Talk show with author Mr. Tappei Nagatsuki | \u30cb\u30e5\u30fc\u30b9 | Re:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b\u539f\u4f5c\u516c\u5f0f\u30b5\u30a4\u30c8",
+                  "publisher": "re-zero.com",
+                  "quote_end": 499,
+                  "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+                  "truncated": false,
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0",
+                  "provenance": {
+                    "job_id": "f2b5f3cb-6b56-41df-a7b9-f03368796715",
+                    "category": "creator-qa",
+                    "authority": "primary",
+                    "registry_id": "ecc6241e-49bf-5df2-b0c0-cf8a25faa739",
+                    "revision_id": null,
+                    "canonical_url": "https://re-zero.com/news/2517/",
+                    "position_basis": null,
+                    "registry_revision": null,
+                    "extraction_version": "normalized-html-v2",
+                    "cloud_content_allowed": true,
+                    "presentation_position": null
+                  },
+                  "public_web": true,
+                  "quote_start": 298,
+                  "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+                  "retrieved_at": "2026-11-14T10:43:56.156403+00:00",
+                  "source_scope": "Registry continuity: 4bea70af-22a3-57ae-8010-d55be5e15bd3 [selection: '\uff13\uff0e\u3010Novel \u2013 Character\u3011' to '\uff14\uff0e\u3010Novel \u2013 Character\u3011']",
+                  "passage_start": 0,
+                  "independence_key": "re-zero.com:official-publisher",
+                  "permission_basis": "Public official small selected benchmark dossier; user explicitly approved cloud inference for these sections. Respect robots and retrieval limits."
+                }
+              ],
+              "snapshot": {
+                "name": "had a history of taking Felt and had been with her ever since",
+                "type": "EVENT",
+                "metadata": {
+                  "event": {
+                    "arc": null,
+                    "trigger": "had a history of taking Felt and had been with her ever since",
+                    "location": null,
+                    "outcomes": [],
+                    "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+                    "trigger_end": 364,
+                    "uncertainty": "",
+                    "participants": [
+                      "Old Man Rom",
+                      "Felt"
+                    ],
+                    "preconditions": [],
+                    "trigger_start": 303,
+                    "identity_anchor": "746a5f3113116077146eecc80012f10613cbdf45220db50019c542a719b20d31",
+                    "reveal_position": null,
+                    "occurrence_status": "actual",
+                    "participant_roles": {
+                      "Felt": "recipient",
+                      "Old Man Rom": "actor"
+                    },
+                    "chronological_position": null
+                  },
+                  "research_owned": true,
+                  "research_first_job": "f2b5f3cb-6b56-41df-a7b9-f03368796715"
+                },
+                "description": "\u201d He had a history of taking Felt and had been with her ever since, but at the time, he still did not like humans at all and thought \u201cIf this little girl dies of malnutrition, it\u2019s none of my business."
+              },
+              "alias_ids": [
+                "9dcbeeb1-2a2f-5e6e-910f-57ba72bc8be6"
+              ],
+              "assessment": {
+                "reason": "Excerpt directly states he had a history of taking Felt and was with her.",
+                "claim_id": "8fc76be8-7d2a-511f-a600-c53ead1d0a40",
+                "decision": "supported",
+                "in_universe": true,
+                "entity_type_valid": true,
+                "material_conflict": false,
+                "continuity_matches": true,
+                "contradiction_evidence": []
+              },
+              "resolution": {
+                "proof": "new_scoped_entity",
+                "reason": "No matching records found in scoped sources to confirm identity.",
+                "accepted": true,
+                "decision": "NEW_ENTITY",
+                "evidence": [
+                  {
+                    "quote": "\u201d He had a history of taking Felt and had been with her ever since, but at the time, he still did not like humans at all and thought \u201cIf this little girl dies of malnutrition, it\u2019s none of my business.",
+                    "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                  }
+                ],
+                "target_id": null,
+                "canonical_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+                "model_reason": "No matching records found in scoped sources to confirm identity.",
+                "target_index": null,
+                "hidden_identity": false,
+                "entity_type_valid": true,
+                "model_evidence_indices": [
+                  0
+                ]
+              },
+              "semantic_key": "entity:EVENT:had a history of taking felt and had been with her ever since",
+              "policy_version": "2.0"
+            },
+            "kind": "entity",
+            "job_id": "f2b5f3cb-6b56-41df-a7b9-f03368796715",
+            "created": true,
+            "claim_id": "8fc76be8-7d2a-511f-a600-c53ead1d0a40",
+            "reversed": false,
+            "target_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+            "created_at": "2026-11-14T10:47:48.331182+00:00",
+            "reversed_at": null,
+            "universe_id": "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6",
+            "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+            "correction_reason": null
+          }
+        ],
+        "unresolved": [
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "4160edc9-71b1-542f-b270-7d4b8ddf859c"
+          },
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "7ce3fd2b-6501-55cc-abf8-c10c2bdc05f6"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "9ec96b75-c974-52e5-acaa-7f215c36de42"
+          },
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "c8cd78ec-fe86-526f-aa9a-b8118cc72260"
+          },
+          {
+            "reason": "Unresolved material contradiction or continuity ambiguity.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "d6f3f224-ceba-537d-8ebc-c51df2b8c7d3"
+          },
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "df1993d7-1541-5b10-961f-d39c2b193fc8"
+          },
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "ee334960-49a8-5e27-9b9d-8c4176f0c6e5"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "0a00e3cf-2308-546d-a656-ce4afc4b689b"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "2a1fac95-98c2-5693-816d-7066729845ff"
+          },
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "46130831-178c-55f2-9f32-5b7457bef3d6"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "8f2762ce-c670-573c-9051-c0dacf27d0bf"
+          },
+          {
+            "reason": "Identity or endpoint resolution is ambiguous.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "921b8703-7636-583a-b434-466dcbe0fb13"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "f7276d5f-7fb0-5ec7-84e3-cbe973983174"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "3eb3aa8a-d292-5b2a-aa9d-0de3fa62c72f"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "4bcd8237-d8c3-557e-9572-45c804241026"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "555999ce-ca18-500f-b7d3-acc4208b919f"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "8471aee3-6bf8-5482-b5e9-c127cff1e6b3"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "8f710da6-4f40-5e29-a77d-cbf38f6a59d3"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "932e11af-fe67-5e43-9b41-3ef0e235ceaa"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "94aa2aae-8b3b-5f18-b005-c3dff7b9447b"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "cad47fd5-a6e7-57b0-872f-0e1bc8e350c3"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "cd4c1147-041c-5613-ac77-463e37c95e06"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "ec56e62f-9a7b-5457-ac0a-e90934c7a474"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "fb709026-58ac-50d2-9b8c-55f9ae266952"
+          }
+        ]
+      },
+      "promotions": [
+        {
+          "id": "5413e613-22f0-5f5a-8efc-33d95df10b93",
+          "target_id": "a7db9d94-7c0e-5938-8b8f-86086ded713d",
+          "kind": "entity",
+          "reversed": true
+        },
+        {
+          "id": "4ce16b38-266e-5c8c-ad8a-2330ec15a3b1",
+          "target_id": "e97d04a4-3c26-5999-b520-696137f14f15",
+          "kind": "entity",
+          "reversed": false
+        }
+      ]
+    },
+    {
+      "id": "1adf4a44-1bd9-4202-bf8a-b4f507817ad7",
+      "status": "partial",
+      "objective": "Investigate the explicitly described caring bond between Old Man Rom and Felt in this original-novel creator Q&A. Extract separate atomic facts about the care Rom provided, their background and their bond. Each named subject may have several different supported facts. Do not transfer attributes from Rom to Felt. Exclude secret identities, unrelated characters, inferred biological kinship and unstated causes. Preserve uncertainty about the loot house, which this section may not establish.",
+      "allow_search": false,
+      "questions": [
+        "Old Man Rom Felt care actions malnutrition history",
+        "Old Man Rom Felt relationship background origin",
+        "Old Man Rom Felt bond nature explicit description"
+      ],
+      "sources": [
+        "6786e5d0-726d-5589-9d5d-cf52d9d0b768"
+      ],
+      "errors": [],
+      "coverage": {
+        "facets": [
+          "events"
+        ],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 7,
+        "source_groups": 1,
+        "contradictions": 0,
+        "missing_facets": [
+          "background",
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 2,
+        "unresolved_findings": 1
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8594,
+          "model_call": true,
+          "input_tokens": 3614,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 135,
+          "reservation_id": "b7ab340f-ad00-4fcc-a8b2-1f64c397834e",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9665,
+          "model_call": true,
+          "input_tokens": 1151,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 254,
+          "reservation_id": "425ce772-f58e-40ad-96dc-1c0ce5fa19b8",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5638,
+          "model_call": true,
+          "input_tokens": 660,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 53,
+          "reservation_id": "a03bcadd-5516-469b-a475-a13368f6c50d",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6907,
+          "model_call": true,
+          "input_tokens": 1333,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 105,
+          "reservation_id": "a04b90db-74d2-4c9b-9424-c85819ae49e1",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10032,
+          "model_call": true,
+          "input_tokens": 1120,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 251,
+          "reservation_id": "30574ae3-fdfc-4a8c-9df8-c473b161c68f",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2605,
+          "model_call": true,
+          "input_tokens": 1051,
+          "model_digest": null,
+          "output_tokens": 984,
+          "reservation_id": "8a531a63-977c-4fe1-989f-d64fbedf65f2",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2053,
+          "model_call": true,
+          "input_tokens": 1108,
+          "model_digest": null,
+          "output_tokens": 601,
+          "reservation_id": "8e630e79-a662-45de-b71c-583da9bbd36d",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1626,
+          "model_call": true,
+          "input_tokens": 641,
+          "model_digest": null,
+          "output_tokens": 662,
+          "reservation_id": "03beabab-4268-4257-b4b0-530a2761a488",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3412,
+          "model_call": true,
+          "input_tokens": 1260,
+          "model_digest": null,
+          "output_tokens": 1399,
+          "reservation_id": "3730ae9f-25aa-4f64-8c7b-009ca70225f1",
+          "validation_errors": []
+        }
+      ],
+      "discoveries": [],
+      "findings": [
+        {
+          "id": "1cde3e9b-e55b-5ec0-9466-1c361d1adc0c",
+          "kind": "entity",
+          "payload": {
+            "name": "Old Man Rom",
+            "type": "CHARACTER",
+            "knowledge": {
+              "section": "background",
+              "category": "character",
+              "route_id": null,
+              "attempt_id": null,
+              "classification": "ESTABLISHED_CANON"
+            },
+            "description": "One of the three representatives who led the demihuman side in the 'Demihuman War.'"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 179,
+              "quote_end": 298
+            }
+          ]
+        }
+      ],
+      "publication": {
+        "promoted": [],
+        "unresolved": [
+          {
+            "reason": "Insufficient independent publisher families for this claim strength.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "1cde3e9b-e55b-5ec0-9466-1c361d1adc0c"
+          }
+        ]
+      },
+      "promotions": []
+    },
+    {
+      "id": "e6e17568-3fe5-441a-9825-fba728ded3ea",
+      "status": "partial",
+      "objective": "Investigate the explicitly described caring bond between Old Man Rom and Felt in this original-novel creator Q&A. Extract separate atomic facts about the care Rom provided, their background and their bond. Each named subject may have several different supported facts. Do not transfer attributes from Rom to Felt. Exclude secret identities, unrelated characters, inferred biological kinship and unstated causes. Preserve uncertainty about the loot house, which this section may not establish.",
+      "allow_search": false,
+      "questions": [
+        "Old Man Rom Felt care actions specific types malnutrition prevention",
+        "Old Man Rom Felt bond nature explicit description creator Q&A",
+        "Old Man Rom Felt relationship background origin history taking",
+        "Old Man Rom Felt unstated causes motivation not liking humans",
+        "Old Man Rom Felt loot house secret identity established text"
+      ],
+      "sources": [
+        "6786e5d0-726d-5589-9d5d-cf52d9d0b768"
+      ],
+      "errors": [],
+      "coverage": {
+        "facets": [
+          "events"
+        ],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 11,
+        "source_groups": 1,
+        "contradictions": 0,
+        "missing_facets": [
+          "background",
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 1,
+        "unresolved_findings": 1
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9759,
+          "model_call": true,
+          "input_tokens": 2841,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 218,
+          "reservation_id": "afa66bb4-cffd-492b-ba95-e2e01ec39738",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "cache_hit",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 0,
+          "model_call": false,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": null,
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5801,
+          "model_call": true,
+          "input_tokens": 660,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 53,
+          "reservation_id": "6e936037-bd80-49b2-adf1-03da3bf705b4",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6704,
+          "model_call": true,
+          "input_tokens": 1331,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 103,
+          "reservation_id": "6d53f5da-5f5f-4bdd-a2a5-f3421d2527f5",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10691,
+          "model_call": true,
+          "input_tokens": 1016,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 374,
+          "reservation_id": "498a6953-f439-44e5-b8a6-939e92bd12d1",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1615,
+          "model_call": true,
+          "input_tokens": 1105,
+          "model_digest": null,
+          "output_tokens": 611,
+          "reservation_id": "51341f55-f5f7-4896-9878-a5da9de719a4",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "provider_http_error",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2577,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "34c513ab-8d0f-4579-825b-04aa41be18c0",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "provider_http_error",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2454,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "73385f69-4a8b-4b06-94b5-469d5de111a2",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7725,
+          "model_call": true,
+          "input_tokens": 518,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 122,
+          "reservation_id": "5c6b48b7-a9ba-4139-8edc-c386c4449199",
+          "validation_errors": []
+        }
+      ],
+      "discoveries": [],
+      "findings": [
+        {
+          "id": "6c7e9e9d-6e36-5af7-8ac3-fbe2a5ffa9ce",
+          "kind": "entity",
+          "payload": {
+            "name": "Old Man Rom",
+            "type": "CHARACTER",
+            "knowledge": {
+              "section": "background",
+              "category": "character",
+              "route_id": null,
+              "attempt_id": null,
+              "classification": "ESTABLISHED_CANON"
+            },
+            "description": "One of the three representatives who led the demihuman side in the 'Demihuman War.'"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 179,
+              "quote_end": 298
+            }
+          ]
+        }
+      ],
+      "publication": {
+        "promoted": [],
+        "unresolved": [
+          {
+            "reason": "Insufficient independent publisher families for this claim strength.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "6c7e9e9d-6e36-5af7-8ac3-fbe2a5ffa9ce"
+          }
+        ]
+      },
+      "promotions": []
+    },
+    {
+      "id": "826126df-163b-49e1-b9d3-827175bf2b3b",
+      "status": "partial",
+      "objective": "Investigate the explicitly described caring bond between Old Man Rom and Felt in this original-novel creator Q&A. Extract separate atomic facts about the care Rom provided, their background and their bond. Each named subject may have several different supported facts. Do not transfer attributes from Rom to Felt. Exclude secret identities, unrelated characters, inferred biological kinship and unstated causes. Preserve uncertainty about the loot house, which this section may not establish.",
+      "allow_search": false,
+      "questions": [
+        "Old Man Rom Felt specific care actions performed malnutrition prevention",
+        "Old Man Rom Felt bond nature explicitly described caring relationship",
+        "Old Man Rom Felt background origin history taking before current timeline",
+        "Old Man Rom Felt loot house secret identity established text evidence"
+      ],
+      "sources": [
+        "6786e5d0-726d-5589-9d5d-cf52d9d0b768"
+      ],
+      "errors": [],
+      "coverage": {
+        "facets": [
+          "events"
+        ],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 14,
+        "source_groups": 1,
+        "contradictions": 0,
+        "missing_facets": [
+          "background",
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 1,
+        "unresolved_findings": 1
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8845,
+          "model_call": true,
+          "input_tokens": 3058,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 182,
+          "reservation_id": "484e5159-a6e8-4332-a24e-d54982813675",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5959,
+          "model_call": true,
+          "input_tokens": 1193,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 56,
+          "reservation_id": "22a9457d-c67d-4359-8769-6a978e7aa532",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5380,
+          "model_call": true,
+          "input_tokens": 660,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 53,
+          "reservation_id": "712249bb-62ac-406c-914e-f4e2df72eb80",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6635,
+          "model_call": true,
+          "input_tokens": 1335,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 108,
+          "reservation_id": "c56e5a2e-5fac-431f-86b2-e3dd64a5ba60",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 14507,
+          "model_call": true,
+          "input_tokens": 1114,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 603,
+          "reservation_id": "4ec46a95-ba6d-4de3-9814-60e709aacf61",
+          "validation_errors": []
+        }
+      ],
+      "discoveries": [],
+      "findings": [
+        {
+          "id": "14afbae1-2513-53aa-87a3-02b17924e007",
+          "kind": "entity",
+          "payload": {
+            "name": "Old Man Rom",
+            "type": "CHARACTER",
+            "knowledge": {
+              "section": "background",
+              "category": "character",
+              "route_id": null,
+              "attempt_id": null,
+              "classification": "ESTABLISHED_CANON"
+            },
+            "description": "One of the three representatives who led the demihuman side in the 'Demihuman War.'"
+          },
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "source_references": [
+            {
+              "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+              "url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+              "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+              "quote_start": 179,
+              "quote_end": 298
+            }
+          ]
+        }
+      ],
+      "publication": {
+        "promoted": [],
+        "unresolved": [
+          {
+            "reason": "Insufficient independent publisher families for this claim strength.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "14afbae1-2513-53aa-87a3-02b17924e007"
+          }
+        ]
+      },
+      "promotions": []
+    }
+  ],
+  "provider_comparison": {
+    "kind": "real approved public dossier comparison; no canonical publication",
+    "source_id": "6786e5d0-726d-5589-9d5d-cf52d9d0b768",
+    "source_url": "https://re-zero.com/news/2517/#scope-7ec0673a18cdd30f",
+    "content_hash": "7058b15304c8f52b0ce812f8741145db6a4b38e215a7a87e0cdca13985ddcee2",
+    "objective": "Extract atomic facts about the care Old Man Rom provided Felt and the bond they formed. Exclude secret identities and unsupported species or kinship. Extract several separate supported facts even when they share a named subject.",
+    "runs": {
+      "ollama": {
+        "extraction": {
+          "entities": [
+            {
+              "knowledge": {
+                "category": "character",
+                "section": "background",
+                "classification": "ESTABLISHED_CANON",
+                "route_id": null,
+                "attempt_id": null
+              },
+              "event": null,
+              "name": "Old Man Rom",
+              "type": "CHARACTER",
+              "description": "One of the three representatives who led the demihuman side in the Demihuman War.",
+              "evidence": [
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                }
+              ]
+            },
+            {
+              "knowledge": {
+                "category": "character",
+                "section": "history",
+                "classification": "ESTABLISHED_CANON",
+                "route_id": null,
+                "attempt_id": null
+              },
+              "event": null,
+              "name": "Valga Cromwell",
+              "type": "CHARACTER",
+              "description": "Has taken care of Felt since she was a baby and has been with her ever since.",
+              "evidence": [
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                },
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                }
+              ]
+            },
+            {
+              "knowledge": {
+                "category": "character",
+                "section": "background",
+                "classification": "ESTABLISHED_CANON",
+                "route_id": null,
+                "attempt_id": null
+              },
+              "event": null,
+              "name": "Felt",
+              "type": "CHARACTER",
+              "description": "A little girl who spills food, needs diaper changes, and is cared for by Old Man Rom/Valga Cromwell.",
+              "evidence": [
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                },
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                }
+              ]
+            }
+          ],
+          "relationships": []
+        },
+        "extraction_ms": 7831,
+        "recap": {
+          "status": "validated",
+          "draft": {
+            "display_title": "Old Man Rom",
+            "short_summary": "Old Man Rom is one of the three representatives who led the demihuman side in the Demihuman War and has cared for Felt since she was a baby.",
+            "statements": [
+              {
+                "text": "Felt is a little girl who spills food, needs diaper changes, and is cared for by Old Man Rom/Valga Cromwell.",
+                "fact_ids": [
+                  "6b551074-ea0a-5125-9c1b-339fc984eca9"
+                ]
+              },
+              {
+                "text": "Old Man Rom/Valga Cromwell has taken care of Felt since she was a baby and has been with her ever since.",
+                "fact_ids": [
+                  "796eab10-d877-5359-b948-943fbd2bbdef"
+                ]
+              }
+            ]
+          }
+        },
+        "unsupported_trait_probe": {
+          "entailed": true,
+          "english": false,
+          "names_consistent": true,
+          "agency_and_tense_preserved": true,
+          "unsupported_relationships": false,
+          "reason": "The evidence explicitly states that Old Man Rom is Valga Cromwell and confirms he has been taking care of Felt (a demihuman girl) since childhood, including feeding, diaper changing, and forming a bond with her. All attributes in the claim are supported by the text."
+        },
+        "usage": [
+          {
+            "provider": "ollama",
+            "model": "qwen3.5:4b",
+            "credential": "local",
+            "task": "extraction",
+            "status": "ok",
+            "elapsed_ms": 7278,
+            "input_tokens": 619,
+            "output_tokens": 159,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+          },
+          {
+            "provider": "ollama",
+            "model": "qwen3.5:4b",
+            "credential": "local",
+            "task": "presentation",
+            "status": "ok",
+            "elapsed_ms": 7556,
+            "input_tokens": 1196,
+            "output_tokens": 162,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+          },
+          {
+            "provider": "ollama",
+            "model": "qwen3.5:4b",
+            "credential": "local",
+            "task": "presentation_verification",
+            "status": "ok",
+            "elapsed_ms": 8546,
+            "input_tokens": 919,
+            "output_tokens": 130,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+          },
+          {
+            "provider": "ollama",
+            "model": "qwen3.5:4b",
+            "credential": "local",
+            "task": "verification",
+            "status": "ok",
+            "elapsed_ms": 7602,
+            "input_tokens": 287,
+            "output_tokens": 122,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+          }
+        ]
+      },
+      "groq": {
+        "extraction": {
+          "entities": [
+            {
+              "knowledge": {
+                "category": "character",
+                "section": "background",
+                "classification": "ESTABLISHED_CANON",
+                "route_id": null,
+                "attempt_id": null
+              },
+              "event": null,
+              "name": "Old Man Rom",
+              "type": "CHARACTER",
+              "description": "One of the three representatives who led the demihuman side in the Demihuman War.",
+              "evidence": [
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                }
+              ],
+              "benchmark_assessment": {
+                "entailed": true,
+                "english": true,
+                "names_consistent": true,
+                "agency_and_tense_preserved": true,
+                "unsupported_relationships": false,
+                "reason": "The provided quotation explicitly states that Old Man Rom (also known as Valga Cromwell) was one of the three representatives who led the demihuman side in the Demihuman War, directly supporting the claim without adding unsupported relationships."
+              }
+            },
+            {
+              "knowledge": {
+                "category": "character",
+                "section": "history",
+                "classification": "ESTABLISHED_CANON",
+                "route_id": null,
+                "attempt_id": null
+              },
+              "event": null,
+              "name": "Valga Cromwell",
+              "type": "CHARACTER",
+              "description": "Has taken care of Felt since she was a baby and has been with her ever since.",
+              "evidence": [
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                },
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                }
+              ],
+              "benchmark_assessment": {
+                "entailed": true,
+                "english": false,
+                "names_consistent": true,
+                "agency_and_tense_preserved": true,
+                "unsupported_relationships": false,
+                "reason": "The text explicitly states that Valga Cromwell has taken care of Felt since she was a baby and has been with her ever since. The evidence quotes confirm this history: 'I am very interested in how Valga Cromwell has taken care of his baby!' and 'He had a history of taking Felt and had been with her, "
+              }
+            },
+            {
+              "knowledge": {
+                "category": "character",
+                "section": "background",
+                "classification": "ESTABLISHED_CANON",
+                "route_id": null,
+                "attempt_id": null
+              },
+              "event": null,
+              "name": "Felt",
+              "type": "CHARACTER",
+              "description": "A little girl who spills food, needs diaper changes, and is cared for by Old Man Rom/Valga Cromwell.",
+              "evidence": [
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                },
+                {
+                  "passage_id": "d29a1dfa-c4a6-525a-aff0-2ff4afeedbe0"
+                }
+              ],
+              "benchmark_assessment": {
+                "entailed": true,
+                "english": true,
+                "names_consistent": true,
+                "agency_and_tense_preserved": true,
+                "unsupported_relationships": false,
+                "reason": "The quotes state that Old Man Rom (Valga Cromwell) has been with Felt, deals with her spilling food and changing her diapers, confirming she is a little girl needing diaper changes and cared for by him."
+              }
+            }
+          ],
+          "relationships": []
+        },
+        "extraction_ms": 16322,
+        "recap": {
+          "status": "validated",
+          "draft": {
+            "display_title": "Old Man Rom",
+            "short_summary": "Old Man Rom is a demihuman war leader who cares for the child Felt.",
+            "statements": [
+              {
+                "text": "Old Man Rom was one of three representatives who led the demihuman side in the Demihuman War.",
+                "fact_ids": [
+                  "c50f908a-9071-572f-b6ca-10f2a30de75c"
+                ]
+              },
+              {
+                "text": "Old Man Rom cares for the little girl Felt, handling her spills, diaper changes, and daily needs.",
+                "fact_ids": [
+                  "6b551074-ea0a-5125-9c1b-339fc984eca9"
+                ]
+              }
+            ]
+          }
+        },
+        "unsupported_trait_probe": {
+          "entailed": true,
+          "english": true,
+          "names_consistent": true,
+          "agency_and_tense_preserved": true,
+          "unsupported_relationships": false,
+          "reason": "The evidence explicitly states that Old Man Rom (Valga Cromwell) has taken care of Felt, a demihuman girl, and formed a bond with her, confirming the claim that Felt is a demihuman girl cared for by Old Man Rom."
+        },
+        "usage": [
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "extraction",
+            "status": "invalid_output",
+            "elapsed_ms": 3804,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "retry": 0,
+            "validation_errors": [
+              "name:extra_forbidden",
+              "*:extra_forbidden"
+            ],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "extraction",
+            "status": "invalid_output",
+            "elapsed_ms": 4808,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "retry": 1,
+            "validation_errors": [
+              "name:extra_forbidden",
+              "*:extra_forbidden"
+            ],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "ollama",
+            "model": "qwen3.5:4b",
+            "credential": "local",
+            "task": "extraction",
+            "status": "ok",
+            "elapsed_ms": 7202,
+            "input_tokens": 619,
+            "output_tokens": 159,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "verification",
+            "status": "ok",
+            "elapsed_ms": 1197,
+            "input_tokens": 567,
+            "output_tokens": 368,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "verification",
+            "status": "invalid_output",
+            "elapsed_ms": 2141,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "retry": 0,
+            "validation_errors": [
+              "entailed:missing",
+              "english:missing",
+              "names_consistent:missing",
+              "agency_and_tense_preserved:missing",
+              "unsupported_relationships:missing",
+              "reason:missing"
+            ],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "verification",
+            "status": "invalid_output",
+            "elapsed_ms": 2366,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "retry": 1,
+            "validation_errors": [
+              "entailed:missing",
+              "english:missing",
+              "names_consistent:missing",
+              "agency_and_tense_preserved:missing",
+              "unsupported_relationships:missing",
+              "reason:missing"
+            ],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "ollama",
+            "model": "qwen3.5:4b",
+            "credential": "local",
+            "task": "verification",
+            "status": "ok",
+            "elapsed_ms": 8057,
+            "input_tokens": 500,
+            "output_tokens": 123,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "verification",
+            "status": "invalid_output",
+            "elapsed_ms": 1888,
+            "input_tokens": 0,
+            "output_tokens": 0,
+            "retry": 0,
+            "validation_errors": [
+              "entailed:missing",
+              "english:missing",
+              "names_consistent:missing",
+              "agency_and_tense_preserved:missing",
+              "unsupported_relationships:missing",
+              "reason:missing"
+            ],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "verification",
+            "status": "ok",
+            "elapsed_ms": 1429,
+            "input_tokens": 765,
+            "output_tokens": 563,
+            "retry": 1,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "presentation",
+            "status": "ok",
+            "elapsed_ms": 1926,
+            "input_tokens": 1434,
+            "output_tokens": 662,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "presentation_verification",
+            "status": "ok",
+            "elapsed_ms": 1273,
+            "input_tokens": 984,
+            "output_tokens": 412,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          },
+          {
+            "provider": "groq",
+            "model": "openai/gpt-oss-120b",
+            "credential": "primary",
+            "task": "verification",
+            "status": "ok",
+            "elapsed_ms": 1017,
+            "input_tokens": 431,
+            "output_tokens": 381,
+            "retry": 0,
+            "validation_errors": [],
+            "model_call": true,
+            "reservation_id": null,
+            "model_digest": null
+          }
+        ]
+      }
+    },
+    "recap_fact_count": 3
+  },
+  "preservation": {
+    "before_nodes": 26,
+    "after_nodes": 27,
+    "before_relationships": 33,
+    "after_relationships": 33,
+    "all_prior_node_ids_retained": true,
+    "all_prior_relationship_ids_retained": true,
+    "historical_content_matches": {
+      "nodes": true,
+      "edges": true
+    }
+  },
+  "unfinished_leads": [
+    {
+      "question": "Old Man Rom Felt care actions malnutrition history",
+      "status": "RESOLVED",
+      "stop_reason": null
+    },
+    {
+      "question": "Felt background Re:Zero light novel chapter index re-zero.com",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt background origin history taking before current timeline",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "What specific care actions did Old Man Rom perform for Felt?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Does the text establish that the 'loot house' is a secret identity?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Is there evidence of unstated causes for Old Man Rom's actions toward Felt?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom caring bond Felt creator Q&A re-zero.com explicit statement",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Felt Old Man Rom loot house connection original novel chapter index",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "What is the background origin history taking before the current timeline?",
+      "status": "DISCOVERED",
+      "stop_reason": null
+    },
+    {
+      "question": "Investigate the explicitly described caring bond between Old Man Rom and Felt in this original-novel creator Q&A. Extract separate atomic facts about the care Rom provided, their background and their bond. Each named subject may have several different supported facts. Do not transfer attributes from Rom to Felt. Exclude secret identities, unrelated characters, inferred biological kinship and unstated causes. Preserve uncertainty about the loot house, which this section may not establish.",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom character profile Re:Zero light novel re-zero.com",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Re:Zero creator Q&A Felt Old Man Rom caring bond official statement",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Felt character profile Re:Zero light novel re-zero.com background",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Felt Old Man Rom character profile re-zero.com official statement",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt unstated causes motivation not liking humans",
+      "status": "RESOLVED",
+      "stop_reason": null
+    },
+    {
+      "question": "How is the caring bond between Old Man Rom and Felt explicitly described in the text?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "What is the official character profile for Felt in the Re:Zero light novel?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Investigate Felt and Old Man Rom in the original Re:Zero novel: their background, their caring bond, and their connection to the loot house. Discover official character profiles and creator Q&A on re-zero.com; investigate useful leads and distinguish explicit statements from interpretations. Preserve original names and unresolved cross-language identities. Do not infer biological kinship, anime equivalence, chronology or causality. Exclude unrelated characters and later plot summaries.",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Investigate the explicitly described caring bond between Old Man Rom and Felt in this original-novel creator Q&A. Extract separate atomic facts about the care Rom provided, their background and their bond.",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Does the creator Q&A on re-zero.com explicitly state a caring bond between Felt and Old Man Rom?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "What is the official character profile for Old Man Rom in the Re:Zero light novel?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt bond nature explicitly described caring relationship",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Re:Zero novel loot house connection Old Man Rom first appearance chapter",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt bond nature explicit description",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Tappei Nagatsuki Q&A Felt Old Man Rom relationship explicit statement",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Re:Zero novel loot house first appearance chapter index Felt",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt relationship background origin",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt care actions specific types malnutrition prevention",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "What are the specific chapter indices detailing Felt's background in the Re:Zero light novel?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Where does the connection between Felt and Old Man Rom to the loot house first appear in the original novel?",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt loot house secret identity established text",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    },
+    {
+      "question": "Old Man Rom Felt relationship background origin history taking",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "BUDGET_EXHAUSTED"
+    }
+  ],
+  "checks": {
+    "backend_pytest": "188 passed, including 7 PostgreSQL tests in isolated schemas",
+    "frontend_unit_tests": "57 passed",
+    "playwright": "11 passed, 1 opt-in skipped"
+  },
+  "cloud_permission_review": {
+    "approved_section_records": 3,
+    "cloud_allowed_discovery_families": 0,
+    "global_routing_change_applied": false
+  }
+}

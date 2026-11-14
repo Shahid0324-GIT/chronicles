@@ -1,5 +1,6 @@
 """Official LangChain adapters. SDK exception bodies never leave this module."""
 
+import json
 import re
 import time
 from contextlib import nullcontext
@@ -150,6 +151,28 @@ class LangChainProvider:
         except Exception as error:
             response = getattr(error, "response", None)
             code = getattr(error, "status_code", 0)
+            body = getattr(error, "body", {})
+            detail = body.get("error", body) if isinstance(body, dict) else {}
+            if (
+                self.name == "groq"
+                and code == 400
+                and isinstance(detail, dict)
+                and detail.get("code") == "tool_use_failed"
+            ):
+                # Provider-side tool validation is invalid output, not network failure.
+                # Recover only redacted schema locations; never expose failed generations.
+                issues: tuple[str, ...] = ("provider:tool_schema_validation",)
+                generation = detail.get("failed_generation", "")
+                if isinstance(generation, str):
+                    try:
+                        start = generation.index("{")
+                        candidate, _ = json.JSONDecoder().raw_decode(generation[start:])
+                        schema.model_validate(candidate)
+                    except ValidationError as invalid:
+                        issues = validation_issues(invalid, schema)
+                    except (ValueError, TypeError):
+                        pass
+                raise InferenceFailure("invalid_output", issues=issues) from None
             if response is not None:
                 self._check_status(code or response.status_code, response.headers)
             raise InferenceFailure("inference_failed") from None

@@ -8,6 +8,7 @@ import pytest
 from sqlalchemy import select
 
 from src.application.ports.research import SearchResult
+from src.application.research_contracts import InferenceFailure, ResearchPlan
 from src.application.source_contracts import SourceDiscovery, SourceRegistration
 from src.application.source_intelligence import SourceDiscoveryService, SourceSelector
 from src.infrastructure.inference import LangChainProvider
@@ -124,6 +125,33 @@ async def test_empty_results_with_upstream_errors_are_not_successful_research():
     with patch("src.infrastructure.sources.httpx.AsyncClient", client):
         with pytest.raises(SourceRejected, match="search_upstream_unavailable"):
             await SearxngSearch("http://127.0.0.1:8080", PublicSourcePolicy([])).search("Owned", 2)
+
+
+async def test_groq_tool_validation_failure_exposes_only_schema_locations():
+    class OwnedError(Exception):
+        status_code = 400
+        body = {
+            "error": {
+                "code": "tool_use_failed",
+                "failed_generation": (
+                    '<function=ResearchPlan>{"questions":[],"private":"SENTINEL"}</function>'
+                ),
+            }
+        }
+
+    class Client:
+        def with_structured_output(self, *args, **kwargs):
+            return self
+
+        async def ainvoke(self, messages):
+            raise OwnedError()
+
+    provider = LangChainProvider(Client(), "groq", "owned", "primary", health_url="unused")
+    with pytest.raises(InferenceFailure) as failure:
+        await provider.generate("Owned", "Owned", ResearchPlan, "planning")
+    assert failure.value.code == "invalid_output"
+    assert any("questions" in issue for issue in failure.value.issues)
+    assert "SENTINEL" not in repr(failure.value.issues)
 
 
 async def test_discovery_inherits_only_explicit_matching_rule_and_retains_existing_permission(

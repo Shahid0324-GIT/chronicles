@@ -1,6 +1,6 @@
 # Current verification
 
-The latest implementation is **Phase 3, increment 5.1**: [executed verification and partial benchmark results](phase-3-increment-5-1-verification.md), [focused-policy configuration and architecture](phase-3-increment-5-1.md), and [actual persisted research audit](phase-3-increment-5-1-demo.json). Focused bounded research and unfinished leads are implemented; cohesive recap and deeper source coverage remain incomplete. Earlier reports remain historical.
+The latest implementation is **Phase 3, increment 5.2**: [operational changes, actual verification and remaining blockers](phase-3-increment-5-2.md), [persisted research and real provider comparison](phase-3-increment-5-2-results.json), and [search setup/captures](phase-3-increment-5-2-search.md). Search and Groq were exercised, but reliable autonomous multi-publisher research, canonical relationship publication and a published cohesive recap remain incomplete. Earlier reports remain historical.
 
 The latest visual implementation is **Phase 2.5B Pass 1**. See [its executed checks, browser evidence and limitations](phase-2-5b-verification.md), [architecture](phase-2-5b-pass-1.md), and [changed-file manifest](phase-2-5b-files.txt). The sections below are historical records.
 
