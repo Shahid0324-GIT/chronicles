@@ -361,7 +361,22 @@ class ResearchWorkflow:
         task: Task,
         public: bool = False,
     ) -> BaseModel:
-        await self.check(state)
+        request = await self.check(state)
+        if public and not request.presentation_only:
+            identifiers = {
+                UUID(value["source_id"]) for value in state.get("passage_context", {}).values()
+            }
+            if self.retrieval and identifiers:
+                async with self.retrieval.transactions() as index:
+                    metadata = await index.source_metadata(
+                        request.universe_id, request.continuity_id, list(identifiers)
+                    )
+                public = identifiers <= set(metadata) and all(
+                    value.get("public_web") and value.get("cloud_content_allowed")
+                    for value in metadata.values()
+                )
+            else:
+                public = False
         if isinstance(self.inference, InferenceRouter):
             async with self.transactions() as archive:
                 job = await archive.get_job(UUID(state["job_id"]))
@@ -523,6 +538,8 @@ class ResearchWorkflow:
             "Do not assume an episode synopsis supplies complete subject coverage. "
             "Choose focus=story for occurrences or encyclopedia for biography, lore, documents "
             "and locations. Adapt to the unanswered questions. "
+            "Search queries should contain 3–12 focused keywords, a subject and a missing fact. "
+            "Prefer official/reference sites listed in the profile; never invent domain names. "
             "Existing curated titles are context, NOT newly discovered evidence. "
             + json.dumps(
                 {
@@ -617,6 +634,19 @@ class ResearchWorkflow:
                 await archive.update_job(UUID(state["job_id"]), checkpoint=checkpoint)
                 await archive.event(UUID(state["job_id"]), "discovery.query", {"query": query})
 
+        async def record_results(query: str, results: list[Any]) -> None:
+            async with self.transactions() as archive:
+                await archive.event(
+                    UUID(state["job_id"]),
+                    "discovery.results",
+                    {
+                        "query": query,
+                        "results": [
+                            {"url": result.url, "title": result.title} for result in results
+                        ],
+                    },
+                )
+
         errors = list(state.get("errors", []))
         registry_entries = []
         if request.use_registry and self.registry:
@@ -652,12 +682,25 @@ class ResearchWorkflow:
                         max_queries=max(0, self.max_queries - len(used)),
                         used_queries=used,
                         on_query=reserve_query,
+                        on_results=record_results,
                         queries=state.get("plan", {}).get("queries")
                         if state.get("policy")
                         else None,
                     )
                 except Exception:
                     errors.append("source_discovery_unavailable")
+            # Discovery returns the complete registry: reapply the caller's fences.
+            if self.source_policy:
+                available = [
+                    entry for entry in available if self.source_policy.is_approved(entry.url)
+                ]
+            if request.spoiler_position is not None:
+                available = [
+                    entry
+                    for entry in available
+                    if entry.presentation_position is not None
+                    and entry.presentation_position <= request.spoiler_position
+                ]
             if state.get("policy"):
                 available = [
                     e for e in available if str(e.id) not in state.get("inspected_registry_ids", [])
@@ -1407,7 +1450,8 @@ class ResearchWorkflow:
         request = await self.check(state)
 
         async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
-            return await self.infer(state, prompt, schema, task)
+            # This prompt contains only source-grounded candidate names, IDs and passages.
+            return await self.infer(state, prompt, schema, task, state.get("public_only", False))
 
         candidates = await self.knowledge.relationships(
             UUID(state["job_id"]),

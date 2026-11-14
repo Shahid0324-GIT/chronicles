@@ -53,7 +53,12 @@ class LangChainProvider:
             payload = response.json()
             models = payload.get("models", []) if self.name == "ollama" else payload.get("data", [])
             match = next(
-                (item for item in models if item.get("name", item.get("id")) == self.model), None
+                (
+                    item
+                    for item in models
+                    if item.get("name" if self.name == "ollama" else "id") == self.model
+                ),
+                None,
             )
             self.revision = match.get("digest") if match and self.name == "ollama" else None
             return match is not None

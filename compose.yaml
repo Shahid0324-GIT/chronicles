@@ -1,5 +1,24 @@
 name: universe-atlas
 services:
+  searxng:
+    image: searxng/searxng@sha256:eb8b09ffa83aebbe8b8d3ded23cfd224b2d3b01db4f3af9eb03876ef6def6dda
+    restart: unless-stopped
+    mem_limit: 768m
+    cpus: 1.0
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      SEARXNG_SECRET: ${SEARXNG_SECRET:?Set a local SEARXNG_SECRET in .env}
+      SEARXNG_BASE_URL: http://127.0.0.1:8080/
+    volumes:
+      - ./infra/searxng/settings.yml:/etc/searxng/settings.yml:ro
+      - searxng_cache:/var/cache/searxng
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--spider", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 8
+      start_period: 20s
   postgres:
     image: pgvector/pgvector:0.8.7-pg18-trixie
     environment:
@@ -16,4 +35,5 @@ services:
       timeout: 5s
       retries: 10
 volumes:
+  searxng_cache:
   atlas_postgres:

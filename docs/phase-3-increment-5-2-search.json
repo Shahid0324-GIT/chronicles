@@ -1,0 +1,419 @@
+{
+  "kind": "Actual local SearXNG requests; no mocked HTTP",
+  "queries": [
+    {
+      "query": "Re:Zero Arc 1 original novel references",
+      "latency_ms": 1408,
+      "results": [
+        {
+          "title": "r/Re_Zero on Reddit: [novels] Anime references upto arc 7 in Re ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/qes5yo/novels_anime_references_upto_arc_7_in_re_zero_web/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: [Novels] Describe every arc in Re Zero in ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/k90llz/novels_describe_every_arc_in_re_zero_in_a_single/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: [Novels] Arc 1 WN vs LN Differences",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/hosp4f/novels_arc_1_wn_vs_ln_differences/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Table of Contents | Witch Cult Translations",
+          "url": "https://witchculttranslation.com/table-of-content/",
+          "domain": "witchculttranslation.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: [Novels] Analysis of the Names of the caracters ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/uifzfp/novels_analysis_of_the_names_of_the_caracters_in/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Witch Cult Translations - Re:Zero Web Novel Translations!",
+          "url": "https://witchculttranslation.com/",
+          "domain": "witchculttranslation.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Arc 1: A Tumultuous First Day | Witch Cult Translations",
+          "url": "https://witchculttranslation.com/arc-1/",
+          "domain": "witchculttranslation.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "List of Re:Zero volumes - Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/List_of_Re:Zero_volumes",
+          "domain": "en.wikipedia.org",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        }
+      ],
+      "unresponsive_engines": [
+        [
+          "duckduckgo",
+          "CAPTCHA"
+        ]
+      ],
+      "observed_result_count": 25
+    },
+    {
+      "query": "Re:Zero Emilia Puck character relationship official",
+      "latency_ms": 947,
+      "results": [
+        {
+          "title": "Puck/Relationships | Re:Zero Wiki | Fandom",
+          "url": "https://rezero.fandom.com/wiki/Puck/Relationships",
+          "domain": "rezero.fandom.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Emilia/Relationships | Re:Zero Wiki | Fandom",
+          "url": "https://rezero.fandom.com/wiki/Emilia/Relationships",
+          "domain": "rezero.fandom.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "re zero - Why does Puck refer to Emilia as 'My Daughter'? - Anime ...",
+          "url": "https://anime.stackexchange.com/questions/34538/why-does-puck-refer-to-emilia-as-my-daughter",
+          "domain": "anime.stackexchange.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Emilia from Re:Zero: Appearance, Personality, Powers, Best Scenes, ...",
+          "url": "https://waifuforlaifu.com/emilia-from-re-zero-character-guide/",
+          "domain": "waifuforlaifu.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/ReZero on Reddit: Why does puck call Amelia his daughter?",
+          "url": "https://www.reddit.com/r/ReZero/comments/1pztzyq/why_does_puck_call_amelia_his_daughter/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: [LN] Little bit of Emilia's contract with Puck",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/4v0chl/ln_little_bit_of_emilias_contract_with_puck/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Puck | Re:Zero Wiki | Fandom",
+          "url": "https://rezero.fandom.com/wiki/Puck",
+          "domain": "rezero.fandom.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "《Re:Zero》In-depth Analysis of the Relationship Between Emilia ...",
+          "url": "https://anihk.com/en/blogs/characters/re-zero-emilia-puck-relationship-father-daughter-bond",
+          "domain": "anihk.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        }
+      ],
+      "unresponsive_engines": [
+        [
+          "duckduckgo",
+          "CAPTCHA"
+        ]
+      ],
+      "observed_result_count": 25
+    },
+    {
+      "query": "Re:Zero capital insignia lore",
+      "latency_ms": 1050,
+      "results": [
+        {
+          "title": "r/Re_Zero on Reddit: [discussion] Where do the insignias originate ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/13is8zc/discussion_where_do_the_insignias_originate_from/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "What does this eagle symbol/crest mean in Re:Zero? - Anime & Manga ...",
+          "url": "https://anime.stackexchange.com/questions/62709/what-does-this-eagle-symbol-crest-mean-in-rezero",
+          "domain": "anime.stackexchange.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: I wish the anime made the insignia thing a ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/1hm9293/i_wish_the_anime_made_the_insignia_thing_a_bit/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: [LN][WN][Spoilers]FAQ + Spoiler FAQ about ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/4skczp/lnwnspoilersfaq_spoiler_faq_about_re_zero/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: Question about Subaru's first Loop [novels]",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/k1iazf/question_about_subarus_first_loop_novels/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: how did reinhard get the insignia",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/4qhoay/how_did_reinhard_get_the_insignia/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Re_Zero on Reddit: [spoiler discussion] Someone else tried to ...",
+          "url": "https://www.reddit.com/r/Re_Zero/comments/12srhmg/spoiler_discussion_someone_else_tried_to_get/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Royal Capital | Re:Zero Wiki | Fandom",
+          "url": "https://rezero.fandom.com/wiki/Royal_Capital",
+          "domain": "rezero.fandom.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        }
+      ],
+      "unresponsive_engines": [
+        [
+          "duckduckgo",
+          "CAPTCHA"
+        ]
+      ],
+      "observed_result_count": 26
+    },
+    {
+      "query": "Elden Ring item descriptions official",
+      "latency_ms": 971,
+      "results": [
+        {
+          "title": "Items | Elden Ring Wiki - Fextralife",
+          "url": "https://eldenring.wiki.fextralife.com/Items",
+          "domain": "eldenring.wiki.fextralife.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Detailed Item Descriptions at Elden Ring Nexus - Mods and Community",
+          "url": "https://www.nexusmods.com/eldenring/mods/1356",
+          "domain": "www.nexusmods.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "13 Most Interesting Item Descriptions In Elden Ring",
+          "url": "https://www.thegamer.com/elden-ring-most-interesting-item-descriptions/",
+          "domain": "www.thegamer.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Elden Ring Item Descriptions",
+          "url": "https://elden-ring-item-descriptions.tumblr.com/",
+          "domain": "elden-ring-item-descriptions.tumblr.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "List of All Items | Elden Ring",
+          "url": "https://game8.co/games/Elden-Ring/archives/358835",
+          "domain": "game8.co",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Detailed Item Descriptions at Elden Ring Nexus - Mods and Community",
+          "url": "https://www.nexusmods.com/eldenring/mods/1356?tab=posts",
+          "domain": "www.nexusmods.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "Item List - Elden Ring Guide - IGN",
+          "url": "https://www.ign.com/wikis/elden-ring/Item_List",
+          "domain": "www.ign.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        },
+        {
+          "title": "r/Eldenring on Reddit: Item descriptions?",
+          "url": "https://www.reddit.com/r/Eldenring/comments/t17rfk/item_descriptions/",
+          "domain": "www.reddit.com",
+          "host_approved": false,
+          "ingestion_permission": "requires registry approval"
+        }
+      ],
+      "unresponsive_engines": [
+        [
+          "duckduckgo",
+          "CAPTCHA"
+        ]
+      ],
+      "observed_result_count": 23
+    },
+    {
+      "adapter": "actual existing SearxngSearch",
+      "urls": [
+        "https://rezero.fandom.com/wiki/Puck/Relationships",
+        "https://rezero.fandom.com/wiki/Emilia/Relationships",
+        "https://anime.stackexchange.com/questions/34538/why-does-puck-refer-to-emilia-as-my-daughter",
+        "https://waifuforlaifu.com/emilia-from-re-zero-character-guide/",
+        "https://www.reddit.com/r/ReZero/comments/1pztzyq/why_does_puck_call_amelia_his_daughter/"
+      ]
+    }
+  ],
+  "registry_proof": [
+    {
+      "universe_id": "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6",
+      "name": "anihk.com",
+      "url": "https://anihk.com/en-th/blogs/characters/re-zero-emilia-puck-relationship-father-daughter-bond",
+      "category": "character-profile",
+      "media": [
+        "unknown"
+      ],
+      "continuity_ids": [
+        "7f3e5d50-2c7a-5bf7-942c-04094052a639"
+      ],
+      "access_method": "navigation",
+      "authority": "unverified",
+      "discovery_priority": 50,
+      "topics": [
+        "Emilia Puck introductory relationship"
+      ],
+      "retrieval_policy": "navigation-only",
+      "permission_basis": "Discovery only; ingestion permission not established",
+      "attribution": "Discovered URL; verify site terms before ingestion",
+      "selectors": {},
+      "revision": null,
+      "discovery_origin": "Re:Zero Emilia Puck character relationship official",
+      "cloud_content_allowed": false,
+      "derived_from": null,
+      "presentation_position": null,
+      "position_basis": null,
+      "id": "55525866-a858-523a-9443-47e76af27df8",
+      "domain": "anihk.com",
+      "health": "unknown",
+      "last_success": null,
+      "last_error": null
+    },
+    {
+      "universe_id": "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6",
+      "name": "www.reddit.com",
+      "url": "https://www.reddit.com/r/Re_Zero/comments/mdnv3u/discussion_why_does_puck_treat_emilia_like_a/",
+      "category": "reference",
+      "media": [
+        "unknown"
+      ],
+      "continuity_ids": [
+        "7f3e5d50-2c7a-5bf7-942c-04094052a639"
+      ],
+      "access_method": "navigation",
+      "authority": "unverified",
+      "discovery_priority": 50,
+      "topics": [
+        "Emilia Puck introductory relationship"
+      ],
+      "retrieval_policy": "navigation-only",
+      "permission_basis": "Discovery only; ingestion permission not established",
+      "attribution": "Discovered URL; verify site terms before ingestion",
+      "selectors": {},
+      "revision": null,
+      "discovery_origin": "Re:Zero Emilia Puck character relationship official",
+      "cloud_content_allowed": false,
+      "derived_from": null,
+      "presentation_position": null,
+      "position_basis": null,
+      "id": "8767f13f-e74f-5dcb-b226-fd83c3044127",
+      "domain": "www.reddit.com",
+      "health": "unknown",
+      "last_success": null,
+      "last_error": null
+    },
+    {
+      "universe_id": "ad4c98b0-37d8-5057-9c47-5cd1783e9bb6",
+      "name": "rezero.fandom.com",
+      "url": "https://rezero.fandom.com/wiki/Puck/Relationships",
+      "category": "dedicated-wiki",
+      "media": [
+        "unknown"
+      ],
+      "continuity_ids": [
+        "7f3e5d50-2c7a-5bf7-942c-04094052a639"
+      ],
+      "access_method": "navigation",
+      "authority": "unverified",
+      "discovery_priority": 50,
+      "topics": [
+        "Emilia Puck introductory relationship"
+      ],
+      "retrieval_policy": "navigation-only",
+      "permission_basis": "Discovery only; ingestion permission not established",
+      "attribution": "Discovered URL; verify site terms before ingestion",
+      "selectors": {},
+      "revision": null,
+      "discovery_origin": "Re:Zero Emilia Puck character relationship official",
+      "cloud_content_allowed": false,
+      "derived_from": null,
+      "presentation_position": null,
+      "position_basis": null,
+      "id": "c5dafb19-3279-5e10-9d2a-29d2965b9397",
+      "domain": "rezero.fandom.com",
+      "health": "unknown",
+      "last_success": null,
+      "last_error": null
+    }
+  ],
+  "groq_probe": {
+    "kind": "Real provider call with owned synthetic content; not factual research or dossier benchmark",
+    "usage": [
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "credential": "primary",
+        "task": "verification",
+        "status": "ok",
+        "elapsed_ms": 594,
+        "input_tokens": 208,
+        "output_tokens": 137,
+        "retry": 0,
+        "validation_errors": [],
+        "model_call": true,
+        "reservation_id": null,
+        "model_digest": null
+      }
+    ],
+    "result": {
+      "focus": "encyclopedia",
+      "questions": [
+        "Which permitted evidence addresses the objective?"
+      ],
+      "queries": []
+    }
+  }
+}

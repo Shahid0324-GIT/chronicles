@@ -108,6 +108,8 @@ async def discover_sources(command: SourceDiscovery, request: Request) -> list[S
             settings.searxng_base_url,
             PublicSourcePolicy(settings.research_allowed_hosts),
             navigation_only=True,
+            timeout=settings.searxng_timeout_seconds,
+            interval=settings.searxng_min_interval_seconds,
         )
         if settings.searxng_base_url
         else None

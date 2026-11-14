@@ -1,0 +1,19 @@
+use_default_settings:
+  engines:
+    keep_only: [google, bing, brave, duckduckgo, wikipedia]
+general:
+  instance_name: Chronicles local research
+search:
+  formats: [html, json]
+  autocomplete: ""
+  safe_search: 1
+server:
+  bind_address: 0.0.0.0
+  port: 8080
+  limiter: false
+  public_instance: false
+outgoing:
+  request_timeout: 8.0
+  max_request_timeout: 12.0
+  pool_connections: 10
+  pool_maxsize: 10

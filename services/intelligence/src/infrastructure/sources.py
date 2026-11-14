@@ -14,6 +14,7 @@ from urllib.robotparser import RobotFileParser
 import httpx
 from bs4 import BeautifulSoup
 
+from src.application.ports.research import SearchResult
 from src.application.research import FetchedDocument, SourceRejected
 from src.application.research_contracts import InferenceFailure
 from src.domain.research import normalize
@@ -270,24 +271,62 @@ class PublicDocumentFetcher:
 
 class SearxngSearch:
     def __init__(
-        self, base_url: str, policy: PublicSourcePolicy, *, navigation_only: bool = False
+        self,
+        base_url: str,
+        policy: PublicSourcePolicy,
+        *,
+        navigation_only: bool = False,
+        timeout: float = 20,
+        interval: float = 1,
     ) -> None:
         parsed = urlsplit(base_url)
         if parsed.scheme != "http" or parsed.hostname not in {"localhost", "127.0.0.1", "::1"}:
             raise ValueError("SearXNG must be a trusted loopback endpoint")
         self.base_url, self.policy = base_url, policy
         self.navigation_only = navigation_only
+        self.timeout, self.interval = timeout, interval
+        self.gate = asyncio.Lock()
+        self.last_search = 0.0
 
     async def search(self, query: str, limit: int) -> list[str]:
-        async with httpx.AsyncClient(timeout=15, trust_env=False) as client:
-            response = await client.get(
-                self.base_url.rstrip("/") + "/search", params={"q": query, "format": "json"}
-            )
-            response.raise_for_status()
-            results = response.json().get("results", [])
+        return [result.url for result in await self.search_results(query, limit)]
+
+    async def search_results(self, query: str, limit: int) -> list[SearchResult]:
+        if limit <= 0:
+            return []
+        async with self.gate:
+            delay = self.interval - (time.monotonic() - self.last_search)
+            if delay > 0:
+                await asyncio.sleep(delay)
+            try:
+                async with httpx.AsyncClient(timeout=self.timeout, trust_env=False) as client:
+                    async with client.stream(
+                        "GET",
+                        self.base_url.rstrip("/") + "/search",
+                        params={"q": query[:1500], "format": "json", "categories": "general"},
+                    ) as response:
+                        response.raise_for_status()
+                        body = bytearray()
+                        async for chunk in response.aiter_bytes():
+                            body.extend(chunk)
+                            if len(body) > 1_000_000:
+                                raise SourceRejected("search_response_too_large")
+                payload = json.loads(body)
+                results = payload.get("results", [])
+                if not isinstance(results, list):
+                    raise SourceRejected("search_invalid_results")
+            except SourceRejected:
+                raise
+            except (httpx.HTTPError, ValueError):
+                raise SourceRejected("search_unavailable") from None
+            finally:
+                self.last_search = time.monotonic()
         accepted = []
+        seen: set[str] = set()
         for item in results:
             try:
+                if not isinstance(item, dict) or not isinstance(item.get("url"), str):
+                    continue
                 candidate_policy = self.policy
                 if self.navigation_only:
                     host = urlsplit(item["url"]).hostname or ""
@@ -300,7 +339,17 @@ class SearxngSearch:
                         pass
                     candidate_policy = PublicSourcePolicy([host])
                 candidate_policy.validate(item["url"])
-                accepted.append(str(item["url"]))
+                url = str(item["url"]).partition("#")[0]
+                if url in seen:
+                    continue
+                seen.add(url)
+                accepted.append(
+                    SearchResult(
+                        url, str(item.get("title", ""))[:300], str(item.get("content", ""))[:1000]
+                    )
+                )
+                if len(accepted) >= min(limit, 20):
+                    break
             except (SourceRejected, KeyError):
                 continue
-        return list(dict.fromkeys(accepted))[:limit]
+        return accepted

@@ -1,5 +1,6 @@
 from collections.abc import Awaitable, Callable
 from contextlib import AbstractAsyncContextManager
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Protocol, runtime_checkable
 from uuid import UUID
@@ -63,3 +64,15 @@ class ApiDocumentFetcher(Protocol):
 
 class SearchProvider(Protocol):
     async def search(self, query: str, limit: int) -> list[str]: ...
+
+
+@dataclass(frozen=True)
+class SearchResult:
+    url: str
+    title: str = ""
+    summary: str = ""
+
+
+@runtime_checkable
+class MetadataSearchProvider(Protocol):
+    async def search_results(self, query: str, limit: int) -> list[SearchResult]: ...

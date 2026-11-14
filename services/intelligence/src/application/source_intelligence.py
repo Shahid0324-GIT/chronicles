@@ -3,7 +3,7 @@ from typing import Literal, cast
 from urllib.parse import urlsplit
 from uuid import UUID
 
-from src.application.ports.research import SearchProvider
+from src.application.ports.research import MetadataSearchProvider, SearchProvider, SearchResult
 from src.application.ports.source_intelligence import SourceRegistryTransaction
 from src.application.research import SourceInput
 from src.application.research_frontier import terms
@@ -44,6 +44,7 @@ class SourceSelector:
             and continuity in {str(c) for c in e.continuity_ids}
             and e.retrieval_policy == "permitted"
             and e.access_method not in {"navigation", "import"}
+            and e.discovery_path_prefix is None
             and (profile is None or e.access_method in profile.retrieval_methods)
         ]
         ranked = []
@@ -142,6 +143,7 @@ class SourceDiscoveryService:
         used_queries: list[str] | None = None,
         queries: list[str] | None = None,
         on_query: Callable[[str], Awaitable[None]] | None = None,
+        on_results: Callable[[str, list[SearchResult]], Awaitable[None]] | None = None,
     ) -> list[SourceEntry]:
         async with self.transactions() as registry:
             existing = await registry.entries(request.universe_id)
@@ -165,15 +167,67 @@ class SourceDiscoveryService:
                 used_queries.append(query)
             if on_query:
                 await on_query(query)
-            for url in (await self.search.search(query, 4))[:4]:
+            results = (
+                await self.search.search_results(query, 8)
+                if isinstance(self.search, MetadataSearchProvider)
+                else [SearchResult(url) for url in (await self.search.search(query, 4))[:4]]
+            )
+            if on_results:
+                await on_results(query, results)
+            for result in results:
+                url = result.url
                 host = urlsplit(url).hostname or ""
-                if host in seen:
+                identity = url if isinstance(self.search, MetadataSearchProvider) else host
+                if identity in seen:
                     continue
-                seen.add(host)
+                seen.add(identity)
+                parsed = urlsplit(url)
+                known = [entry for entry in existing if entry.url.partition("#")[0] == url]
+                if any(entry.retrieval_policy == "permitted" for entry in known):
+                    continue  # Discovery cannot erase existing permission or source selections.
+                rules = [
+                    entry
+                    for entry in existing
+                    if entry.retrieval_policy == "permitted"
+                    and entry.discovery_path_prefix
+                    and request.continuity_id in entry.continuity_ids
+                    and urlsplit(entry.url).scheme == parsed.scheme
+                    and urlsplit(entry.url).netloc == parsed.netloc
+                    and urlsplit(entry.url).query == parsed.query
+                    and (
+                        parsed.path.rstrip("/") == entry.discovery_path_prefix.rstrip("/")
+                        or parsed.path.startswith(entry.discovery_path_prefix.rstrip("/") + "/")
+                    )
+                ]
+                if rules:
+                    longest = max(len(entry.discovery_path_prefix or "") for entry in rules)
+                    for template in rules:
+                        if len(template.discovery_path_prefix or "") != longest:
+                            continue
+                        data = {
+                            key: value
+                            for key, value in template.model_dump(mode="json").items()
+                            if key in SourceRegistration.model_fields
+                        }
+                        data.update(
+                            url=url,
+                            name=result.title or host,
+                            discovery_origin=query,
+                            discovery_summary=result.summary,
+                            discovery_path_prefix=None,
+                            permission_basis=(
+                                "Approved discovery rule "
+                                + str(template.id)
+                                + ": "
+                                + template.permission_basis
+                            )[:500],
+                        )
+                        references.append(SourceRegistration.model_validate(data))
+                    continue
                 references.append(
                     SourceRegistration(
                         universe_id=request.universe_id,
-                        name=host,
+                        name=result.title or host,
                         url=url,
                         category=self.category(url),
                         media=["unknown"],
@@ -184,6 +238,7 @@ class SourceDiscoveryService:
                         permission_basis="Discovery only; ingestion permission not established",
                         attribution="Discovered URL; verify site terms before ingestion",
                         discovery_origin=query,
+                        discovery_summary=result.summary,
                     )
                 )
         async with self.transactions() as registry:

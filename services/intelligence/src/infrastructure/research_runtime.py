@@ -67,7 +67,14 @@ def build_workflow(
         PublicDocumentFetcher(
             policy, settings.research_max_source_bytes, settings.research_max_source_chars
         ),
-        SearxngSearch(settings.searxng_base_url, policy) if settings.searxng_base_url else None,
+        SearxngSearch(
+            settings.searxng_base_url,
+            policy,
+            timeout=settings.searxng_timeout_seconds,
+            interval=settings.searxng_min_interval_seconds,
+        )
+        if settings.searxng_base_url
+        else None,
         max_iterations=settings.agent_max_iterations,
         max_sources=settings.agent_max_sources,
         max_queries=settings.agent_max_search_queries,
@@ -82,7 +89,13 @@ def build_workflow(
         default_policy=settings.research_focused_policy,
         source_policy=policy,
         discovery_search=(
-            SearxngSearch(settings.searxng_base_url, policy, navigation_only=True)
+            SearxngSearch(
+                settings.searxng_base_url,
+                policy,
+                navigation_only=True,
+                timeout=settings.searxng_timeout_seconds,
+                interval=settings.searxng_min_interval_seconds,
+            )
             if settings.searxng_base_url
             else None
         ),

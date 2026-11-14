@@ -40,6 +40,8 @@ class SourceRegistration(StructuredModel):
     selectors: dict[str, str] = Field(default_factory=dict)
     revision: str | None = None
     discovery_origin: str | None = Field(default=None, max_length=1500)
+    discovery_summary: str = Field(default="", max_length=1000)
+    discovery_path_prefix: str | None = Field(default=None, max_length=1000)
     cloud_content_allowed: bool = False
     derived_from: str | None = None
     presentation_position: int | None = Field(default=None, ge=1, le=100000)
@@ -62,6 +64,14 @@ class SourceRegistration(StructuredModel):
             raise ValueError("Section markers must contain one to 200 characters")
         if self.access_method == "navigation" and self.retrieval_policy != "navigation-only":
             raise ValueError("Navigational references cannot authorize ingestion")
+        if self.discovery_path_prefix is not None and (
+            not self.discovery_path_prefix.startswith("/")
+            or ".." in self.discovery_path_prefix
+            or "?" in self.discovery_path_prefix
+            or self.retrieval_policy != "permitted"
+            or self.access_method != "html"
+        ):
+            raise ValueError("Discovery rules require an explicit permitted HTML path prefix")
         return self
 
 

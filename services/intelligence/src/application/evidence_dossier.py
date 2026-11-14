@@ -92,7 +92,8 @@ class EvidenceDossierBuilder:
 def expand_queries(
     objective: str, questions: list[str], aliases: list[str], categories: list[str], limit: int
 ) -> list[str]:
-    queries = [objective, *questions]
+    concise = " ".join(objective.split()[:16])
+    queries = [*questions, concise]
     queries += [f"{alias} {question}" for alias in aliases[:2] for question in questions[:2]]
     queries += [f"{objective} {category} references" for category in categories]
     selected: list[str] = []

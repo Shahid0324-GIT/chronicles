@@ -54,6 +54,8 @@ class Settings(BaseSettings):
         "www.gutenberg.org",
     ]
     searxng_base_url: str | None = None
+    searxng_timeout_seconds: float = Field(default=20, ge=1, le=60)
+    searxng_min_interval_seconds: float = Field(default=2, ge=0.5, le=60)
 
     @field_validator("agent_stage_model_calls")
     @classmethod
