@@ -1,0 +1,1272 @@
+{
+  "observed_on": "2026-11-14",
+  "kind": "actual local research and persisted presentations; synthetic tests are separate",
+  "cloud_inference_used": false,
+  "source_quotations_and_prompts_omitted": true,
+  "preservation": {
+    "original_seed_nodes": 15,
+    "original_seed_edges": 25,
+    "all_original_nodes_identical": true,
+    "all_original_edges_identical": true,
+    "current_nodes": 24,
+    "current_edges": 31
+  },
+  "arc": [
+    {
+      "id": "ad7696ea-d4ba-5e0c-9100-e5156067bfa5",
+      "display_title": "A partial story guide",
+      "overview": "A girl appeared before Natsuki Subaru. After being attacked by someone the first time, Natsuki Subaru found himself back where he started in the same parallel world every time. Elsa attacks them.",
+      "major_milestones": [
+        {
+          "id": "9168a626-87d2-5136-b1a1-844e09d2e1be",
+          "eventNodeId": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "title": "Story account pending",
+          "body": "An English account is not available yet.",
+          "episodeLabel": "By episode 1",
+          "sourceIds": [
+            "63d644ac-6513-5385-94d5-d02fb7590a7c"
+          ],
+          "loreThreadIds": [],
+          "participantRoles": [
+            {
+              "nodeId": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+              "role": "recipient"
+            }
+          ],
+          "presentation": {
+            "relatedNodeIds": [
+              "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+            ],
+            "relationshipIds": [
+              "fea25aba-6435-5cec-9942-a508a21682b7"
+            ]
+          },
+          "causes": [],
+          "consequences": [],
+          "participantIds": [
+            "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d"
+          ],
+          "locationIds": [],
+          "underlyingEventIds": [
+            "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+            "56769ce6-f699-50fe-8515-9640345429d5"
+          ],
+          "detailedRecap": "",
+          "presentationStatus": "unavailable"
+        },
+        {
+          "id": "6a527a3d-607b-50d2-9a23-4a4a9bc5dd47",
+          "eventNodeId": "9507722f-4ff0-5332-b670-97427f67ce42",
+          "title": "Natsuki Subaru's Resurrection Cycle",
+          "body": "Natsuki Subaru repeatedly returns to the same parallel world after being attacked.",
+          "episodeLabel": "By episode 2",
+          "sourceIds": [
+            "ff448fb7-73ef-514f-9caa-e94a602fd3a7"
+          ],
+          "loreThreadIds": [],
+          "participantRoles": [],
+          "presentation": {
+            "relatedNodeIds": [],
+            "relationshipIds": []
+          },
+          "causes": [],
+          "consequences": [],
+          "participantIds": [],
+          "locationIds": [],
+          "underlyingEventIds": [
+            "9507722f-4ff0-5332-b670-97427f67ce42"
+          ],
+          "detailedRecap": "After being attacked by someone the first time, Natsuki Subaru found himself back where he started in the same parallel world every time.",
+          "presentationStatus": "validated"
+        },
+        {
+          "id": "9da7da81-3ea8-5a31-a53a-850b615ad74c",
+          "eventNodeId": "3eb1995d-d0b7-584f-abec-14af61be2a45",
+          "title": "Story account pending",
+          "body": "An English account is not available yet.",
+          "episodeLabel": "By episode 3",
+          "sourceIds": [
+            "c46d5515-36c4-5481-a462-cec2135519cf"
+          ],
+          "loreThreadIds": [],
+          "participantRoles": [],
+          "presentation": {
+            "relatedNodeIds": [],
+            "relationshipIds": []
+          },
+          "causes": [],
+          "consequences": [],
+          "participantIds": [],
+          "locationIds": [],
+          "underlyingEventIds": [
+            "3eb1995d-d0b7-584f-abec-14af61be2a45"
+          ],
+          "detailedRecap": "",
+          "presentationStatus": "unavailable"
+        }
+      ],
+      "continuity": "7f3e5d50-2c7a-5bf7-942c-04094052a639",
+      "source_references": [
+        {
+          "id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+          "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+          "locator": "passage 3132c69c-0e5b-5afc-983b-4e3dd6102233; normalized offsets 0:290"
+        },
+        {
+          "id": "c46d5515-36c4-5481-a462-cec2135519cf",
+          "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-a469e43acc18798d",
+          "locator": "passage 3e75f2bb-9215-5f07-9e1f-84cace878a71; normalized offsets 0:279"
+        },
+        {
+          "id": "ff448fb7-73ef-514f-9caa-e94a602fd3a7",
+          "title": "Reunion with the Witch — api.tvmaze.com",
+          "url": "https://www.tvmaze.com/episodes/677597/rezero-starting-life-in-another-world-1x02-reunion-with-the-witch",
+          "locator": "passage b12e3b30-387e-5167-910a-40d882dc4e35; normalized offsets 0:488"
+        }
+      ],
+      "partial": true,
+      "ordering": {
+        "basis": "broadcast-presentation",
+        "explanation": "Earliest supporting episode source in this archive, not proof of first reveal or in-world chronology. Synopses may recap earlier events. Ambiguous episode groups show one representative; other events remain unordered. Within-episode order requires accepted PRECEDES evidence.",
+        "sourceIds": [
+          "63d644ac-6513-5385-94d5-d02fb7590a7c",
+          "c46d5515-36c4-5481-a462-cec2135519cf",
+          "ff448fb7-73ef-514f-9caa-e94a602fd3a7"
+        ]
+      },
+      "organization_kind": "partial-source-guide",
+      "presentation": {
+        "status": "validated",
+        "policy_version": "grounded-english-v8:arc-assembly-v4",
+        "generated_at": "2026-11-14T07:15:14.891390+00:00",
+        "knowledge_revision": "6be3e6d498e5cf5f473e4761f07e71c2002fe3cff59250930832b3a5e5c38e2d",
+        "providers": [
+          {
+            "model": "qwen3.5:4b",
+            "origin": "upstream-milestone",
+            "provider": "ollama",
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+            "source_artifact_id": "346b038a-5491-52fd-a393-ae0d1ca6258b"
+          },
+          {
+            "model": "qwen3.5:4b",
+            "origin": "upstream-milestone",
+            "provider": "ollama",
+            "model_digest": null,
+            "source_artifact_id": "687435c0-8306-57e2-abd9-930aec0dbc46"
+          },
+          {
+            "model": "qwen3.5:4b",
+            "origin": "upstream-milestone",
+            "provider": "ollama",
+            "model_digest": null,
+            "source_artifact_id": "346b038a-5491-52fd-a393-ae0d1ca6258b"
+          },
+          {
+            "model": "qwen3.5:4b",
+            "origin": "upstream-milestone",
+            "provider": "ollama",
+            "model_digest": null,
+            "source_artifact_id": "d2d99c16-7724-513d-9fbd-6b69746a970a"
+          },
+          {
+            "model": "qwen3.5:4b",
+            "origin": "upstream-milestone",
+            "provider": "ollama",
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+            "source_artifact_id": "687435c0-8306-57e2-abd9-930aec0dbc46"
+          },
+          {
+            "model": "qwen3.5:4b",
+            "origin": "upstream-milestone",
+            "provider": "ollama",
+            "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+            "source_artifact_id": "d2d99c16-7724-513d-9fbd-6b69746a970a"
+          }
+        ],
+        "assembly": {
+          "method": "deterministic-grounded-milestones",
+          "source_artifact_ids": [
+            "687435c0-8306-57e2-abd9-930aec0dbc46",
+            "346b038a-5491-52fd-a393-ae0d1ca6258b",
+            "d2d99c16-7724-513d-9fbd-6b69746a970a"
+          ]
+        }
+      }
+    }
+  ],
+  "entries": [
+    {
+      "id": "4948b221-369a-59a5-a943-9d4f443a7256",
+      "entry_type": "lore",
+      "graph_type": "LORE",
+      "display_title": "Return by Death",
+      "short_introduction": "Subaru possesses the power to return to the initial state of a parallel world upon his death.",
+      "detailed_overview": "Natsuki Subaru recognizes that he has acquired the ability to return to the time and place where he began, which he terms \"Return by Death.\" Despite thinking it impossible, Subaru realizes that every time he dies, Return by Death causes him to return to the initial state from which he started.",
+      "aliases": [
+        "Return by Death"
+      ],
+      "original_names": [
+        "Return by Death"
+      ],
+      "sections": [
+        {
+          "name": "overview",
+          "statements": [
+            {
+              "text": "Natsuki Subaru recognizes that he has acquired the ability to return to the time and place where he began, which he terms \"Return by Death.\"",
+              "fact_ids": [
+                "1084b2f5d0d3c0c528cdf03a3f060b3185127df0d2421f6b98ff4afe743aca44"
+              ]
+            },
+            {
+              "text": "Despite thinking it impossible, Subaru realizes that every time he dies, Return by Death causes him to return to the initial state from which he started.",
+              "fact_ids": [
+                "1084b2f5d0d3c0c528cdf03a3f060b3185127df0d2421f6b98ff4afe743aca44",
+                "1084b2f5d0d3c0c528cdf03a3f060b3185127df0d2421f6b98ff4afe743aca44"
+              ]
+            }
+          ]
+        }
+      ],
+      "connections": [],
+      "source_references": [
+        {
+          "id": "74d9bbbd-b899-5307-96fb-8b3177b07d03",
+          "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-215ef116e8b2eb9d",
+          "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "locator": "passage 51d637d4-d52c-5399-9a17-3fbcf7a67ac4; normalized offsets 0:265",
+          "quote_start_in_passage": "83",
+          "quote_end_in_passage": "117",
+          "content_hash": "6b42eec89152e7cc8b352a3a28416498b28f0809693ae807dc6f16a0878be50e",
+          "source_language": "ja"
+        },
+        {
+          "id": "ff448fb7-73ef-514f-9caa-e94a602fd3a7",
+          "url": "https://www.tvmaze.com/episodes/677597/rezero-starting-life-in-another-world-1x02-reunion-with-the-witch",
+          "title": "Reunion with the Witch — api.tvmaze.com",
+          "locator": "passage b12e3b30-387e-5167-910a-40d882dc4e35; normalized offsets 0:488",
+          "quote_start_in_passage": "243",
+          "quote_end_in_passage": "369",
+          "content_hash": "33d89c81dba4fcdd46924759a227e2a9e75b66ecc68471d8d3a0e9df03a2ed00",
+          "source_language": "en"
+        }
+      ],
+      "continuity_id": "7f3e5d50-2c7a-5bf7-942c-04094052a639",
+      "language": "en",
+      "spoiler_position": null,
+      "knowledge_revision": "6dc742c4f80c6e18636ea5b055b154aa930ae4dced03d6893413180b016708d1",
+      "presentation": {
+        "status": "validated",
+        "policy_version": "grounded-english-v8",
+        "generated_at": "2026-11-13T17:49:26.408848+00:00",
+        "translation": "source-grounded English; original names retained"
+      }
+    },
+    {
+      "id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+      "entry_type": "character",
+      "graph_type": "CHARACTER",
+      "display_title": "Natsuki Subaru",
+      "short_introduction": "Subaru is summoned to a parallel world on his way home from the convenience store.",
+      "detailed_overview": "Subaru is summoned to a parallel world on his way home from the convenience store. A gang of punks surrounds him, but he quickly learns that he doesn't have any of the powers that he thought all people transported to a parallel world should have.",
+      "aliases": [
+        "Natsuki Subaru",
+        "Subaru",
+        "Subaru Natsuki",
+        "スバル",
+        "ナツキ・スバル"
+      ],
+      "original_names": [
+        "Natsuki Subaru",
+        "Subaru",
+        "Subaru Natsuki",
+        "スバル",
+        "ナツキ・スバル"
+      ],
+      "sections": [
+        {
+          "name": "history",
+          "statements": [
+            {
+              "text": "Subaru is summoned to a parallel world on his way home from the convenience store.",
+              "fact_ids": [
+                "d58b3434f46b46a66df139378d9e35e89199557f881ccfa4753956bc211e3487",
+                "de026ea68deca1ef118b75beea63aa920694a9083dce44a0b7f4975259a1d06a"
+              ]
+            },
+            {
+              "text": "A gang of punks surrounds him, but he quickly learns that he doesn't have any of the powers that he thought all people transported to a parallel world should have.",
+              "fact_ids": [
+                "8f840fd79946826e0df3c7cbf0a06152e09e43b4fc38f5bdb14114f39c6cb7cf",
+                "de026ea68deca1ef118b75beea63aa920694a9083dce44a0b7f4975259a1d06a"
+              ]
+            }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "id": "fea25aba-6435-5cec-9942-a508a21682b7",
+          "source": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "target": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+          "type": "PARTICIPATED_IN"
+        }
+      ],
+      "source_references": [
+        {
+          "id": "657d3475-5dc3-5752-b87d-d395e521ff78",
+          "url": "https://re-zero-anime.jp/tv/character/#scope-861db9e47b69f6b6",
+          "title": "CHARACTER｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "locator": "passage f62af60f-b510-5f3f-afd8-85d893f8bf08; normalized offsets 0:257",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "128",
+          "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+          "source_language": "ja"
+        },
+        {
+          "id": "e00d6b30-d5ee-5f56-8abd-495669e13635",
+          "url": "https://re-zero-anime.jp/tv/character/#scope-9b57cfd93394e415",
+          "title": "CHARACTER｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "locator": "passage 09c39028-63a0-56ba-80d4-ad04c2e5fbb2; normalized offsets 0:257",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "128",
+          "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+          "source_language": "ja"
+        },
+        {
+          "id": "be6632a9-3e0f-5915-a0e6-61e6c4735bdd",
+          "url": "https://www.tvmaze.com/episodes/660417/rezero-starting-life-in-another-world-1x01-the-end-of-the-beginning-and-the-beginning-of-the-end",
+          "title": "The End of the Beginning and the Beginning of the End — api.tvmaze.com",
+          "locator": "passage f20157f0-f05a-5c2d-aebe-b85cb4951376; normalized offsets 0:506",
+          "quote_start_in_passage": "275",
+          "quote_end_in_passage": "443",
+          "content_hash": "c8eb439574c350489e8fb0f7d8ad1948e68d0ded228ca54e9c5177d329ea1d83",
+          "source_language": "en"
+        },
+        {
+          "id": "d231294a-9030-57b7-ae0e-16e98f28ac84",
+          "url": "https://re-zero-anime.jp/tv/character/#scope-0205f8946a54e2c5",
+          "title": "CHARACTER｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "locator": "passage be725ae4-4cbf-5a6b-aab5-b10b41516f02; normalized offsets 0:257",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "53",
+          "content_hash": "5eaaeb395499fb692f46a430536706c9b4aa5572b66a7e9e4288c2bbb9aec529",
+          "source_language": "ja"
+        },
+        {
+          "id": "63d644ac-6513-5385-94d5-d02fb7590a7c",
+          "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-09a0f7747bb4b176",
+          "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "locator": "passage 3132c69c-0e5b-5afc-983b-4e3dd6102233; normalized offsets 0:290",
+          "quote_start_in_passage": "154",
+          "quote_end_in_passage": "229",
+          "content_hash": "1788685c1dc849c25181e5a82462cb8bd83b22a62719bac1d99a1b611511bee3",
+          "source_language": "ja"
+        },
+        {
+          "id": "93d9e283-93cb-5477-9193-fb64c841a20f",
+          "url": "https://www.tvmaze.com/episodes/677598/rezero-starting-life-in-another-world-1x03-starting-life-from-zero-in-another-world",
+          "title": "Starting Life from Zero in Another World — api.tvmaze.com",
+          "locator": "passage 8ad71cf8-bee1-5feb-a7bf-28fb5ddb56cc; normalized offsets 0:198",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "111",
+          "content_hash": "52708952f2806ea5e53fa8e01037ecf9efd3e81c639cc6e717df33a84697544d",
+          "source_language": "en"
+        },
+        {
+          "id": "ff448fb7-73ef-514f-9caa-e94a602fd3a7",
+          "url": "https://www.tvmaze.com/episodes/677597/rezero-starting-life-in-another-world-1x02-reunion-with-the-witch",
+          "title": "Reunion with the Witch — api.tvmaze.com",
+          "locator": "passage b12e3b30-387e-5167-910a-40d882dc4e35; normalized offsets 0:488",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "242",
+          "content_hash": "33d89c81dba4fcdd46924759a227e2a9e75b66ecc68471d8d3a0e9df03a2ed00",
+          "source_language": "en"
+        },
+        {
+          "id": "c46d5515-36c4-5481-a462-cec2135519cf",
+          "url": "https://re-zero-anime.jp/tv/story/tv1r.html#scope-a469e43acc18798d",
+          "title": "STORY - 1st season｜TVアニメ『Re:ゼロから始める異世界生活』オフィシャルサイト — re-zero-anime.jp",
+          "locator": "passage 3e75f2bb-9215-5f07-9e1f-84cace878a71; normalized offsets 0:279",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "65",
+          "content_hash": "bcacb913881ad09d34bd0564ad46d1a5f5a561298eac425dd23da180d85310f1",
+          "source_language": "ja"
+        }
+      ],
+      "continuity_id": "7f3e5d50-2c7a-5bf7-942c-04094052a639",
+      "language": "en",
+      "spoiler_position": null,
+      "knowledge_revision": "bcb420825af0e256ce3fe3b73d07ee77c7ddf94ce34e1c353dc56ab959724bc2",
+      "presentation": {
+        "status": "validated",
+        "policy_version": "grounded-english-v8",
+        "generated_at": "2026-11-14T06:50:12.817806+00:00",
+        "translation": "source-grounded English; original names retained"
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "fea25aba-6435-5cec-9942-a508a21682b7",
+      "source": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+      "target": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+      "type": "PARTICIPATED_IN"
+    }
+  ],
+  "spoiler_boundary": {
+    "unbounded_entry_count": 13,
+    "episode_1_entry_count": 6,
+    "return_by_death_excluded_at_1": true
+  },
+  "catalog_revision": "351ace9f9c813f6dcaea9ae3092e7c63b6865897d1d6843ddbc13448e5c83fdc",
+  "repeated_catalog_equal": true,
+  "ordering_gaps": [
+    {
+      "kind": "ambiguous-within-episode-order",
+      "position": 1,
+      "eventNodeIds": [
+        "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+        "48d3c6b3-2ec4-5536-9360-fe31c42b8d93",
+        "56769ce6-f699-50fe-8515-9640345429d5",
+        "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+        "c3d03c54-0b61-5606-9f68-83b883d41cf7"
+      ]
+    },
+    {
+      "kind": "missing-verified-presentation-order",
+      "eventNodeIds": [
+        "48d3c6b3-2ec4-5536-9360-fe31c42b8d93",
+        "56769ce6-f699-50fe-8515-9640345429d5",
+        "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+        "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+        "c3d03c54-0b61-5606-9f68-83b883d41cf7"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "resource_id": "3cc13390-aa77-51a8-9fc0-38ab93aae46c",
+      "kind": "entry",
+      "status": "missing",
+      "artifact_id": null,
+      "knowledge_revision": "277775274fd34f33215b6009486be6a792485a7cbb5bc0bb8b8899a7e0270400",
+      "generated_at": null,
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "3eb1995d-d0b7-584f-abec-14af61be2a45",
+      "kind": "entry",
+      "status": "missing",
+      "artifact_id": null,
+      "knowledge_revision": "7a8ef0a2da493e593b5541904bf38c44e2d348e4dcf6c45cc1708792c20bd64f",
+      "generated_at": null,
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "483c811c-8ec4-5618-8a63-cb180bdf45a2",
+      "kind": "entry",
+      "status": "withheld_grounding",
+      "artifact_id": "52206192-26a0-53f6-9342-b6f49ed2d144",
+      "knowledge_revision": "ad5e5abcce81e7f07ce4a8d7d84543068e066fd93f98ed49aef88056a96a2a49",
+      "generated_at": "2026-11-13T17:49:09.284158+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "48d3c6b3-2ec4-5536-9360-fe31c42b8d93",
+      "kind": "entry",
+      "status": "missing",
+      "artifact_id": null,
+      "knowledge_revision": "17039aa5b9f3564c454338bba2e18c45c04f58a478fcc77cf512f8c0186390a8",
+      "generated_at": null,
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "4948b221-369a-59a5-a943-9d4f443a7256",
+      "kind": "entry",
+      "status": "validated",
+      "artifact_id": "a56cd7f5-9383-5e5e-ac54-2e85961582b4",
+      "knowledge_revision": "6dc742c4f80c6e18636ea5b055b154aa930ae4dced03d6893413180b016708d1",
+      "generated_at": "2026-11-13T17:49:26.408848+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "Return by Death"
+    },
+    {
+      "resource_id": "4dd188d1-64a3-5cc7-a76c-ce4ae222a8f7",
+      "kind": "entry",
+      "status": "withheld_names",
+      "artifact_id": "181a4508-e108-5bb8-8516-9553e87ed626",
+      "knowledge_revision": "27d06dfcbda12c66b326bdf259baedc08104f127930dbfaebdaacfede72bbee1",
+      "generated_at": "2026-11-13T17:49:34.322297+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "56769ce6-f699-50fe-8515-9640345429d5",
+      "kind": "entry",
+      "status": "missing",
+      "artifact_id": null,
+      "knowledge_revision": "220c3116ad2f267662ba9745a7564f505557b3eba0d92c528b3976c009ed6419",
+      "generated_at": null,
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "67f2e03a-e860-5d20-b77a-4c92ab2c164a",
+      "kind": "entry",
+      "status": "validated",
+      "artifact_id": "384eab41-ae8a-566e-b1d0-5c736764a90f",
+      "knowledge_revision": "19d6cb48a9757a9f19ecf803ed303a6003625e5d687c136a02041d258cac161f",
+      "generated_at": "2026-11-14T07:17:56.408716+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "Elsa attacks them"
+    },
+    {
+      "resource_id": "78ecf3cb-cbf6-5287-94f8-ab11ef90bdde",
+      "kind": "entry",
+      "status": "validated",
+      "artifact_id": "75ada463-0842-5682-89c4-732e7666f2aa",
+      "knowledge_revision": "0c8713b3b9ee53078d08719d4060dd259aa25c256c3e9e9d7dfa1ed24f38e97e",
+      "generated_at": "2026-11-14T07:17:56.500889+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "A girl appears before Subaru"
+    },
+    {
+      "resource_id": "9507722f-4ff0-5332-b670-97427f67ce42",
+      "kind": "entry",
+      "status": "validated",
+      "artifact_id": "1d6132f3-be33-520e-bcb1-262e0246ee8c",
+      "knowledge_revision": "45aedbb460804ba25e7a81c3df97b0be7934ec88f87751ed90329289a737e12c",
+      "generated_at": "2026-11-14T07:17:56.664185+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "Natsuki Subaru's Resurrection Cycle"
+    },
+    {
+      "resource_id": "a13997f9-a7a5-5468-85dc-130e52b12db3",
+      "kind": "entry",
+      "status": "withheld_names",
+      "artifact_id": "d3422b32-8e4b-54bb-90f8-ef2f9957e66e",
+      "knowledge_revision": "2bd80974d56f4fa2af9cf967ba55c0aa97142697271c18a03cd183a560a7cb42",
+      "generated_at": "2026-11-13T17:49:41.645703+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "c3d03c54-0b61-5606-9f68-83b883d41cf7",
+      "kind": "entry",
+      "status": "missing",
+      "artifact_id": null,
+      "knowledge_revision": "602264fb54a44a544b705f764321f7160a705ffe8192148f74edb5a885a05ddd",
+      "generated_at": null,
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+      "kind": "entry",
+      "status": "validated",
+      "artifact_id": "f02e8109-222c-5853-99ee-e93c1a83c775",
+      "knowledge_revision": "bcb420825af0e256ce3fe3b73d07ee77c7ddf94ce34e1c353dc56ab959724bc2",
+      "generated_at": "2026-11-14T06:50:12.817806+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "Natsuki Subaru"
+    },
+    {
+      "resource_id": "9168a626-87d2-5136-b1a1-844e09d2e1be",
+      "kind": "milestone",
+      "status": "withheld_grounding",
+      "artifact_id": "bb8f816a-e0cd-58f9-9e09-c4f169cfd141",
+      "knowledge_revision": "33cd23618a66a7477b7afef2943a96b71e0555a5f6396ee66cd6ff10ebebb8f8",
+      "generated_at": "2026-11-13T17:47:50.303606+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "9da7da81-3ea8-5a31-a53a-850b615ad74c",
+      "kind": "milestone",
+      "status": "withheld_names",
+      "artifact_id": "3afe8870-f02b-53e2-97a4-162bdc18d038",
+      "knowledge_revision": "7a8ef0a2da493e593b5541904bf38c44e2d348e4dcf6c45cc1708792c20bd64f",
+      "generated_at": "2026-11-13T17:48:05.249990+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "c0003eda-cb8d-5dc3-b936-39fa4ce81119",
+      "kind": "milestone",
+      "status": "withheld_grounding",
+      "artifact_id": "ccb16e1b-3fdc-50cb-97cd-89a40848cf07",
+      "knowledge_revision": "17039aa5b9f3564c454338bba2e18c45c04f58a478fcc77cf512f8c0186390a8",
+      "generated_at": "2026-11-13T17:48:36.431375+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "77661339-04be-5c03-b5bd-bf9245898e60",
+      "kind": "milestone",
+      "status": "validated",
+      "artifact_id": "d2d99c16-7724-513d-9fbd-6b69746a970a",
+      "knowledge_revision": "19d6cb48a9757a9f19ecf803ed303a6003625e5d687c136a02041d258cac161f",
+      "generated_at": "2026-11-13T17:47:26.284403+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "Elsa attacks them"
+    },
+    {
+      "resource_id": "c291e10b-fa6c-5d38-9e69-1fc61507c937",
+      "kind": "milestone",
+      "status": "validated",
+      "artifact_id": "687435c0-8306-57e2-abd9-930aec0dbc46",
+      "knowledge_revision": "0c8713b3b9ee53078d08719d4060dd259aa25c256c3e9e9d7dfa1ed24f38e97e",
+      "generated_at": "2026-11-13T17:48:51.740419+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "A girl appears before Subaru"
+    },
+    {
+      "resource_id": "6a527a3d-607b-50d2-9a23-4a4a9bc5dd47",
+      "kind": "milestone",
+      "status": "validated",
+      "artifact_id": "346b038a-5491-52fd-a393-ae0d1ca6258b",
+      "knowledge_revision": "45aedbb460804ba25e7a81c3df97b0be7934ec88f87751ed90329289a737e12c",
+      "generated_at": "2026-11-13T17:47:04.943024+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": "Natsuki Subaru's Resurrection Cycle"
+    },
+    {
+      "resource_id": "a061616c-7118-536c-9b44-08205d6bdf19",
+      "kind": "milestone",
+      "status": "withheld_grounding",
+      "artifact_id": "c845ba6e-b769-597f-b1db-68b64cc24f60",
+      "knowledge_revision": "602264fb54a44a544b705f764321f7160a705ffe8192148f74edb5a885a05ddd",
+      "generated_at": "2026-11-13T17:48:21.279077+00:00",
+      "policy_version": "grounded-english-v8",
+      "display_title": null
+    },
+    {
+      "resource_id": "ad7696ea-d4ba-5e0c-9100-e5156067bfa5",
+      "kind": "arc",
+      "status": "validated",
+      "artifact_id": "fefa7edf-256e-5906-877d-a2de5afc178a",
+      "knowledge_revision": "6be3e6d498e5cf5f473e4761f07e71c2002fe3cff59250930832b3a5e5c38e2d",
+      "generated_at": "2026-11-14T07:15:14.891390+00:00",
+      "policy_version": "grounded-english-v8:arc-assembly-v4",
+      "display_title": "A partial story guide"
+    }
+  ],
+  "jobs": [
+    {
+      "id": "ed1e5245-8ba5-4be9-856e-3aa4078fc557",
+      "status": "completed",
+      "error": null,
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": {
+        "reused": 8,
+        "withheld": 18,
+        "generated": 3
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 17,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 13
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 4
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "b77a8139-72ab-408c-be44-46feee7ed2d7",
+      "status": "partial",
+      "error": null,
+      "objective": "Research ONLY the explicitly named Return by Death power and its explicitly stated mechanics in the supplied original anime episode 2 synopsis. Extract LORE facts, not characters or events. Do not infer causes, motives or extra rules.",
+      "checkpoint_summary": {
+        "partial": true,
+        "journeys": 1,
+        "revision": "cfd025ab0e0b3deb8b4ebe4f3bbeaa40dcc0e40e50e6a6f9355336231b29b550",
+        "unordered": 4,
+        "ordering_gaps": 2
+      },
+      "source_retrievals": 0,
+      "indexing": {
+        "reused": 1,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "model_calls": 5,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "count": 3
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "fab6b755-f977-4d57-90f9-e7a0f9898bd0",
+      "status": "partial",
+      "error": null,
+      "objective": "Research ONLY the explicitly named Return by Death power and its explicitly stated mechanics in the supplied original anime episode 2 synopsis. Extract LORE facts, not characters or events. Do not infer causes, motives or extra rules.",
+      "checkpoint_summary": {
+        "partial": true,
+        "journeys": 1,
+        "revision": "cfd025ab0e0b3deb8b4ebe4f3bbeaa40dcc0e40e50e6a6f9355336231b29b550",
+        "unordered": 4,
+        "ordering_gaps": 2
+      },
+      "source_retrievals": 0,
+      "indexing": {
+        "reused": 1,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "model_calls": 4,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "count": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "identity_resolution",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "fe6ea305-f08e-4f0d-8b41-9ce48d1b218b",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": {
+        "reused": 6,
+        "partial": true,
+        "withheld": 17,
+        "generated": 3
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 18,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 14
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 4
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "b63e55bc-5360-4e0e-937b-173f7059982a",
+      "status": "partial",
+      "error": null,
+      "objective": "Research ONLY the explicitly named Return by Death power and its explicitly stated mechanics in the supplied original anime episode 2 synopsis. Extract LORE facts, not characters or events. Do not infer causes, motives or extra rules.",
+      "checkpoint_summary": {
+        "partial": true,
+        "journeys": 1,
+        "revision": "0a70fe948167df3a1f9c4b2ff64101a8bb139ccc5fc72b19e2a4ea5822600365",
+        "unordered": 4,
+        "ordering_gaps": 2
+      },
+      "source_retrievals": 0,
+      "indexing": {
+        "reused": 1,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "model_calls": 3,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "extraction",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "verification",
+          "status": "ok",
+          "count": 1
+        }
+      ],
+      "published_findings": [
+        {
+          "id": "66b5b320-8d88-5d3b-abb2-d8870b7f0ab2",
+          "canonical_id": "4948b221-369a-59a5-a943-9d4f443a7256",
+          "name": "Return by Death",
+          "type": "LORE",
+          "description": "The power that allows Subaru to return to the initial state of the parallel world every time he dies.",
+          "decision": "supported"
+        }
+      ]
+    },
+    {
+      "id": "3c4205f6-bcfb-477e-b4f2-a42b3753eba3",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": {
+        "reused": 6,
+        "partial": true,
+        "withheld": 18,
+        "generated": 3
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 17,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 15
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 2
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "a5d5da77-07a0-45b6-beac-2eb1b58a73ae",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": {
+        "reused": 6,
+        "partial": true,
+        "withheld": 17,
+        "generated": 4
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 18,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 15
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen2.5-coder:7b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 3
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "2f32552a-4978-4ae0-b43a-cd9d43d8345b",
+      "status": "failed",
+      "error": "structured_output_exhausted",
+      "objective": "Compose grounded English story, character and lore presentations from existing accepted evidence.",
+      "checkpoint_summary": null,
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 2,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "invalid_output",
+          "count": 2
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "f1ef7532-c8f4-4313-99bf-2174953970aa",
+      "status": "partial",
+      "error": null,
+      "objective": "Compose grounded English story, character and lore presentations from existing accepted evidence.",
+      "checkpoint_summary": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 4,
+        "generated": 0
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 5,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 4
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 1
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "e47110b1-c09f-46e6-9ae5-c8d22510df35",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 4,
+        "generated": 6
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 24,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "invalid_output",
+          "count": 6
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 10
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 8
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "badbd895-b40e-4617-8201-98259843f709",
+      "status": "failed",
+      "error": "research_execution_failed",
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": null,
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 22,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "invalid_output",
+          "count": 8
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 8
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 6
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "e28894d9-aa83-40b9-8aa3-b81d89460c30",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild grounded English entries and story recaps from existing accepted evidence only.",
+      "checkpoint_summary": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 8,
+        "generated": 4
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 25,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "invalid_output",
+          "count": 4
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 12
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 9
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "4a4effa2-9d0a-4975-9577-917f870a51e9",
+      "status": "partial",
+      "error": null,
+      "objective": "Research ONLY Natsuki Subaru's explicit introductory identity and background in this official profile section. Extract at most two atomic CHARACTER facts with knowledge category character and section background or origin. Exclude voice actors, cast credits, opinions, powers, episode-event retellings and other characters. Do not infer age, motives or relationships.",
+      "checkpoint_summary": {
+        "partial": true,
+        "journeys": 1,
+        "revision": "a2c2bd45e959c0d8f7f74d768ef204544cefcea60b4c46313488b71cbe0fdb34",
+        "unordered": 4,
+        "ordering_gaps": 2
+      },
+      "source_retrievals": 0,
+      "indexing": {
+        "reused": 1,
+        "indexed": 0,
+        "model_key": "embeddinggemma:latest@85462619ee721b466c5927d109d4cb765861907d5417b9109caebc4e614679f1:768:passage-v2",
+        "dimensions": 768,
+        "rows_added": 0
+      },
+      "model_calls": 3,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "extraction",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "planning",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "verification",
+          "status": "ok",
+          "count": 1
+        }
+      ],
+      "published_findings": [
+        {
+          "id": "6f917d71-5f90-546f-9afc-07965343e5e8",
+          "canonical_id": "f974ad2b-7275-5dfa-8f3d-27bf2b40c03d",
+          "name": "Natsuki Subaru",
+          "type": "CHARACTER",
+          "description": "Subaru is summoned to a parallel world on his way home from the convenience store.",
+          "decision": "supported"
+        }
+      ]
+    },
+    {
+      "id": "bf4b5b6a-69ea-4679-bef2-f602136b7164",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild English encyclopedia entries and recaps from accepted evidence.",
+      "checkpoint_summary": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 1,
+        "generated": 1
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 4,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 2
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 2
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "ae251529-444a-4bda-a040-7399290e64ec",
+      "status": "partial",
+      "error": null,
+      "objective": "Rebuild English encyclopedia entries and recaps from accepted evidence.",
+      "checkpoint_summary": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 1,
+        "generated": 0
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 2,
+      "usage": [
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation",
+          "status": "ok",
+          "count": 1
+        },
+        {
+          "provider": "ollama",
+          "model": "qwen3.5:4b",
+          "task": "presentation_verification",
+          "status": "ok",
+          "count": 1
+        }
+      ],
+      "published_findings": []
+    },
+    {
+      "id": "ab6d8489-409a-4c4a-a696-598f2043cdd2",
+      "status": "completed",
+      "error": null,
+      "objective": "Rebuild English encyclopedia entries and recaps from accepted evidence.",
+      "checkpoint_summary": {
+        "reused": 0,
+        "partial": false,
+        "withheld": 0,
+        "generated": 1
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 0,
+      "usage": [],
+      "published_findings": []
+    },
+    {
+      "id": "87723334-7ce4-4051-a141-cf96bebdb14f",
+      "status": "completed",
+      "error": null,
+      "objective": "Rebuild English encyclopedia entries and recaps from accepted evidence.",
+      "checkpoint_summary": {
+        "reused": 1,
+        "partial": false,
+        "withheld": 0,
+        "generated": 0
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 0,
+      "usage": [],
+      "published_findings": []
+    },
+    {
+      "id": "0cca91b8-8812-4fe5-a428-66681fb5caa0",
+      "status": "completed",
+      "error": null,
+      "objective": "Rebuild English encyclopedia entries and recaps from accepted evidence.",
+      "checkpoint_summary": {
+        "reused": 6,
+        "partial": false,
+        "withheld": 0,
+        "generated": 3
+      },
+      "source_retrievals": 0,
+      "indexing": null,
+      "model_calls": 0,
+      "usage": [],
+      "published_findings": []
+    }
+  ]
+}
