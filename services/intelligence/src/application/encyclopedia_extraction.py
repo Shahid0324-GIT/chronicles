@@ -13,6 +13,7 @@ from src.application.research_contracts import (
     Extraction,
     StructuredModel,
 )
+from src.domain.knowledge import name_key
 from src.domain.research import SourcePassage
 from src.domain.value_objects import NodeType
 
@@ -39,6 +40,7 @@ async def extract_encyclopedia(
     objective: str,
     infer: Callable[[str, type[BaseModel]], Awaitable[BaseModel]],
     types: list[NodeType],
+    subjects: list[str] | None = None,
 ) -> Extraction:
     units = evidence_units(passages)
     result = EncyclopediaClaims.model_validate(
@@ -64,6 +66,11 @@ async def extract_encyclopedia(
                 {
                     "objective": objective,
                     "types": [t.value for t in types] or [t.value for t in NodeType],
+                    "allowed_categories_by_type": {
+                        t.value: sorted(CandidateEntity.allowed_categories(t))
+                        for t in (types or list(NodeType))
+                    },
+                    "target_subject_names_not_identity_proof": subjects or [],
                     "units": [
                         {
                             "id": u["id"],
@@ -80,6 +87,12 @@ async def extract_encyclopedia(
     )
     entities = []
     for item in result.entities:
+        if (
+            subjects
+            and item.type == NodeType.CHARACTER
+            and name_key(item.name) not in {name_key(name) for name in subjects}
+        ):
+            continue
         selected = [u for u in units if u["id"] in item.sentence_ids]
         if len(selected) != len(set(item.sentence_ids)) or (types and item.type not in types):
             continue

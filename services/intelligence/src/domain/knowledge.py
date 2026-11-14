@@ -1,5 +1,6 @@
 """Deterministic publication rules. Model confidence is intentionally absent."""
 
+import json
 import re
 import unicodedata
 from collections.abc import Mapping
@@ -22,7 +23,7 @@ def direct_primary_claim(payload: dict[str, Any], evidence: list[dict[str, Any]]
     """A literal named-subject assertion, not a model's unsupported paraphrase."""
     description = " ".join(payload.get("description", "").split())
     name = payload.get("name", "")
-    if not description or not name or name_key(name) not in name_key(description):
+    if not description or not name:
         return False
     if re.search(
         r"\b(might|perhaps|hypothetical|reportedly|rumou?r|theory|imagine|because|caused)\b"
@@ -31,12 +32,31 @@ def direct_primary_claim(payload: dict[str, Any], evidence: list[dict[str, Any]]
         re.I,
     ):
         return False
-    return any(
-        item.get("public_web")
-        and item.get("provenance", {}).get("authority") == "primary"
-        and description in " ".join(item.get("quote", "").split())
-        for item in evidence
-    )
+    for item in evidence:
+        provenance = item.get("provenance", {})
+        if (
+            not item.get("public_web")
+            or provenance.get("authority") != "primary"
+            or description not in " ".join(item.get("quote", "").split())
+        ):
+            continue
+        if re.search(
+            r"\b(I think|probably|perhaps|might|seems|rumou?r)\b|と思|らしい|かもしれ",
+            item.get("quote", ""),
+            re.I,
+        ):
+            continue
+        if name_key(name) in name_key(description):
+            return True
+        absolute = item.get("passage_start", 0) + item.get("quote_start", 0)
+        end = item.get("passage_start", 0) + item.get("quote_end", 0)
+        if any(
+            name_key(name) in name_key(section["title"])
+            and section["start"] <= absolute < end <= section["end"]
+            for section in json.loads(provenance.get("sections_json", "[]"))
+        ):
+            return True
+    return False
 
 
 def script(name: str) -> str:
@@ -252,11 +272,36 @@ def relation_structure(
         re.search(r"foreshadow|hint|伏線|暗示", text, re.IGNORECASE) for text in texts
     ):
         return False
-    if kind in {RelationshipType.RELATED_TO, RelationshipType.CONNECTED_TO} and not any(
-        re.search(r"related|connected|linked|関係|関連|繋|つなが", text, re.IGNORECASE)
-        for text in texts
-    ):
-        return False
+    if kind in {RelationshipType.RELATED_TO, RelationshipType.CONNECTED_TO}:
+        explicit_label = any(
+            re.search(r"related|connected|linked|関係|関連|繋|つなが", text, re.I) for text in texts
+        )
+
+        def named_interaction(text: str) -> bool:
+            if not source_name or not target_name:
+                return False
+            if re.search(
+                r"\b(not|never|would|might|could|attempt|trying|planned)\b"
+                r"|なかった|もし|仮定|つもり",
+                text,
+                re.I,
+            ):
+                return False
+            a, b = re.escape(name_key(source_name)), re.escape(name_key(target_name))
+            value = name_key(text)
+            roles = rf"(?:{a} and {b}|{b} and {a}) became master and knight"
+            action = r"(?:helped|assisted|rescued|saved|invented|developed|created)"
+            english = rf"(?:{a} (?:has |had )?{action} {b}|{b} (?:has |had )?{action} {a})"
+            japanese = (
+                rf"(?:{a}[はが]{b}を(?:助けた|救った)|"
+                rf"{b}[はが]{a}を(?:助けた|救った)|{a}は{b}に(?:助けられ|救われ)|"
+                rf"{b}は{a}に(?:助けられ|救われ))"
+            )
+            return bool(re.search(roles + "|" + english + "|" + japanese, value))
+
+        interaction = any(named_interaction(text) for text in texts)
+        if not explicit_label and not interaction:
+            return False
     if kind == RelationshipType.CAUSED:
         markers = (
             r"\b(because|caused|therefore|resulted in|led to|as a result)\b"

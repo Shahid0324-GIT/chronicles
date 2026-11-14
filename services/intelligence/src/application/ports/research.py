@@ -49,6 +49,18 @@ class RegisteredDocumentFetcher(Protocol):
 
 
 @runtime_checkable
+class RenderedDocumentFetcher(Protocol):
+    async def fetch_rendered(self, url: str) -> FetchedDocument: ...
+
+
+@runtime_checkable
+class StructuredDiscoveryFetcher(Protocol):
+    async def discover_mediawiki(
+        self, endpoint: str, query: str, limit: int
+    ) -> list["SearchResult"]: ...
+
+
+@runtime_checkable
 class BudgetedDocumentFetcher(Protocol):
     def budget_requests(
         self,

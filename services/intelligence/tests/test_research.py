@@ -197,6 +197,7 @@ async def test_workflow_persists_source_evidence_and_keeps_canonical_graph_uncha
     assert [row["stage"] for row in events if row["stage"].startswith("research.")] == [
         "research.queued",
         "research.planner",
+        "research.source_archived",
         "research.researcher",
         "research.extractor",
         "research.verifier",

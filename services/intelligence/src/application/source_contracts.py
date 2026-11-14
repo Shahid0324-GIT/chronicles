@@ -43,6 +43,11 @@ class SourceRegistration(StructuredModel):
     discovery_summary: str = Field(default="", max_length=1000)
     discovery_parent_url: str | None = Field(default=None, max_length=2000)
     discovery_depth: int = Field(default=0, ge=0, le=10)
+    discovery_api: Literal["mediawiki-search"] | None = None
+    follow_links: bool = False
+    render_javascript: bool = False
+    eligible_section_terms: list[str] = Field(default_factory=list, max_length=20)
+    discovery_index: bool = False
     discovery_path_prefix: str | None = Field(default=None, max_length=1000)
     cloud_content_allowed: bool = False
     derived_from: str | None = None
@@ -51,6 +56,8 @@ class SourceRegistration(StructuredModel):
 
     @model_validator(mode="after")
     def validate_locator(self) -> "SourceRegistration":
+        if any(not term.strip() or len(term) > 100 for term in self.eligible_section_terms):
+            raise ValueError("Eligible section terms require explicit nonempty labels")
         p = urlsplit(self.url)
         if (
             p.scheme not in {"http", "https"}
@@ -66,6 +73,16 @@ class SourceRegistration(StructuredModel):
             raise ValueError("Section markers must contain one to 200 characters")
         if self.access_method == "navigation" and self.retrieval_policy != "navigation-only":
             raise ValueError("Navigational references cannot authorize ingestion")
+        if self.discovery_api and (
+            self.access_method != "mediawiki" or self.retrieval_policy != "permitted" or p.query
+        ):
+            raise ValueError(
+                "Search APIs require an explicitly permitted query-free MediaWiki endpoint"
+            )
+        if self.render_javascript and (
+            self.access_method != "html" or self.retrieval_policy != "permitted"
+        ):
+            raise ValueError("Rendered extraction requires explicit permitted HTML registration")
         if self.discovery_path_prefix is not None and (
             not self.discovery_path_prefix.startswith("/")
             or ".." in self.discovery_path_prefix
@@ -83,6 +100,7 @@ class SourceEntry(SourceRegistration):
     health: str
     last_success: datetime | None
     last_error: str | None
+    retry_at: datetime | None = None
 
 
 class SourceDiscovery(StructuredModel):

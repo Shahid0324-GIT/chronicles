@@ -4,11 +4,14 @@ import asyncio
 import http.client
 import ipaddress
 import json
+import math
 import socket
 import ssl
 import time
 from collections.abc import Awaitable, Callable
-from urllib.parse import urljoin, urlsplit, urlunsplit
+from datetime import UTC, datetime
+from email.utils import parsedate_to_datetime
+from urllib.parse import urlencode, urljoin, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 
 import httpx
@@ -132,6 +135,7 @@ class PublicDocumentFetcher:
         self.policy, self.max_bytes, self.max_chars = policy, max_bytes, max_chars
         self.lock = asyncio.Lock()
         self.last: dict[str, float] = {}
+        self.cooldowns: dict[str, float] = {}
         self.reserve_bytes: Callable[[int], Awaitable[None]] | None = None
         self.complete_bytes: Callable[[int, int], Awaitable[None]] | None = None
 
@@ -140,6 +144,54 @@ class PublicDocumentFetcher:
         approved = [url for url in urls if PublicSourcePolicy.public_url(url)]
         robots = [urlunsplit((*urlsplit(url)[:2], "/robots.txt", "", "")) for url in approved]
         self.policy = PublicSourcePolicy(list(self.policy.hosts), [*approved, *robots])
+
+    async def fetch_rendered(self, url: str) -> FetchedDocument:
+        from src.infrastructure.browser_extraction import ControlledBrowserExtractor
+
+        self.policy.validate(url)
+        origin = urlsplit(url)[:2]
+
+        async def read(target: str) -> tuple[int, dict[str, str], bytes]:
+            if urlsplit(target)[:2] != origin:
+                raise SourceRejected("source_browser_origin_rejected")
+            # Explicit rendered-document permission covers its same-origin GET resources.
+            self.authorize_registered([url, target])
+            await self._robots(target)
+            return await self._request(target)
+
+        return await ControlledBrowserExtractor(self.max_bytes).extract(url, read)
+
+    async def discover_mediawiki(self, endpoint: str, query: str, limit: int) -> list[SearchResult]:
+        self.policy.validate(endpoint)
+        target = (
+            endpoint
+            + "?"
+            + urlencode(
+                {
+                    "action": "query",
+                    "generator": "search",
+                    "gsrsearch": query,
+                    "gsrlimit": min(max(limit, 1), 20),
+                    "prop": "info",
+                    "inprop": "url",
+                    "format": "json",
+                    "formatversion": 2,
+                }
+            )
+        )
+        self.authorize_registered([endpoint, target])
+        await self._robots(target)
+        code, headers, body = await self._request(target)
+        if code != 200 or "json" not in headers.get("content-type", ""):
+            raise SourceRejected("source_search_api_unavailable")
+        data = json.loads(body)
+        if "error" in data:
+            raise SourceRejected("source_search_api_rejected")
+        return [
+            SearchResult(p["fullurl"], p.get("title", ""), "MediaWiki search result")
+            for p in data.get("query", {}).get("pages", [])
+            if p.get("fullurl") and PublicSourcePolicy.public_url(p["fullurl"])
+        ]
 
     def budget_requests(
         self,
@@ -151,6 +203,9 @@ class PublicDocumentFetcher:
     async def _request(self, url: str) -> tuple[int, dict[str, str], bytes]:
         _, host, _, _ = self.policy.validate(url)
         async with self.lock:
+            remaining = self.cooldowns.get(host, 0) - time.monotonic()
+            if remaining > 0:
+                raise SourceRejected("source_rate_limited", remaining)
             delay = 1.0 - (time.monotonic() - self.last.get(host, 0))
             if delay > 0:
                 await asyncio.sleep(delay)
@@ -159,9 +214,33 @@ class PublicDocumentFetcher:
                 # A crash or unknown partial response retains its reservation.
                 if self.reserve_bytes:
                     await self.reserve_bytes(self.max_bytes + 1)
-                result = await asyncio.to_thread(pinned_request, url, self.policy, self.max_bytes)
+                try:
+                    result = await asyncio.to_thread(
+                        pinned_request, url, self.policy, self.max_bytes
+                    )
+                except ssl.SSLCertVerificationError:
+                    raise SourceRejected("source_tls_validation_failed") from None
                 if self.complete_bytes:
                     await self.complete_bytes(self.max_bytes + 1, len(result[2]))
+                if result[0] == 429:
+                    raw_retry = result[1].get("retry-after", "60")
+                    try:
+                        seconds = float(raw_retry)
+                    except ValueError:
+                        try:
+                            seconds = (
+                                parsedate_to_datetime(raw_retry) - datetime.now(UTC)
+                            ).total_seconds()
+                        except (ValueError, TypeError):
+                            seconds = 60
+                    seconds = max(1, seconds) if math.isfinite(seconds) else 60
+                    self.cooldowns[host] = time.monotonic() + seconds
+                    raise SourceRejected("source_rate_limited", seconds)
+                if "html" in result[1].get("content-type", "") and any(
+                    marker in result[2][:20000].lower()
+                    for marker in (b"cf-chl-", b"verify you are human", b"captcha challenge")
+                ):
+                    raise SourceRejected("source_access_challenge")
                 return result
             finally:
                 self.last[host] = time.monotonic()
@@ -178,6 +257,8 @@ class PublicDocumentFetcher:
                 raise SourceRejected("robots_redirect_not_same_origin")
             robots_url = target
             code, headers, body = await self._request(target)
+        if code == 429:
+            raise SourceRejected("source_rate_limited")
         if code in {404, 410}:
             return
         if code != 200:
@@ -260,6 +341,11 @@ class PublicDocumentFetcher:
                 self.policy.validate(url)
                 await self._robots(url)
                 code, headers, body = await self._request(url)
+                if any(
+                    marker in body[:20000].lower()
+                    for marker in (b"cf-chl-", b"verify you are human", b"captcha challenge")
+                ):
+                    raise SourceRejected("source_access_challenge")
                 if code in {301, 302, 303, 307, 308}:
                     url = urljoin(url, headers.get("location", ""))
                     continue
@@ -276,13 +362,17 @@ class PublicDocumentFetcher:
                         publisher=urlsplit(url).hostname or "",
                         text=text,
                         truncated=False,
+                        metadata={"extraction_version": "plain-text-v1"},
                     )
                 else:
                     document = html_document(body, url)
                     text = document.text
                 text = normalize(text)
                 if len(text) < 30:
-                    raise SourceRejected("source_has_no_usable_text")
+                    if document.metadata.get("links_json") not in {None, "[]"}:
+                        document.metadata["document_role"] = "navigation-index"
+                    else:
+                        raise SourceRejected("source_has_no_usable_text")
                 return document.model_copy(
                     update={
                         "text": text[: self.max_chars] if cap else text,

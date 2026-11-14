@@ -43,6 +43,17 @@ def scope_structure(metadata: dict[str, str], start: int, end: int) -> dict[str,
     return result
 
 
+def section_at(provenance: dict[str, Any], offset: int) -> str:
+    return next(
+        (
+            s["title"]
+            for s in reversed(json.loads(provenance.get("sections_json", "[]")))
+            if s["start"] <= offset < s["end"]
+        ),
+        "",
+    )
+
+
 @dataclass(frozen=True)
 class SourceDocument:
     id: UUID
@@ -75,6 +86,8 @@ class SourcePassage:
 
 
 def passages_for(source: SourceDocument, size: int = 1400) -> list[SourcePassage]:
+    if source.provenance.get("document_role") == "navigation-index":
+        return []
     passages: list[SourcePassage] = []
     start = 0
     sections = json.loads(source.provenance.get("sections_json", "[]"))
@@ -87,6 +100,11 @@ def passages_for(source: SourceDocument, size: int = 1400) -> list[SourcePassage
             if boundaries and boundaries[-1].end() >= size // 2:
                 end = start + boundaries[-1].end()
         text = source.text[start:end]
+        eligible = source.provenance.get("eligible_section_terms", [])
+        title = section_at(source.provenance, start)
+        if eligible and not any(term.casefold() in title.casefold() for term in eligible):
+            start = end
+            continue
         ordinal = len(passages)
         passages.append(
             SourcePassage(

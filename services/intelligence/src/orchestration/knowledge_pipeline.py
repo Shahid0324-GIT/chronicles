@@ -156,6 +156,9 @@ class KnowledgePipeline:
                 "OCCURRED_AT is EVENT to LOCATION. PRECEDES is chronology only, not causality. "
                 "CAUSED/ENABLED require explicit cause/effect and two EVENT endpoints. "
                 "Use short literal descriptions in the source language. No inferred alliances "
+                "For two CHARACTER endpoints, use RELATED_TO for explicitly stated assistance "
+                "or another explicit relationship; describe the exact interaction, not vague "
+                "co-participation. Never use PARTICIPATED_IN between two characters. "
                 "or future revelations. Return empty when evidence is insufficient.\n"
                 + json.dumps(
                     {

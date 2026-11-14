@@ -69,13 +69,15 @@ async def extract_events(
     passages: list[SourcePassage],
     objective: str,
     infer: Callable[[str, type[BaseModel]], Awaitable[BaseModel]],
+    max_passages: int = 4,
+    max_entities: int = 12,
 ) -> Extraction:
     units = evidence_units(passages)
     entities: dict[tuple[str, str], dict[str, Any]] = {}
     relationships = []
     batches: list[tuple[SourcePassage, list[dict[str, Any]], list[EventFrame]]] = []
     # Each call sees neighboring sentences from one passage, never a whole long article.
-    for p in passages[:4]:
+    for p in passages[:max_passages]:
         local = [u for u in units if u["passage_id"] == str(p.id)]
         if not local:
             continue
@@ -161,7 +163,14 @@ async def extract_events(
                     {
                         "name": name,
                         "type": kind,
-                        "description": description,
+                        "description": next(
+                            (
+                                part.strip()
+                                for part in re.split(r"(?<=[,;，；])", description)
+                                if name in part and frame.trigger in part
+                            ),
+                            description,
+                        ),
                         "evidence": evidence,
                     },
                 )
@@ -175,7 +184,25 @@ async def extract_events(
                     }
                 )
     # Event endpoints are included in the same batch and every proposed edge is still verified.
-    chosen = list(entities.values())[:12]
+    chosen: list[dict[str, Any]] = []
+    chosen_keys: set[tuple[str, str]] = set()
+    for key, event in entities.items():
+        if key[0] != "EVENT":
+            continue
+        linked_names = {
+            r["source_name"] if r["target_name"] == event["name"] else r["target_name"]
+            for r in relationships
+            if event["name"] in {r["source_name"], r["target_name"]}
+        }
+        bundle = [
+            (k, item)
+            for k, item in entities.items()
+            if k == key or k[0] != "EVENT" and item["name"] in linked_names
+        ]
+        additions = [(k, item) for k, item in bundle if k not in chosen_keys]
+        if len(chosen) + len(additions) <= max_entities:
+            chosen.extend(item for _, item in additions)
+            chosen_keys.update(k for k, _ in additions)
     names = {e["name"] for e in chosen}
     return Extraction.model_validate(
         {

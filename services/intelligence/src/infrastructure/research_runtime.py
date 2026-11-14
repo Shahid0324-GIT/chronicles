@@ -39,7 +39,11 @@ def knowledge_transactions(factory: async_sessionmaker[AsyncSession]) -> Knowled
     @asynccontextmanager
     async def transaction() -> AsyncIterator[KnowledgeSession]:
         async with factory() as session, session.begin():
-            yield KnowledgeSession(SqlResearchRepository(session), SqlKnowledgeRepository(session))
+            yield KnowledgeSession(
+                SqlResearchRepository(session),
+                SqlKnowledgeRepository(session),
+                SqlSourceRegistry(session),
+            )
 
     return transaction
 

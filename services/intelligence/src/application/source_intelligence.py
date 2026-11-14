@@ -4,12 +4,18 @@ from typing import Literal, cast
 from urllib.parse import urlsplit
 from uuid import UUID
 
-from src.application.ports.research import MetadataSearchProvider, SearchProvider, SearchResult
+from src.application.ports.research import (
+    MetadataSearchProvider,
+    SearchProvider,
+    SearchResult,
+    StructuredDiscoveryFetcher,
+)
 from src.application.ports.source_intelligence import SourceRegistryTransaction
 from src.application.research import SourceInput
 from src.application.research_frontier import terms
 from src.application.research_policy import UniverseResearchProfile
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
+from src.domain.entities import now
 
 
 class DocumentLinkSearch:
@@ -40,13 +46,28 @@ class DocumentLinkSearch:
                 or p.username
                 or p.password
                 or not public
-                or not words & terms(link.title + " " + link.summary)
+                or not words & terms(link.title + " " + link.summary + " " + p.path)
             ):
                 continue
             relevant.append(link)
         return sorted(
-            relevant, key=lambda r: (-len(words & terms(r.title + " " + r.summary)), r.url)
+            relevant,
+            key=lambda r: (
+                -len(words & terms(r.title + " " + r.summary + " " + urlsplit(r.url).path)),
+                r.url,
+            ),
         )[:limit]
+
+
+class MediaWikiSearch:
+    def __init__(self, fetcher: StructuredDiscoveryFetcher, endpoint: str) -> None:
+        self.fetcher, self.endpoint = fetcher, endpoint
+
+    async def search(self, query: str, limit: int) -> list[str]:
+        return [item.url for item in await self.search_results(query, limit)]
+
+    async def search_results(self, query: str, limit: int) -> list[SearchResult]:
+        return await self.fetcher.discover_mediawiki(self.endpoint, query, limit)
 
 
 class SourceSelector:
@@ -83,6 +104,8 @@ class SourceSelector:
             and e.retrieval_policy == "permitted"
             and e.access_method not in {"navigation", "import"}
             and e.discovery_path_prefix is None
+            and e.discovery_api is None
+            and (e.retry_at is None or e.retry_at <= now())
             and (profile is None or e.access_method in profile.retrieval_methods)
         ]
         ranked = []
@@ -144,6 +167,9 @@ class SourceSelector:
             source_scope="Registry continuity: " + ",".join(map(str, entry.continuity_ids)),
             source_group=entry.derived_from,
             registry_id=entry.id,
+            render_javascript=entry.render_javascript,
+            eligible_section_terms=entry.eligible_section_terms,
+            discovery_index=entry.discovery_index,
             presentation_position=entry.presentation_position,
             position_basis=entry.position_basis,
             **entry.selectors,
@@ -184,6 +210,7 @@ class SourceDiscoveryService:
         on_results: Callable[[str, list[SearchResult]], Awaitable[None]] | None = None,
         parent_url: str | None = None,
         depth: int = 0,
+        result_limit: int = 8,
     ) -> list[SourceEntry]:
         async with self.transactions() as registry:
             existing = await registry.entries(request.universe_id)
@@ -200,7 +227,10 @@ class SourceDiscoveryService:
                 request.universe_name + " dedicated encyclopedia references",
             ]
         )
-        for query in candidates[: max(0, max_queries)]:
+        pending = [
+            query for query in candidates if used_queries is None or query not in used_queries
+        ]
+        for query in pending[: max(0, max_queries)]:
             if used_queries is not None:
                 if query in used_queries:
                     continue
@@ -208,7 +238,7 @@ class SourceDiscoveryService:
             if on_query:
                 await on_query(query)
             results = (
-                await self.search.search_results(query, 8)
+                await self.search.search_results(query, min(max(result_limit, 1), 20))
                 if isinstance(self.search, MetadataSearchProvider)
                 else [SearchResult(url) for url in (await self.search.search(query, 4))[:4]]
             )
@@ -223,11 +253,16 @@ class SourceDiscoveryService:
                 seen.add(identity)
                 parsed = urlsplit(url)
                 known = [entry for entry in existing if entry.url.partition("#")[0] == url]
-                if known and (
-                    parent_url or not any(request.continuity_id in e.continuity_ids for e in known)
+                whole_documents = [
+                    e
+                    for e in known
+                    if not e.selectors and not e.discovery_path_prefix and not e.discovery_api
+                ]
+                if (whole_documents and parent_url) or (
+                    known and not any(request.continuity_id in e.continuity_ids for e in known)
                 ):
                     continue  # Persistent URL index: no linked loops or scope overwrites.
-                if any(entry.retrieval_policy == "permitted" for entry in known):
+                if any(entry.retrieval_policy == "permitted" for entry in whole_documents):
                     continue  # Discovery cannot erase existing permission or source selections.
                 rules = [
                     entry
@@ -268,6 +303,26 @@ class SourceDiscoveryService:
                                 + template.permission_basis
                             )[:500],
                         )
+                        category = self.category(url)
+                        if category != "reference" and template.category in {
+                            "official",
+                            "reference",
+                        }:
+                            data["category"] = category
+                        if "/story/" in parsed.path and "anime" in template.media:
+                            data["category"] = "episode-guide"
+                        if any(
+                            e.selectors == template.selectors
+                            and e.eligible_section_terms == template.eligible_section_terms
+                            and (
+                                e.retrieval_policy == "permitted"
+                                or not e.permission_basis.startswith("Discovery only")
+                            )
+                            and not e.discovery_path_prefix
+                            and not e.discovery_api
+                            for e in known
+                        ):
+                            continue  # A broader rule never overwrites an existing section grant.
                         references.append(SourceRegistration.model_validate(data))
                     continue
                 references.append(

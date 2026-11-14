@@ -55,13 +55,28 @@ class EvidenceDossierBuilder:
         objective: str,
         token_budget: int,
         priority_ids: set[str] | None = None,
+        *,
+        require_relevance: bool = False,
     ) -> EvidenceDossier:
         query = terms(objective)
+
+        def relevance(fact: dict[str, Any]) -> int:
+            payload = fact["payload"]
+            content = [
+                payload.get(key, "")
+                for key in ("name", "description", "source_name", "target_name", "event")
+            ]
+            return len(query & terms(json.dumps(content, ensure_ascii=False)))
+
         ranked = sorted(
-            facts,
+            [
+                fact
+                for fact in facts
+                if not require_relevance or relevance(fact) or fact["id"] in (priority_ids or set())
+            ],
             key=lambda f: (
                 -int(f["id"] in (priority_ids or set())),
-                -len(query & terms(json.dumps(f["payload"], ensure_ascii=False))),
+                -relevance(f),
                 -int(f.get("kind") == "relationship"),
                 str(f["id"]),
             ),
@@ -85,7 +100,7 @@ class EvidenceDossierBuilder:
             "estimated_tokens": used,
             "omitted_facts": len(facts) - len(selected),
             "missing_information": [] if selected else ["No eligible accepted facts"],
-            "selection": "relevance-and-relationships-v1",
+            "selection": "content-relevance-and-relationships-v2",
         }
 
 

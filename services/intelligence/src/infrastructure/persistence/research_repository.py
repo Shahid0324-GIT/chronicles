@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.application.research import ResearchRequest
 from src.domain.entities import now
 from src.domain.exceptions import NotFoundError
-from src.domain.research import SourceDocument, SourcePassage, digest
+from src.domain.research import SourceDocument, SourcePassage, digest, section_at
 from src.infrastructure.persistence.models import ContinuityModel, NodeModel, UniverseModel
 from src.infrastructure.persistence.models.knowledge import PromotionRecordModel
 from src.infrastructure.persistence.models.research import (
@@ -204,6 +204,24 @@ class SqlResearchRepository:
             ) != (source.universe_id, source.continuity_id, source.content_hash, source.url):
                 raise ValueError("Archived source identity cannot change")
             existing.last_checked_at = source.retrieved_at
+            if (
+                source.text == existing.text
+                and source.provenance.get("structure_text_hash") == existing.content_hash
+            ):
+                keys = {
+                    "extraction_version",
+                    "language",
+                    "rendered",
+                    "structure_text_hash",
+                    "sections_json",
+                    "links_json",
+                    "structure_selection_start",
+                    "document_role",
+                }
+                existing.provenance = {
+                    **existing.provenance,
+                    **{k: v for k, v in source.provenance.items() if k in keys},
+                }
             await self.session.flush()
             return
         self.session.add(
@@ -247,16 +265,24 @@ class SqlResearchRepository:
         await self.session.flush()
 
     async def get_passages(self, source_ids: list[UUID]) -> list[SourcePassage]:
-        rows = await self.session.scalars(
-            select(SourcePassageModel)
+        rows = await self.session.execute(
+            select(SourcePassageModel, SourceDocumentModel.provenance)
+            .join(SourceDocumentModel, SourceDocumentModel.id == SourcePassageModel.source_id)
             .where(SourcePassageModel.source_id.in_(source_ids))
             .order_by(SourcePassageModel.source_id, SourcePassageModel.ordinal)
         )
         return [
             SourcePassage(
-                row.id, row.source_id, row.ordinal, row.start, row.end, row.text, row.content_hash
+                row.id,
+                row.source_id,
+                row.ordinal,
+                row.start,
+                row.end,
+                row.text,
+                row.content_hash,
+                section_at(provenance, row.start),
             )
-            for row in rows
+            for row, provenance in rows
         ]
 
     async def save_claim(

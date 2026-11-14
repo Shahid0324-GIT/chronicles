@@ -4,6 +4,7 @@ from typing import Any, Protocol
 from uuid import UUID
 
 from src.application.ports.research import ResearchRepository
+from src.application.ports.source_intelligence import SourceRegistry
 from src.domain.entities import GraphNode, GraphRelationship
 
 
@@ -42,6 +43,7 @@ class KnowledgeRepository(Protocol):
 class KnowledgeSession:
     archive: ResearchRepository
     graph: KnowledgeRepository
+    registry: SourceRegistry | None = None
 
 
 class KnowledgeTransaction(Protocol):

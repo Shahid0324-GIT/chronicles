@@ -26,6 +26,21 @@ Objective: explain Subaru and Emilia’s relationship in the opening TV anime, u
 | Unknown reveal positions fail bounded reads | Spoiler safety | Unpositioned deep lore cannot enter opening-story views | Retain and report gaps; never invent first-reveal positions |
 | Cloud permission per source, global opt-in and current read checks | Privacy | New discoveries cannot automatically use Groq | Retain; earlier approval applies only to the selected 5.2 dossier, not new benchmark content |
 
-Before/after measurements, tests and real provider results will accompany the completed implementation. This audit is not a claim that all proposed fixes or the live acceptance benchmark already pass.
+Additional restrictions found during the live run:
+
+| Restriction | Observed loss | Change |
+| --- | --- | --- |
+| Illustrated indexes require factual body text | Official image-navigation root lost all links | Archive explicitly registered discovery indexes as navigation, never factual passages; preserve image alt link labels |
+| Used query slots sliced before filtering | A second discovery adapter issued no new query | Filter previously issued queries before applying remaining budget |
+| Same-hash archives ignore parser upgrades | Refetched documents retained missing section metadata forever | Upgrade structural metadata only; preserve retrieval history, source and passage identities |
+| Mixed-media numbered sections flattened | Novel and anime answers could share chunks | Parse explicit section labels; archive full article and index only declared eligible sections |
+| Small flat candidate cap | Events could displace their participant endpoints | Select bounded coherent event/participant bundles and reserve encyclopedia capacity |
+| Generic type names match all dossier records | Unrelated character facts entered research context | Rank actual content rather than metadata vocabulary; require relevance for research dossiers |
+| Source policy only checked at acquisition | A revoked source might support later publication | Recheck and lock current registry permissions in publication; retain audited rollback |
+| No persisted Retry-After window | A later job might retry too soon | Retain source cooldown across jobs, preserve it on registry updates, clear on successful acquisition |
+
+The user subsequently approved all permitted public material for the Subaru–Emilia benchmark for cloud processing. This does not grant retrieval rights or authorize private/unrelated content. The deeper investigation uses a separate light-novel continuity after the initial anime run produced insufficient connected evidence.
+
+Before/after measurements and real provider results will accompany the completed implementation. This audit is not a claim that the live acceptance benchmark already passes.
 
 Core quality checkpoint: Ruff check/format and mypy passed; **195 backend tests passed**, including seven PostgreSQL tests using unique disposable schemas. New regressions cover long-form retention beyond 12,000 characters, structure offsets, clipped excerpt metadata, exact URL grants/revocation, depth-policy round trips, unsupported subject attribution, single-primary literal publication, hidden-identity withholding and rollback. A real broad Subaru/Emilia SearXNG query returned 25 results without upstream errors. Linked/browser/API discovery and the two-pass live benchmark remain in progress.

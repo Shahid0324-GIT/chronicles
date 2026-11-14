@@ -48,6 +48,11 @@ class CanonicalGraphPromotionService:
             findings = await unit.archive.findings(job_id)
             catalog = await unit.graph.catalog(universe, continuity)
             records = await unit.graph.records()
+            permissions = (
+                {str(e.id): e for e in await unit.registry.entries(universe, lock=True)}
+                if unit.registry
+                else {}
+            )
             by_claim = {r["claim_id"]: r for r in records}
             bound: dict[str, set[UUID]] = {}
 
@@ -75,6 +80,22 @@ class CanonicalGraphPromotionService:
                 assessment = assessments.get(cid, {})
                 previous = by_claim.get(cid)
                 evidence = claim["evidence"]
+                current_permission = True
+                if unit.registry:
+                    for item in evidence:
+                        metadata = item.get("provenance", {})
+                        registration = metadata.get("registry_id")
+                        if registration:
+                            policy = permissions.get(registration)
+                            if (
+                                policy is None
+                                or policy.retrieval_policy != "permitted"
+                                or continuity not in policy.continuity_ids
+                                or policy.discovery_index
+                                or policy.eligible_section_terms
+                                != metadata.get("eligible_section_terms", [])
+                            ):
+                                current_permission = False
                 passages = {
                     str(p.id): p
                     for p in await unit.archive.get_passages(
@@ -94,6 +115,7 @@ class CanonicalGraphPromotionService:
                 if previous and not previous["reversed"]:
                     still_valid = (
                         exact
+                        and current_permission
                         and claim["decision"] == "supported"
                         and not assessment.get("material_conflict")
                         and assessment.get("continuity_matches", True)
@@ -138,7 +160,11 @@ class CanonicalGraphPromotionService:
                 target: UUID | None = None
                 source_node: GraphNode | None = None
                 target_node: GraphNode | None = None
-                structural = exact and in_world_structure(payload, [e["quote"] for e in evidence])
+                structural = (
+                    exact
+                    and current_permission
+                    and in_world_structure(payload, [e["quote"] for e in evidence])
+                )
                 structural = (
                     structural
                     and payload.get(

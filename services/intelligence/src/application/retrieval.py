@@ -165,7 +165,12 @@ class EvidenceRetrieval:
 
             def value(hit: EvidenceHit) -> float:
                 family = hit.source.independence_key or hit.source.publisher
-                return scores[hit.passage.id] / (1 + seen_families.get(family, 0) * 0.25)
+                authority = {"primary": 1.6, "secondary": 1.0, "unverified": 0.7}.get(
+                    hit.source.provenance.get("authority", "unverified"), 0.7
+                )
+                return (
+                    scores[hit.passage.id] * authority / (1 + seen_families.get(family, 0) * 0.15)
+                )
 
             h = max(ordered, key=value)
             ordered.remove(h)

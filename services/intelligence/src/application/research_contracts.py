@@ -45,7 +45,7 @@ class CandidateEntity(StructuredModel):
     evidence: list[Citation] = Field(min_length=1, max_length=3)
 
     @staticmethod
-    def validate_category(node_type: NodeType, knowledge: KnowledgeMetadata | None) -> None:
+    def allowed_categories(node_type: NodeType) -> set[str]:
         categories = {
             NodeType.CHARACTER: {"character"},
             NodeType.LOCATION: {"place", "region", "nation"},
@@ -96,7 +96,11 @@ class CandidateEntity(StructuredModel):
             },
             NodeType.MYSTERY: {"mystery"},
         }
-        if knowledge and knowledge.category not in categories[node_type]:
+        return categories[node_type]
+
+    @staticmethod
+    def validate_category(node_type: NodeType, knowledge: KnowledgeMetadata | None) -> None:
+        if knowledge and knowledge.category not in CandidateEntity.allowed_categories(node_type):
             raise ValueError("Knowledge category does not match graph type")
 
     @model_validator(mode="after")
@@ -117,7 +121,7 @@ class CandidateRelationship(StructuredModel):
 
 
 class Extraction(StructuredModel):
-    entities: list[CandidateEntity] = Field(default_factory=list, max_length=12)
+    entities: list[CandidateEntity] = Field(default_factory=list, max_length=200)
     relationships: list[CandidateRelationship] = Field(default_factory=list, max_length=8)
 
 

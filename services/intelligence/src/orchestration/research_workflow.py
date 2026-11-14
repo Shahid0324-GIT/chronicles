@@ -38,8 +38,11 @@ from src.application.ports.research import (
     CompleteDocumentFetcher,
     DocumentFetcher,
     RegisteredDocumentFetcher,
+    RenderedDocumentFetcher,
     ResearchTransaction,
     SearchProvider,
+    SearchResult,
+    StructuredDiscoveryFetcher,
 )
 from src.application.ports.source_intelligence import SourceRegistryTransaction
 from src.application.research import FetchedDocument, ResearchRequest, SourceInput, SourceRejected
@@ -56,9 +59,15 @@ from src.application.research_frontier import ResearchFrontierService, terms
 from src.application.research_policy import CoverageReview, ResearchPolicy, UniverseResearchProfile
 from src.application.research_use_cases import SourceApprovalPolicy
 from src.application.retrieval import EvidenceRetrieval
-from src.application.source_contracts import SourceDiscovery
-from src.application.source_intelligence import SourceDiscoveryService, SourceSelector
+from src.application.source_contracts import SourceDiscovery, SourceEntry
+from src.application.source_intelligence import (
+    DocumentLinkSearch,
+    MediaWikiSearch,
+    SourceDiscoveryService,
+    SourceSelector,
+)
 from src.domain.entities import GraphNode, GraphRelationship, now
+from src.domain.knowledge import name_key
 from src.domain.research import (
     SourceDocument,
     SourcePassage,
@@ -515,6 +524,7 @@ class ResearchWorkflow:
                     [f for values in scope.facts.values() for f in values],
                     request.objective,
                     self.policy(state).dossier_tokens // 2,
+                    require_relevance=True,
                 )
                 state = {**state, "dossier": dict(dossier)}
             if self.retrieval:
@@ -641,6 +651,17 @@ class ResearchWorkflow:
                 checkpoint = {**(saved["checkpoint"] if saved else {}), **state}
                 if saved and "retrieved_bytes" in saved["checkpoint"]:
                     checkpoint["retrieved_bytes"] = saved["checkpoint"]["retrieved_bytes"]
+                if state.get("policy"):
+                    requests = (
+                        max(
+                            checkpoint.get("retrieval_requests", 0),
+                            (saved or {}).get("checkpoint", {}).get("retrieval_requests", 0),
+                        )
+                        + 1
+                    )
+                    if requests > self.policy(state).max_requests:
+                        raise InferenceFailure("job_request_budget_exhausted")
+                    checkpoint["retrieval_requests"] = state["retrieval_requests"] = requests
                 await archive.update_job(UUID(state["job_id"]), checkpoint=checkpoint)
                 await archive.event(UUID(state["job_id"]), "discovery.query", {"query": query})
 
@@ -674,17 +695,34 @@ class ResearchWorkflow:
                     if e.presentation_position is not None
                     and e.presentation_position <= request.spoiler_position
                 ]
-            if request.allow_search and self.discovery_search:
+            adapters: list[SearchProvider] = (
+                [self.discovery_search] if self.discovery_search else []
+            )
+            if isinstance(self.fetcher, StructuredDiscoveryFetcher):
+                adapters.extend(
+                    MediaWikiSearch(self.fetcher, e.url.partition("#")[0])
+                    for e in available
+                    if e.discovery_api == "mediawiki-search"
+                    and e.retrieval_policy == "permitted"
+                    and request.continuity_id in e.continuity_ids
+                )
+            for adapter_index, adapter in enumerate(adapters):
+                if not request.allow_search:
+                    break
+                endpoint = getattr(adapter, "endpoint", None)
+                if endpoint and isinstance(self.fetcher, RegisteredDocumentFetcher):
+                    self.fetcher.authorize_registered([endpoint])
                 try:
-                    available = await SourceDiscoveryService(
-                        self.discovery_search, self.registry
-                    ).discover(
+                    available = await SourceDiscoveryService(adapter, self.registry).discover(
                         SourceDiscovery(
                             universe_id=request.universe_id,
                             continuity_id=request.continuity_id,
                             universe_name=state["context"]["universe"],
                         ),
-                        max_queries=max(0, self.max_queries - len(used)),
+                        max_queries=math.ceil(
+                            max(0, self.max_queries - len(used)) / (len(adapters) - adapter_index)
+                        ),
+                        result_limit=self.policy(state).results_per_query,
                         used_queries=used,
                         on_query=reserve_query,
                         on_results=record_results,
@@ -692,7 +730,7 @@ class ResearchWorkflow:
                         if state.get("policy")
                         else None,
                     )
-                except Exception:
+                except Exception as discovery_error:
                     errors.append("source_discovery_unavailable")
                     async with self.registry() as registry:
                         available = await registry.entries(request.universe_id)
@@ -700,7 +738,12 @@ class ResearchWorkflow:
                         await archive.event(
                             UUID(state["job_id"]),
                             "discovery.unavailable",
-                            {"reason": "search_unavailable"},
+                            {
+                                "reason": str(discovery_error)
+                                if isinstance(discovery_error, SourceRejected)
+                                else "search_unavailable",
+                                "adapter": type(adapter).__name__,
+                            },
                         )
             # Discovery returns the complete registry: reapply the caller's fences.
             if request.spoiler_position is not None:
@@ -791,6 +834,9 @@ class ResearchWorkflow:
                     or spec.url.partition("#")[0] != entry.url.partition("#")[0]
                     or spec.start_at != entry.selectors.get("start_at")
                     or spec.end_before != entry.selectors.get("end_before")
+                    or spec.render_javascript != entry.render_javascript
+                    or spec.eligible_section_terms != entry.eligible_section_terms
+                    or spec.discovery_index != entry.discovery_index
                 ):
                     errors.append("source_registry_permission_changed")
                     continue
@@ -821,6 +867,13 @@ class ResearchWorkflow:
                                 spec.presentation_position,
                                 spec.position_basis,
                                 spec.access_method,
+                                *(["rendered"] if spec.render_javascript else []),
+                                *(
+                                    [spec.eligible_section_terms]
+                                    if spec.eligible_section_terms
+                                    else []
+                                ),
+                                *(["navigation-index"] if spec.discovery_index else []),
                             ],
                             ensure_ascii=False,
                         )
@@ -838,6 +891,15 @@ class ResearchWorkflow:
                     request.continuity_id,
                     now() - timedelta(hours=self.cache_hours),
                 )
+            if cached:
+                if (
+                    state.get("policy", {}).get("version") == "adaptive-v2"
+                    and spec.url
+                    and cached.provenance.get("extraction_version")
+                    not in {"structured-html-v4", "api-text-v1", "plain-text-v1"}
+                ):
+                    cached = None
+            acquired = cached
             if cached:
                 registry_revision = next(
                     (e.revision for e in registry_entries if e.id == spec.registry_id), None
@@ -870,19 +932,26 @@ class ResearchWorkflow:
                     await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
                 try:
                     if spec.url:
+                        if spec.render_javascript and not isinstance(
+                            self.fetcher, RenderedDocumentFetcher
+                        ):
+                            raise SourceRejected("source_browser_adapter_unavailable")
                         if spec.access_method != "html" and not isinstance(
                             self.fetcher, ApiDocumentFetcher
                         ):
                             raise SourceRejected("source_api_adapter_unavailable")
                         cache_key = (
                             spec.url.partition("#")[0],
-                            spec.access_method,
+                            spec.access_method + (":rendered" if spec.render_javascript else ""),
                             bool(spec.start_at or spec.end_before),
                         )
                         document = self.document_cache.get(cache_key)
                         if document is None:
                             document = (
-                                await self.fetcher.fetch_api(spec.url, spec.access_method)
+                                await self.fetcher.fetch_rendered(spec.url)
+                                if spec.render_javascript
+                                and isinstance(self.fetcher, RenderedDocumentFetcher)
+                                else await self.fetcher.fetch_api(spec.url, spec.access_method)
                                 if spec.access_method != "html"
                                 and isinstance(self.fetcher, ApiDocumentFetcher)
                                 else await self.fetcher.fetch_complete(spec.url)
@@ -917,6 +986,8 @@ class ResearchWorkflow:
                         )
                     scope_note = spec.source_scope
                     fetched_metadata = dict(document.metadata) if spec.url and document else {}
+                    if spec.discovery_index:
+                        fetched_metadata["document_role"] = "navigation-index"
                     if spec.start_at or spec.end_before:
                         begin = text.find(spec.start_at) if spec.start_at else 0
                         finish = (
@@ -950,6 +1021,8 @@ class ResearchWorkflow:
                         truncated = truncated or len(text) > self.source_chars
                         text = text[: self.source_chars]
                     fingerprint = digest(text)
+                    if fetched_metadata:
+                        fetched_metadata["structure_text_hash"] = fingerprint
                     source_id = uuid5(
                         NAMESPACE_URL,
                         f"chronicles:source:{request.universe_id}:{request.continuity_id}:{url}:{fingerprint}",
@@ -978,6 +1051,7 @@ class ResearchWorkflow:
                             "job_id": state["job_id"],
                             "presentation_position": spec.presentation_position,
                             "position_basis": spec.position_basis,
+                            "eligible_section_terms": spec.eligible_section_terms,
                             **(fetched_metadata if spec.url else {}),
                             **next(
                                 (
@@ -1002,6 +1076,18 @@ class ResearchWorkflow:
                     )
                     async with self.transactions() as archive:
                         await archive.save_source(source, passages_for(source))
+                        await archive.event(
+                            UUID(state["job_id"]),
+                            "research.source_archived",
+                            {
+                                "source_id": str(source.id),
+                                "url": source.url,
+                                "characters": len(source.text),
+                                "passages": len(passages_for(source)),
+                                "truncated": source.truncated,
+                            },
+                        )
+                    acquired = source
                     identifier = str(source_id)
                     public_only = (
                         public_only
@@ -1013,7 +1099,12 @@ class ResearchWorkflow:
                 except SourceRejected as failure:
                     if self.registry and spec.registry_id:
                         async with self.registry() as registry:
-                            await registry.health(spec.registry_id, str(failure))
+                            if failure.retry_after is not None:
+                                await registry.health(
+                                    spec.registry_id, str(failure), failure.retry_after
+                                )
+                            else:
+                                await registry.health(spec.registry_id, str(failure))
                     errors.append(str(failure))
                     async with self.transactions() as archive:
                         await archive.event(
@@ -1033,6 +1124,20 @@ class ResearchWorkflow:
                     await registry.health(spec.registry_id, None)
             if identifier not in identifiers:
                 identifiers.append(identifier)
+            if cached:
+                async with self.transactions() as archive:
+                    await archive.event(
+                        UUID(state["job_id"]),
+                        "research.source_reused",
+                        {
+                            "source_id": identifier,
+                            "url": cached.url,
+                            "content_hash": cached.content_hash,
+                        },
+                    )
+            entry = next((e for e in registry_entries if e.id == spec.registry_id), None)
+            if acquired and entry and entry.follow_links:
+                await self.explore_links(state, request, entry, acquired)
             if spec.registry_id:
                 state["inspected_registry_ids"] = list(
                     dict.fromkeys([*state.get("inspected_registry_ids", []), str(spec.registry_id)])
@@ -1049,6 +1154,79 @@ class ResearchWorkflow:
                 and (bool(state.get("policy")) or not request.use_registry),
             },
         )
+
+    async def explore_links(
+        self,
+        state: ResearchState,
+        request: ResearchRequest,
+        entry: SourceEntry,
+        source: SourceDocument,
+    ) -> None:
+        if not self.registry or not state.get("policy"):
+            return
+        policy = self.policy(state)
+        links = [
+            SearchResult(item["url"].partition("#")[0], item["text"], item.get("section", ""))
+            for item in json.loads(source.provenance.get("links_json", "[]"))
+            if item["url"].partition("#")[0] != source.url.partition("#")[0]
+            and len(item["url"]) <= 2000
+        ]
+        query = request.objective + " " + " ".join(entry.topics)
+        provider = DocumentLinkSearch(links)
+        relevant = await provider.search_results(query, policy.max_links_per_document)
+        if not relevant:
+            return
+        depth = entry.discovery_depth + 1
+        async with self.transactions() as archive:
+            await archive.event(
+                UUID(state["job_id"]),
+                "discovery.links",
+                {
+                    "parent": source.url,
+                    "depth": depth,
+                    "links": [{"url": link.url, "title": link.title} for link in relevant],
+                    "within_depth": depth <= policy.max_follow_up_depth,
+                },
+            )
+        if depth <= policy.max_follow_up_depth:
+            await SourceDiscoveryService(provider, self.registry).discover(
+                SourceDiscovery(
+                    universe_id=request.universe_id,
+                    continuity_id=request.continuity_id,
+                    universe_name=state["context"]["universe"],
+                ),
+                queries=[query],
+                max_queries=1,
+                parent_url=source.url,
+                depth=depth,
+                result_limit=policy.max_links_per_document,
+            )
+        if self.memory:
+            questions = [
+                f"Investigate linked evidence {link.title[:180]} at {link.url[:900]}"
+                for link in relevant
+            ]
+            leads = await ResearchFrontierService(self.memory).discover(
+                request.universe_id,
+                request.continuity_id,
+                request.spoiler_position,
+                request.objective,
+                questions,
+                ("document:" + source.url)[:300],
+                policy,
+                depth=depth,
+            )
+            async with self.memory() as memory:
+                for lead in leads:
+                    matching = [link.url for link in relevant if link.url[:900] in lead.question]
+                    if matching:
+                        lead.available_sources = list(
+                            dict.fromkeys([*lead.available_sources, *matching])
+                        )
+                        lead.source_ids = list(dict.fromkeys([*lead.source_ids, source.id]))
+                        if depth > policy.max_follow_up_depth:
+                            lead.last_stop_reason = "follow_up_depth_budget_exhausted"
+                        await memory.save_lead(lead)
 
     async def selected_passages(self, state: ResearchState) -> list[SourcePassage]:
         async with self.transactions() as archive:
@@ -1123,7 +1301,11 @@ class ResearchWorkflow:
                 )
 
             extraction = await extract_encyclopedia(
-                passages, request.objective, entry_infer, request.extraction_types
+                passages,
+                request.objective,
+                entry_infer,
+                request.extraction_types,
+                request.subject_names,
             )
         elif self.knowledge and request.narrative_research and focus == "story":
 
@@ -1143,7 +1325,28 @@ class ResearchWorkflow:
                 else passages,
                 request.objective,
                 event_infer,
+                max_passages=self.policy(state).event_extraction_calls
+                if state.get("policy")
+                else 4,
+                max_entities=max(3, self.policy(state).max_candidates_per_pass - 5)
+                if state.get("policy")
+                else 12,
             )
+            extra_types: list[NodeType] = [
+                kind for kind in request.extraction_types if kind != NodeType.EVENT
+            ]
+            if state.get("policy") and extra_types:
+
+                async def extra_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
+                    return await event_infer(prompt, schema)
+
+                extra = await extract_encyclopedia(
+                    passages, request.objective, extra_infer, extra_types, request.subject_names
+                )
+                extraction = Extraction(
+                    entities=[*extraction.entities, *extra.entities],
+                    relationships=extraction.relationships,
+                )
         elif self.knowledge and request.extraction_types:
             entities: list[CandidateEntity] = []
             seen = set()
@@ -1533,7 +1736,9 @@ class ResearchWorkflow:
             for f in values
             if terms(request.objective) & terms(json.dumps(f["payload"], ensure_ascii=False))
         ]
-        dossier = EvidenceDossierBuilder().select(facts, request.objective, policy.dossier_tokens)
+        dossier = EvidenceDossierBuilder().select(
+            facts, request.objective, policy.dossier_tokens, require_relevance=True
+        )
         boundary = ResearchFrontierService.boundary(request.spoiler_position)
         async with self.memory() as memory:
             leads = [
@@ -1884,6 +2089,47 @@ class ResearchWorkflow:
             or not self.policy(state).presentation_requires_coverage
             or state.get("coverage", {}).get("outcome") == "SUFFICIENT_FOR_PRESENTATION"
         )
+        resource_ids = request.presentation_resource_ids
+        if (
+            enough
+            and self.atlas
+            and request.subject_names
+            and not request.presentation_only
+            and not resource_ids
+        ):
+            scope = await self.atlas.scope(
+                request.universe_id,
+                request.continuity_id,
+                spoiler_position=request.spoiler_position,
+            )
+            subject_keys = {name_key(name) for name in request.subject_names}
+            focal = {
+                target
+                for target, facts in scope.facts.items()
+                if any(
+                    f["kind"] == "entity" and name_key(f["payload"].get("name", "")) in subject_keys
+                    for f in facts
+                )
+            }
+            related = set(focal)
+            for edge in scope.edges():
+                if str(edge.source_node_id) in focal or str(edge.target_node_id) in focal:
+                    related.update((str(edge.source_node_id), str(edge.target_node_id)))
+            resource_ids = [
+                UUID(resource["id"])
+                for resource in self.atlas.resources(scope)
+                if resource["kind"] != "arc"
+                and (
+                    resource["id"] in related
+                    or any(f["target_id"] in related for f in resource["facts"])
+                )
+            ]
+            if not resource_ids:
+                enough = False
+                state["telemetry"] = {
+                    **state.get("telemetry", {}),
+                    "presentation_withheld": "no_relevant_accepted_resources",
+                }
         if (request.presentation_only or request.compose_presentations and enough) and self.atlas:
 
             async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
@@ -1922,7 +2168,7 @@ class ResearchWorkflow:
                 infer,
                 spoiler_position=request.spoiler_position,
                 provider_metadata=lambda: [asdict(u) for u in self.inference.usage[start:]],
-                resource_ids=request.presentation_resource_ids,
+                resource_ids=resource_ids,
                 retry_withheld=request.retry_withheld_presentations,
                 cohesive_arc=request.adaptive_research,
             )

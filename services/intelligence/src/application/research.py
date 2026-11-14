@@ -12,10 +12,17 @@ from src.domain.value_objects import NodeType
 class SourceRejected(Exception):
     """Sanitized acquisition/policy failure shared by source adapters."""
 
+    def __init__(self, code: str, retry_after: float | None = None) -> None:
+        super().__init__(code)
+        self.retry_after = retry_after
+
 
 class SourceInput(StructuredModel):
     access_method: Literal["html", "mediawiki", "official-api"] = "html"
     registry_id: UUID | None = None
+    render_javascript: bool = False
+    eligible_section_terms: list[str] = Field(default_factory=list, max_length=20)
+    discovery_index: bool = False
     presentation_position: int | None = Field(default=None, ge=1, le=100000)
     position_basis: str | None = Field(default=None, max_length=80)
     url: str | None = Field(default=None, max_length=2000)
@@ -30,6 +37,8 @@ class SourceInput(StructuredModel):
 
     @model_validator(mode="after")
     def one_input(self) -> "SourceInput":
+        if self.render_javascript and not self.registry_id:
+            raise ValueError("Rendered documents require explicit registry permission")
         if bool(self.url) == bool(self.text):
             raise ValueError("Provide exactly one approved public URL or imported text")
         if self.reference_url:
@@ -63,6 +72,7 @@ class ResearchRequest(StructuredModel):
     sources: list[SourceInput] = Field(default_factory=list, max_length=200)
     allow_search: bool = False
     extraction_types: list[NodeType] = Field(default_factory=list, max_length=8)
+    subject_names: list[str] = Field(default_factory=list, max_length=20)
 
 
 class FetchedDocument(StructuredModel):

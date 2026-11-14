@@ -21,6 +21,7 @@ from src.infrastructure.config.settings import Settings
 from src.infrastructure.inference import create_inference
 from src.infrastructure.persistence.knowledge_repository import SqlKnowledgeRepository
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
+from src.infrastructure.persistence.source_registry import SqlSourceRegistry
 from src.infrastructure.sources import PublicSourcePolicy
 from src.presentation.api.schemas.research import (
     AliasResponse,
@@ -195,7 +196,11 @@ async def inspect_aliases(
 def promotion_service(session: Session, request: Request) -> CanonicalGraphPromotionService:
     @asynccontextmanager
     async def transaction() -> AsyncIterator[KnowledgeSession]:
-        yield KnowledgeSession(SqlResearchRepository(session), SqlKnowledgeRepository(session))
+        yield KnowledgeSession(
+            SqlResearchRepository(session),
+            SqlKnowledgeRepository(session),
+            SqlSourceRegistry(session),
+        )
 
     settings: Settings = request.app.state.settings
     return CanonicalGraphPromotionService(

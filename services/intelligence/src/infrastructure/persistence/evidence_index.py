@@ -51,11 +51,17 @@ class SqlEvidenceIndex:
             query = query.where(SourceDocumentModel.id.in_(source_ids))
         values = {}
         for identifier, provenance, public in (await self.session.execute(query)).all():
+            if provenance.get("document_role") == "navigation-index":
+                continue
             registration = provenance.get("registry_id")
             policy = registry.get(registration, {})
+            if policy.get("discovery_index"):
+                continue
             if registration and (
                 policy.get("retrieval_policy") != "permitted"
                 or str(continuity) not in policy.get("continuity_ids", [])
+                or policy.get("eligible_section_terms", [])
+                != provenance.get("eligible_section_terms", [])
             ):
                 continue
             values[identifier] = {
@@ -102,7 +108,10 @@ class SqlEvidenceIndex:
             q = q.where(SourceDocumentModel.id.in_(source_ids))
         score: ColumnElement[int] | None = None
         if query:
-            words = list(dict.fromkeys(re.findall(r"\w+", query.casefold())))[:20]
+            words = sorted(
+                set(re.findall(r"\w+", query.casefold())),
+                key=lambda word: (word.isascii(), -len(word), word),
+            )[:64]
             if words:
                 score = sum(
                     (
@@ -119,6 +128,7 @@ class SqlEvidenceIndex:
             )
             if r.configuration.get("retrieval_policy") == "permitted"
             and str(continuity) in r.configuration.get("continuity_ids", [])
+            and not r.configuration.get("discovery_index", False)
         }
         return [
             replace(
@@ -142,7 +152,12 @@ class SqlEvidenceIndex:
                     ).limit(600)
                 )
             ).all()
-            if not s.provenance.get("registry_id") or s.provenance["registry_id"] in registered
+            if (
+                not s.provenance.get("registry_id")
+                or s.provenance["registry_id"] in registered
+                and registered[s.provenance["registry_id"]].get("eligible_section_terms", [])
+                == s.provenance.get("eligible_section_terms", [])
+            )
         ]
 
     async def indexed(self, passage: UUID, model: EmbeddingIdentity, content_hash: str) -> bool:

@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from urllib.parse import urlsplit, urlunsplit
 from uuid import UUID, uuid5
 
@@ -20,12 +21,13 @@ class SqlSourceRegistry:
     @staticmethod
     def entry(row: SourceRegistryModel) -> SourceEntry:
         return SourceEntry(
-            **row.configuration,
+            **{k: v for k, v in row.configuration.items() if not k.startswith("_")},
             id=row.id,
             domain=row.domain,
             health=row.health,
             last_success=row.last_success,
             last_error=row.last_error,
+            retry_at=row.configuration.get("_retry_at"),
         )
 
     async def register(self, entry: SourceRegistration) -> SourceEntry:
@@ -47,11 +49,21 @@ class SqlSourceRegistry:
         url = urlunsplit((p.scheme.lower(), p.netloc.lower(), p.path or "/", p.query, ""))
         if entry.selectors:
             url += "#selection-" + digest(json.dumps(entry.selectors, sort_keys=True))[:16]
+        elif entry.discovery_path_prefix or entry.discovery_api:
+            url += (
+                "#discovery-"
+                + digest(json.dumps([entry.discovery_path_prefix, entry.discovery_api]))[:16]
+            )
+        if entry.eligible_section_terms:
+            url += "#sections-" + digest(json.dumps(entry.eligible_section_terms))[:16]
         identifier = uuid5(entry.universe_id, "source-registry:" + url)
         row = await self.session.get(SourceRegistryModel, identifier)
         data = entry.model_copy(update={"url": url}).model_dump(mode="json")
         if row:
-            row.configuration = data
+            row.configuration = {
+                **data,
+                **{k: v for k, v in row.configuration.items() if k.startswith("_")},
+            }
         else:
             row = SourceRegistryModel(
                 id=identifier,
@@ -67,20 +79,28 @@ class SqlSourceRegistry:
         await self.session.flush()
         return self.entry(row)
 
-    async def entries(self, universe: UUID) -> list[SourceEntry]:
-        return [
-            self.entry(r)
-            for r in await self.session.scalars(
-                select(SourceRegistryModel)
-                .where(SourceRegistryModel.universe_id == universe)
-                .order_by(SourceRegistryModel.id)
-            )
-        ]
+    async def entries(self, universe: UUID, *, lock: bool = False) -> list[SourceEntry]:
+        query = (
+            select(SourceRegistryModel)
+            .where(SourceRegistryModel.universe_id == universe)
+            .order_by(SourceRegistryModel.id)
+        )
+        if lock:
+            query = query.with_for_update()
+        return [self.entry(r) for r in await self.session.scalars(query)]
 
-    async def health(self, identifier: UUID, error: str | None) -> None:
+    async def health(
+        self, identifier: UUID, error: str | None, retry_after: float | None = None
+    ) -> None:
         row = await self.session.get(SourceRegistryModel, identifier)
         if row:
             row.health, row.last_error = ("failed" if error else "healthy"), error
             if not error:
                 row.last_success = now()
+                row.configuration = {k: v for k, v in row.configuration.items() if k != "_retry_at"}
+            elif error == "source_rate_limited":
+                row.configuration = {
+                    **row.configuration,
+                    "_retry_at": (now() + timedelta(seconds=max(1, retry_after or 60))).isoformat(),
+                }
             await self.session.flush()
