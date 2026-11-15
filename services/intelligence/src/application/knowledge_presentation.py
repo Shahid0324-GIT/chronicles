@@ -23,7 +23,7 @@ from src.application.research_contracts import InferenceFailure, StructuredModel
 from src.domain.research import digest
 
 Infer = Callable[[str, type[BaseModel], Task], Awaitable[BaseModel]]
-POLICY = "grounded-english-v8"
+POLICY = "grounded-english-v11"
 
 
 def source_language(text: str) -> str:
@@ -377,6 +377,11 @@ class RecapComposer:
             history = sorted(
                 [f for f in facts if f not in own], key=lambda f: (position(f), f["target_id"])
             )
+            first_atomic_fact: dict[str, str] = {}
+            for fact in own + history:
+                atom = fact["payload"].get("atomic") or {}
+                if atom.get("id"):
+                    first_atomic_fact.setdefault(atom["id"], fact["id"])
             return EvidenceDossierBuilder().select(
                 own + history,
                 " ".join(
@@ -384,12 +389,15 @@ class RecapComposer:
                 )
                 + " identity background history relationships",
                 3500,
+                priority_ids=set(first_atomic_fact.values()),
             )["facts"]
         return EvidenceDossierBuilder().select(
             facts, "event participants location action outcome", 3500
         )["facts"]
 
-    async def compose(self, resource: dict[str, Any], infer: Infer) -> tuple[dict[str, Any], str]:
+    async def compose(
+        self, resource: dict[str, Any], infer: Infer, *, _repair: bool = False
+    ) -> tuple[dict[str, Any], str]:
         if (
             resource["kind"] == "entry"
             and resource.get("graph_type") != "EVENT"
@@ -403,7 +411,16 @@ class RecapComposer:
             return {}, "withheld_name_localization"
         facts = self.selected_facts(resource)
         references = {str(index + 1): f["id"] for index, f in enumerate(facts)}
-        quotes = sorted({s.get("quote", "") for f in facts for s in f["sources"]})
+
+        def presentation_quote(fact: dict[str, Any], source: dict[str, Any]) -> str:
+            raw_quote = source.get("quote", "")
+            quote = raw_quote if isinstance(raw_quote, str) else ""
+            literal = (fact["payload"].get("atomic") or {}).get("statement", "")
+            # Canonical atomic assertions license this exact clause, not every
+            # other action or pronoun in the archived supporting sentence.
+            return literal if isinstance(literal, str) and literal and literal in quote else quote
+
+        quotes = sorted({presentation_quote(f, s) for f in facts for s in f["sources"]})
         evidence = {str(index + 1): quote for index, quote in enumerate(quotes)}
         quote_ids = {quote: key for key, quote in evidence.items()}
         prompt_facts = [
@@ -412,7 +429,9 @@ class RecapComposer:
                 "kind": f["kind"],
                 "target_id": f["target_id"],
                 "assertion": {
-                    k: v for k, v in f["payload"].items() if k not in {"description", "event"}
+                    k: v
+                    for k, v in f["payload"].items()
+                    if k not in {"description", "event", "atomic"}
                 },
                 "statement": (
                     {"event_frame": True}
@@ -426,11 +445,27 @@ class RecapComposer:
                     for k, v in (f["payload"].get("event") or {}).items()
                     if k in {"trigger", "occurrence_status", "participant_roles"}
                 },
-                "evidence_refs": sorted({quote_ids[s.get("quote", "")] for s in f["sources"]}),
+                "evidence_refs": sorted(
+                    {quote_ids[presentation_quote(f, s)] for s in f["sources"]}
+                ),
             }
             for index, f in enumerate(facts)
         ]
         names = resource.get("names", [])
+        connected: dict[str, dict[str, Any]] = {}
+        for index, fact in enumerate(facts):
+            atom = fact["payload"].get("atomic") or {}
+            if atom.get("id"):
+                item = connected.setdefault(
+                    atom["id"],
+                    {
+                        "subject": atom["subject"],
+                        "predicate": atom["predicate"],
+                        "object": atom["object"],
+                        "fact_refs": [],
+                    },
+                )
+                item["fact_refs"].append(str(index + 1))
         context = json.dumps(
             {
                 "resource": {
@@ -439,6 +474,7 @@ class RecapComposer:
                     "id": resource.get("id"),
                 },
                 "accepted_names": names,
+                "connected_actions": list(connected.values()),
                 "facts": prompt_facts,
                 "evidence": evidence,
                 "validated_english_glosses": self.indexed_glosses(resource, references),
@@ -462,6 +498,10 @@ class RecapComposer:
             "where supplied, otherwise a faithful English name. Short summary: one sentence. "
             "Statements: one or two concise sentences, up to four only when needed for an arc "
             "or substantial entry. Cite supplied fact IDs. Focus on each accepted event's "
+            "Cover every supplied connected_action using its fact_refs. "
+            "Keep joint role claims as a named pair; never make one person hold both roles. "
+            "Write concise original encyclopedia prose. No source quotations, Q/A markers, "
+            "or 'as recorded' attribution. Evidence citations belong only in fact_ids. "
             "literal trigger/action, not other clauses or hypothetical conventions in its source. "
             "Do not repeat summaries or describe metadata, participants lists or verification. "
             "Do not include cast or production credits. Translate common nouns rather than "
@@ -499,6 +539,69 @@ class RecapComposer:
             return draft.model_dump(), "withheld_language"
         if any(not set(s.fact_ids) <= ids for s in draft.statements):
             return draft.model_dump(), "withheld_references"
+        failure = None
+        if connected:
+            cited = {i for statement in draft.statements for i in statement.fact_ids}
+            if any(not set(item["fact_refs"]) & cited for item in connected.values()):
+                failure = "withheld_connected_coverage"
+            if re.search(r"\bas (?:recorded|noted|quoted)\b|A[：:]|Q[：:]", " ".join(texts), re.I):
+                failure = "withheld_source_quotation"
+            for item in connected.values():
+                roles = re.fullmatch(r"became (\w+) and (\w+)", item["predicate"], re.I)
+                if not roles:
+                    continue
+                first_role, second_role = roles.group(1), roles.group(2)
+                a, b = re.escape(item["subject"]), re.escape(item["object"])
+                pair = rf"(?:{a} and {b}|{b} and {a})"
+
+                def wrong_role(
+                    text: str, r1: str = first_role, r2: str = second_role, named_pair: str = pair
+                ) -> bool:
+                    return bool(
+                        re.search(rf"\b(?:{r1}|{r2})\b", text, re.I)
+                        and not re.search(named_pair, text, re.I)
+                    )
+
+                if wrong_role(draft.short_summary):
+                    # Reuse a supported draft statement rather than ask a model to
+                    # paraphrase joint roles repeatedly. The complete repaired draft
+                    # still undergoes the normal semantic grounding assessment.
+                    replacement = next(
+                        (
+                            s.text
+                            for s in draft.statements
+                            if len(s.text) <= 350 and not wrong_role(s.text)
+                        ),
+                        None,
+                    )
+                    if replacement:
+                        draft.short_summary = replacement
+                        texts = [
+                            draft.display_title,
+                            draft.short_summary,
+                            *[s.text for s in draft.statements],
+                        ]
+                if any(wrong_role(text) for text in texts):
+                    failure = "withheld_joint_role_binding"
+            if failure:
+                if _repair:
+                    return draft.model_dump(), failure
+
+                async def repair(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+                    return await infer(
+                        prompt
+                        + (
+                            "\nTARGETED REPAIR: "
+                            + failure
+                            + ". Cover all connected actions. State joint roles as a pair. "
+                            "Never give one person both roles. No quotes or Q/A markers. "
+                            "Write concise prose using accepted facts only."
+                        ),
+                        schema,
+                        task,
+                    )
+
+                return await self.compose(resource, repair, _repair=True)
         if re.search(r"\b(voiced by|voice actor|cast member)\b", " ".join(texts), re.I):
             return draft.model_dump(), "withheld_out_of_world"
         if names:
@@ -635,6 +738,16 @@ class KnowledgeAtlas:
             if node.type.value == "CHARACTER":
                 # History is available only through accepted participation edges.
                 for edge in scope.edges():
+                    if edge.relationship_type.value == "RELATED_TO" and node.id in {
+                        edge.source_node_id,
+                        edge.target_node_id,
+                    }:
+                        other = str(
+                            edge.target_node_id
+                            if edge.source_node_id == node.id
+                            else edge.source_node_id
+                        )
+                        facts += scope.facts[str(edge.id)] + scope.facts.get(other, [])
                     if (
                         edge.relationship_type.value == "PARTICIPATED_IN"
                         and edge.source_node_id == node.id
@@ -807,6 +920,9 @@ class KnowledgeAtlas:
                 and not (retry_withheld and stored["grounding_status"] != "validated")
             ):
                 counts["reused"] += 1
+                if stored["grounding_status"] != "validated":
+                    counts["withheld"] += 1
+                    counts["partial"] = True
                 if resource["kind"] != "arc":
                     composed[resource["revision"]] = (
                         stored["payload"],

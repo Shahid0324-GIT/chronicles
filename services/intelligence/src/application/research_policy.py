@@ -18,6 +18,9 @@ class ResearchPolicy(StructuredModel):
     max_links_per_document: int = Field(default=12, ge=1, le=100)
     event_extraction_calls: int = Field(default=4, ge=1, le=20)
     complex_event_reasoning: bool = False
+    verification_reserve_fraction: float = Field(default=0.35, ge=0.1, le=0.8)
+    investigation_bundle_limit: int = Field(default=2, ge=1, le=10)
+    verification_batch_size: int = Field(default=2, ge=1, le=4)
     max_candidates_per_pass: int = Field(default=24, ge=3, le=200)
     max_documents: int = Field(default=12, ge=1, le=200)
     max_bytes: int = Field(default=20_000_000, ge=1024, le=50_000_000)

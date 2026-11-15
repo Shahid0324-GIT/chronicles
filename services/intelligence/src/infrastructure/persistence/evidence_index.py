@@ -4,7 +4,7 @@ from dataclasses import replace
 from typing import Any
 from uuid import UUID, uuid5
 
-from sqlalchemy import case, literal, select
+from sqlalchemy import and_, case, literal, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql.elements import ColumnElement
 
@@ -31,6 +31,31 @@ def hit(
 class SqlEvidenceIndex:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
+
+    async def neighbors(self, passage_ids: list[UUID]) -> list[EvidenceHit]:
+        anchors = list(
+            await self.session.scalars(
+                select(SourcePassageModel).where(SourcePassageModel.id.in_(passage_ids))
+            )
+        )
+        if not anchors:
+            return []
+        rows = await self.session.execute(
+            select(SourcePassageModel, SourceDocumentModel)
+            .join(SourceDocumentModel, SourceDocumentModel.id == SourcePassageModel.source_id)
+            .where(
+                or_(
+                    *(
+                        and_(
+                            SourcePassageModel.source_id == p.source_id,
+                            SourcePassageModel.ordinal.between(p.ordinal - 1, p.ordinal + 1),
+                        )
+                        for p in anchors
+                    )
+                )
+            )
+        )
+        return [hit(p, s) for p, s in rows if permitted_span(s.provenance, p.start, p.end)]
 
     async def source_metadata(
         self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None

@@ -3,8 +3,10 @@ import re
 from dataclasses import replace
 from uuid import UUID
 
+from src.application.evidence_bundles import EvidenceBundleBuilder
 from src.application.evidence_dossier import token_estimate
 from src.application.ports.retrieval import EmbeddingProvider, EvidenceHit, EvidenceIndexTransaction
+from src.application.relationship_contracts import EvidenceBundle, InvestigationSubject
 
 
 class EvidenceRetrieval:
@@ -12,6 +14,54 @@ class EvidenceRetrieval:
         self, transactions: EvidenceIndexTransaction, embeddings: EmbeddingProvider
     ) -> None:
         self.transactions, self.embeddings = transactions, embeddings
+
+    async def bundles(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        objective: str,
+        subjects: list[InvestigationSubject],
+        *,
+        spoiler_position: int | None,
+        token_budget: int,
+    ) -> tuple[list[EvidenceBundle], list[EvidenceHit]]:
+        names = list(dict.fromkeys(n for s in subjects for n in [s.name, *s.aliases]))
+        anchors = await self.retrieve(
+            universe,
+            continuity,
+            objective,
+            names=names,
+            limit=64,
+            spoiler_position=spoiler_position,
+            token_budget=token_budget * 3,
+        )
+        async with self.transactions() as repo:
+            neighbors = await repo.neighbors([h.passage.id for h in anchors])
+            metadata = await repo.source_metadata(universe, continuity)
+        eligible = {h.passage.id: h for h in [*anchors, *neighbors] if h.source.id in metadata}
+        hits = []
+        for h in eligible.values():
+            provenance = metadata[h.source.id]
+            title = next(
+                (
+                    s["title"]
+                    for s in reversed(json.loads(provenance.get("sections_json", "[]")))
+                    if s["start"] <= h.passage.start < s["end"]
+                ),
+                "",
+            )
+            hits.append(
+                replace(
+                    h,
+                    source=replace(h.source, provenance=provenance),
+                    passage=replace(h.passage, section_title=title),
+                )
+            )
+        bundles = EvidenceBundleBuilder().build(
+            hits, subjects, objective, continuity, spoiler_position, token_budget
+        )
+        selected = {p.passage_id for b in bundles for p in b.passages}
+        return bundles, [h for h in hits if h.passage.id in selected]
 
     async def index(
         self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None

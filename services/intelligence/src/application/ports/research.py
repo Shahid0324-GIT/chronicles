@@ -10,6 +10,13 @@ from src.domain.research import SourceDocument, SourcePassage
 
 
 class ResearchRepository(Protocol):
+    async def investigation_state(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        investigation: UUID,
+        exclude_job: UUID,
+    ) -> dict[str, Any] | None: ...
     async def create_job(self, request: ResearchRequest) -> UUID: ...
     async def get_job(self, job_id: UUID) -> dict[str, Any] | None: ...
     async def lock_job(self, job_id: UUID) -> dict[str, Any] | None: ...

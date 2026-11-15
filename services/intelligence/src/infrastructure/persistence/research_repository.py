@@ -49,6 +49,27 @@ class SqlResearchRepository:
     def __init__(self, session: AsyncSession) -> None:
         self.session = session
 
+    async def investigation_state(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        investigation: UUID,
+        exclude_job: UUID,
+    ) -> dict[str, Any] | None:
+        row = await self.session.scalar(
+            select(ResearchJobModel)
+            .where(
+                ResearchJobModel.universe_id == universe,
+                ResearchJobModel.continuity_id == continuity,
+                ResearchJobModel.id != exclude_job,
+                ResearchJobModel.checkpoint["investigation"]["id"].as_string()
+                == str(investigation),
+            )
+            .order_by(ResearchJobModel.updated_at.desc())
+            .limit(1)
+        )
+        return dict(row.checkpoint["investigation"]) if row else None
+
     async def context(self, universe_id: UUID, continuity_id: UUID) -> dict[str, Any]:
         universe = await self.session.get(UniverseModel, universe_id)
         continuity = await self.session.get(ContinuityModel, continuity_id)

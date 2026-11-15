@@ -11,6 +11,64 @@ from src.domain.research import SourceDocument, digest, passages_for
 
 
 @pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("Mira（ミラ） helped Ron in the owned story.", True),
+        ("Mira met ミラ in the owned story.", False),
+    ],
+)
+async def test_multilingual_identity_requires_an_explicit_bridge(text, expected):
+    scope, universe, target = uuid4(), uuid4(), uuid4()
+    source = SourceDocument(
+        uuid4(),
+        universe,
+        scope,
+        "local:owned",
+        "Owned",
+        "Owned",
+        text,
+        digest(text),
+        now(),
+        "Owned test permission",
+        "Owned continuity",
+        False,
+        False,
+    )
+    passage = passages_for(source)[0]
+    candidate = {
+        "id": str(uuid4()),
+        "payload": {
+            "name": "ミラ",
+            "type": "CHARACTER",
+            "description": text,
+            "evidence": [{"passage_id": str(passage.id), "quote": text}],
+        },
+    }
+    catalog = [{"id": str(target), "name": "Mira", "type": "CHARACTER", "aliases": []}]
+    calls = []
+
+    async def compare(prompt, schema):
+        calls.append(prompt)
+        return schema.model_validate(
+            {
+                "decision": "SAME_ENTITY",
+                "target_index": 0,
+                "entity_type_valid": True,
+                "evidence_indices": [0],
+                "hidden_identity": False,
+                "reason": "Owned model proposes a match; Python must check the bridge.",
+            }
+        )
+
+    result = await IdentityResolver().resolve(
+        candidate, catalog, [passage], compare, scope, indexed_evidence=True
+    )
+    assert result["accepted"] == expected
+    if expected:
+        assert result["canonical_id"] == str(target) and not calls
+
+
+@pytest.mark.parametrize(
     "name,text,others,expected",
     [
         ("Natsuki Subaru", "Natsuki Subaru arrived in the owned synthetic scene.", [], True),

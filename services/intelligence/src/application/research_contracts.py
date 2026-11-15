@@ -1,7 +1,7 @@
 """Validated model structures, not canonical graph records."""
 
 from dataclasses import dataclass
-from typing import Literal, Protocol, TypeVar
+from typing import Any, Literal, Protocol, TypeVar
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -37,6 +37,7 @@ class Citation(StructuredModel):
 
 
 class CandidateEntity(StructuredModel):
+    atomic: dict[str, Any] | None = None
     knowledge: KnowledgeMetadata | None = None
     event: dict[str, object] | None = None
     name: str = Field(min_length=1, max_length=200)
@@ -110,6 +111,7 @@ class CandidateEntity(StructuredModel):
 
 
 class CandidateRelationship(StructuredModel):
+    atomic: dict[str, Any] | None = None
     classification: EpistemicClass = "ESTABLISHED_CANON"
     source_id: UUID | None = None
     target_id: UUID | None = None
@@ -122,7 +124,7 @@ class CandidateRelationship(StructuredModel):
 
 class Extraction(StructuredModel):
     entities: list[CandidateEntity] = Field(default_factory=list, max_length=200)
-    relationships: list[CandidateRelationship] = Field(default_factory=list, max_length=8)
+    relationships: list[CandidateRelationship] = Field(default_factory=list, max_length=32)
 
 
 class Assessment(StructuredModel):

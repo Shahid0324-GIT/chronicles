@@ -4,6 +4,7 @@ from uuid import UUID
 
 from pydantic import Field, model_validator
 
+from src.application.relationship_contracts import InvestigationSubject
 from src.application.research_contracts import StructuredModel
 from src.application.research_policy import ResearchPolicy
 from src.domain.value_objects import NodeType
@@ -55,6 +56,7 @@ class SourceInput(StructuredModel):
 
 
 class ResearchRequest(StructuredModel):
+    relationship_subjects: list[InvestigationSubject] = Field(default_factory=list, max_length=8)
     adaptive_research: bool = True
     research_policy: ResearchPolicy | None = None
     presentation_only: bool = False
@@ -73,6 +75,24 @@ class ResearchRequest(StructuredModel):
     allow_search: bool = False
     extraction_types: list[NodeType] = Field(default_factory=list, max_length=8)
     subject_names: list[str] = Field(default_factory=list, max_length=20)
+
+    @model_validator(mode="after")
+    def relationship_mode(self) -> "ResearchRequest":
+        if self.relationship_subjects:
+            if len(self.relationship_subjects) < 2:
+                raise ValueError(
+                    "Relationship investigations require at least two subject candidates"
+                )
+            self.narrative_research = True
+            self.subject_names = list(
+                dict.fromkeys(
+                    [
+                        *self.subject_names,
+                        *[n for s in self.relationship_subjects for n in [s.name, *s.aliases]],
+                    ]
+                )
+            )
+        return self
 
 
 class FetchedDocument(StructuredModel):

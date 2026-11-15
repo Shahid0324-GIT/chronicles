@@ -234,6 +234,7 @@ def relation_structure(
     texts: list[str],
     source_name: str | None = None,
     target_name: str | None = None,
+    atomic: Mapping[str, Any] | None = None,
 ) -> bool:
     if kind in {RelationshipType.CAUSED, RelationshipType.ENABLED, RelationshipType.PRECEDES}:
         if source != NodeType.EVENT or target != NodeType.EVENT:
@@ -276,6 +277,19 @@ def relation_structure(
     ):
         return False
     if kind in {RelationshipType.RELATED_TO, RelationshipType.CONNECTED_TO}:
+        if atomic:
+            from src.domain.atomic_evidence import atomic_payload_support
+
+            return atomic_payload_support(
+                {
+                    "type": kind.value,
+                    "source_name": source_name,
+                    "target_name": target_name,
+                    "description": atomic.get("statement"),
+                    "atomic": atomic,
+                },
+                texts,
+            ).supported
         explicit_label = any(
             re.search(r"related|connected|linked|関係|関連|繋|つなが", text, re.I) for text in texts
         )

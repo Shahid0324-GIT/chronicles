@@ -1,0 +1,17 @@
+# Increment 5.4 diagnosis (2026-11-15)
+
+Reproduced against persisted job `e77f3a5e-b221-4490-9319-30bb3875587a`, not inferred from an older report. Its relevant official Q&A passage `e24409d2-c45f-5f9e-bc3d-b710198b8635` is archived intact and was retrieved. The source hash is `952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b`.
+
+| Observed failure | Current location / cause | Correction and regression |
+| --- | --- | --- |
+| Relevant section ranked fourth; three event calls never saw it | `research_workflow.research_context`: counts alias strings, then spreads first slots across sources | Rank connected action clauses above mere mentions; treat aliases as endpoint alternatives; bundle token-aware context. Test a late action section against alias-rich profile/production distractors. |
+| 19 candidates, no retained edge; 10 saved semantic assessments | `verifier`: every call includes all selected passages; partial results only saved after loop | Verify bundle-scoped atomic claims and persist each result immediately. Test interrupted verification and cross-job continuation. |
+| Author-production prose and speech fragments briefly became character facts | Entity descriptions borrowed from event clauses | Existing 5.3 production/fragment guards remain; add subject/predicate/object binding and atomic negative controls rather than weakening publication. |
+| Relevant companions may disappear from encyclopedia supplement | `extract_encyclopedia`: exact focal CHARACTER allowlist | Keep directly involved entities from evidence bundles; distinguish them from irrelevant mentions. Test a third participant omitted from the objective. |
+| Reverse assistance passed deterministic relationship guard | `relation_structure`: action regex accepts either name order regardless edge direction; reproduced with owned `Mira helped Ron` / reversed endpoints | Enforce directional atomic binding and recheck during promotion. Test reverse direction even with a supporting fake model assessment. |
+| Some identities ambiguous and expensive | `IdentityResolver` already reuses unique exact scoped matches; this is **not** a missing feature. Cross-language names require explicit bridges; new identities still use model assessment | Reuse supported exact/name-order/bilingual identities and completed valid resolutions; never guess translation or merge adaptations. Test explicit bilingual annotation versus co-occurrence. |
+| Ordinary one-primary claims already allowed; no universal two-publisher block | `PromotionPolicy`, `direct_primary_claim` | Preserve claim-aware strong requirements. Test ordinary direct relation and withheld hidden identity/causality. |
+| Optional relationship reasoning exhausted quota; token budget later stopped remaining verification | Existing 5.3 quota correction present; no stage token reserve or per-candidate recovery | Reserve configurable verification resources, cost/rank complete bundles, retain pending work. Never replenish an old job's consumed budget/deadline. |
+| Four new novel promotions were retracted; canonical graph remains 27 nodes / 33 edges | Audited rollback works, source/evidence history preserved | Continue through the same promotion service and current source checks; test repeat-run idempotency and preserve existing rows. |
+
+No new crawling, frontend redesign, graph reset, inferred alias bridge or model-only confidence rule is warranted by this diagnosis. The live 5.4 benchmark will reuse the permitted archived evidence.

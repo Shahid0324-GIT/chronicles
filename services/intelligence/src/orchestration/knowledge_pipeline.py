@@ -71,6 +71,8 @@ class KnowledgePipeline:
         passages: list[SourcePassage],
         infer: InferRole,
         grounded: bool = False,
+        completed: dict[str, dict[str, Any]] | None = None,
+        progress: Callable[[str, dict[str, Any]], Awaitable[None]] | None = None,
     ) -> dict[str, dict[str, Any]]:
         async with self.transactions() as unit:
             job = await unit.archive.get_job(job_id)
@@ -84,6 +86,19 @@ class KnowledgePipeline:
         for claim in ordered:
             if claim["kind"] != "entity":
                 continue
+            cache_key = digest(
+                json.dumps(
+                    {
+                        "policy": "scoped-identity-progress-v1",
+                        "candidate": claim["payload"],
+                        "catalog": catalog,
+                        "passages": [(str(p.id), p.content_hash) for p in passages],
+                        "continuity": str(continuity),
+                    },
+                    sort_keys=True,
+                    default=str,
+                )
+            )
 
             async def compare(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return await infer(prompt, schema, "identity_resolution")
@@ -99,14 +114,19 @@ class KnowledgePipeline:
                         and results.get(c["id"], {}).get("accepted")
                     }
                 )
-                decision = await self.resolver.resolve(
-                    claim,
-                    catalog,
-                    passages,
-                    compare,
-                    continuity,
-                    indexed_evidence=grounded,
-                    participant_ids=participant_ids,
+                cached = (completed or {}).get(cache_key)
+                decision = (
+                    cached
+                    if cached and cached.get("accepted")
+                    else await self.resolver.resolve(
+                        claim,
+                        catalog,
+                        passages,
+                        compare,
+                        continuity,
+                        indexed_evidence=grounded,
+                        participant_ids=participant_ids,
+                    )
                 )
             except InferenceFailure:
                 decision = {
@@ -118,6 +138,8 @@ class KnowledgePipeline:
                     "reason": "Identity inference failed bounded validation; no match accepted.",
                 }
             results[claim["id"]] = decision
+            if progress:
+                await progress(cache_key, decision)
             if decision["accepted"] and decision["decision"] in {"NEW_ENTITY", "DIFFERENT_ENTITY"}:
                 catalog.append({"id": decision["canonical_id"], **claim["payload"], "aliases": []})
             elif decision["accepted"]:

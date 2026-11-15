@@ -30,6 +30,7 @@ class EvidenceHit:
 
 
 class EvidenceIndex(Protocol):
+    async def neighbors(self, passage_ids: list[UUID]) -> list[EvidenceHit]: ...
     async def source_metadata(
         self, universe: UUID, continuity: UUID, source_ids: list[UUID] | None = None
     ) -> dict[UUID, dict[str, Any]]: ...

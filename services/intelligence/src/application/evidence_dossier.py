@@ -49,6 +49,39 @@ class EvidenceDossier(TypedDict):
 
 
 class EvidenceDossierBuilder:
+    @staticmethod
+    def compact_fact(fact: dict[str, Any]) -> dict[str, Any]:
+        """Keep inference evidence, not the archive's complete link/section index.
+
+        Eligibility is checked by the scoped caller before selection. Exact quote,
+        offsets, passage/source IDs and revisions remain attached; archive rows do
+        not change. Models never need a document's entire navigation metadata.
+        """
+        useful = {
+            "category",
+            "authority",
+            "language",
+            "cloud_content_allowed",
+            "registry_id",
+            "registry_revision",
+            "presentation_position",
+            "position_basis",
+            "extraction_version",
+            "attribution_url",
+            "derived_from",
+        }
+        return {
+            **fact,
+            "payload": {k: v for k, v in fact["payload"].items() if k != "evidence"},
+            "sources": [
+                {
+                    **s,
+                    "provenance": {k: v for k, v in s.get("provenance", {}).items() if k in useful},
+                }
+                for s in fact.get("sources", [])
+            ],
+        }
+
     def select(
         self,
         facts: list[dict[str, Any]],
@@ -85,13 +118,14 @@ class EvidenceDossierBuilder:
         used = 0
         hashes = set()
         for fact in ranked:
-            size = token_estimate(fact)
+            selected_fact = self.compact_fact(fact)
+            size = token_estimate(selected_fact)
             identity = json.dumps(
                 [fact.get("target_id"), fact["payload"], fact.get("sources")], sort_keys=True
             )
             if identity in hashes or used + size > token_budget:
                 continue
-            selected.append(fact)
+            selected.append(selected_fact)
             hashes.add(identity)
             used += size
         return {
@@ -100,7 +134,7 @@ class EvidenceDossierBuilder:
             "estimated_tokens": used,
             "omitted_facts": len(facts) - len(selected),
             "missing_information": [] if selected else ["No eligible accepted facts"],
-            "selection": "content-relevance-and-relationships-v2",
+            "selection": "compact-content-relevance-and-relationships-v3",
         }
 
 

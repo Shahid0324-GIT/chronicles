@@ -61,6 +61,25 @@ class IdentityResolver:
         exact_matches = [
             n for n in eligible if key in {name_key(a) for a in [n["name"], *n.get("aliases", [])]}
         ]
+        cited_texts = [c["quote"] for c in citations]
+        bridged_matches = (
+            [
+                n
+                for n in eligible
+                if any(
+                    source_name_bridge(payload["name"], alias, cited_texts)
+                    or same_full_name_order(payload["name"], alias)
+                    or short_name_bridge(payload["name"], alias, cited_texts)
+                    for alias in [n["name"], *n.get("aliases", [])]
+                )
+            ]
+            if payload["type"] != "EVENT"
+            and not any(
+                re.search(r"secret|true identity|real identity|real name|正体|本名", text, re.I)
+                for text in cited_texts
+            )
+            else []
+        )
         event = payload.get("event") or {}
         anchored = [
             n
@@ -99,6 +118,8 @@ class IdentityResolver:
             and payload["type"] != "EVENT"
             and not reusable
             and any(key in name_key(c["quote"]) for c in citations)
+            else bridged_matches[0]
+            if len(bridged_matches) == 1 and not reusable
             else None
         )
         if indexed_evidence and valid and match:
@@ -107,7 +128,11 @@ class IdentityResolver:
                 "accepted": True,
                 "canonical_id": match["id"],
                 "entity_type_valid": True,
-                "proof": "same_evidence_event_anchor" if event_anchor else "exact_scoped_name",
+                "proof": "same_evidence_event_anchor"
+                if event_anchor
+                else "exact_scoped_name"
+                if match in exact_matches
+                else "explicit_name_bridge",
                 "evidence": citations,
                 "hidden_identity": False,
                 "reason": "Unique existing scoped identity and exact source evidence reused.",
@@ -131,6 +156,22 @@ class IdentityResolver:
             return -score, node["id"]
 
         choices = sorted(eligible, key=rank)[:8]
+        if payload.get("atomic"):
+            if payload["type"] != "EVENT":
+                choices = [n for n in choices if rank(n)[0] < 0 or n in bridged_matches]
+            else:
+                new_names = {name_key(n) for n in event.get("participants", [])}
+
+                def relevant_occurrence(node: dict[str, Any]) -> bool:
+                    old = node.get("event") or {}
+                    if old.get("source_id") == event.get("source_id") and old.get(
+                        "trigger"
+                    ) != event.get("trigger"):
+                        return False  # Distinct literal action predicates within the same source.
+                    old_names = {name_key(n) for n in old.get("participants", [])}
+                    return not (old_names and new_names and old_names.isdisjoint(new_names))
+
+                choices = [n for n in choices if relevant_occurrence(n)]
         if event_anchor:
             choices.sort(
                 key=lambda n: (n.get("event") or {}).get("identity_anchor") != event_anchor
@@ -212,6 +253,23 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                     + prompt
                 )
             indexed_response = schema.model_validate((await infer(prompt, schema)).model_dump())
+            if (
+                payload.get("atomic")
+                and indexed_response.decision in {"SAME_ENTITY", "DIFFERENT_ENTITY"}
+                and indexed_response.target_index is None
+            ):
+                # One targeted cross-field repair, charged to the same job/stage budget.
+                indexed_response = schema.model_validate(
+                    (
+                        await infer(
+                            prompt
+                            + "\nRepair target_index: SAME_ENTITY and DIFFERENT_ENTITY must select "
+                            "an existing index. For a distinct new occurrence, choose NEW_ENTITY. "
+                            "Do not invent indices or evidence. If unresolved, use AMBIGUOUS.",
+                            schema,
+                        )
+                    ).model_dump()
+                )
             indices = indexed_response.evidence_indices
             if any(i < 0 or i >= len(payload["evidence"]) for i in indices) or (
                 indexed_response.decision in {"SAME_ENTITY", "DIFFERENT_ENTITY"}
@@ -412,7 +470,9 @@ Copy citations from candidate.evidence; do not cite unrelated passages.
                 not collisions
                 and not contradicts_bridge
                 and not partial_reference
-                and (len(eligible) <= 8 or event_anchor)
+                and (
+                    len(eligible) <= 8 or event_anchor or payload.get("atomic") and len(choices) < 8
+                )
                 and not any(
                     same_scoped_occurrence(
                         payload.get("event") or {}, n.get("event") or {}, catalog

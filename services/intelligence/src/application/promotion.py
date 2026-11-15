@@ -1,10 +1,12 @@
 """Only this application service publishes graph mutations; all checks repeat in its transaction."""
 
+import re
 from typing import Any
 from uuid import UUID, uuid5
 
 from src.application.event_identity import same_scoped_occurrence
 from src.application.ports.knowledge import KnowledgeTransaction
+from src.domain.atomic_evidence import atomic_payload_support
 from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import (
@@ -115,6 +117,9 @@ class CanonicalGraphPromotionService:
                 if previous and not previous["reversed"]:
                     still_valid = (
                         exact
+                        and atomic_payload_support(
+                            payload, [e["quote"] for e in evidence]
+                        ).supported
                         and current_permission
                         and claim["decision"] == "supported"
                         and not assessment.get("material_conflict")
@@ -162,6 +167,7 @@ class CanonicalGraphPromotionService:
                 target_node: GraphNode | None = None
                 structural = (
                     exact
+                    and atomic_payload_support(payload, [e["quote"] for e in evidence]).supported
                     and current_permission
                     and in_world_structure(payload, [e["quote"] for e in evidence])
                 )
@@ -188,7 +194,18 @@ class CanonicalGraphPromotionService:
                         "本名",
                     )
                 )
-                strong = sensitive_identity
+                atom = payload.get("atomic") or {}
+                strong = (
+                    sensitive_identity
+                    or atom.get("kind") in {"causality", "identity"}
+                    or bool(
+                        re.search(
+                            r"\b(caused|enabled|knew|knows|revealed)\b",
+                            atom.get("predicate", ""),
+                            re.I,
+                        )
+                    )
+                )
                 created = False
                 snapshot: dict[str, Any] = {}
                 if claim["kind"] == "entity":
@@ -415,6 +432,7 @@ class CanonicalGraphPromotionService:
                                 [e["quote"] for e in evidence],
                                 payload["source_name"],
                                 payload["target_name"],
+                                payload.get("atomic"),
                             )
                         )
                         edge = GraphRelationship(

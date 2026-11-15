@@ -14,6 +14,18 @@ from langgraph.graph import END, START, StateGraph
 from langsmith import tracing_context
 from pydantic import BaseModel
 
+from src.application.atomic_verification import (
+    assess_atomic_batch,
+    assessment_key,
+    candidate_assessment,
+    context_fingerprint,
+    related_evidence,
+)
+from src.application.connected_extraction import (
+    candidate_rows,
+    compile_connected,
+    extract_connected,
+)
 from src.application.encyclopedia_extraction import extract_encyclopedia
 from src.application.event_extraction import extract_events
 from src.application.evidence_dossier import (
@@ -45,7 +57,13 @@ from src.application.ports.research import (
     StructuredDiscoveryFetcher,
 )
 from src.application.ports.source_intelligence import SourceRegistryTransaction
+from src.application.relationship_contracts import (
+    ConnectedAssertions,
+    EvidenceBundle,
+    RelationshipInvestigation,
+)
 from src.application.research import FetchedDocument, ResearchRequest, SourceInput, SourceRejected
+from src.application.research_budget import budget_ledger, reserve_inference
 from src.application.research_contracts import (
     CandidateEntity,
     Extraction,
@@ -66,6 +84,7 @@ from src.application.source_intelligence import (
     SourceDiscoveryService,
     SourceSelector,
 )
+from src.domain.atomic_evidence import atomic_support
 from src.domain.entities import GraphNode, GraphRelationship, now
 from src.domain.knowledge import name_key
 from src.domain.research import (
@@ -98,6 +117,7 @@ Return exactly the requested JSON structure. No tools or external knowledge are 
 
 
 class ResearchState(TypedDict, total=False):
+    investigation: dict[str, Any]
     source_access_gaps: list[dict[str, str]]
     retrieved_bytes: int
     policy: dict[str, Any]
@@ -412,6 +432,26 @@ class ResearchWorkflow:
                     + token_estimate(RULES)
                     + 4000
                 )
+                if request.relationship_subjects:
+                    outputs = {
+                        "planning": 600,
+                        "identity_resolution": 1100,
+                        "extraction": 3000,
+                        "relationship_analysis": 2500,
+                        "verification": 900,
+                        "presentation": 1300,
+                        "presentation_verification": 700,
+                    }
+                    reservation_tokens = (
+                        token_estimate(prompt)
+                        + token_estimate(schema.model_json_schema())
+                        + token_estimate(
+                            PRESENTATION_RULES
+                            if role in {"presentation", "presentation_verification"}
+                            else RULES
+                        )
+                        + (3000 if provider == "groq" else outputs[role])
+                    )
                 async with self.transactions() as archive:
                     if state.get("policy"):
                         reservations = await archive.events(UUID(state["job_id"]))
@@ -437,6 +477,17 @@ class ResearchWorkflow:
                         )
                         if charged + reservation_tokens > self.policy(state).max_tokens:
                             raise InferenceFailure("job_token_budget_exhausted")
+                        if request.relationship_subjects:
+                            ledger = budget_ledger(
+                                reservations, (current or {}).get("provider_usage", [])
+                            )
+                            reserve_inference(
+                                self.policy(state),
+                                ledger,
+                                role,
+                                reservation_tokens,
+                                cast(InferenceRouter, self.inference).max_calls,
+                            )
                     await archive.event(
                         UUID(state["job_id"]),
                         "inference.started",
@@ -1269,6 +1320,8 @@ class ResearchWorkflow:
         passages = await self.selected_passages(state)
         if not passages:
             return await self.snapshot("extractor", {**state, "candidates": []})
+        if request.relationship_subjects and state.get("investigation"):
+            return await self.connected_extractor(state, request)
         prompt = (
             "Extract at most 8 entities (including explicit events when present) "
             "and 3 relationships. "
@@ -1500,6 +1553,8 @@ class ResearchWorkflow:
 
     async def verifier(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
+        if request.relationship_subjects and state.get("investigation"):
+            return await self.atomic_verifier(state, request)
         passages = {str(p.id): p for p in await self.selected_passages(state)}
         valid: dict[str, list[dict[str, Any]]] = {}
         reasons: dict[str, str] = {}
@@ -1714,6 +1769,231 @@ class ResearchWorkflow:
             },
         )
 
+    async def atomic_verifier(
+        self, state: ResearchState, request: ResearchRequest
+    ) -> ResearchState:
+        investigation = RelationshipInvestigation.model_validate(state["investigation"])
+        bundles = {b.fingerprint: b for b in investigation.bundles}
+        passages = {str(p.id): p for p in await self.selected_passages(state)}
+        evidence: dict[str, list[dict[str, Any]]] = {}
+        atoms: dict[str, dict[str, Any]] = {}
+        for candidate in state.get("candidates", []):
+            payload = candidate["payload"]
+            refs = []
+            for citation in payload["evidence"]:
+                passage = passages.get(citation["passage_id"])
+                if passage and citation["quote"] in passage.text:
+                    start = passage.text.find(citation["quote"])
+                    refs.append(
+                        {
+                            "passage_id": str(passage.id),
+                            "quote": citation["quote"],
+                            "start": start,
+                            "end": start + len(citation["quote"]),
+                        }
+                    )
+            if len(refs) != len(payload["evidence"]):
+                refs = []
+            evidence[candidate["id"]] = refs
+            atom = payload.get("atomic") or {}
+            if atom and atom.get("bundle_fingerprint") in bundles:
+                atoms.setdefault(assessment_key(atom), atom)
+        for key, atom in atoms.items():
+            cached = investigation.assessments.get(key)
+            if cached and cached.get(
+                "context_fingerprint", digest(json.dumps([atom["bundle_fingerprint"]]))
+            ) != context_fingerprint(atom, investigation.bundles):
+                investigation.assessments.pop(key)
+            if key in investigation.assessments:
+                continue
+            atom_quotes = [
+                e["quote"]
+                for c in state["candidates"]
+                if assessment_key(c["payload"].get("atomic") or {}) == key
+                for e in evidence[c["id"]]
+            ]
+            proof = atomic_support(atom, atom_quotes)
+            if not proof.supported:
+                investigation.assessments[key] = {
+                    "bundle_fingerprint": atom["bundle_fingerprint"],
+                    "policy_version": "atomic-verification-v1",
+                    "verdict": {"reason": proof.reason},
+                    "method": "deterministic_rejection",
+                    "context_fingerprint": context_fingerprint(atom, investigation.bundles),
+                }
+
+        async def persist() -> None:
+            assessments = {}
+            for candidate in state.get("candidates", []):
+                payload = candidate["payload"]
+                key = assessment_key(payload.get("atomic") or {})
+                record = investigation.assessments.get(key, {})
+                result = candidate_assessment(
+                    payload,
+                    record.get("verdict", {}),
+                    [e["quote"] for e in evidence[candidate["id"]]],
+                )
+                if not evidence[candidate["id"]]:
+                    result.update(
+                        decision="insufficient", reason="Current exact evidence unavailable."
+                    )
+                assessments[candidate["id"]] = result
+            investigation.pending_claims = [k for k in atoms if k not in investigation.assessments]
+            investigation.supporting_claims = [
+                k for k, v in assessments.items() if v["decision"] == "supported"
+            ]
+            investigation.contradictory_claims = [
+                k for k, v in assessments.items() if v["material_conflict"]
+            ]
+            investigation.verification_state = (
+                "partial" if investigation.pending_claims else "complete"
+            )
+            state["investigation"] = investigation.model_dump(mode="json")
+            state["semantic_assessments"] = assessments
+            state["verified"] = len(investigation.supporting_claims)
+            async with self.transactions() as archive:
+                for candidate in state.get("candidates", []):
+                    verdict = assessments[candidate["id"]]
+                    await archive.save_claim(
+                        UUID(state["job_id"]),
+                        candidate,
+                        evidence[candidate["id"]],
+                        verdict["decision"],
+                        verdict["reason"],
+                    )
+                await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
+
+        await persist()
+        for fingerprint, bundle in bundles.items():
+            pending = [
+                (k, a)
+                for k, a in atoms.items()
+                if a["bundle_fingerprint"] == fingerprint and k not in investigation.assessments
+            ]
+            batch_size = self.policy(state).verification_batch_size
+            for offset in range(0, len(pending), batch_size):
+                batch = pending[offset : offset + batch_size]
+                await self.check(state)
+
+                async def infer(
+                    prompt: str, schema: type[BaseModel], *, active_bundle: EvidenceBundle = bundle
+                ) -> BaseModel:
+                    return await self.infer(
+                        state,
+                        prompt,
+                        schema,
+                        "verification",
+                        all(p.cloud_allowed for p in active_bundle.passages),
+                    )
+
+                try:
+                    related = {
+                        b.fingerprint: b
+                        for _, a in batch
+                        for b in related_evidence(a, investigation.bundles)
+                    }
+                    results = await assess_atomic_batch(
+                        [a for _, a in batch], bundle, infer, list(related.values())
+                    )
+                except InferenceFailure as failure:
+                    investigation.missing_information = list(
+                        dict.fromkeys(
+                            [
+                                *investigation.missing_information,
+                                "Unfinished verification: " + failure.code,
+                            ]
+                        )
+                    )
+                    await persist()
+                    if "budget" in failure.code:
+                        break
+                    continue
+                for key, verdict in results.items():
+                    investigation.assessments[key] = {
+                        "bundle_fingerprint": fingerprint,
+                        "policy_version": "atomic-verification-v1",
+                        "verdict": verdict,
+                        "method": "model_semantic_assessment_not_independent_verification",
+                        "context_fingerprint": context_fingerprint(
+                            atoms[key], investigation.bundles
+                        ),
+                    }
+                await persist()
+        return await self.snapshot("verifier", state)
+
+    async def connected_extractor(
+        self, state: ResearchState, request: ResearchRequest
+    ) -> ResearchState:
+        investigation = RelationshipInvestigation.model_validate(state["investigation"])
+        candidates = []
+        hypotheses = []
+        for bundle in investigation.bundles[: self.policy(state).investigation_bundle_limit]:
+            cached = investigation.extractions.get(bundle.fingerprint)
+            if cached:
+                answer = ConnectedAssertions.model_validate(cached)
+                async with self.transactions() as archive:
+                    await archive.event(
+                        UUID(state["job_id"]),
+                        "investigation.extraction_reused",
+                        {"bundle_id": str(bundle.id)},
+                    )
+            else:
+
+                async def infer(
+                    prompt: str, schema: type[BaseModel], *, active_bundle: EvidenceBundle = bundle
+                ) -> BaseModel:
+                    return await self.infer(
+                        state,
+                        prompt,
+                        schema,
+                        "relationship_analysis",
+                        all(p.cloud_allowed for p in active_bundle.passages),
+                    )
+
+                answer = await extract_connected(bundle, request.objective, infer)
+                investigation.extractions[bundle.fingerprint] = answer.model_dump(mode="json")
+            extraction, proposed = compile_connected(bundle, answer)
+            candidates.extend(candidate_rows(extraction, UUID(state["job_id"])))
+            hypotheses.extend(proposed)
+            investigation.missing_information = list(
+                dict.fromkeys(
+                    [
+                        *investigation.missing_information,
+                        *answer.missing_information,
+                        *[p["reason"] for p in proposed if not p["supported_literal_binding"]],
+                    ]
+                )
+            )
+            investigation.hypotheses = hypotheses
+            state["investigation"] = investigation.model_dump(mode="json")
+            async with self.transactions() as archive:
+                await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
+        unique: dict[Any, dict[str, Any]] = {}
+        for row in candidates:
+            payload = row["payload"]
+            key = (
+                (row["kind"], payload.get("type"), payload.get("name"))
+                if row["kind"] == "entity"
+                else row["hash"]
+            )
+            unique.setdefault(key, row)
+        candidates = list(unique.values())
+        investigation.pending_claims = [c["hash"] for c in candidates]
+        investigation.relevant_events = [
+            c["id"] for c in candidates if c["payload"].get("type") == "EVENT"
+        ]
+        investigation.relevant_lore = [
+            c["id"] for c in candidates if c["payload"].get("type") == "LORE"
+        ]
+        return await self.snapshot(
+            "extractor",
+            {
+                **state,
+                "candidates": candidates,
+                "investigation": investigation.model_dump(mode="json"),
+            },
+        )
+
     async def identity_resolver(self, state: ResearchState) -> ResearchState:
         assert self.knowledge
         request = await self.check(state)
@@ -1723,18 +2003,48 @@ class ResearchWorkflow:
             # cannot authorize exporting that context.
             return await self.infer(state, prompt, schema, task)
 
+        async def identity_progress(key: str, decision: dict[str, Any]) -> None:
+            investigation = dict(state.get("investigation", {}))
+            completed = dict(investigation.get("resolution_progress", {}))
+            completed[key] = decision
+            investigation["resolution_progress"] = completed
+            state["investigation"] = investigation
+            async with self.transactions() as archive:
+                await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
+
         resolutions = await self.knowledge.resolve(
             UUID(state["job_id"]),
             state.get("candidates", []),
             await self.selected_passages(state),
             infer,
             grounded=request.narrative_research,
+            completed=state.get("investigation", {}).get("resolution_progress")
+            if request.relationship_subjects
+            else None,
+            progress=identity_progress if request.relationship_subjects else None,
         )
         return await self.snapshot("identity_resolver", {**state, "resolutions": resolutions})
 
     async def relationship_analyst(self, state: ResearchState) -> ResearchState:
         assert self.knowledge
         request = await self.check(state)
+        if request.relationship_subjects:
+            candidates = []
+            for candidate in state.get("candidates", []):
+                payload = dict(candidate["payload"])
+                if candidate["kind"] == "relationship":
+                    for side in ("source", "target"):
+                        ids = {
+                            state["resolutions"][c["id"]]["canonical_id"]
+                            for c in state["candidates"]
+                            if c["kind"] == "entity"
+                            and c["payload"]["name"] == payload[side + "_name"]
+                            and state.get("resolutions", {}).get(c["id"], {}).get("accepted")
+                        }
+                        if len(ids) == 1:
+                            payload[side + "_id"] = next(iter(ids))
+                candidates.append({**candidate, "payload": payload})
+            return await self.snapshot("relationship_analyst", {**state, "candidates": candidates})
 
         async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
             # This prompt contains only source-grounded candidate names, IDs and passages.
@@ -1770,7 +2080,7 @@ class ResearchWorkflow:
 
     async def promotion_policy(self, state: ResearchState) -> ResearchState:
         assert self.knowledge
-        await self.check(state)
+        request = await self.check(state)
         budget = bool(
             state.get("search_allowed")
             and self.search
@@ -1784,7 +2094,66 @@ class ResearchWorkflow:
             state.get("semantic_assessments", {}),
             budget,
         )
-        if self.memory and self.atlas and state.get("policy"):
+        if request.relationship_subjects and state.get("investigation"):
+            investigation = RelationshipInvestigation.model_validate(state["investigation"])
+            published = {r["claim_id"] for r in publication["promoted"]}
+            primary = {
+                name_key(n) for s in request.relationship_subjects for n in [s.name, *s.aliases]
+            }
+            pairs = {
+                (c["payload"].get("atomic") or {}).get("id")
+                for c in state["candidates"]
+                if c["id"] in published
+                and c["kind"] == "relationship"
+                and c["payload"]["type"] == "RELATED_TO"
+                and name_key(c["payload"]["source_name"]) in primary
+                and name_key(c["payload"]["target_name"]) in primary
+            }
+            events = {
+                (c["payload"].get("atomic") or {}).get("id")
+                for c in state["candidates"]
+                if c["id"] in published and c["payload"].get("type") == "EVENT"
+            }
+            investigation.presentation_ready = bool((pairs & events) - {None})
+            investigation.publication_state = (
+                (
+                    "published"
+                    if not publication["unresolved"] and not investigation.pending_claims
+                    else "partially_published"
+                )
+                if published
+                else "unresolved"
+            )
+            state["investigation"] = investigation.model_dump(mode="json")
+            state["coverage"] = {
+                "outcome": "SUFFICIENT_FOR_PRESENTATION"
+                if investigation.presentation_ready
+                else "PARTIAL_COVERAGE",
+                "relevant_facts": len(published),
+                "pending_verifications": len(investigation.pending_claims),
+                "reason": (
+                    "A published focal relationship and its actual event permit a bounded "
+                    "explanation; topic gaps remain."
+                ),
+            }
+            if self.memory:
+                questions = [
+                    f"Which permitted evidence resolves {h['assertion']['subject']} "
+                    f"{h['assertion']['predicate']} {h['assertion']['object']}?"
+                    for h in investigation.hypotheses
+                    if not h["supported_literal_binding"]
+                ]
+                await ResearchFrontierService(self.memory).discover(
+                    request.universe_id,
+                    request.continuity_id,
+                    request.spoiler_position,
+                    request.objective,
+                    questions,
+                    "relationship-investigation:" + str(investigation.id),
+                    self.policy(state),
+                    depth=state.get("iteration", 1),
+                )
+        elif self.memory and self.atlas and state.get("policy"):
             state = await self.assess_coverage({**state, "publication": publication})
         return await self.snapshot("promotion_policy", {**state, "publication": publication})
 
@@ -1995,13 +2364,17 @@ class ResearchWorkflow:
         self.max_iterations, self.max_sources, self.max_queries = self.execution_limits
         if (
             isinstance(self.inference, InferenceRouter)
-            and self.memory
+            and (self.memory or request.relationship_subjects)
             and request.adaptive_research
         ):
             self.inference.max_calls = self.model_call_limit
         if isinstance(self.fetcher, BudgetedDocumentFetcher):
             self.fetcher.budget_requests(None, None)
-        if request.adaptive_research and self.memory and not request.presentation_only:
+        if (
+            request.adaptive_research
+            and (self.memory or request.relationship_subjects)
+            and not request.presentation_only
+        ):
             policy = ResearchPolicy.model_validate(
                 state.get("policy") or (request.research_policy or self.default_policy).model_dump()
             )
@@ -2069,6 +2442,68 @@ class ResearchWorkflow:
             [UUID(i) for i in state.get("source_ids", [])],
         )
         await self.check(state)
+        if request.relationship_subjects:
+            bundles, hits = await self.retrieval.bundles(
+                request.universe_id,
+                request.continuity_id,
+                request.objective,
+                request.relationship_subjects,
+                spoiler_position=request.spoiler_position,
+                token_budget=self.policy(state).dossier_tokens,
+            )
+            investigation = RelationshipInvestigation(
+                id=uuid5(
+                    request.continuity_id,
+                    "relationship:"
+                    + digest(request.objective.casefold() + ":" + str(request.spoiler_position)),
+                ),
+                objective=request.objective,
+                continuity_id=request.continuity_id,
+                spoiler_position=request.spoiler_position,
+                subjects=request.relationship_subjects,
+                bundles=bundles,
+            )
+            async with self.transactions() as archive:
+                previous = await archive.investigation_state(
+                    request.universe_id,
+                    request.continuity_id,
+                    investigation.id,
+                    UUID(state["job_id"]),
+                )
+            if previous and previous.get("policy_version") == investigation.policy_version:
+                old = RelationshipInvestigation.model_validate(previous)
+                eligible = {b.fingerprint for b in bundles}
+                investigation.extractions = {
+                    k: v for k, v in old.extractions.items() if k in eligible
+                }
+                investigation.assessments = {
+                    k: v
+                    for k, v in old.assessments.items()
+                    if v.get("bundle_fingerprint") in eligible
+                    and v.get("policy_version") == "atomic-verification-v1"
+                }
+                investigation.resolution_progress = old.resolution_progress
+            return await self.snapshot(
+                "research_context",
+                {
+                    **state,
+                    "indexing": indexed,
+                    "investigation": investigation.model_dump(mode="json"),
+                    "archive_source_ids": list(dict.fromkeys(str(h.source.id) for h in hits)),
+                    "retrieved_passage_ids": [str(h.passage.id) for h in hits],
+                    "extraction_passage_ids": [str(b.anchor_passage_id) for b in bundles],
+                    "passage_context": {
+                        str(h.passage.id): {"source_id": str(h.source.id), **h.source.provenance}
+                        for h in hits
+                    },
+                    "public_only": bool(hits)
+                    and all(
+                        h.source.public_web
+                        and h.source.provenance.get("cloud_content_allowed", False)
+                        for h in hits
+                    ),
+                },
+            )
         names = list(request.subject_names)
         if self.atlas:
             scope = await self.atlas.scope(
@@ -2166,6 +2601,23 @@ class ResearchWorkflow:
             or state.get("coverage", {}).get("outcome") == "SUFFICIENT_FOR_PRESENTATION"
         )
         resource_ids = request.presentation_resource_ids
+        if request.relationship_subjects and state.get("investigation", {}).get(
+            "presentation_ready"
+        ):
+            enough = True
+            subject_keys = {
+                name_key(n) for s in request.relationship_subjects for n in [s.name, *s.aliases]
+            }
+            resource_ids = list(
+                dict.fromkeys(
+                    UUID(state["resolutions"][c["id"]]["canonical_id"])
+                    for c in state.get("candidates", [])
+                    if c["kind"] == "entity"
+                    and c["payload"].get("type") == "CHARACTER"
+                    and name_key(c["payload"]["name"]) in subject_keys
+                    and state.get("resolutions", {}).get(c["id"], {}).get("accepted")
+                )
+            )
         if (
             enough
             and self.atlas
