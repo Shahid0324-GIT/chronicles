@@ -1,0 +1,4365 @@
+{
+  "date": "2026-11-15",
+  "kind": "real permitted archive investigation; fake-provider tests reported separately",
+  "runs": [
+    {
+      "id": "2ea40307-516d-4fa8-b112-e7fdfc39b61c",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": {
+        "nodes": 27,
+        "edges": 33
+      },
+      "coverage": {
+        "facets": [
+          "events"
+        ],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 22,
+        "source_groups": 1,
+        "contradictions": 0,
+        "missing_facets": [
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 1,
+        "unresolved_findings": 2
+      },
+      "narrative": {
+        "partial": true,
+        "journeys": 0,
+        "revision": "e4b511c9c35b779c748cb2f7f85848b060f816d6b5617ab17cfae1d6c5185a6b",
+        "unordered": 1,
+        "ordering_gaps": 1
+      },
+      "stage_times_ms": {
+        "planner": 55329,
+        "verifier": 4931,
+        "extractor": 6066,
+        "researcher": 919,
+        "promotion_policy": 12002,
+        "research_context": 5551,
+        "identity_resolver": 24323,
+        "narrative_builder": 415,
+        "relationship_analyst": 137
+      },
+      "model_calls": 8,
+      "measured_tokens": 12381,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 35982,
+          "model_call": true,
+          "input_tokens": 2282,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 174,
+          "reservation_id": "37266fd8-3e27-4a69-9f6d-0d84fa9ab5f6",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5002,
+          "model_call": true,
+          "input_tokens": 1715,
+          "model_digest": null,
+          "output_tokens": 2040,
+          "reservation_id": "2a31c06a-ae67-45b9-93d8-512c3cab55ba",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7539,
+          "model_call": true,
+          "input_tokens": 842,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 50,
+          "reservation_id": "ef7f643b-9819-4475-9ad0-e73e5aed11fe",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6599,
+          "model_call": true,
+          "input_tokens": 843,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 53,
+          "reservation_id": "c4c17719-c6af-4d24-a468-8bd2b464be1d",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7952,
+          "model_call": true,
+          "input_tokens": 1473,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 96,
+          "reservation_id": "616a212b-3a84-40c6-b133-c616026eaffe",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2277,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "e1331f42-3023-4443-b8ba-ef2addec678d",
+          "validation_errors": [
+            "assessments:missing",
+            "*:extra_forbidden",
+            "*:extra_forbidden"
+          ]
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1504,
+          "model_call": true,
+          "input_tokens": 1229,
+          "model_digest": null,
+          "output_tokens": 529,
+          "reservation_id": "8b4eaab2-f5e3-4c3b-ad6d-fc5162584dbd",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10245,
+          "model_call": true,
+          "input_tokens": 829,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 226,
+          "reservation_id": "477aee2b-c56c-4347-aa98-47220b4e948a",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 3,
+      "unresolved": [
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "da927dc5-874d-55c7-a0ed-757d93b1545d"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "574c528e-5763-58a3-a7ab-9fa57eedc58f"
+        }
+      ],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        }
+      ],
+      "findings": [
+        {
+          "id": "1fe04076-e982-51fe-a2c1-e2182c247e3c",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "44a00e93-b074-5caf-bfb5-17b1f9cecc32",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "574c528e-5763-58a3-a7ab-9fa57eedc58f",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "7120904f-c0b3-5d46-bccd-ab006dac1556",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "da927dc5-874d-55c7-a0ed-757d93b1545d",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1
+      }
+    },
+    {
+      "id": "6937cce5-fb28-4075-bbcd-e6eab649a9d9",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": {
+        "nodes": 29,
+        "edges": 34
+      },
+      "coverage": {
+        "reason": "A published focal relationship and its actual event permit a bounded explanation; topic gaps remain.",
+        "outcome": "PARTIAL_COVERAGE",
+        "relevant_facts": 7,
+        "pending_verifications": 0
+      },
+      "narrative": {
+        "partial": true,
+        "journeys": 0,
+        "revision": "e4f6c67dd9e7edd0a38b2beb6f11cfd74f593ec4ea4438d4150c9b200dff2ff4",
+        "unordered": 3,
+        "ordering_gaps": 1
+      },
+      "stage_times_ms": {
+        "planner": 17267,
+        "verifier": 6787,
+        "extractor": 234,
+        "researcher": 924,
+        "promotion_policy": 657,
+        "research_context": 4723,
+        "identity_resolver": 46172,
+        "narrative_builder": 300,
+        "relationship_analyst": 158
+      },
+      "model_calls": 9,
+      "measured_tokens": 17641,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9090,
+          "model_call": true,
+          "input_tokens": 3494,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 174,
+          "reservation_id": "b8fa7406-f8fa-43ad-87ab-11a16f3b57f1",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6266,
+          "model_call": true,
+          "input_tokens": 1010,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 59,
+          "reservation_id": "6c57c862-cc1d-4fde-be2f-82e434c026aa",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5982,
+          "model_call": true,
+          "input_tokens": 1017,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 65,
+          "reservation_id": "ea7acf56-4f18-407d-89ab-66ba9f62b9ef",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6715,
+          "model_call": true,
+          "input_tokens": 1533,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 87,
+          "reservation_id": "a48e6223-25f9-4cbb-bc63-b2c73ce42933",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6984,
+          "model_call": true,
+          "input_tokens": 2105,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 96,
+          "reservation_id": "2f78451a-cac4-4ed3-b9b2-98c665ca114b",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7278,
+          "model_call": true,
+          "input_tokens": 2758,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 78,
+          "reservation_id": "fcb880ec-bcd9-43a4-bd1f-bf1647d9980d",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8468,
+          "model_call": true,
+          "input_tokens": 2804,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 148,
+          "reservation_id": "61e42176-45b5-45df-9c24-e8d5c4c10026",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3440,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "e6e82f3c-7c80-4727-ac26-109473aebad1",
+          "validation_errors": [
+            "assessments:missing",
+            "*:extra_forbidden",
+            "*:extra_forbidden"
+          ]
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1899,
+          "model_call": true,
+          "input_tokens": 1455,
+          "model_digest": null,
+          "output_tokens": 758,
+          "reservation_id": "44629ff5-f8f1-4f55-afac-e57e147c9ca5",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 7,
+      "unresolved": [
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "03211b55-82dc-59db-a3ce-14216530fdcc"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "74711f16-cb6f-5340-ac6e-00a265932571"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "9fd1eb5e-7aec-56a0-ada1-d02120c951e9"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "2e2d9205-b65a-5659-8e0e-263e5f5a257c"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "5020f3fe-3136-5b17-ac54-fd9e6d9529e1"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "530360d7-47af-5496-89d3-ee7d33adbeb3"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "746f98f7-9af2-531f-a38f-2545e4c7e58f"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "fc6a75a8-b8f9-567d-99cd-4ae4b71405e2"
+        }
+      ],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "4c8f2ee90d2e55d6c3dd2fa28eb5284d7fc2bb7a5e493e189a4350d221409dd7",
+          "subject": "Emilia",
+          "object": "Subaru",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "6ba8f718f6408862f4ec8a6ddab18d0363a1869d255d45d2b41270de7c479a6c",
+          "subject": "Subaru",
+          "object": "Beatrice",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        }
+      ],
+      "findings": [
+        {
+          "id": "03211b55-82dc-59db-a3ce-14216530fdcc",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Beatrice",
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "20877309-e325-5e8d-b60d-0bc0ea906b8b",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "20e3d317-3e86-5a53-be14-5075099412a8",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "a0ded713-68ee-5065-9a34-774b80e762f1",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "2e2d9205-b65a-5659-8e0e-263e5f5a257c",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "5020f3fe-3136-5b17-ac54-fd9e6d9529e1",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "530360d7-47af-5496-89d3-ee7d33adbeb3",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "746f98f7-9af2-531f-a38f-2545e4c7e58f",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "74711f16-cb6f-5340-ac6e-00a265932571",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Emilia",
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "75acd3e4-87a2-5f3c-810c-bfce6a8a9bfe",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "254de875-11b1-5569-98c0-f14c153d3b4a",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "8ca882cb-9e9b-5b7a-987a-9a55a50f7cf5",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "9fd1eb5e-7aec-56a0-ada1-d02120c951e9",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "a5f30175-b54b-57bc-b823-d072cb222d0d",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "bab189a7-6c81-54b1-a392-0dc88548f296",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "d537c28e-b948-5717-8555-fd7906ca3c16",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "fc6a75a8-b8f9-567d-99cd-4ae4b71405e2",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": false,
+          "canonical_id": null,
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1,
+        "investigation.extraction_reused": 1
+      }
+    },
+    {
+      "id": "0a54121a-2c25-4879-94fc-a62d29c72838",
+      "status": "completed",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": {
+        "nodes": 31,
+        "edges": 36
+      },
+      "coverage": {
+        "reason": "A published focal relationship and its actual event permit a bounded explanation; topic gaps remain.",
+        "outcome": "SUFFICIENT_FOR_PRESENTATION",
+        "relevant_facts": 15,
+        "pending_verifications": 0
+      },
+      "narrative": {
+        "reused": 0,
+        "partial": false,
+        "withheld": 0,
+        "generated": 2
+      },
+      "stage_times_ms": {
+        "planner": 16715,
+        "verifier": 383,
+        "extractor": 282,
+        "researcher": 751,
+        "promotion_policy": 678,
+        "research_context": 4220,
+        "identity_resolver": 18738,
+        "narrative_builder": 18061,
+        "relationship_analyst": 125
+      },
+      "model_calls": 10,
+      "measured_tokens": 12570,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8757,
+          "model_call": true,
+          "input_tokens": 3748,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 173,
+          "reservation_id": "88c0f9e4-1293-42d8-946c-60241abf92ac",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5337,
+          "model_call": true,
+          "input_tokens": 885,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 48,
+          "reservation_id": "839f8016-a48e-440b-aec8-08bba0507f12",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5523,
+          "model_call": true,
+          "input_tokens": 888,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 57,
+          "reservation_id": "e66977f5-5893-4fe6-b927-b00e9c984f32",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5556,
+          "model_call": true,
+          "input_tokens": 1203,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 43,
+          "reservation_id": "16928500-bc75-4b21-b472-0c29b044a443",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1580,
+          "model_call": true,
+          "input_tokens": 1254,
+          "model_digest": null,
+          "output_tokens": 503,
+          "reservation_id": "6327c5fd-8ac6-443c-a2ce-c66910747fbf",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1449,
+          "model_call": true,
+          "input_tokens": 783,
+          "model_digest": null,
+          "output_tokens": 493,
+          "reservation_id": "97edf04c-1c78-4100-91b4-78dd9e4ae8e5",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1853,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "43679f6d-f150-4fb5-ae5a-e73a64c5a8c4",
+          "validation_errors": [
+            "display_title:missing",
+            "short_summary:missing",
+            "statements:missing",
+            "*:extra_forbidden",
+            "*:extra_forbidden"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1876,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "ee5bdf9a-d6bd-4b19-afc8-33952cfa596b",
+          "validation_errors": [
+            "display_title:missing",
+            "short_summary:missing",
+            "statements:missing",
+            "*:extra_forbidden",
+            "*:extra_forbidden"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6137,
+          "model_call": true,
+          "input_tokens": 1063,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 85,
+          "reservation_id": "0227d0b7-28d8-4f63-aeb5-f02b6ae5baf9",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1578,
+          "model_call": true,
+          "input_tokens": 796,
+          "model_digest": null,
+          "output_tokens": 548,
+          "reservation_id": "85fd30bd-53df-4a4c-aeed-d16b8e59d50a",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 15,
+      "unresolved": [],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "4c8f2ee90d2e55d6c3dd2fa28eb5284d7fc2bb7a5e493e189a4350d221409dd7",
+          "subject": "Emilia",
+          "object": "Subaru",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "6ba8f718f6408862f4ec8a6ddab18d0363a1869d255d45d2b41270de7c479a6c",
+          "subject": "Subaru",
+          "object": "Beatrice",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        }
+      ],
+      "findings": [
+        {
+          "id": "08d5a403-ced2-5ae4-a320-ffc7149ee235",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "0c98280c-b390-5507-a7e1-c70779ae7963",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Beatrice",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "2b20f338-6952-5af9-8c6c-536599352a55",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "0faa7e54-d1bf-5342-bfda-6abfd36a63a2",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "cb4df875-4703-5cba-9fa8-0a9c5354afcf",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "14affbe6-8c5c-526d-856b-487addf9c6d5",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Emilia",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "3323a562-b237-5f94-afb7-72c869470440",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "49927f46-042f-5d87-91a4-a80f467023b7",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "81ed3d8a-3804-56a0-95f4-b61b5d489f3c",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e75698ac-14ff-549b-a524-3d8c4a15373b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "a2d1a970-a170-5e0b-a838-c8f6235c5c34",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "d2ce59bd-8f7c-58a7-8850-a914ba316823",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "af44b05c-982d-5cf9-989b-614d30a0be84",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "c58fa4e5-aa94-5955-ad2a-3b36880c05bd",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "f534e58a-69c7-54ac-9b65-55b7f44e94bd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "cde9ad6d-e267-5cb0-af44-49ef6c9f5ea0",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "254de875-11b1-5569-98c0-f14c153d3b4a",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "dd0bac4d-db2b-5719-ae19-f1cb62e93fd8",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "e4b37fab-2d5d-57d3-85d7-19c3a1bfa4a7",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "f263b4b4-8978-57d3-945e-00b5561ffe04",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "a0ded713-68ee-5065-9a34-774b80e762f1",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "f9994dd4-7cfe-5586-ba60-7f9f2e80b069",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "ff0e47fd-d5e9-5b5c-8a38-4ae3f72157d1",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "fad5df3e-c97d-5d64-bf11-b1b0da7e78dd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1,
+        "investigation.extraction_reused": 1
+      }
+    },
+    {
+      "id": "c67f6ae1-3ebc-42c6-8ef3-9925e42a313b",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": {
+        "nodes": 34,
+        "edges": 41
+      },
+      "coverage": {
+        "reason": "A published focal relationship and its actual event permit a bounded explanation; topic gaps remain.",
+        "outcome": "SUFFICIENT_FOR_PRESENTATION",
+        "relevant_facts": 15,
+        "pending_verifications": 0
+      },
+      "narrative": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 2,
+        "generated": 0
+      },
+      "stage_times_ms": {
+        "planner": 48460,
+        "verifier": 416,
+        "extractor": 250,
+        "researcher": 1003,
+        "promotion_policy": 1010,
+        "research_context": 4504,
+        "identity_resolver": 634,
+        "narrative_builder": 25552,
+        "relationship_analyst": 141
+      },
+      "model_calls": 7,
+      "measured_tokens": 12098,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 35369,
+          "model_call": true,
+          "input_tokens": 3809,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 204,
+          "reservation_id": "cdf0dc20-ad41-431a-b26d-d925542614bb",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1871,
+          "model_call": true,
+          "input_tokens": 1751,
+          "model_digest": null,
+          "output_tokens": 639,
+          "reservation_id": "a788c2f3-fd83-44a4-b400-d76162fe3a86",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1386,
+          "model_call": true,
+          "input_tokens": 1785,
+          "model_digest": null,
+          "output_tokens": 406,
+          "reservation_id": "ddb42a6b-c5ae-4ef0-97fe-c5e9500356a9",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2729,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "6d4a647a-137d-4de8-94b1-9d23c2cc70de",
+          "validation_errors": [
+            "display_title:missing",
+            "short_summary:missing",
+            "statements:missing",
+            "*:extra_forbidden",
+            "*:extra_forbidden"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 624,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "5495d6ff-587f-4510-a6cf-0829a7cd4c09",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7711,
+          "model_call": true,
+          "input_tokens": 1589,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 150,
+          "reservation_id": "1b55adc9-d270-439b-9ece-f43fe63cee64",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7134,
+          "model_call": true,
+          "input_tokens": 1624,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 141,
+          "reservation_id": "319bc788-6dc7-4cf6-8794-00d01c1365f9",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 15,
+      "unresolved": [],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "4c8f2ee90d2e55d6c3dd2fa28eb5284d7fc2bb7a5e493e189a4350d221409dd7",
+          "subject": "Emilia",
+          "object": "Subaru",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "6ba8f718f6408862f4ec8a6ddab18d0363a1869d255d45d2b41270de7c479a6c",
+          "subject": "Subaru",
+          "object": "Beatrice",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        }
+      ],
+      "findings": [
+        {
+          "id": "11b7cdee-980c-5dbf-b08c-52326f1b886a",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e75698ac-14ff-549b-a524-3d8c4a15373b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "2e23789b-cd5a-5bd8-b3f7-63d4221357bb",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "cb4df875-4703-5cba-9fa8-0a9c5354afcf",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "5c4d9723-0a16-52f5-8d48-ebdae62b7b25",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "69d04f1c-cbdb-5d5c-8ddc-a58d7d1cf064",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "a0ded713-68ee-5065-9a34-774b80e762f1",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "7443a657-7acf-5c3c-822a-0d9c53e6a7de",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "887db670-e4fe-5ea1-81a9-f53a4b6ea83b",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "fad5df3e-c97d-5d64-bf11-b1b0da7e78dd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "989b585b-3abb-5595-a328-ba0102b12be7",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "254de875-11b1-5569-98c0-f14c153d3b4a",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "9aaa8f7f-3920-52ae-9ffd-4ccd86b631a3",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "f534e58a-69c7-54ac-9b65-55b7f44e94bd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "9bea499f-1d5a-5922-b6e4-eb19d22c564e",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Emilia",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "a02b6309-cdbd-5af2-b2cd-f2c566954c3b",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "d2ce59bd-8f7c-58a7-8850-a914ba316823",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "a85b7616-ade0-52c4-a327-6b48482d75df",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "ae0cfa40-c9d8-5853-8ee1-561d61605750",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "49927f46-042f-5d87-91a4-a80f467023b7",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "cffaac14-d6e8-5532-a35e-315a318a1aa9",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Beatrice",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "2b20f338-6952-5af9-8c6c-536599352a55",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "e7f7c81b-5eb7-5b5a-9995-d0483902a715",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "fef9a650-6daa-5461-8e79-a4455db08936",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1,
+        "investigation.extraction_reused": 1
+      }
+    },
+    {
+      "id": "cda524e5-90c0-4aba-a1a9-2e0839c799ff",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": {
+        "nodes": 34,
+        "edges": 41
+      },
+      "coverage": {
+        "reason": "A published focal relationship and its actual event permit a bounded explanation; topic gaps remain.",
+        "outcome": "SUFFICIENT_FOR_PRESENTATION",
+        "relevant_facts": 15,
+        "pending_verifications": 0
+      },
+      "narrative": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 1,
+        "generated": 1
+      },
+      "stage_times_ms": {
+        "planner": 46783,
+        "verifier": 354,
+        "extractor": 212,
+        "researcher": 1050,
+        "promotion_policy": 711,
+        "research_context": 4053,
+        "identity_resolver": 417,
+        "narrative_builder": 19009,
+        "relationship_analyst": 140
+      },
+      "model_calls": 6,
+      "measured_tokens": 12943,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 30935,
+          "model_call": true,
+          "input_tokens": 4059,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 224,
+          "reservation_id": "06738836-460a-4c79-b460-82028e13b681",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2394,
+          "model_call": true,
+          "input_tokens": 1751,
+          "model_digest": null,
+          "output_tokens": 939,
+          "reservation_id": "358809ad-1822-4ff5-a3a4-06415852fe4f",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1506,
+          "model_call": true,
+          "input_tokens": 1255,
+          "model_digest": null,
+          "output_tokens": 596,
+          "reservation_id": "37e3af26-208e-4cf6-9d55-f111ef0e802e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2569,
+          "model_call": true,
+          "input_tokens": 1814,
+          "model_digest": null,
+          "output_tokens": 1023,
+          "reservation_id": "d988ddd7-4b21-4145-b8f1-3cefb87aff4d",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 632,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "095a87c8-11ff-4a6d-8f86-f1431fefcc7a",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7830,
+          "model_call": true,
+          "input_tokens": 1155,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 127,
+          "reservation_id": "5eb0b1c2-b1c3-4ea1-b356-66af0b91300e",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 15,
+      "unresolved": [],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "4c8f2ee90d2e55d6c3dd2fa28eb5284d7fc2bb7a5e493e189a4350d221409dd7",
+          "subject": "Emilia",
+          "object": "Subaru",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "6ba8f718f6408862f4ec8a6ddab18d0363a1869d255d45d2b41270de7c479a6c",
+          "subject": "Subaru",
+          "object": "Beatrice",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        }
+      ],
+      "findings": [
+        {
+          "id": "0ff6d2a5-71de-5015-a442-fceb344e4cc9",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "a0ded713-68ee-5065-9a34-774b80e762f1",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "1147fe43-48db-51f9-98d1-85377cdabeb8",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "fad5df3e-c97d-5d64-bf11-b1b0da7e78dd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "33cbcd9c-5867-5894-ab7d-3c3d43a049ad",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "d2ce59bd-8f7c-58a7-8850-a914ba316823",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "4527077b-f861-513c-9cee-1ce91ac4060a",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Emilia",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "51ece473-2f6d-5008-8a73-3d473d4c6939",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "593295e2-9b96-5bf3-89b2-1c942b00d725",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Beatrice",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "2b20f338-6952-5af9-8c6c-536599352a55",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "6bcdad5f-4c19-5987-bbb3-7168d1998ebe",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "49927f46-042f-5d87-91a4-a80f467023b7",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "883ae362-ee70-5549-81a8-b3d650e2e507",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "b15bb0b8-0325-58b8-b54d-7ad9848108c6",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "caeab477-fa12-5e30-824c-5467633a4bc1",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "d3097a7a-4d17-50b2-881b-5549e0a72dfb",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "cb4df875-4703-5cba-9fa8-0a9c5354afcf",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "d54d758c-fef6-57cf-9b10-1f369d4a16dc",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "eed237e9-606b-589f-8990-acb801b9672d",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "f534e58a-69c7-54ac-9b65-55b7f44e94bd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "fad5a71b-90de-5534-b6e1-df26fc916b8f",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "254de875-11b1-5569-98c0-f14c153d3b4a",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "fbb98b78-584a-52a5-bae8-2f9f5e11b49f",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e75698ac-14ff-549b-a524-3d8c4a15373b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1,
+        "investigation.extraction_reused": 1
+      }
+    },
+    {
+      "id": "fcc08f31-63d6-45f9-9de0-f4134a8fd54e",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": {
+        "nodes": 34,
+        "edges": 41
+      },
+      "coverage": {
+        "reason": "A published focal relationship and its actual event permit a bounded explanation; topic gaps remain.",
+        "outcome": "SUFFICIENT_FOR_PRESENTATION",
+        "relevant_facts": 15,
+        "pending_verifications": 0
+      },
+      "narrative": {
+        "reused": 0,
+        "partial": true,
+        "withheld": 1,
+        "generated": 1
+      },
+      "stage_times_ms": {
+        "planner": 18043,
+        "verifier": 332,
+        "extractor": 259,
+        "researcher": 1047,
+        "promotion_policy": 654,
+        "research_context": 4054,
+        "identity_resolver": 574,
+        "narrative_builder": 38913,
+        "relationship_analyst": 132
+      },
+      "model_calls": 9,
+      "measured_tokens": 13736,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10323,
+          "model_call": true,
+          "input_tokens": 4264,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 210,
+          "reservation_id": "885b4640-6c22-4134-9768-4fabc4f7a87f",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2426,
+          "model_call": true,
+          "input_tokens": 1743,
+          "model_digest": null,
+          "output_tokens": 888,
+          "reservation_id": "fbc561e2-b6e7-42dd-ac7d-8960c388f2f7",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3265,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "d4ff489d-9d4b-4bdd-8e3d-d9a001e2f8a4",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2642,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "747cfb08-8d0c-4b27-9ee0-2daa91a07721",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7951,
+          "model_call": true,
+          "input_tokens": 1114,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 138,
+          "reservation_id": "5ca2f6b1-61c0-44e7-8d21-edcdc7c15cc6",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1589,
+          "model_call": true,
+          "input_tokens": 1816,
+          "model_digest": null,
+          "output_tokens": 496,
+          "reservation_id": "95a6a6f0-6e3a-4bc5-8af9-4e29181917a4",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 635,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "5d552470-e14f-467c-ae8f-c93d595dbc98",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7161,
+          "model_call": true,
+          "input_tokens": 1637,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 147,
+          "reservation_id": "7ce4dd81-cd1a-4999-9f79-f47963dbf3b2",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8293,
+          "model_call": true,
+          "input_tokens": 1161,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 122,
+          "reservation_id": "01ec320f-50e4-4966-96dc-6b30fda15abb",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 15,
+      "unresolved": [],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "4c8f2ee90d2e55d6c3dd2fa28eb5284d7fc2bb7a5e493e189a4350d221409dd7",
+          "subject": "Emilia",
+          "object": "Subaru",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "6ba8f718f6408862f4ec8a6ddab18d0363a1869d255d45d2b41270de7c479a6c",
+          "subject": "Subaru",
+          "object": "Beatrice",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        }
+      ],
+      "findings": [
+        {
+          "id": "1c56d2ed-7cca-5bcc-8362-e7bfcdf55c3c",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Beatrice",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "2b20f338-6952-5af9-8c6c-536599352a55",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "1e24efad-2baa-5fe9-962c-b3fde735f6d5",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Emilia",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "218edc2e-91ae-518e-9692-588f820171db",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "332d6bb3-571b-54e1-a08b-45d4b2248966",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "a0ded713-68ee-5065-9a34-774b80e762f1",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "39e81cc6-ed84-5ec5-9ac9-34f3866bc2e7",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "d2ce59bd-8f7c-58a7-8850-a914ba316823",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "3dfc0a78-2c33-5491-88cf-e4144db66576",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "5c7b3196-fa84-589d-877a-6850b8d7125f",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e75698ac-14ff-549b-a524-3d8c4a15373b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "73ab826a-64b0-525d-a44d-fbfe7633d08b",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "49927f46-042f-5d87-91a4-a80f467023b7",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "80ba4d24-822c-5b7b-aa6e-0b269cea5e04",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "f534e58a-69c7-54ac-9b65-55b7f44e94bd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "82615d6a-1ce8-54f8-a072-b3e353cb5e28",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "254de875-11b1-5569-98c0-f14c153d3b4a",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "82d2f391-eeef-5aa9-aff9-25d789d7b735",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "bef460a3-8548-5104-9f62-c31d689a508b",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "fad5df3e-c97d-5d64-bf11-b1b0da7e78dd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "c2af599f-dcf9-5e94-bf9b-641b8664353f",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "eee1b73a-3570-5815-a312-cd14738639ab",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "f8c10eaa-5ac2-541b-b259-c4d95908d38d",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "cb4df875-4703-5cba-9fa8-0a9c5354afcf",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1,
+        "investigation.extraction_reused": 1
+      }
+    },
+    {
+      "id": "91aa53bf-50ab-4227-bf10-aae8f1d84f7b",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 90000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 1,
+        "dossier_tokens": 2500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 1,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "before": null,
+      "coverage": {
+        "reason": "A published focal relationship and its actual event permit a bounded explanation; topic gaps remain.",
+        "outcome": "SUFFICIENT_FOR_PRESENTATION",
+        "relevant_facts": 15,
+        "pending_verifications": 0
+      },
+      "narrative": {
+        "reused": 2,
+        "partial": true,
+        "withheld": 1,
+        "generated": 0
+      },
+      "stage_times_ms": {
+        "planner": 19910,
+        "verifier": 365,
+        "extractor": 492,
+        "researcher": 1411,
+        "promotion_policy": 682,
+        "research_context": 4951,
+        "identity_resolver": 524,
+        "narrative_builder": 649,
+        "relationship_analyst": 149
+      },
+      "model_calls": 1,
+      "measured_tokens": 4474,
+      "provider_usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10219,
+          "model_call": true,
+          "input_tokens": 4264,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 210,
+          "reservation_id": "485b6d67-b8d2-43b3-a85e-be7259ebf574",
+          "validation_errors": []
+        }
+      ],
+      "active_promotions": 15,
+      "unresolved": [],
+      "pending_verifications": 0,
+      "investigation_id": "8d203504-cc37-5982-9587-96288c042772",
+      "primary_bundle": [
+        {
+          "id": "d50a82b9-809d-58b1-bf2d-35b79ba231f3",
+          "score": 56.20253164556962,
+          "subjects": [
+            {
+              "name": "Subaru",
+              "type": "CHARACTER",
+              "aliases": [
+                "Natsuki Subaru",
+                "Subaru Natsuki",
+                "\u30b9\u30d0\u30eb",
+                "\u30ca\u30c4\u30ad\u30fb\u30b9\u30d0\u30eb"
+              ],
+              "canonical_id": null
+            },
+            {
+              "name": "Emilia",
+              "type": "CHARACTER",
+              "aliases": [
+                "\u30a8\u30df\u30ea\u30a2"
+              ],
+              "canonical_id": null
+            }
+          ],
+          "fingerprint": "4ee5d84e6a6280cc649324c7adf6c38690354eb0dc0aab4667f6a57d65890833",
+          "continuity_id": "4bea70af-22a3-57ae-8010-d55be5e15bd3",
+          "estimated_tokens": 283,
+          "spoiler_position": null,
+          "anchor_passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+          "permission_fingerprint": "e4702eb58c453220c93444d2e42bdfffa2719379c1963b93b32435cd7eae4b62",
+          "passage_references": [
+            {
+              "end": 14596,
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "start": 13779,
+              "section": "\uff11\uff16\uff0e\u3010Novel \u2013 Character\u3011",
+              "language": "und",
+              "authority": "primary",
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_hash": "1c4127d5545f4f9523265836cb5213947a182379810b1ad1a3326312dc25756f",
+              "cloud_allowed": true,
+              "source_family": "re-zero.com:official-publisher",
+              "source_revision": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b"
+            }
+          ]
+        }
+      ],
+      "hypotheses": [
+        {
+          "id": "4c8f2ee90d2e55d6c3dd2fa28eb5284d7fc2bb7a5e493e189a4350d221409dd7",
+          "subject": "Emilia",
+          "object": "Subaru",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "c7bb8a14a62f8bd2cc7691400d9b6837d92b52597bde42e06a91abb2abf340b6",
+          "subject": "Subaru",
+          "object": "Ice Brand Arts",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        },
+        {
+          "id": "1e68edebd88f567f1374798a29b23e88c7285edd39b8ebaa4e19e42c2fd6b32a",
+          "subject": "Subaru",
+          "object": "Emilia",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Exact subject, predicate, object and direction are not established."
+        },
+        {
+          "id": "146e4d25441647e3599a8b65dc543626ec7000769ec1a9d2c8da19225a57396c",
+          "subject": "Emilia",
+          "object": "I can\u2019t lose to Subaru!",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "32ab7ce0e15b8aa9d2bdcd7a2264a4a661505d1ab4c0d467a4402ba4c7e4fca3",
+          "subject": "Subaru",
+          "object": "secret training facility",
+          "kind": "interaction",
+          "binding_supported": false,
+          "reason": "Predicate requires further semantic investigation."
+        },
+        {
+          "id": "6ba8f718f6408862f4ec8a6ddab18d0363a1869d255d45d2b41270de7c479a6c",
+          "subject": "Subaru",
+          "object": "Beatrice",
+          "kind": "interaction",
+          "binding_supported": true,
+          "reason": "Exact atomic subject/predicate/object binding."
+        }
+      ],
+      "findings": [
+        {
+          "id": "0c4767b2-c045-5f22-854c-1641dc17d4a6",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "254de875-11b1-5569-98c0-f14c153d3b4a",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "1bd8714b-06ea-527c-845e-a87a74b10358",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "30da5906-c4e3-5ec9-81ce-cd9ecf54a8a5",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "49927f46-042f-5d87-91a4-a80f467023b7",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "589e6f47-bc69-5e1c-9867-74bc0528c1eb",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "f534e58a-69c7-54ac-9b65-55b7f44e94bd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "76461454-074a-56a7-9980-1ec1a7b03ac1",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Emilia",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "8b88956c-502d-5f3f-84ea-43d89b09c41c",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "fad5df3e-c97d-5d64-bf11-b1b0da7e78dd",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "a4fab618-07b9-58e0-8c1f-cf1390ee1c35",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "a0ded713-68ee-5065-9a34-774b80e762f1",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "a6c1c585-bdeb-5db7-93dd-6e1510f0ffc2",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Subaru",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "ab16845f-6451-59ff-b603-52fa6d70bf4c",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "af53e3ab-9334-5a71-87ac-f423625a194b",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e75698ac-14ff-549b-a524-3d8c4a15373b",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "afc8a133-db6a-5965-8516-bbf47e801706",
+          "kind": "entity",
+          "graph_type": "EVENT",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "cb4df875-4703-5cba-9fa8-0a9c5354afcf",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "b5a39bb7-fa1e-58ae-a88c-985a60d3ca5e",
+          "kind": "entity",
+          "graph_type": "LORE",
+          "name": "Ice Brand Arts",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "cf1e48a3-5683-5e0d-9553-271a18c76061",
+          "kind": "relationship",
+          "graph_type": "PARTICIPATED_IN",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "d2ce59bd-8f7c-58a7-8850-a914ba316823",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        },
+        {
+          "id": "e0b83efa-0b5e-58d4-907f-03c12bb0ad5f",
+          "kind": "relationship",
+          "graph_type": "RELATED_TO",
+          "name": null,
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "4feed130-1e0c-5c5e-bf29-f8a15b8b9dc3",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 323,
+              "quote_end": 384
+            }
+          ]
+        },
+        {
+          "id": "fc6081e6-3055-521e-8246-50637cd851a2",
+          "kind": "entity",
+          "graph_type": "CHARACTER",
+          "name": "Beatrice",
+          "decision": "supported",
+          "canonical": true,
+          "canonical_id": "2b20f338-6952-5af9-8c6c-536599352a55",
+          "evidence": [
+            {
+              "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+              "url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+              "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+              "passage_start": 13779,
+              "quote_start": 83,
+              "quote_end": 247
+            }
+          ]
+        }
+      ],
+      "reuse_events": {
+        "research.source_reused": 1,
+        "investigation.extraction_reused": 1
+      }
+    }
+  ],
+  "graph": {
+    "nodes": 34,
+    "edges": 41
+  },
+  "new_canonical_nodes": [
+    {
+      "id": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+      "name": "Subaru",
+      "type": "CHARACTER"
+    },
+    {
+      "id": "e563413a-ff12-5bd0-976e-25ffa6287e67",
+      "name": "Ice Brand Arts",
+      "type": "LORE"
+    },
+    {
+      "id": "43dbf045-945f-53ff-8e1c-e91c7bd6d33b",
+      "name": "became master and knight \u00b7 Subaru",
+      "type": "EVENT"
+    },
+    {
+      "id": "e57b8891-55e3-5eb9-a3e2-d770172292d2",
+      "name": "invented \u00b7 Ice Brand Arts",
+      "type": "EVENT"
+    },
+    {
+      "id": "2b20f338-6952-5af9-8c6c-536599352a55",
+      "name": "Beatrice",
+      "type": "CHARACTER"
+    },
+    {
+      "id": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+      "name": "Emilia",
+      "type": "CHARACTER"
+    },
+    {
+      "id": "cb4df875-4703-5cba-9fa8-0a9c5354afcf",
+      "name": "started training for magic \u00b7 Beatrice",
+      "type": "EVENT"
+    }
+  ],
+  "presentations": [
+    {
+      "id": "ef2d68a5-1311-598e-94c8-2699fda1c560",
+      "resource": "189a4d78-ab0c-5cd0-940a-fff043395e9b",
+      "status": "validated",
+      "policy": "grounded-english-v11",
+      "payload": {
+        "statements": [
+          {
+            "text": "Emilia is a character who is related to Subaru.",
+            "fact_ids": [
+              "2dfc0b1d6827ce6abd6aedc69b2449a09cc24f795189ab9c06c4a8a52aa9b83e",
+              "d7413eb23f41ef5a442e9a713bd60bbb6c735ce7d6aea2ab22de153ececc8b5a"
+            ]
+          },
+          {
+            "text": "Emilia and Subaru became master and knight.",
+            "fact_ids": [
+              "2dfc0b1d6827ce6abd6aedc69b2449a09cc24f795189ab9c06c4a8a52aa9b83e",
+              "8acb9756e0b06fdfc8ed6b6d5b6d5270547a98a0e3a9fad7650f9f3cec8e2c3b",
+              "d7413eb23f41ef5a442e9a713bd60bbb6c735ce7d6aea2ab22de153ececc8b5a"
+            ]
+          },
+          {
+            "text": "Subaru invented Ice Brand Arts.",
+            "fact_ids": [
+              "e4876b56ebdbfc1a6cb65490bc7782ac1dd89b2959cad2e008dc6e56f8a3fe72"
+            ]
+          }
+        ],
+        "display_title": "Emilia",
+        "short_summary": "Emilia is a character who is related to Subaru."
+      }
+    },
+    {
+      "id": "892a6568-3c57-5445-9fe4-819b68a1ef4a",
+      "resource": "b0c93ac8-dad9-5726-a04f-54e48ed475c9",
+      "status": "withheld_grounding",
+      "policy": "grounded-english-v11",
+      "payload": {
+        "statements": [
+          {
+            "text": "Emilia and Subaru became master and knight.",
+            "fact_ids": [
+              "58d010f52398170b731d84fbf2b8c636a6cd49e592e8eb5123db6f54af28acb2"
+            ]
+          },
+          {
+            "text": "Subaru started training for magic with Beatrice.",
+            "fact_ids": [
+              "7b52072dcc0ad3a73cc02b94ffd9897d88fd3dcf297f19ed41d467e8b2637024",
+              "369b198ee05d1db20d3b17ea0ea91c18f7dc21bfc9ce357549a9254514e3d362"
+            ]
+          },
+          {
+            "text": "Subaru invented Ice Brand Arts.",
+            "fact_ids": [
+              "e4876b56ebdbfc1a6cb65490bc7782ac1dd89b2959cad2e008dc6e56f8a3fe72",
+              "2c3e9202c1879c108a946003c078fa19fdc212173f26d24d2471d1dbf599e88a"
+            ]
+          }
+        ],
+        "display_title": "Subaru",
+        "short_summary": "Emilia and Subaru became master and knight."
+      }
+    }
+  ],
+  "unfinished_frontier": [
+    {
+      "id": "019f1a86-4d7a-55f6-938d-0f7f982e7f29",
+      "question": "Which permitted evidence resolves Subaru building secret training facility?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "09bdb8f5-23f0-5d6a-ac62-d7a97a4927a1",
+      "question": "Re:Zero Subaru Emilia romance motives chronology hidden identity uncertainty",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "09f7a6a4-facb-552b-92c8-3e6c5b70393b",
+      "question": "Re:Zero Subaru Emilia named abilities creator Q&A Tappei Nagatsuki",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "18387b18-0f00-5b03-8fbc-dc45344ea6f3",
+      "question": "Investigate linked evidence \u8cea\u554f\uff06\u56de\u7b54\u516c\u958b\uff01\u300cRe:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b\u300d45\u5dfb\u767a\u58f2\u8a18\u5ff5\uff06\u300a\u596a\u9084\u7de8\u300b\u958b\u5e55\u76f4\u524d \u9577\u6708\u9054\u5e73\u5148\u751f\u30c8\u30fc\u30af\u30b7\u30e7\u30fc at https://re-zero.com/news/2666/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "1d55419e-50a9-563d-92d0-9fe80fb6442f",
+      "question": "Re:Zero Subaru Emilia magic training outcomes Tappei Nagatsuki Q&A relationship collaboration",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "1f1b04ed-f0a7-5d89-91c6-869212b3d6f5",
+      "question": "Which named abilities are directly involved in actual events between Subaru and Emilia?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "23766f3d-ae6c-54b3-83ca-f4aeb69ba10e",
+      "question": "Re:Zero Subaru Emilia creator Q&A Tappei Nagatsuki relationship",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "29955140-6734-54d1-bac6-8dcb0c3d2d21",
+      "question": "Re:Zero Subaru Emilia creator Q&A Tappei Nagatsuki relationship collaboration confirmed",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "314e3cf6-0676-59cd-a3e0-db4397b8f81f",
+      "question": "Re:Zero Subaru Emilia Ice Brand Arts named abilities actual events official site",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "3280aba2-775c-595f-af6c-2d815ddbfeff",
+      "question": "Is there evidence regarding Subaru or Emilia's hidden identity or romance motives in the provided text?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "3827c827-bcdf-5108-8bb9-6df7f361204f",
+      "question": "Which permitted evidence resolves Subaru consulted with Emilia?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "3ba22255-bf8b-5191-abed-39b5e532b16f",
+      "question": "Re:Zero Subaru Emilia became master knight event participants roles canon confirmed",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "4fd29770-8ed2-5625-bfc1-3aff44eea8f7",
+      "question": "Investigate linked evidence \u300eRe:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b44\u300f\u306f3\u670825\u65e5\u767a\u58f2\uff01 at https://re-zero.com/news/2623/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "5fded635-43f7-5238-b34e-c1623624052f",
+      "question": "Re:Zero Subaru Emilia secret training facility Beatrice involved chapter index arc name",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "6b4d4314-37aa-52ae-b3c4-bf24e9a260bf",
+      "question": "Investigate linked evidence \u300eRe:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b46\u300f\u306f9\u670825\u65e5\u767a\u58f2\uff01 at https://re-zero.com/news/2680/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "78c0a5e4-b46d-5e86-8446-67489cb4dc53",
+      "question": "Are there any official site entries detailing the relationship and collaboration between Subaru and Emilia?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "7d76bb75-c520-5045-b08e-97267bbe7fcd",
+      "question": "Investigate linked evidence \u30b9\u30c8\u30fc\u30ea\u30fc at https://re-zero.com/story/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "848b7cd9-2b01-51fe-9820-ed5e04db1413",
+      "question": "Investigate linked evidence << \u65b0\u3057\u3044\u8a18\u4e8b\u3078 at https://re-zero.com/news/2510/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "905dfa9e-5551-5e52-990d-942c8cfe4c95",
+      "question": "Investigate linked evidence \u304a\u77e5\u3089\u305b at https://re-zero.com/news/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "947aeb7e-8059-5ba7-87d8-931af1fc0df8",
+      "question": "Re:Zero Subaru Emilia canon official site romance motives uncertainty",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "a3d4efb7-e846-5c11-8b2f-09fca4576079",
+      "question": "What are the chronologically ordered actual events involving Subaru and Emilia?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "a3dd47d1-02ef-517d-82ee-efa920043900",
+      "question": "Re:Zero Subaru Emilia named abilities Ice Brand Arts training facility actual events",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "baa6ca20-287f-5760-bc37-a9d4e7bc8929",
+      "question": "Re:Zero Subaru Emilia master knight event participants roles actual canon",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "bd4be307-947c-5385-81a5-1d7490ce01c0",
+      "question": "Investigate linked evidence \u300e\uff32\uff45\uff1a\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b \u77ed\u7de8\u96c6\uff11\uff14\u300f\u306f7\u670824\u65e5\u767a\u58f2\uff01 at https://re-zero.com/news/2663/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "c1a1e1d0-8da4-5928-9265-4550759dc815",
+      "question": "Investigate the explicitly documented relationship and collaboration between Subaru and Emilia, connected actual events, directly involved companions and named abilities. Preserve uncertainty and do not invent romance, motives, chronology or hidden identity.",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "c1d2caac-75db-5966-86ce-fbd2dba4893a",
+      "question": "Investigate linked evidence \u66f8\u7c4d\u60c5\u5831 at https://re-zero.com/books/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "c7243812-836d-5877-b78e-b239f057075b",
+      "question": "Investigate linked evidence \u8cea\u554f\uff06\u56de\u7b54\u516c\u958b\uff01\u300cRe:\u30bc\u30ed\u304b\u3089\u59cb\u3081\u308b\u7570\u4e16\u754c\u751f\u6d3b\u300d\u539f\u4f5c\u7b2c\u5341\u7ae0\uff06TV\u30a2\u30cb\u30e1\u7b2c\u56db\u671fW\u958b\u5e55\u8a18\u5ff5 \u9577\u6708\u9054\u5e73\u5148\u751f\u30c8\u30fc\u30af\u30b7\u30e7\u30fc at https://re-zero.com/news/2632/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "c85694e6-1f4a-56ab-b496-6eddc8cacf80",
+      "question": "Subaru Emilia Re:Zero canon official site explicitly documented relationship collaboration events",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "dacb555a-e4af-5798-96a8-9a2f2ae94f13",
+      "question": "Which permitted evidence resolves Emilia said I can\u2019t lose to Subaru!?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "dd174219-5b89-59ff-82b1-8cc3b4d1be32",
+      "question": "Re:Zero Subaru Emilia directly involved companions named abilities actual events",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "e70b2e6f-f797-5059-b578-b39a53631875",
+      "question": "Re:Zero Subaru Emilia secret training facility chapter index arc name official site",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "e96c8461-58a5-5f75-a1d8-ed2c3107b0c1",
+      "question": "What is the specific chapter index or arc name where Subaru and Emilia's collaboration is explicitly documented?",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "ea7cbb25-4809-5ee9-8146-0f26f6cf141f",
+      "question": "Re:Zero Subaru Emilia connected actual events light novel chapter index",
+      "status": "PARTIALLY_RESOLVED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "f71dc5e7-f5dd-5bfa-92ad-5bf235a7950a",
+      "question": "Re:Zero Subaru Emilia magic training outcomes Beatrice involved official source",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "fa3449a0-4253-500d-8483-d232ca33a9ec",
+      "question": "Investigate linked evidence \u30ad\u30e3\u30e9\u30af\u30bf\u30fc\u7d39\u4ecb at https://re-zero.com/character/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    },
+    {
+      "id": "fd61dfa2-5a0e-5408-8f20-8a1ad0c7c947",
+      "question": "Investigate linked evidence \u904e\u53bb\u306e\u8a18\u4e8b\u3078 >> at https://re-zero.com/news/2503/",
+      "status": "QUEUED",
+      "stop_reason": "SUFFICIENT_FOR_PRESENTATION"
+    }
+  ],
+  "repeat_graph_unchanged": true,
+  "negative_controls": {
+    "source_id": "75b99b73-acf8-5c33-a961-ff9907908bd4",
+    "source_url": "https://re-zero.com/news/2517/#scope-a16abad08d77c5f5",
+    "source_hash": "952367677ee6d40abb193e1c82e996eeb377bfd531110445eb1e12f19b6ed23b",
+    "passage_id": "e24409d2-c45f-5f9e-bc3d-b710198b8635",
+    "kind": "real model controls, no canonical writes",
+    "controls": [
+      {
+        "claim": {
+          "subject": "Subaru",
+          "predicate": "invented",
+          "object": "Ice Brand Arts",
+          "subject_type": "CHARACTER",
+          "object_type": "LORE",
+          "kind": "interaction"
+        },
+        "deterministic_support": true,
+        "deterministic_reason": "Exact atomic subject/predicate/object binding.",
+        "model_assessment_not_independent_verification": {
+          "index": 0,
+          "subject_supported": true,
+          "predicate_supported": true,
+          "object_supported": true,
+          "direction_valid": true,
+          "subject_type_valid": true,
+          "object_type_valid": true,
+          "actual_occurrence": true,
+          "in_universe": true,
+          "material_conflict": false,
+          "continuity_matches": true,
+          "reason": "Evidence states \"Subaru invented \u2018Ice Brand Arts\u2019\" confirming the claim exactly."
+        }
+      },
+      {
+        "claim": {
+          "subject": "Subaru",
+          "predicate": "is",
+          "object": "a half-elf",
+          "subject_type": "CHARACTER",
+          "object_type": "LORE",
+          "kind": "attribute"
+        },
+        "deterministic_support": false,
+        "deterministic_reason": "Exact subject, predicate, object and direction are not established.",
+        "model_assessment_not_independent_verification": {
+          "index": 1,
+          "subject_supported": true,
+          "predicate_supported": false,
+          "object_supported": false,
+          "direction_valid": true,
+          "subject_type_valid": true,
+          "object_type_valid": true,
+          "actual_occurrence": false,
+          "in_universe": true,
+          "material_conflict": false,
+          "continuity_matches": false,
+          "reason": "The evidence mentions Subaru but never describes him as a half\u2011elf, so the predicate is unsupported."
+        }
+      },
+      {
+        "claim": {
+          "subject": "Ice Brand Arts",
+          "predicate": "invented",
+          "object": "Subaru",
+          "subject_type": "LORE",
+          "object_type": "CHARACTER",
+          "kind": "interaction"
+        },
+        "deterministic_support": false,
+        "deterministic_reason": "Exact subject, predicate, object and direction are not established.",
+        "model_assessment_not_independent_verification": {
+          "index": 2,
+          "subject_supported": true,
+          "predicate_supported": false,
+          "object_supported": false,
+          "direction_valid": false,
+          "subject_type_valid": true,
+          "object_type_valid": true,
+          "actual_occurrence": false,
+          "in_universe": true,
+          "material_conflict": false,
+          "continuity_matches": false,
+          "reason": "Evidence shows Subaru invented Ice Brand Arts, not the reverse; the claim\u2019s direction contradicts the source."
+        }
+      },
+      {
+        "claim": {
+          "subject": "Emilia",
+          "predicate": "is",
+          "object": "Satella",
+          "subject_type": "CHARACTER",
+          "object_type": "CHARACTER",
+          "kind": "identity"
+        },
+        "deterministic_support": false,
+        "deterministic_reason": "Exact subject, predicate, object and direction are not established.",
+        "model_assessment_not_independent_verification": {
+          "index": 3,
+          "subject_supported": true,
+          "predicate_supported": false,
+          "object_supported": false,
+          "direction_valid": true,
+          "subject_type_valid": true,
+          "object_type_valid": true,
+          "actual_occurrence": false,
+          "in_universe": true,
+          "material_conflict": false,
+          "continuity_matches": false,
+          "reason": "The source discusses Emilia\u2019s training but never identifies her as Satella, so the identity claim lacks support."
+        }
+      }
+    ],
+    "usage": [
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "credential": "primary",
+        "task": "verification",
+        "status": "ok",
+        "elapsed_ms": 3036,
+        "input_tokens": 810,
+        "output_tokens": 1264,
+        "retry": 0,
+        "validation_errors": [],
+        "model_call": true,
+        "reservation_id": null,
+        "model_digest": null
+      }
+    ]
+  },
+  "checks": {
+    "backend": "239 passed including explicit PostgreSQL and Chrome opt-ins",
+    "ruff": "passed",
+    "ruff_format": "passed",
+    "mypy": "89 modules passed",
+    "alembic_check": "No new upgrade operations detected",
+    "frontend": {
+      "lint": "passed",
+      "typecheck": "passed",
+      "unit_tests": "57 passed",
+      "production_build": "passed",
+      "browser_tests": "11 passed, 1 explicit opt-in skipped",
+      "initial_browser_failure": "duplicate display-name selector across legitimate distinct continuities; corrected to selected backend ID"
+    }
+  },
+  "partial_recovery": {
+    "real": "Early incomplete identity/publication jobs retained supported technique knowledge; later continuation reused completed source/extraction/assessments and published the connected relationship.",
+    "owned_test": "Forced verification budget interruption retained one completed interaction and two pending atoms; a new job verified only those two. This is simulated, not a live budget-exhaustion claim."
+  },
+  "scope_limits": [
+    "One publisher family, one selected official novel section.",
+    "One English entry validated; Subaru draft withheld_grounding.",
+    "Broader history, pronoun antecedents and chronology remain unresolved."
+  ]
+}

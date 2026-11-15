@@ -102,9 +102,12 @@ test("handles missing artwork, continuity filters, empty layers and reduced moti
     page.getByRole("complementary", { name: "Journey story" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Explore", exact: true }).click();
-  await page
+  const emiliaId = await page
     .getByRole("button", { name: "Explore Emilia", exact: true })
-    .click();
+    .getAttribute("data-node-id");
+  expect(emiliaId).toBeTruthy();
+  const emilia = page.locator(`[data-node-id="${emiliaId}"]`);
+  await emilia.click();
   const panel = page.getByRole("complementary", { name: "Story information" });
   await expect(panel.locator("img")).toHaveAttribute(
     "src",
@@ -131,18 +134,15 @@ test("handles missing artwork, continuity filters, empty layers and reduced moti
     page.getByRole("heading", { name: "Nothing in this layer." }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Show all layers" }).click();
-  await expect(
-    page.getByRole("button", { name: "Explore Emilia", exact: true }),
-  ).toBeVisible();
+  // Names can legitimately repeat across distinct canonical continuities.
+  await expect(emilia).toBeVisible();
   await page.getByRole("button", { name: "Re:Zero", exact: true }).click();
   await page.getByRole("button", { name: /Currently exploring/ }).click();
   await expect(
     page.getByRole("navigation", { name: "Story milestones" }),
   ).toBeVisible();
   await page.getByRole("button", { name: "Explore", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Explore Emilia", exact: true }),
-  ).toBeVisible();
+  await expect(emilia).toBeVisible();
   await expect(page).toHaveURL("http://127.0.0.1:3000/");
 });
 
