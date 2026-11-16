@@ -86,6 +86,10 @@ class LangChainProvider:
             raise InferenceFailure("rate_limited", delay)
         if code in (401, 403):
             raise InferenceFailure("authentication")
+        if code in (400, 413, 422):
+            # Identical malformed/oversized requests are not transient outages.
+            # Keep response bodies private while exposing a useful diagnostic.
+            raise InferenceFailure("provider_invalid_request", issues=(f"http_status:{code}",))
         if code >= 400:
             raise InferenceFailure("provider_http_error")
 
@@ -153,11 +157,14 @@ class LangChainProvider:
             code = getattr(error, "status_code", 0)
             body = getattr(error, "body", {})
             detail = body.get("error", body) if isinstance(body, dict) else {}
+            if self.name == "groq" and code == 400 and isinstance(detail, dict):
+                if isinstance(detail.get("error"), dict):
+                    detail = detail["error"]
             if (
                 self.name == "groq"
                 and code == 400
                 and isinstance(detail, dict)
-                and detail.get("code") == "tool_use_failed"
+                and detail.get("code") in {"tool_use_failed", "json_validate_failed"}
             ):
                 # Provider-side tool validation is invalid output, not network failure.
                 # Recover only redacted schema locations; never expose failed generations.
@@ -173,6 +180,30 @@ class LangChainProvider:
                     except (ValueError, TypeError):
                         pass
                 raise InferenceFailure("invalid_output", issues=issues) from None
+            if code == 400 and isinstance(detail, dict):
+                provider_code = str(detail.get("code", "unknown"))
+                safe_code = (
+                    provider_code if re.fullmatch(r"[a-z_]{1,60}", provider_code) else "unknown"
+                )
+                message = str(detail.get("message", "")).lower()
+                categories = tuple(
+                    "provider:" + word
+                    for word in (
+                        "tool_choice",
+                        "too large",
+                        "token",
+                        "unsupported",
+                        "schema",
+                        "function",
+                        "model",
+                        "json",
+                    )
+                    if word in message
+                )
+                raise InferenceFailure(
+                    "provider_invalid_request",
+                    issues=("http_status:400", "provider_code:" + safe_code, *categories),
+                ) from None
             if response is not None:
                 self._check_status(code or response.status_code, response.headers)
             raise InferenceFailure("inference_failed") from None

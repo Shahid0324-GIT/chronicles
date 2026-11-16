@@ -33,7 +33,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v1"
+POLICY = "arc-intelligence-v2"
 
 
 def licensed_context(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -52,6 +52,13 @@ def licensed_context(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
         }
         for i, f in enumerate(facts)
     ]
+
+
+def prose_eligible(fact: dict[str, Any]) -> bool:
+    statement = fact["payload"].get("description", "")
+    # A place assertion such as 'He is tied to a post' establishes no named
+    # subject. Another fact mentioning Koby cannot license that pronoun binding.
+    return not re.match(r"^(?:He|She|They|His|Her|Their|This moment)\b", statement)
 
 
 class ArcIntelligence:
@@ -94,7 +101,24 @@ class ArcIntelligence:
         for edge in scope.edges():
             if edge.relationship_type.value == "REVEALED" and str(edge.source_node_id) in targets:
                 eligible.update((str(edge.id), str(edge.target_node_id)))
-        selected = [f for f in facts if f["target_id"] in eligible]
+        unique = {}
+        for fact in facts:
+            if fact["target_id"] not in eligible:
+                continue
+            value = {k: v for k, v in fact.items() if k != "id"}
+            value["payload"] = {k: v for k, v in fact["payload"].items() if k != "evidence"}
+            value["sources"] = [
+                {
+                    **s,
+                    "provenance": {
+                        k: v for k, v in s.get("provenance", {}).items() if k != "job_id"
+                    },
+                }
+                for s in fact["sources"]
+            ]
+            key = fingerprint(value)
+            unique[key] = {**value, "id": key}
+        selected = [unique[key] for key in sorted(unique)]
         return scope, definition, selected
 
     async def save(
@@ -151,12 +175,19 @@ class ArcIntelligence:
                 "article": None,
             }
         dossier = ArcDossier.model_validate(stored["payload"])
+        article_payload = (
+            dict(article["payload"])
+            if article and article["knowledge_revision"] == dossier.revision
+            else None
+        )
+        if article_payload and not any(
+            s["status"] == "validated" for s in article_payload.get("sections", [])
+        ):
+            article_payload["status"] = "withheld"
         return {
             "status": "partial",
             "dossier": dossier.model_dump(mode="json"),
-            "article": article["payload"]
-            if article and article["knowledge_revision"] == dossier.revision
-            else None,
+            "article": article_payload,
         }
 
     async def rebuild(
@@ -169,6 +200,7 @@ class ArcIntelligence:
         providers: Callable[[], list[dict[str, Any]]],
         *,
         compose: bool = True,
+        retry_withheld: bool = False,
     ) -> dict[str, Any]:
         scope, definition, facts = await self.context(universe, continuity, arc, boundary)
         evidence_revision = fingerprint(
@@ -324,7 +356,9 @@ class ArcIntelligence:
                 providers(),
             )
         if compose:
-            await self.compose(dossier, scope.boundary, infer, providers)
+            await self.compose(
+                dossier, scope.boundary, infer, providers, retry_withheld=retry_withheld
+            )
         return await self.read(universe, continuity, arc, boundary)
 
     async def compose(
@@ -333,6 +367,8 @@ class ArcIntelligence:
         boundary_key: str,
         infer: Infer,
         providers: Callable[[], list[dict[str, Any]]],
+        *,
+        retry_withheld: bool = False,
     ) -> None:
         sections = []
         for section in dossier.sections:
@@ -341,11 +377,18 @@ class ArcIntelligence:
             section_id = section.id
             async with self.presentations() as repo:
                 stored = await repo.get(self.identifier(section_id, "arc_section", boundary_key))
-            if stored and stored["knowledge_revision"] == section.revision:
+            if (
+                stored
+                and stored["knowledge_revision"] == section.revision
+                and not (retry_withheld and stored["grounding_status"] != "validated")
+            ):
                 sections.append(stored["payload"])
                 continue
             selected = {i for b in section.developments for i in b.fact_ids}
-            facts = [f for f in dossier.accepted_facts if f["id"] in selected]
+            facts = [f for f in dossier.accepted_facts if f["id"] in selected and prose_eligible(f)]
+            selected = {f["id"] for f in facts}
+            if not facts:
+                continue
             offset = len(providers())
             try:
                 draft = ArcSectionDraft.model_validate(
@@ -382,10 +425,47 @@ class ArcIntelligence:
                 by_id = {f["id"]: f for f in facts}
                 for paragraph in draft.paragraphs:
                     cited_types = {by_id[i]["payload"].get("type") for i in paragraph.fact_ids}
+                    words = {
+                        word.casefold()
+                        for item in licensed_context([by_id[i] for i in paragraph.fact_ids])
+                        for word in re.findall(r"[A-Za-z]+", item["statement"])
+                    }
+                    starters = {
+                        "the",
+                        "a",
+                        "an",
+                        "this",
+                        "these",
+                        "his",
+                        "her",
+                        "their",
+                        "he",
+                        "she",
+                        "they",
+                        "in",
+                        "on",
+                        "at",
+                        "with",
+                        "by",
+                    }
+                    if any(
+                        word.casefold() not in words | starters
+                        for word in re.findall(r"\b[A-Z][A-Za-z]+\b", paragraph.text)
+                    ):
+                        raise ValueError("Article introduces an uncited name or subject")
                     if re.search(
                         r"\b(because|therefore|caused|as a result|led to)\b", paragraph.text, re.I
                     ) and not cited_types & {"CAUSED", "ENABLED"}:
                         raise ValueError("Article causal bridge lacks an accepted causal assertion")
+                    if (
+                        re.search(
+                            r"\b(after|before|later|then|meanwhile|while)\b", paragraph.text, re.I
+                        )
+                        and "PRECEDES" not in cited_types
+                    ):
+                        raise ValueError(
+                            "Article temporal bridge lacks an accepted order assertion"
+                        )
                 assessment = GroundingAssessment.model_validate(
                     await infer(
                         "Verify every assertion in the original prose against ONLY licensed"
@@ -468,6 +548,7 @@ class ArcIntelligence:
             perspective=dossier.perspective,
             spoiler_position=dossier.spoiler_position,
             dossier_revision=dossier.revision,
+            status="partial" if any(s["status"] == "validated" for s in sections) else "withheld",
             sections=sections,
             coverage=[s.coverage for s in dossier.sections],
             quality={
@@ -506,6 +587,11 @@ def article_markdown(result: dict[str, Any]) -> str:
         "Status: partial; coverage is assessed separately from prose validation.",
         "",
     ]
+    if article["status"] == "withheld":
+        lines += [
+            "Article quality gate: FAILED. No validated narrative paragraphs are available.",
+            "",
+        ]
     for section in article["sections"]:
         if section["status"] != "validated":
             continue

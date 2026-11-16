@@ -12,6 +12,7 @@ from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.encyclopedia_contracts import GroundingAssessment
 from src.application.story_scope import ArcResearchScope
 from src.domain.entities import GraphNode, GraphRelationship
+from src.domain.event_support import event_support_issue
 from src.domain.value_objects import NodeType, RelationshipType
 
 from .test_knowledge_presentation import fixture_knowledge, memory_atlas
@@ -66,6 +67,20 @@ def arc_fixture():
         yield Repo()
 
     return ArcIntelligence(atlas, tx), universe, continuity, UUID(arc.id), knowledge, stored
+
+
+def test_editorial_characterization_is_not_an_event_and_active_roles_cannot_reverse():
+    assert event_support_issue({"description": "This moment cements her character as brave."})
+    bad = {
+        "description": "Mira refuses to eat the food offered by Taro.",
+        "event": {
+            "trigger": "refuses to eat the food offered by Taro",
+            "participant_roles": {"Taro": "actor", "Mira": "recipient"},
+        },
+    }
+    assert event_support_issue(bad) == "active_clause_roles_reversed"
+    bad["event"]["participant_roles"] = {"Mira": "actor", "Taro": "recipient"}
+    assert event_support_issue(bad) is None
 
 
 def inference(calls):
@@ -126,6 +141,16 @@ async def test_dossier_survives_jobs_and_unchanged_sections_reuse_without_infere
     first_calls = len(calls)
     again = await service.rebuild(universe, continuity, arc, 7, inference(calls), lambda: [])
     assert again == result and len(calls) == first_calls
+    from copy import deepcopy
+
+    duplicate = deepcopy(knowledge.facts[1])
+    duplicate["id"] = "rediscovered-claim"
+    duplicate["sources"][0]["provenance"]["job_id"] = "later-research-job"
+    knowledge.facts.append(duplicate)
+    assert (
+        await service.rebuild(universe, continuity, arc, 7, inference(calls), lambda: []) == result
+    )
+    assert len(calls) == first_calls
     assert len(knowledge.nodes) == 2 and len(knowledge.edges) == 1
     assert "https://example.org/owned" in article_markdown(result)
 
@@ -176,6 +201,113 @@ async def test_failed_prose_grounding_preserves_dossier_and_withholds_paragraphs
     assert result["dossier"]["sections"][0]["developments"]
     assert result["article"]["sections"][0]["paragraphs"] == []
     assert "Mira entered the observatory." not in article_markdown(result)
+    assert result["article"]["status"] == "withheld"
+    repaired = await service.rebuild(
+        universe, continuity, arc, 7, base, lambda: [], retry_withheld=True
+    )
+    assert repaired["article"]["quality"]["validated_sections"] == 1
+
+
+async def test_explicit_source_failure_does_not_extract_unrelated_archive_material():
+    from types import SimpleNamespace
+    from uuid import uuid4
+
+    from src.application.research import ResearchRequest, SourceInput
+    from src.orchestration.research_workflow import ResearchWorkflow
+
+    request = ResearchRequest(
+        universe_id=uuid4(),
+        continuity_id=uuid4(),
+        objective="Investigate an exact historical inscription",
+        sources=[
+            SourceInput(
+                url="https://example.org/history",
+                permission_basis="Owned permitted test",
+                source_scope="Owned historical test scope",
+            )
+        ],
+    )
+
+    async def check(state):
+        return request
+
+    async def snapshot(stage, state):
+        return state
+
+    result = await ResearchWorkflow.extractor(
+        SimpleNamespace(check=check, snapshot=snapshot),
+        {"source_ids": [], "archive_source_ids": [str(uuid4())], "errors": ["source_http_error"]},
+    )
+    assert result["candidates"] == []
+
+
+async def test_import_sharing_requires_explicit_current_grant_and_revocation_takes_effect(factory):
+    from src.application.source_contracts import SourceRegistration
+    from src.infrastructure.persistence.evidence_index import SqlEvidenceIndex
+    from src.infrastructure.persistence.models.research import SourceDocumentModel
+    from src.infrastructure.persistence.source_registry import SqlSourceRegistry
+
+    from .test_source_intelligence import prepare_index
+
+    scope, ids, _, _ = await prepare_index(factory)
+    async with factory() as session, session.begin():
+        command = SourceRegistration(
+            universe_id=scope.universe_id,
+            name="Owned imported account",
+            url="https://first.example/import",
+            category="reference",
+            media=["anime"],
+            continuity_ids=[scope.id],
+            access_method="import",
+            authority="secondary",
+            retrieval_policy="permitted",
+            permission_basis="Owned explicit cloud test grant",
+            attribution="Owned text",
+            cloud_content_allowed=True,
+            imported_content_cloud_allowed=True,
+        )
+        row = await SqlSourceRegistry(session).register(command)
+        source = await session.get(SourceDocumentModel, ids[0])
+        source.public_web = False
+        source.provenance = {**source.provenance, "registry_id": str(row.id)}
+        metadata = await SqlEvidenceIndex(session).source_metadata(
+            scope.universe_id, scope.id, [ids[0]]
+        )
+        assert metadata[ids[0]]["import_cloud_allowed"]
+        assert not metadata[ids[0]]["public_web"]
+        await SqlSourceRegistry(session).register(
+            command.model_copy(
+                update={"cloud_content_allowed": False, "imported_content_cloud_allowed": False}
+            )
+        )
+        metadata = await SqlEvidenceIndex(session).source_metadata(
+            scope.universe_id, scope.id, [ids[0]]
+        )
+        assert not metadata[ids[0]]["import_cloud_allowed"]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Taro entered the observatory.",
+        "Mira entered the observatory before Mira opened its gate.",
+    ],
+)
+async def test_model_cannot_approve_uncited_subject_or_temporal_bridge(text):
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    base = inference([])
+
+    async def invalid_prose(prompt, schema, task):
+        if schema is GroundingAssessment:
+            raise AssertionError("Deterministic rejection must precede model approval")
+        draft = await base(prompt, schema, task)
+        if schema is ArcSectionDraft:
+            draft.paragraphs[0].text = text
+        return draft
+
+    result = await service.rebuild(universe, continuity, arc, 7, invalid_prose, lambda: [])
+    assert result["article"]["quality"]["validated_sections"] == 0
+    assert result["article"]["sections"][0]["status"] == "withheld"
 
 
 async def test_later_revelation_enriches_earlier_full_lore_context_but_not_bounded_view():
@@ -214,7 +346,7 @@ async def test_later_revelation_enriches_earlier_full_lore_context_but_not_bound
     assert (await service.read(universe, continuity, arc, None))["article"] is None
     _, _, full_facts = await service.context(universe, continuity, arc, None)
     _, _, early_facts = await service.context(universe, continuity, arc, 7)
-    assert {"later-history", "later-explanation"} <= {f["id"] for f in full_facts}
-    assert not {"later-history", "later-explanation"} & {f["id"] for f in early_facts}
+    assert {str(historical.id), str(revelation.id)} <= {f["target_id"] for f in full_facts}
+    assert not {str(historical.id), str(revelation.id)} & {f["target_id"] for f in early_facts}
     after = await service.rebuild(universe, continuity, arc, None, inference([]), lambda: [])
     assert after["article"]["dossier_revision"] != before["article"]["dossier_revision"]

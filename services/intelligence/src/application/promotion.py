@@ -8,6 +8,7 @@ from src.application.event_identity import same_scoped_occurrence
 from src.application.ports.knowledge import KnowledgeTransaction
 from src.domain.atomic_evidence import atomic_payload_support
 from src.domain.entities import GraphNode, GraphRelationship
+from src.domain.event_support import event_support_issue
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import (
     PromotionPolicy,
@@ -228,6 +229,8 @@ class CanonicalGraphPromotionService:
                     )
                     accepted = accepted and identity_grounded
                     event = payload.get("event") or {}
+                    if payload.get("type") == "EVENT" and event_support_issue(payload):
+                        accepted = False
                     if event.get("occurrence_status", "actual") != "actual":
                         accepted = False
                     anchor = event.get("identity_anchor")

@@ -196,6 +196,10 @@ async def extract_events(
             metadata["trigger_end"] = metadata["trigger_start"] + len(frame.trigger)
             label = frame.trigger
             description = anchor["text"]
+            from src.domain.event_support import event_support_issue
+
+            if event_support_issue({"event": metadata, "description": description}):
+                continue
             entities[("EVENT", metadata["identity_anchor"])] = {
                 "name": label,
                 "type": "EVENT",

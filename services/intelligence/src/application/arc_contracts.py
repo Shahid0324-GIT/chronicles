@@ -122,7 +122,7 @@ class ArcArticle(StructuredModel):
     perspective: Literal["bounded", "full_lore"]
     spoiler_position: int | None
     dossier_revision: str
-    status: Literal["partial"] = "partial"
+    status: Literal["partial", "withheld"] = "partial"
     sections: list[dict[str, Any]]
     coverage: list[ArcSectionCoverage]
     quality: dict[str, Any]

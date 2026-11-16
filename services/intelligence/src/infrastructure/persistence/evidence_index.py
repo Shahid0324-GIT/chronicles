@@ -92,6 +92,12 @@ class SqlEvidenceIndex:
             values[identifier] = {
                 **provenance,
                 "public_web": public,
+                "import_cloud_allowed": bool(
+                    not public
+                    and policy.get("access_method") == "import"
+                    and policy.get("cloud_content_allowed")
+                    and policy.get("imported_content_cloud_allowed")
+                ),
                 "cloud_content_allowed": bool(
                     public and policy.get("cloud_content_allowed", False)
                 ),

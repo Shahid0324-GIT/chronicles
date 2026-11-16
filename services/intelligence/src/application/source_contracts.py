@@ -50,12 +50,17 @@ class SourceRegistration(StructuredModel):
     discovery_index: bool = False
     discovery_path_prefix: str | None = Field(default=None, max_length=1000)
     cloud_content_allowed: bool = False
+    imported_content_cloud_allowed: bool = False
     derived_from: str | None = None
     presentation_position: int | None = Field(default=None, ge=1, le=100000)
     position_basis: str | None = None
 
     @model_validator(mode="after")
     def validate_locator(self) -> "SourceRegistration":
+        if self.imported_content_cloud_allowed and (
+            self.access_method != "import" or not self.cloud_content_allowed
+        ):
+            raise ValueError("Imported sharing requires explicit import and cloud permissions")
         if any(not term.strip() or len(term) > 100 for term in self.eligible_section_terms):
             raise ValueError("Eligible section terms require explicit nonempty labels")
         p = urlsplit(self.url)

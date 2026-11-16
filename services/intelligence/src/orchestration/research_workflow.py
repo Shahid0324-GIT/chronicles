@@ -411,7 +411,8 @@ class ResearchWorkflow:
                         request.universe_id, request.continuity_id, list(identifiers)
                     )
                 public = identifiers <= set(metadata) and all(
-                    value.get("public_web") and value.get("cloud_content_allowed")
+                    (value.get("public_web") and value.get("cloud_content_allowed"))
+                    or (bool(request.arc_id) and value.get("import_cloud_allowed"))
                     for value in metadata.values()
                 )
             else:
@@ -1323,12 +1324,28 @@ class ResearchWorkflow:
 
     async def extractor(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
+        if (
+            request.sources
+            and not request.use_registry
+            and not request.allow_search
+            and not state.get("source_ids")
+            and state.get("errors")
+        ):
+            # Failed explicit acquisition is not permission to process unrelated
+            # archive hits from the planner's broad universe query.
+            return await self.snapshot("extractor", {**state, "candidates": []})
         focus = (
             request.research_focus
             if state.get("iteration", 1) == 1
             else (state.get("plan", {}).get("focus") or request.research_focus)
         )
-        passages = await self.selected_passages(state)
+        if request.sources and not request.use_registry and not request.allow_search:
+            async with self.transactions() as archive:
+                passages = await archive.get_passages(
+                    [UUID(i) for i in state.get("source_ids", [])]
+                )
+        else:
+            passages = await self.selected_passages(state)
         if not passages:
             return await self.snapshot("extractor", {**state, "candidates": []})
         if request.relationship_subjects and state.get("investigation"):
@@ -2811,7 +2828,8 @@ class ResearchWorkflow:
                         request.universe_id, request.continuity_id, list(sources)
                     )
                 public = sources <= set(metadata) and all(
-                    s.get("public_web") and s.get("cloud_content_allowed")
+                    (s.get("public_web") and s.get("cloud_content_allowed"))
+                    or s.get("import_cloud_allowed")
                     for s in metadata.values()
                 )
             # Provisional outline text may have a separate, local-only source.
@@ -2828,6 +2846,7 @@ class ResearchWorkflow:
             infer,
             lambda: [asdict(u) for u in self.inference.usage[offset:]],
             compose=compose,
+            retry_withheld=request.retry_withheld_presentations,
         )
         dossier = result.get("dossier") or {}
         questions = [g for s in dossier.get("sections", []) for g in s["coverage"]["gaps"]]
