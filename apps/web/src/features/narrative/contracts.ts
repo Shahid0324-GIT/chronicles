@@ -69,6 +69,32 @@ export interface Discovery {
   presentation: PresentationHint;
 }
 export interface NarrativeCatalog {
+  reconstruction?: {
+    status: string;
+    readingExplanation: string;
+    coverage: {
+      verifiedSegments: number;
+      candidateTransitions: number;
+      causallyExplainedTransitions: number;
+      unexplainedTransitions: number;
+      segmentsWithParticipants: number;
+      segmentsWithLocations: number;
+    };
+    segments: {
+      id: string;
+      eventNodeIds: string[];
+      title: string;
+      statement: string;
+    }[];
+    transitions: {
+      fromId: string;
+      toId: string;
+      explanation: string;
+      sourceOrder: string;
+      narrativeOrder: string;
+      chronology: string;
+    }[];
+  };
   researchScopes?: {
     id: string;
     title: string;

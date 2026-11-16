@@ -6,7 +6,7 @@ Phase 3 increment 4 connects PostgreSQL-backed researched journeys to the existi
 
 ## Prerequisites
 
-Increment 6.0 adds manga-aware One Piece research configuration and partial reader publication. The live Romance Dawn benchmark currently exposes two accepted nodes and a short grounded recap; it is not a complete arc reconstruction. See [implementation, actual research and limitations](docs/phase-3-increment-6-0.md) and the [persisted research audit](docs/phase-3-increment-6-0-results.json). The mandatory research-to-browser enrichment test uses explicitly owned fixtures, separately from real One Piece research.
+Increment 6.1 adds evidence-backed story reconstruction and explicit missing-transition coverage. The real Romance Dawn reader exposes three verified segments linked through Luffy, with two unexplained transitions and no accepted causal links. It remains a partial account, not a complete arc reconstruction. See [implementation, actual research and limitations](docs/phase-3-increment-6-1.md) and the [persisted research audit](docs/phase-3-increment-6-1-results.json). The mandatory research-to-browser enrichment test uses explicitly owned fixtures, separately from real One Piece research.
 
 To add configuration without story seeds, run `..\..\.venv\Scripts\python -m src.infrastructure.persistence.configure_one_piece` from `services/intelligence` after migrations. This does not grant source or cloud-sharing permissions. Use the existing research worker and source controls; configuration alone creates no story content.
 

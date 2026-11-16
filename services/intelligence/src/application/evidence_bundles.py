@@ -24,7 +24,9 @@ def connection_score(text: str, subjects: list[InvestigationSubject], objective:
     actions = len(
         re.findall(
             r"\b(helped|assisted|rescued|saved|invented|developed|created|became|consulting|"
-            r"collaborated|joined|taught|trained)\b|助け|救っ|発明|協力|同行",
+            r"collaborated|joined|taught|trained|saves|rescues|helps|gives|gave|recruits|"
+            r"recruited|recruiting|joins|eats|ate|receives|received|defeats|fights|fought)\b"
+            r"|助け|救っ|発明|協力|同行",
             text,
             re.I,
         )
@@ -122,7 +124,7 @@ class EvidenceBundleBuilder:
             fingerprint = digest(
                 json.dumps(
                     {
-                        "policy": "relationship-bundles-v1",
+                        "policy": "relationship-bundles-v2",
                         "continuity": str(continuity),
                         "boundary": spoiler_position,
                         "permissions": permissions,

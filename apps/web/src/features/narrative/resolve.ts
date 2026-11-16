@@ -87,6 +87,11 @@ export function resolveNarrative(
   });
   const threadIds = new Set(loreThreads.map((t) => t.id));
   const resolved: NarrativeCatalog = {
+    reconstruction: catalog.reconstruction?.segments.every((s) =>
+      s.eventNodeIds.every((i) => nodes.get(i)?.type === "EVENT"),
+    )
+      ? catalog.reconstruction
+      : undefined,
     coverage: catalog.coverage,
     researchState: catalog.researchState,
     researchScopes: catalog.researchScopes,

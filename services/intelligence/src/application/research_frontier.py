@@ -25,6 +25,43 @@ class ResearchFrontierService:
     def boundary(position: int | None) -> str:
         return digest(str(position))
 
+    @staticmethod
+    def rank(leads: list[ResearchLead], objective: str) -> list[ResearchLead]:
+        """Prefer missing connections with evidence over repeatedly unanswered trivia."""
+
+        def value(lead: ResearchLead) -> float:
+            words = terms(lead.question)
+            connection = bool(
+                words
+                & {
+                    "meet",
+                    "met",
+                    "recruit",
+                    "recruitment",
+                    "joined",
+                    "joins",
+                    "rescued",
+                    "rescue",
+                    "relationship",
+                    "interactions",
+                    "conflict",
+                    "connections",
+                }
+            )
+            detail = bool(words & {"spelling", "romanization", "alias", "aliases"})
+            available = min(2, len(lead.source_ids)) * 8 + min(2, len(lead.available_sources)) * 2
+            relevance = min(10, len(words & terms(objective)))
+            return (
+                (lead.priority + connection * 20 - detail * 12 + available + relevance)
+                * lead.expected_value
+                / max(1, lead.estimated_cost)
+                / (1 + 0.25 * lead.attempt_count)
+            )
+
+        return sorted(
+            leads, key=lambda lead: (lead.status == "RESOLVED", -value(lead), str(lead.id))
+        )
+
     async def discover(
         self,
         universe: UUID,
@@ -78,10 +115,7 @@ class ResearchFrontierService:
                     missing_evidence=["Source-backed answer not yet established"],
                 )
                 existing.append(await memory.save_lead(lead))
-        return sorted(
+        return self.rank(
             [lead for lead in existing if lead.objective_key == objective_key],
-            key=lambda lead: (
-                -lead.priority * lead.expected_value / max(1, lead.estimated_cost),
-                str(lead.id),
-            ),
+            objective,
         )

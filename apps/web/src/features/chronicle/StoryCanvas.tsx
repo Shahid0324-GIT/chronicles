@@ -19,6 +19,7 @@ export default function StoryCanvas() {
     coverage = useExploration((s) => s.narrative.coverage),
     entries = useExploration((s) => s.narrative.entryIndex),
     research = useExploration((s) => s.narrative.researchState),
+    reconstruction = useExploration((s) => s.narrative.reconstruction),
     scope = useExploration((s) => s.narrative.researchScopes?.[0]),
     inspect = useExploration((s) => s.selectNode),
     setMode = useExploration((s) => s.setMode);
@@ -160,6 +161,37 @@ export default function StoryCanvas() {
               <small>{step.presentationState?.reason}</small>
             </article>
           ))}
+        </section>
+      )}
+      {reconstruction && reconstruction.coverage.verifiedSegments > 0 && (
+        <section className="unplaced-events" aria-label="Story reconstruction">
+          <details>
+            <summary>
+              Story progression · {reconstruction.coverage.verifiedSegments}{" "}
+              verified segments ·{" "}
+              {reconstruction.coverage.unexplainedTransitions} unexplained
+              transitions
+            </summary>
+            <p>{reconstruction.readingExplanation}</p>
+            <ol>
+              {reconstruction.transitions.map((t) => (
+                <li key={`${t.fromId}:${t.toId}`}>
+                  <strong>
+                    {
+                      reconstruction.segments.find((s) => s.id === t.fromId)
+                        ?.title
+                    }{" "}
+                    →{" "}
+                    {
+                      reconstruction.segments.find((s) => s.id === t.toId)
+                        ?.title
+                    }
+                  </strong>
+                  <p>{t.explanation}</p>
+                </li>
+              ))}
+            </ol>
+          </details>
         </section>
       )}
     </section>

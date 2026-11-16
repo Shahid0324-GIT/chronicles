@@ -156,10 +156,10 @@ class IdentityResolver:
             return -score, node["id"]
 
         choices = sorted(eligible, key=rank)[:8]
-        if payload.get("atomic"):
+        if payload.get("atomic") or indexed_evidence and payload["name"].isascii():
             if payload["type"] != "EVENT":
                 choices = [n for n in choices if rank(n)[0] < 0 or n in bridged_matches]
-            else:
+            elif payload.get("atomic"):
                 new_names = {name_key(n) for n in event.get("participants", [])}
 
                 def relevant_occurrence(node: dict[str, Any]) -> bool:

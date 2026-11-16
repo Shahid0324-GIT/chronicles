@@ -51,6 +51,54 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
   if (
     !object(value) ||
     value.schemaVersion !== 1 ||
+    (value.reconstruction !== undefined &&
+      !(
+        object(value.reconstruction) &&
+        text(value.reconstruction.status) &&
+        text(value.reconstruction.readingExplanation) &&
+        object(value.reconstruction.coverage) &&
+        [
+          "verifiedSegments",
+          "candidateTransitions",
+          "causallyExplainedTransitions",
+          "unexplainedTransitions",
+          "segmentsWithParticipants",
+          "segmentsWithLocations",
+        ].every(
+          (k) =>
+            Number.isInteger(
+              (value.reconstruction as RecordValue).coverage &&
+                ((value.reconstruction as RecordValue).coverage as RecordValue)[
+                  k
+                ],
+            ) &&
+            Number(
+              ((value.reconstruction as RecordValue).coverage as RecordValue)[
+                k
+              ],
+            ) >= 0,
+        ) &&
+        list(
+          value.reconstruction.segments,
+          (s) =>
+            object(s) &&
+            id(s.id) &&
+            ids(s.eventNodeIds) &&
+            text(s.title) &&
+            text(s.statement),
+        ) &&
+        list(
+          value.reconstruction.transitions,
+          (t) =>
+            object(t) &&
+            id(t.fromId) &&
+            id(t.toId) &&
+            text(t.explanation) &&
+            text(t.sourceOrder) &&
+            text(t.narrativeOrder) &&
+            text(t.chronology),
+        )
+      )) ||
     (value.researchScopes !== undefined &&
       !list(
         value.researchScopes,

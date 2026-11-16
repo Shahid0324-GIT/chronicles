@@ -110,10 +110,37 @@ class SourceSelector:
         ]
         ranked = []
         for entry in eligible:
-            relevance = len(query_terms & terms(entry.name + " " + " ".join(entry.topics)))
+            relevance = len(
+                query_terms
+                & terms(entry.name + " " + " ".join(entry.topics) + " " + entry.discovery_summary)
+            )
             authority = {"primary": 8, "secondary": 4, "unverified": 0}[entry.authority]
             priority = (profile.source_priorities.get(entry.category, 0) if profile else 0) / 10
-            score = relevance * 10 + authority + priority + entry.discovery_priority / 100
+            medium = profile.original_medium if profile else "unknown"
+            medium_fit = (
+                12
+                if medium in entry.media
+                else -24
+                if medium != "unknown" and "unknown" not in entry.media
+                else 0
+            )
+            # Navigation is useful discovery, but rarely the evidence for a story account.
+            navigation = entry.discovery_index or entry.category == "chapter-index"
+            richness = (
+                -12
+                if navigation and "index" not in query_terms
+                else min(6, len(terms(entry.discovery_summary)) / 8)
+            )
+            novelty = 3 if entry.last_success is None else 0
+            score = (
+                relevance * 10
+                + authority
+                + priority
+                + entry.discovery_priority / 100
+                + medium_fit
+                + richness
+                + novelty
+            )
             if entry.health == "failed":
                 score -= 20
             ranked.append(
@@ -126,6 +153,9 @@ class SourceSelector:
                         "continuity-compatible",
                         "retrieval-permitted",
                         f"profile-priority:{priority}",
+                        f"medium-fit:{medium_fit}",
+                        f"information-richness:{richness}",
+                        f"unretrieved-source:{entry.last_success is None}",
                     ],
                 )
             )

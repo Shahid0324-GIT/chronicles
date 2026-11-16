@@ -4,6 +4,7 @@ from uuid import UUID, uuid5
 
 from src.application.ports.narrative import NarrativeKnowledge, NarrativeTransaction
 from src.application.story_position import POSITION_BASES, position_basis, source_position
+from src.application.story_reconstruction import reconstruct_story
 from src.domain.research import digest
 from src.domain.value_objects import NodeType, RelationshipType
 
@@ -328,6 +329,45 @@ class NarrativeBuilder:
                         "steps": arc_steps,
                     }
                 )
+        outline_bases = {item.get("positionBasis") for item in knowledge.reference_outline}
+        outline_basis = (
+            basis if facts else next(iter(outline_bases)) if len(outline_bases) == 1 else None
+        )
+        outline = [
+            item
+            for item in knowledge.reference_outline
+            if (allowed is None or item["sourceId"] in allowed)
+            and item.get("positionBasis") in POSITION_BASES
+            and (spoiler_position is None or item.get("positionBasis") == outline_basis)
+            and (
+                spoiler_position is None
+                or type(item.get("position")) is int
+                and item["position"] <= spoiler_position
+            )
+        ]
+        all_steps = [s for j in catalog["journeys"] for s in j["steps"]] + catalog[
+            "unorderedMilestones"
+        ]
+        catalog["reconstruction"] = reconstruct_story(continuity, facts, edges, all_steps, outline)
+        if knowledge.story_scopes:
+            catalog["reconstructions"] = []
+            for arc in knowledge.story_scopes:
+                arc_steps = [
+                    step
+                    for step in all_steps
+                    if step["eventNodeId"] in positions
+                    and arc.first_position <= positions[step["eventNodeId"]] <= arc.last_position
+                ]
+                arc_outline = [
+                    item
+                    for item in outline
+                    if type(item.get("position")) is int
+                    and item.get("positionBasis") == arc.position_basis
+                    and arc.first_position <= item["position"] <= arc.last_position
+                ]
+                result = reconstruct_story(continuity, facts, edges, arc_steps, arc_outline)
+                catalog["reconstructions"].append({"arcId": arc.id, "title": arc.title, **result})
+            catalog["reconstruction"] = catalog["reconstructions"][0]
         revision = digest(json.dumps(catalog, sort_keys=True, ensure_ascii=False))
         catalog["revision"] = revision
         boundary = digest(

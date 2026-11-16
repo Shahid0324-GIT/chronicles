@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.ports.narrative import NarrativeKnowledge
 from src.application.research_policy import UniverseResearchProfile
+from src.application.story_reconstruction import outline_permission
 from src.domain.entities import now
 from src.domain.exceptions import NotFoundError
 from src.infrastructure.persistence.models import ContinuityModel, NodeModel, RelationshipModel
@@ -174,6 +175,68 @@ class SqlNarrativeRepository:
             if profile
             else []
         )
+        jobs = list(
+            await self.session.scalars(
+                select(ResearchJobModel)
+                .where(
+                    ResearchJobModel.universe_id == universe,
+                    ResearchJobModel.continuity_id == continuity,
+                )
+                .order_by(ResearchJobModel.created_at.desc())
+                .limit(20)
+            )
+        )
+        outlines = {}
+        for job in jobs:
+            for item in job.checkpoint.get("reconstruction_outline", [])[:30]:
+                if (
+                    not isinstance(item, dict)
+                    or not isinstance(item.get("id"), str)
+                    or (not isinstance(item.get("statement"), str) or item["id"] in outlines)
+                ):
+                    continue
+                try:
+                    passage_id = UUID(item["passageId"])
+                    source_id = UUID(item["sourceId"])
+                    start, end = item["quoteStart"], item["quoteEnd"]
+                except (KeyError, ValueError, TypeError):
+                    continue
+                passage = await self.session.get(SourcePassageModel, passage_id)
+                source = await self.session.get(SourceDocumentModel, source_id)
+                if (
+                    not source
+                    or not passage
+                    or passage.source_id != source.id
+                    or (
+                        source.universe_id != universe
+                        or source.continuity_id != continuity
+                        or source.content_hash != item.get("sourceRevision")
+                        or passage.content_hash != item.get("passageHash")
+                        or type(start) is not int
+                        or type(end) is not int
+                        or not 0 <= start < end <= len(passage.text)
+                        or passage.text[start:end] != item.get("statement")
+                    )
+                ):
+                    continue
+                config = registry.get((source.provenance or {}).get("registry_id", ""), {})
+                if item.get("permissionFingerprint") != outline_permission(config):
+                    continue
+                if source.provenance.get("registry_id") and (
+                    config.get("retrieval_policy") != "permitted"
+                    or str(continuity) not in config.get("continuity_ids", [])
+                    or config.get("discovery_index")
+                    or config.get("eligible_section_terms", [])
+                    != source.provenance.get("eligible_section_terms", [])
+                    or config.get("revision") != source.provenance.get("registry_revision")
+                ):
+                    continue
+                outlines[item["id"]] = {
+                    **item,
+                    "position": source.provenance.get("presentation_position"),
+                    "positionBasis": source.provenance.get("position_basis"),
+                    "url": source.url,
+                }
         return NarrativeKnowledge(
             nodes,
             edges,
@@ -187,17 +250,10 @@ class SqlNarrativeRepository:
                     "spoiler_position": job.request.get("spoiler_position"),
                     "coverage": job.checkpoint.get("coverage", {}).get("outcome"),
                 }
-                for job in await self.session.scalars(
-                    select(ResearchJobModel)
-                    .where(
-                        ResearchJobModel.universe_id == universe,
-                        ResearchJobModel.continuity_id == continuity,
-                    )
-                    .order_by(ResearchJobModel.created_at.desc())
-                    .limit(20)
-                )
+                for job in jobs
             ],
             [arc for arc in story_scopes if arc.continuity_id == continuity],
+            list(outlines.values()),
         )
 
     async def save(

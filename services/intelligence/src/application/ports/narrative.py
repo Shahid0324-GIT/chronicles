@@ -15,6 +15,7 @@ class NarrativeKnowledge:
     interpretations: list[dict[str, Any]] = field(default_factory=list)
     research: list[dict[str, Any]] = field(default_factory=list)
     story_scopes: list[ArcResearchScope] = field(default_factory=list)
+    reference_outline: list[dict[str, Any]] = field(default_factory=list)
 
 
 class NarrativeRepository(Protocol):

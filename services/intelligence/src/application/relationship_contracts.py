@@ -108,4 +108,4 @@ class RelationshipInvestigation(StructuredModel):
     verification_state: str = "pending"
     publication_state: str = "unpublished"
     presentation_ready: bool = False
-    policy_version: str = "relationship-bundles-v1"
+    policy_version: str = "relationship-bundles-v2"

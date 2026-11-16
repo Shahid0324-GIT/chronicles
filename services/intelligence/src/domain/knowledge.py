@@ -172,7 +172,13 @@ def same_full_name_order(left: str, right: str) -> bool:
 def short_name_bridge(short: str, full: str, texts: list[str]) -> bool:
     key = name_key(short)
     parts = name_key(full).split()
-    if script(short) != "latin" or len(key.split()) != 1 or len(parts) != 2 or key not in parts:
+    if (
+        script(short) != "latin"
+        or len(key.split()) != 1
+        or not 2 <= len(parts) <= 4
+        or len(key) < 2
+        or key not in parts
+    ):
         return False
     for text in texts:
         value = name_key(text)

@@ -256,7 +256,9 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
             )
             await page.goto(f"http://127.0.0.1:{web_port}")
             await page.get_by_role("status").filter(has_text="No verified story events").wait_for()
-            screenshots = root / "docs/evidence/increment-6-0"
+            screenshots = Path(
+                os.environ.get("CHRONICLES_FIXTURE_EVIDENCE_DIR", tmp_path / "screenshots")
+            )
             screenshots.mkdir(parents=True, exist_ok=True)
             await page.screenshot(path=str(screenshots / "fixture-before.png"))
             await investigate(TEXT, "first")

@@ -115,6 +115,16 @@ class KnowledgePipeline:
                     }
                 )
                 cached = (completed or {}).get(cache_key)
+                if cached and cached.get("decision") in {"NEW_ENTITY", "DIFFERENT_ENTITY"}:
+                    anchor = (claim["payload"].get("event") or {}).get("identity_anchor")
+                    cached = {
+                        **cached,
+                        "canonical_id": str(
+                            uuid5(
+                                continuity, "event:" + anchor if anchor else "entity:" + claim["id"]
+                            )
+                        ),
+                    }
                 decision = (
                     cached
                     if cached and cached.get("accepted")

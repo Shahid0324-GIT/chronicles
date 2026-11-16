@@ -5,6 +5,8 @@ import {
 } from "../../src/features/narrative/provider";
 import { createExplorationStore } from "../../src/stores/exploration";
 import { eventRegion } from "../../src/features/chronicle/model";
+import { decodeNarrative } from "../../src/features/narrative/decode";
+import { resolveNarrative } from "../../src/features/narrative/resolve";
 import {
   getResearchSummary,
   startResearch,
@@ -112,6 +114,48 @@ const scope = {
 };
 afterEach(() => vi.unstubAllGlobals());
 describe("live narrative provider", () => {
+  it("retains real reconstruction gaps but rejects malformed or unresolved graph references", () => {
+    const value = catalog();
+    value.reconstruction = {
+      status: "partial",
+      readingExplanation: "Source order does not establish cause.",
+      coverage: {
+        verifiedSegments: 1,
+        candidateTransitions: 0,
+        causallyExplainedTransitions: 0,
+        unexplainedTransitions: 0,
+        segmentsWithParticipants: 0,
+        segmentsWithLocations: 0,
+      },
+      segments: [
+        {
+          id: id(15),
+          eventNodeIds: [id(5)],
+          title: "Owned event",
+          statement: "Owned evidence",
+        },
+      ],
+      transitions: [],
+    };
+    const decoded = decodeNarrative(value);
+    expect(
+      resolveNarrative(decoded, graph(), continuity).catalog.reconstruction
+        ?.coverage.verifiedSegments,
+    ).toBe(1);
+    value.reconstruction.segments[0].eventNodeIds = [id(99)];
+    expect(
+      resolveNarrative(value, graph(), continuity).catalog.reconstruction,
+    ).toBeUndefined();
+    expect(() =>
+      decodeNarrative({
+        ...value,
+        reconstruction: {
+          ...value.reconstruction,
+          coverage: { verifiedSegments: -1 },
+        },
+      }),
+    ).toThrow();
+  });
   it("reselecting the current continuity preserves the loaded story and bookmark", async () => {
     const store = createExplorationStore(
       graph(),

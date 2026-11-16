@@ -31,6 +31,9 @@ def atomic_support(atom: Mapping[str, Any], quotations: list[str]) -> AtomicSupp
     if not re.match(
         r"(?:helped|assisted|rescued|saved|invented|created|developed|taught|trained|joined|"
         r"met|protected|defeated|consulted|became|started|worked|is|was|are|were|belongs|"
+        r"saves|rescues|helps|protects|defeats|meets|gives|gave|eats|ate|receives|received|"
+        r"recruits|recruited|recruiting|joins|fights|fought|escapes|escaped|leaves|left|"
+        r"arrives|arrived|arriving|"
         r"knew|knows|caused|enabled|has|had)\b|助け|救っ|発明|協力|出会|同行|である|だった",
         predicate,
         re.I,
@@ -38,7 +41,8 @@ def atomic_support(atom: Mapping[str, Any], quotations: list[str]) -> AtomicSupp
         return AtomicSupport(False, "Predicate requires further semantic investigation.")
     a, p, b = map(re.escape, (subject, predicate, target))
     directed = (
-        rf"(?<!\w){a}\s+(?:(?:has|had)\s+)?{p}\s+(?:(?:a|an|the)\s+)?[\"“‘']?{b}[\"”’']?(?!\w)"
+        rf"(?<!\w){a}\s+(?:(?:has|had|accidentally|shows up and)\s+)?"
+        rf"{p}\s+(?:(?:a|an|the)\s+)?[\"“‘']?{b}[\"”’']?(?!\w)"
     )
     japanese = rf"{a}(?:は|が){b}(?:を|に){p}"
     joint = rf"(?<!\w)(?:{a}\s+and\s+{b}|{b}\s+and\s+{a})\s+{p}(?!\w)"
@@ -83,11 +87,12 @@ def atomic_payload_support(payload: Mapping[str, Any], quotations: list[str]) ->
         for k in ("subject", "subject_type", "predicate", "object", "object_type", "event_name")
     ):
         return AtomicSupport(False, "Malformed atomic binding is not evidence.")
-    proof = atomic_support(atom, quotations)
-    if not proof.supported:
-        return proof
-    if payload.get("description") != proof.statement:
-        return AtomicSupport(False, "Payload asserts more than its bound atomic statement.")
+    proofs = [atomic_support(atom, [quote]) for quote in quotations]
+    proof = next(
+        (p for p in proofs if p.supported and p.statement == payload.get("description")), None
+    )
+    if proof is None:
+        return AtomicSupport(False, "Payload lacks its exact bound atomic statement.")
     if "name" in payload:
         expected = {
             atom["subject"]: atom["subject_type"],

@@ -24,7 +24,9 @@ from src.application.atomic_verification import (
 from src.application.connected_extraction import (
     candidate_rows,
     compile_connected,
+    corroborate_candidates,
     extract_connected,
+    repair_connected,
 )
 from src.application.encyclopedia_extraction import extract_encyclopedia
 from src.application.event_extraction import action_score, extract_events
@@ -56,6 +58,7 @@ from src.application.ports.research import (
     SearchResult,
     StructuredDiscoveryFetcher,
 )
+from src.application.ports.retrieval import EvidenceHit
 from src.application.ports.source_intelligence import SourceRegistryTransaction
 from src.application.relationship_contracts import (
     ConnectedAssertions,
@@ -84,6 +87,7 @@ from src.application.source_intelligence import (
     SourceDiscoveryService,
     SourceSelector,
 )
+from src.application.story_reconstruction import reference_outline
 from src.domain.atomic_evidence import atomic_support
 from src.domain.entities import GraphNode, GraphRelationship, now
 from src.domain.knowledge import name_key
@@ -117,6 +121,8 @@ Return exactly the requested JSON structure. No tools or external knowledge are 
 
 
 class ResearchState(TypedDict, total=False):
+    reconstruction_outline: list[dict[str, Any]]
+    reconstruction: dict[str, Any]
     investigation: dict[str, Any]
     source_access_gaps: list[dict[str, str]]
     retrieved_bytes: int
@@ -658,7 +664,8 @@ class ResearchWorkflow:
                 "lead_ids": [
                     str(lead.id)
                     for lead in leads
-                    if lead.depth <= self.policy(state).max_follow_up_depth
+                    if lead.status != "RESOLVED"
+                    and lead.depth <= self.policy(state).max_follow_up_depth
                 ][: self.policy(state).max_leads],
                 "plan": {
                     "questions": list(plan.model_dump()["questions"]),
@@ -1816,7 +1823,7 @@ class ResearchWorkflow:
             if not proof.supported:
                 investigation.assessments[key] = {
                     "bundle_fingerprint": atom["bundle_fingerprint"],
-                    "policy_version": "atomic-verification-v1",
+                    "policy_version": "atomic-verification-v3",
                     "verdict": {"reason": proof.reason},
                     "method": "deterministic_rejection",
                     "context_fingerprint": context_fingerprint(atom, investigation.bundles),
@@ -1874,26 +1881,33 @@ class ResearchWorkflow:
             for offset in range(0, len(pending), batch_size):
                 batch = pending[offset : offset + batch_size]
                 await self.check(state)
+                related = {
+                    b.fingerprint: b
+                    for _, a in batch
+                    for b in related_evidence(a, investigation.bundles)
+                }
+                cloud_allowed = all(
+                    p.cloud_allowed for b in [bundle, *related.values()] for p in b.passages
+                )
 
                 async def infer(
-                    prompt: str, schema: type[BaseModel], *, active_bundle: EvidenceBundle = bundle
+                    prompt: str, schema: type[BaseModel], *, public: bool = cloud_allowed
                 ) -> BaseModel:
                     return await self.infer(
                         state,
                         prompt,
                         schema,
                         "verification",
-                        all(p.cloud_allowed for p in active_bundle.passages),
+                        public,
                     )
 
                 try:
-                    related = {
-                        b.fingerprint: b
-                        for _, a in batch
-                        for b in related_evidence(a, investigation.bundles)
-                    }
                     results = await assess_atomic_batch(
-                        [a for _, a in batch], bundle, infer, list(related.values())
+                        [a for _, a in batch],
+                        bundle,
+                        infer,
+                        list(related.values()),
+                        continuity_label=state.get("context", {}).get("continuity", ""),
                     )
                 except InferenceFailure as failure:
                     investigation.missing_information = list(
@@ -1911,7 +1925,7 @@ class ResearchWorkflow:
                 for key, verdict in results.items():
                     investigation.assessments[key] = {
                         "bundle_fingerprint": fingerprint,
-                        "policy_version": "atomic-verification-v1",
+                        "policy_version": "atomic-verification-v3",
                         "verdict": verdict,
                         "method": "model_semantic_assessment_not_independent_verification",
                         "context_fingerprint": context_fingerprint(
@@ -1928,6 +1942,18 @@ class ResearchWorkflow:
         candidates = []
         hypotheses = []
         for bundle in investigation.bundles[: self.policy(state).investigation_bundle_limit]:
+
+            async def infer(
+                prompt: str, schema: type[BaseModel], *, active_bundle: EvidenceBundle = bundle
+            ) -> BaseModel:
+                return await self.infer(
+                    state,
+                    prompt,
+                    schema,
+                    "relationship_analysis",
+                    all(p.cloud_allowed for p in active_bundle.passages),
+                )
+
             cached = investigation.extractions.get(bundle.fingerprint)
             if cached:
                 answer = ConnectedAssertions.model_validate(cached)
@@ -1938,20 +1964,9 @@ class ResearchWorkflow:
                         {"bundle_id": str(bundle.id)},
                     )
             else:
-
-                async def infer(
-                    prompt: str, schema: type[BaseModel], *, active_bundle: EvidenceBundle = bundle
-                ) -> BaseModel:
-                    return await self.infer(
-                        state,
-                        prompt,
-                        schema,
-                        "relationship_analysis",
-                        all(p.cloud_allowed for p in active_bundle.passages),
-                    )
-
                 answer = await extract_connected(bundle, request.objective, infer)
-                investigation.extractions[bundle.fingerprint] = answer.model_dump(mode="json")
+            answer = await repair_connected(bundle, answer, infer)
+            investigation.extractions[bundle.fingerprint] = answer.model_dump(mode="json")
             extraction, proposed = compile_connected(bundle, answer)
             candidates.extend(candidate_rows(extraction, UUID(state["job_id"])))
             hypotheses.extend(proposed)
@@ -1968,16 +1983,9 @@ class ResearchWorkflow:
             state["investigation"] = investigation.model_dump(mode="json")
             async with self.transactions() as archive:
                 await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
-        unique: dict[Any, dict[str, Any]] = {}
-        for row in candidates:
-            payload = row["payload"]
-            key = (
-                (row["kind"], payload.get("type"), payload.get("name"))
-                if row["kind"] == "entity"
-                else row["hash"]
-            )
-            unique.setdefault(key, row)
-        candidates = list(unique.values())
+        candidates = corroborate_candidates(
+            candidates, investigation.bundles, UUID(state["job_id"])
+        )
         investigation.pending_claims = [c["hash"] for c in candidates]
         investigation.relevant_events = [
             c["id"] for c in candidates if c["payload"].get("type") == "EVENT"
@@ -2134,6 +2142,9 @@ class ResearchWorkflow:
                 "reason": (
                     "A published focal relationship and its actual event permit a bounded "
                     "explanation; topic gaps remain."
+                    if investigation.presentation_ready
+                    else "No published focal interaction yet; source, identity and verification "
+                    "gaps remain unresolved."
                 ),
             }
             if self.memory:
@@ -2153,7 +2164,9 @@ class ResearchWorkflow:
                     self.policy(state),
                     depth=state.get("iteration", 1),
                 )
-        elif self.memory and self.atlas and state.get("policy"):
+        if self.atlas:
+            state = await self.reconstruction_stage({**state, "publication": publication}, request)
+        if self.memory and self.atlas and state.get("policy"):
             state = await self.assess_coverage({**state, "publication": publication})
         return await self.snapshot("promotion_policy", {**state, "publication": publication})
 
@@ -2480,7 +2493,7 @@ class ResearchWorkflow:
                     k: v
                     for k, v in old.assessments.items()
                     if v.get("bundle_fingerprint") in eligible
-                    and v.get("policy_version") == "atomic-verification-v1"
+                    and v.get("policy_version") == "atomic-verification-v3"
                 }
                 investigation.resolution_progress = old.resolution_progress
             return await self.snapshot(
@@ -2489,6 +2502,7 @@ class ResearchWorkflow:
                     **state,
                     "indexing": indexed,
                     "investigation": investigation.model_dump(mode="json"),
+                    "reconstruction_outline": await self.outline_evidence(request, hits),
                     "archive_source_ids": list(dict.fromkeys(str(h.source.id) for h in hits)),
                     "retrieved_passage_ids": [str(h.passage.id) for h in hits],
                     "extraction_passage_ids": [str(b.anchor_passage_id) for b in bundles],
@@ -2583,6 +2597,7 @@ class ResearchWorkflow:
             {
                 **state,
                 "indexing": indexed,
+                "reconstruction_outline": await self.outline_evidence(request, selected),
                 "archive_source_ids": list(dict.fromkeys(str(h.source.id) for h in selected)),
                 "retrieved_passage_ids": [str(h.passage.id) for h in selected],
                 "extraction_passage_ids": first + remaining,
@@ -2600,11 +2615,14 @@ class ResearchWorkflow:
 
     async def narrative_builder(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
+        state = await self.reconstruction_stage(state, request)
         enough = (
             not state.get("policy")
             or not self.policy(state).presentation_requires_coverage
             or state.get("coverage", {}).get("outcome") == "SUFFICIENT_FOR_PRESENTATION"
             or bool(state.get("publication", {}).get("promoted"))
+            or request.compose_presentations
+            and bool(state.get("dossier", {}).get("facts"))
         )
         resource_ids = request.presentation_resource_ids
         if request.relationship_subjects and state.get("investigation", {}).get(
@@ -2736,7 +2754,9 @@ class ResearchWorkflow:
             if request.presentation_only:
                 state["verified"] = 1
             state = {**state, "narrative": counts}
-            return await self.snapshot("narrative_builder", state)
+            return await self.snapshot(
+                "narrative_builder", await self.reconstruction_stage(state, request)
+            )
         if request.narrative_research and self.narratives:
             catalog = await self.narratives.build(
                 request.universe_id,
@@ -2753,4 +2773,88 @@ class ResearchWorkflow:
                     "ordering_gaps": len(catalog["orderingGaps"]),
                 },
             }
-        return await self.snapshot("narrative_builder", state)
+        return await self.snapshot(
+            "narrative_builder", await self.reconstruction_stage(state, request)
+        )
+
+    async def outline_evidence(
+        self, request: ResearchRequest, hits: list[EvidenceHit]
+    ) -> list[dict[str, Any]]:
+        permissions = {}
+        if self.registry:
+            async with self.registry() as registry:
+                permissions = {
+                    str(e.id): e.model_dump(mode="json")
+                    for e in await registry.entries(request.universe_id)
+                }
+        return reference_outline(hits, permissions)
+
+    async def reconstruction_stage(
+        self, state: ResearchState, request: ResearchRequest
+    ) -> ResearchState:
+        if not self.atlas:
+            return state
+        catalog = await self.atlas.catalog(
+            request.universe_id, request.continuity_id, spoiler_position=request.spoiler_position
+        )
+        reconstruction = catalog["reconstruction"]
+        state["reconstruction"] = reconstruction
+        state["coverage"] = {
+            "outcome": "PARTIAL_COVERAGE"
+            if reconstruction["segments"]
+            else "INSUFFICIENT_EVIDENCE",
+            **state.get("coverage", {}),
+            "reconstruction": reconstruction["coverage"],
+        }
+        if (
+            reconstruction["gaps"]
+            and state["coverage"].get("outcome") == "SUFFICIENT_FOR_PRESENTATION"
+        ):
+            state["coverage"]["outcome"] = "PARTIAL_COVERAGE"
+        if self.memory and reconstruction["gaps"] and not request.presentation_only:
+            leads = await ResearchFrontierService(self.memory).discover(
+                request.universe_id,
+                request.continuity_id,
+                request.spoiler_position,
+                request.objective,
+                [g["question"] for g in reconstruction["gaps"]],
+                "story-reconstruction-v1",
+                self.policy(state),
+                depth=state.get("iteration", 1),
+            )
+            questions = {g["question"]: g for g in reconstruction["gaps"]}
+            async with self.memory() as memory:
+                for lead in leads:
+                    gap = questions.get(lead.question)
+                    if not gap or lead.status == "RESOLVED":
+                        continue
+                    lead.related_entity_ids = [UUID(i) for i in gap["eventNodeIds"]]
+                    lead.last_job_id = UUID(state["job_id"])
+                    lead.last_stop_reason = "story_evidence_gap"
+                    if gap["kind"] == "missing_transition":
+                        lead.priority, lead.expected_value = 95, 0.9
+                    if gap.get("sourceId"):
+                        lead.source_ids = list(
+                            dict.fromkeys([*lead.source_ids, UUID(gap["sourceId"])])
+                        )
+                    await memory.save_lead(lead)
+            state["lead_ids"] = list(
+                dict.fromkeys(
+                    [
+                        *state.get("lead_ids", []),
+                        *[str(lead.id) for lead in leads if lead.status != "RESOLVED"],
+                    ]
+                )
+            )[: self.policy(state).max_leads]
+        async with self.transactions() as archive:
+            await archive.update_job(UUID(state["job_id"]), checkpoint=dict(state))
+            await archive.event(
+                UUID(state["job_id"]),
+                "research.story_reconstruction",
+                {
+                    "coverage": reconstruction["coverage"],
+                    "gaps": len(reconstruction["gaps"]),
+                    "reference_segments": len(reconstruction["referenceOutline"]),
+                },
+            )
+        return state

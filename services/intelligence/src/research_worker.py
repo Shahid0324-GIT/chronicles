@@ -79,16 +79,17 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                     try:
                         async with asyncio.timeout(max(0, checkpoint["deadline_at"] - time.time())):
                             state = await workflow.run(selected_id, checkpoint)
+                        coverage_sufficient = (
+                            state.get("coverage", {}).get("outcome")
+                            == "SUFFICIENT_FOR_PRESENTATION"
+                        )
                         if (
                             not state.get("verified")
                             or state["verified"] < len(state.get("candidates", []))
                             or state.get("errors")
                             or state.get("publication", {}).get("unresolved")
                             or state.get("narrative", {}).get("partial")
-                            or (
-                                state.get("coverage")
-                                and state["coverage"]["outcome"] != "SUFFICIENT_FOR_PRESENTATION"
-                            )
+                            or (state.get("coverage") and not coverage_sufficient)
                         ):
                             status = "partial"
                     except ResearchCancelled:

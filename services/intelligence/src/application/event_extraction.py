@@ -81,7 +81,11 @@ def immediate_pronoun_context(
 def evidence_units(passages: list[SourcePassage]) -> list[dict[str, Any]]:
     units: list[dict[str, Any]] = []
     for p in passages:
-        for sentence in re.finditer(r"[^.!?。！？]+(?:[.!?。！？]+|$)", p.text):
+        # A middle initial followed by a name is not a sentence boundary. Preserve
+        # the original text and offsets; no substituted or model-authored names.
+        for sentence in re.finditer(
+            r"(?:[^.!?。！？]|(?<=[A-Z])\.(?=\s+[A-Z][a-z]))+(?:[.!?。！？]+|$)", p.text
+        ):
             text = sentence.group().strip()
             start = sentence.start() + len(sentence.group()) - len(sentence.group().lstrip())
             # Bound each unit to the existing Citation quote limit, preserving exact offsets.
