@@ -11,6 +11,8 @@ from src.application.arc_contracts import ArcPlan, ArcSectionDraft, ArcUnderstan
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.encyclopedia_contracts import GroundingAssessment
 from src.application.story_scope import ArcResearchScope
+from src.domain.entities import GraphNode, GraphRelationship
+from src.domain.value_objects import NodeType, RelationshipType
 
 from .test_knowledge_presentation import fixture_knowledge, memory_atlas
 
@@ -87,7 +89,7 @@ def inference(calls):
                     dict(
                         section_key="entry",
                         facet="action",
-                        fact_ids=[f["id"] for f in facts if f["payload"].get("type") == "EVENT"],
+                        fact_ids=[f["id"] for f in facts if f.get("type") == "EVENT"],
                     )
                 ]
             )
@@ -174,3 +176,45 @@ async def test_failed_prose_grounding_preserves_dossier_and_withholds_paragraphs
     assert result["dossier"]["sections"][0]["developments"]
     assert result["article"]["sections"][0]["paragraphs"] == []
     assert "Mira entered the observatory." not in article_markdown(result)
+
+
+async def test_later_revelation_enriches_earlier_full_lore_context_but_not_bounded_view():
+    from copy import deepcopy
+
+    service, universe, continuity, arc, knowledge, _ = arc_fixture()
+    before = await service.rebuild(universe, continuity, arc, 7, inference([]), lambda: [])
+    await service.rebuild(universe, continuity, arc, None, inference([]), lambda: [])
+    historical = GraphNode(
+        universe_id=universe,
+        continuity_id=continuity,
+        type=NodeType.EVENT,
+        title="built the observatory",
+        summary="Not evidence",
+    )
+    revelation = GraphRelationship(
+        universe_id=universe,
+        continuity_id=continuity,
+        source_node_id=knowledge.nodes[1].id,
+        target_node_id=historical.id,
+        relationship_type=RelationshipType.REVEALED,
+        description="The arrival revealed the old construction.",
+    )
+    fact = deepcopy(knowledge.facts[1])
+    fact.update(id="later-history", target_id=str(historical.id))
+    fact["payload"]["description"] = "Taro built the observatory before Mira's arrival."
+    fact["sources"][0]["provenance"]["presentation_position"] = 50
+    fact["sources"][0]["quote"] = fact["payload"]["description"]
+    link_fact = deepcopy(fact)
+    link_fact.update(id="later-explanation", target_id=str(revelation.id), kind="relationship")
+    link_fact["payload"].update(type="REVEALED", description=revelation.description)
+    knowledge.nodes.append(historical)
+    knowledge.edges.append(revelation)
+    knowledge.facts.extend([fact, link_fact])
+    assert (await service.read(universe, continuity, arc, 7)) == before
+    assert (await service.read(universe, continuity, arc, None))["article"] is None
+    _, _, full_facts = await service.context(universe, continuity, arc, None)
+    _, _, early_facts = await service.context(universe, continuity, arc, 7)
+    assert {"later-history", "later-explanation"} <= {f["id"] for f in full_facts}
+    assert not {"later-history", "later-explanation"} & {f["id"] for f in early_facts}
+    after = await service.rebuild(universe, continuity, arc, None, inference([]), lambda: [])
+    assert after["article"]["dossier_revision"] != before["article"]["dossier_revision"]

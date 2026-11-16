@@ -56,6 +56,7 @@ class SourceInput(StructuredModel):
 
 
 class ResearchRequest(StructuredModel):
+    arc_id: UUID | None = None
     relationship_subjects: list[InvestigationSubject] = Field(default_factory=list, max_length=8)
     adaptive_research: bool = True
     research_policy: ResearchPolicy | None = None

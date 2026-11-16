@@ -5,6 +5,7 @@ assertions. Prose has an independent artifact and grounding gate.
 """
 
 import json
+import re
 from collections.abc import Callable
 from typing import Any
 from uuid import UUID, uuid5
@@ -33,6 +34,24 @@ REQUIRED: list[Facet] = [
     "consequence",
 ]
 POLICY = "arc-intelligence-v1"
+
+
+def licensed_context(facts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """No full archive metadata or unlicensed quotation clauses in model dossiers."""
+    return [
+        {
+            "id": str(i + 1),
+            "kind": f["kind"],
+            "target_id": f["target_id"],
+            "type": f["payload"].get("type"),
+            "statement": (f["payload"].get("atomic") or {}).get("statement")
+            or f["payload"].get("description", ""),
+            "positions": [
+                s.get("provenance", {}).get("presentation_position") for s in f["sources"]
+            ],
+        }
+        for i, f in enumerate(facts)
+    ]
 
 
 class ArcIntelligence:
@@ -217,13 +236,19 @@ class ArcIntelligence:
                         "understanding. Leave unsupported facets empty. This organization "
                         "adds no canon.\n"
                         + json.dumps(
-                            {"plan": plan.model_dump(mode="json"), "facts": facts},
+                            {
+                                "plan": plan.model_dump(mode="json"),
+                                "facts": licensed_context(facts),
+                            },
                             ensure_ascii=False,
                         ),
                         ArcUnderstanding,
                         "relationship_analysis",
                     )
                 )
+            references = {str(i + 1): f["id"] for i, f in enumerate(facts)}
+            for binding in understanding.bindings:
+                binding.fact_ids = [references.get(i, i) for i in binding.fact_ids]
             ids = {f["id"] for f in facts}
             if any(
                 b.section_key not in {s.key for s in plan.sections} or not set(b.fact_ids) <= ids
@@ -339,15 +364,28 @@ class ArcIntelligence:
                         "evidence warrants "
                         "a short partial section, never padding. Do not copy source prose.\n"
                         + json.dumps(
-                            {"section": section.model_dump(mode="json"), "facts": facts},
+                            {
+                                "section": section.model_dump(mode="json"),
+                                "facts": licensed_context(facts),
+                            },
                             ensure_ascii=False,
                         ),
                         ArcSectionDraft,
                         "presentation",
                     )
                 )
+                references = {str(i + 1): f["id"] for i, f in enumerate(facts)}
+                for paragraph in draft.paragraphs:
+                    paragraph.fact_ids = [references.get(i, i) for i in paragraph.fact_ids]
                 if any(not set(p.fact_ids) <= selected for p in draft.paragraphs):
                     raise ValueError("Unlicensed article citations")
+                by_id = {f["id"]: f for f in facts}
+                for paragraph in draft.paragraphs:
+                    cited_types = {by_id[i]["payload"].get("type") for i in paragraph.fact_ids}
+                    if re.search(
+                        r"\b(because|therefore|caused|as a result|led to)\b", paragraph.text, re.I
+                    ) and not cited_types & {"CAUSED", "ENABLED"}:
+                        raise ValueError("Article causal bridge lacks an accepted causal assertion")
                 assessment = GroundingAssessment.model_validate(
                     await infer(
                         "Verify every assertion in the original prose against ONLY licensed"
@@ -357,7 +395,20 @@ class ArcIntelligence:
                         "citations. Reject unsupported motives, causal/temporal bridges, "
                         "changed roles, "
                         "names, contradictions or adaptation mixing.\n"
-                        + json.dumps({"draft": draft.model_dump(mode="json"), "facts": facts}),
+                        + json.dumps(
+                            {
+                                "heading": draft.heading,
+                                "paragraphs": [
+                                    {
+                                        "text": p.text,
+                                        "cited_assertions": licensed_context(
+                                            [by_id[i] for i in p.fact_ids]
+                                        ),
+                                    }
+                                    for p in draft.paragraphs
+                                ],
+                            }
+                        ),
                         GroundingAssessment,
                         "presentation_verification",
                     )
@@ -387,6 +438,17 @@ class ArcIntelligence:
                 if "budget" in error.code:
                     break
                 raise
+            except ValueError:
+                # A bad section cannot discard other validated partial sections.
+                status = "withheld"
+                payload = {
+                    "id": str(section.id),
+                    "heading": section.plan.title,
+                    "paragraphs": [],
+                    "status": status,
+                    "revision": section.revision,
+                    "assessment": {"reason": "Deterministic citation or causal gate failed"},
+                }
             await self.save(
                 dossier.universe_id,
                 dossier.continuity_id,

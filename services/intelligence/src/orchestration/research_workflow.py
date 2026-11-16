@@ -121,6 +121,7 @@ Return exactly the requested JSON structure. No tools or external knowledge are 
 
 
 class ResearchState(TypedDict, total=False):
+    arc_research: dict[str, Any]
     reconstruction_outline: list[dict[str, Any]]
     reconstruction: dict[str, Any]
     investigation: dict[str, Any]
@@ -539,6 +540,8 @@ class ResearchWorkflow:
 
     async def planner(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
+        if request.arc_id and self.atlas:
+            state = await self.arc_stage(state, request, compose=False)
         async with self.transactions() as archive:
             context = await archive.context(request.universe_id, request.continuity_id)
         if self.atlas:
@@ -621,6 +624,7 @@ class ResearchWorkflow:
             + json.dumps(
                 {
                     "objective": request.objective,
+                    "arc_section_research": state.get("arc_research"),
                     "context": context,
                     "previous_errors": state.get("errors", []),
                     "follow_up": state.get("publication", {}).get("unresolved", []),
@@ -2616,6 +2620,9 @@ class ResearchWorkflow:
     async def narrative_builder(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
         state = await self.reconstruction_stage(state, request)
+        if request.arc_id:
+            state = await self.arc_stage(state, request, compose=True)
+            return await self.snapshot("narrative_builder", state)
         enough = (
             not state.get("policy")
             or not self.policy(state).presentation_requires_coverage
@@ -2776,6 +2783,79 @@ class ResearchWorkflow:
         return await self.snapshot(
             "narrative_builder", await self.reconstruction_stage(state, request)
         )
+
+    async def arc_stage(
+        self, state: ResearchState, request: ResearchRequest, *, compose: bool
+    ) -> ResearchState:
+        from src.application.arc_intelligence import ArcIntelligence
+
+        if not self.atlas or not request.arc_id:
+            return state
+        arc_id = request.arc_id
+        service = ArcIntelligence(self.atlas, self.atlas.presentations)
+
+        async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+            # The whole current dossier participates in organization. Permission
+            # is checked for every included source, not just an anchor passage.
+            _, _, facts = await service.context(
+                request.universe_id,
+                request.continuity_id,
+                arc_id,
+                request.spoiler_position,
+            )
+            sources = {UUID(s["id"]) for f in facts for s in f["sources"]}
+            public = False
+            if self.retrieval and sources:
+                async with self.retrieval.transactions() as index:
+                    metadata = await index.source_metadata(
+                        request.universe_id, request.continuity_id, list(sources)
+                    )
+                public = sources <= set(metadata) and all(
+                    s.get("public_web") and s.get("cloud_content_allowed")
+                    for s in metadata.values()
+                )
+            # Provisional outline text may have a separate, local-only source.
+            if "reference_outline" in prompt:
+                public = False
+            return await self.infer(state, prompt, schema, task, public)
+
+        offset = len(self.inference.usage)
+        result = await service.rebuild(
+            request.universe_id,
+            request.continuity_id,
+            request.arc_id,
+            request.spoiler_position,
+            infer,
+            lambda: [asdict(u) for u in self.inference.usage[offset:]],
+            compose=compose,
+        )
+        dossier = result.get("dossier") or {}
+        questions = [g for s in dossier.get("sections", []) for g in s["coverage"]["gaps"]]
+        state["arc_research"] = {
+            "arc_id": str(request.arc_id),
+            "revision": dossier.get("revision"),
+            "sections": [
+                {
+                    "key": s["plan"]["key"],
+                    "objective": s["plan"]["objective"],
+                    "coverage": s["coverage"],
+                }
+                for s in dossier.get("sections", [])
+            ],
+            "questions": questions,
+            "article_quality": (result.get("article") or {}).get("quality"),
+        }
+        if self.memory and questions and not request.presentation_only:
+            await ResearchFrontierService(self.memory).discover(
+                request.universe_id,
+                request.continuity_id,
+                request.spoiler_position,
+                request.objective,
+                questions,
+                "arc-coverage-v1",
+                self.policy(state),
+            )
+        return state
 
     async def outline_evidence(
         self, request: ResearchRequest, hits: list[EvidenceHit]

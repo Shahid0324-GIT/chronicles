@@ -18,3 +18,10 @@ Arc contracts and a durable projection service now reuse knowledge_presentations
 
 Checks: 36 deterministic narrative/dossier tests passed; Ruff check/format passed (146 files); mypy passed (96 modules). These fixtures are not live research. Frontend content diff is empty. Milestones 1–2 foundation checks pass; real coverage and article quality are unproven.
 
+
+## Section workflow and reconstruction checkpoint
+
+ResearchRequest.arc_id opts into arc-oriented planning before acquisition and dossier/article reconstruction after publication. Coverage gaps feed the existing frontier. The existing worker, budget reservations, provider routing and permission controls remain in force. Arc organization and composition use compact licensed statements, never full archive navigation metadata or extra quotation clauses. A failed section is withheld independently. Export via python -m src.export_arc writes current Markdown/JSON without inference. Existing short recap consumers are unchanged.
+
+Checks: 29 focused arc/research/source tests passed, Ruff passed, mypy passed. An additional owned regression proves that an accepted later REVEALED link invalidates the earlier full-lore artifact and includes its historical assertion while the previously generated chapter-bounded artifact stays unchanged. This is fixture verification, not the live Skypiea/Wano benchmark. Real jobs are still under evaluation; no comprehensive article quality gate has passed.
+

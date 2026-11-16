@@ -26,7 +26,10 @@ class QueueResearch:
 
     async def execute(self, command: ResearchRequest) -> UUID:
         if len(command.sources) > self.source_limit or (
-            not command.sources and not command.allow_search and not command.use_registry
+            not command.sources
+            and not command.allow_search
+            and not command.use_registry
+            and not (command.presentation_only and command.arc_id)
         ):
             raise ResearchRequestError(
                 "Provide approved sources within the configured source limit"
