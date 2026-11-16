@@ -16,6 +16,7 @@ from src.domain.exceptions import NotFoundError
 from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.source_registry import SqlSourceRegistry
 from src.infrastructure.research_runtime import (
+    build_arc_intelligence,
     build_atlas,
     build_retrieval,
     registry_transactions,
@@ -24,6 +25,25 @@ from src.infrastructure.sources import PublicSourcePolicy, SearxngSearch
 from src.presentation.dependencies import Session, get_universe
 
 router = APIRouter(prefix="/api")
+
+
+@router.get("/universes/{slug}/arcs/{arc_id}")
+async def arc_research_artifacts(
+    slug: str,
+    arc_id: UUID,
+    request: Request,
+    use_case: Annotated[GetUniverse, Depends(get_universe)],
+    continuity_id: UUID,
+    allowed_source_id: Annotated[list[UUID] | None, Query()] = None,
+    spoiler_position: int | None = Query(default=None, ge=1),
+) -> dict[str, Any]:
+    universe = await use_case.execute(slug)
+    try:
+        return await build_arc_intelligence(request.app.state.session_factory).read(
+            universe.id, continuity_id, arc_id, spoiler_position, allowed_source_id
+        )
+    except ValueError as error:
+        raise NotFoundError("Arc not found in this continuity") from error
 
 
 @router.put("/universes/{slug}/research/profile", response_model=UniverseResearchProfile)

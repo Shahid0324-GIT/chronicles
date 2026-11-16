@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from src.application.arc_intelligence import ArcIntelligence
 from src.application.inference import InferenceRouter
 from src.application.inference_cache import StoredInferenceCache
 from src.application.knowledge_presentation import KnowledgeAtlas
@@ -170,3 +171,8 @@ def build_atlas(factory: async_sessionmaker[AsyncSession]) -> KnowledgeAtlas:
 
     presentations: PresentationTransaction = transaction
     return KnowledgeAtlas(narrative_transactions(factory), presentations)
+
+
+def build_arc_intelligence(factory: async_sessionmaker[AsyncSession]) -> ArcIntelligence:
+    atlas = build_atlas(factory)
+    return ArcIntelligence(atlas, atlas.presentations)
