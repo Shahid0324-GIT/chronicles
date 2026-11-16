@@ -12,6 +12,7 @@ export interface PresentationHint {
   focusRatio?: number;
 }
 export interface JourneyStep {
+  presentationState?: { status: string; reason: string };
   detailedRecap?: string;
   presentationStatus?: "validated" | "unavailable";
   underlyingEventIds?: string[];
@@ -29,6 +30,7 @@ export interface JourneyStep {
   presentation: PresentationHint;
 }
 export interface NarrativeJourney {
+  presentationState?: { status: string; reason: string };
   overview?: string;
   id: string;
   universeId: string;
@@ -37,7 +39,7 @@ export interface NarrativeJourney {
   introduction: string;
   spoilerScope: string;
   ordering: {
-    basis: "broadcast-presentation";
+    basis: "broadcast-presentation" | "manga-chapter" | "unresolved";
     explanation: string;
     sourceIds: string[];
   };
@@ -67,6 +69,27 @@ export interface Discovery {
   presentation: PresentationHint;
 }
 export interface NarrativeCatalog {
+  researchScopes?: {
+    id: string;
+    title: string;
+    firstPosition: number;
+    lastPosition: number;
+    references: string[];
+  }[];
+  researchState?: {
+    coverage?: string | null;
+    status: string;
+    jobId: string | null;
+    error: string | null;
+  };
+  unorderedMilestones?: JourneyStep[];
+  coverage?: {
+    status: string;
+    acceptedEvents: number;
+    validatedMilestones: number;
+    entries: number;
+    orderingGaps: number;
+  };
   relations?: { id: string; source: string; target: string; type: string }[];
   entryIndex?: { id: string; displayTitle: string }[];
   availability?: {

@@ -112,6 +112,34 @@ const scope = {
 };
 afterEach(() => vi.unstubAllGlobals());
 describe("live narrative provider", () => {
+  it("reselecting the current continuity preserves the loaded story and bookmark", async () => {
+    const store = createExplorationStore(
+      graph(),
+      new LocalNarrativeDataProvider(catalog()),
+    );
+    await store.getState().loadNarrative();
+    store.getState().selectMilestone(1);
+    const before = store.getState();
+    store.getState().setContinuity(continuity);
+    expect(store.getState().narrative).toBe(before.narrative);
+    expect(store.getState().narrativeRequest).toBe(before.narrativeRequest);
+    expect(store.getState().journeyIndex).toBe(1);
+  });
+  it("keeps a single real milestone through both provider and resolver", async () => {
+    const single = catalog();
+    single.journeys[0].steps = single.journeys[0].steps.slice(0, 1);
+    const store = createExplorationStore(
+      graph(),
+      new BackendNarrativeDataProvider(
+        new LocalNarrativeDataProvider(),
+        vi.fn<typeof fetch>().mockResolvedValue(Response.json(single)),
+      ),
+    );
+    await store.getState().loadNarrative();
+    expect(store.getState().narrative.availability?.kind).toBe("generated");
+    expect(store.getState().narrative.journeys[0]?.steps).toHaveLength(1);
+    expect(store.getState().narrativeIssues).toEqual([]);
+  });
   it("decodes an API catalog through the provider contract", async () => {
     const request = vi.fn<typeof fetch>().mockResolvedValue(
       Response.json({

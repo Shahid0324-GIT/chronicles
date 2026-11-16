@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openUniverse } from "./universe";
 // Legacy UI cases explicitly exercise the curated fallback; live integration is separate.
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/atlas/universes/*/narrative?*", (route) =>
@@ -10,7 +11,7 @@ test("fits a narrow viewport and keeps keyboard selection on the same page", asy
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await expect(
     page.getByRole("complementary", { name: "Journey story" }),
   ).toBeVisible();
@@ -46,7 +47,7 @@ test("explores a persisted universe without leaving the canvas", async ({
 }) => {
   const errors: string[] = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await expect(
     page.getByRole("complementary", { name: "Journey story" }),
   ).toBeVisible();
@@ -97,7 +98,7 @@ test("handles missing artwork, continuity filters, empty layers and reduced moti
 }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.route("**/art/silver.svg", (route) => route.abort());
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await expect(
     page.getByRole("complementary", { name: "Journey story" }),
   ).toBeVisible();
@@ -156,7 +157,7 @@ for (const mobile of [false, true]) {
     }
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto("/");
+    await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
     const story = page.getByRole("complementary", { name: "Journey story" });
     const lore = page.getByRole("complementary", { name: "Lore discovery" });
     await expect(
@@ -264,7 +265,7 @@ test("opens illustrated milestones, reveals scoped branches and keeps the story 
   page,
 }) => {
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   const spine = page.getByRole("navigation", { name: "Story milestones" });
   await expect(spine.getByRole("button")).toHaveCount(4);
   await expect(page.getByTestId("sigma-canvas")).toHaveCount(0);
@@ -366,7 +367,7 @@ for (const reduced of [false, true]) {
     });
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
-    await page.goto("/");
+    await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
     const spine = page.getByRole("navigation", { name: "Story milestones" });
     await page.getByRole("button", { name: "Lore", exact: true }).click();
     await expect(

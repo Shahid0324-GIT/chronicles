@@ -1,0 +1,3521 @@
+{
+  "date": "2026-11-16",
+  "kind": "Real One Piece research only; fixture verification is separate",
+  "universe": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+  "continuity": "9110bdd8-a094-570f-827b-ad75793989cd",
+  "runs": [
+    {
+      "id": "1f524860-99ba-438a-9b09-36dde64985a8",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 150000,
+        "max_queries": 2,
+        "max_seconds": 1800,
+        "max_requests": 60,
+        "max_documents": 4,
+        "dossier_tokens": 3500,
+        "max_model_calls": 48,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 3,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "deadline_at": 1794749199.2724037,
+      "questions": [
+        "What specific actions does Monkey D. Luffy perform in chapters 1 through 7 of the original One Piece manga?",
+        "How is Roronoa Zoro introduced and what interactions occur between him and Luffy in the first seven chapters?",
+        "Where do Luffy and Zoro recruit their initial crew members within the Romance Dawn arc chapters 1\u20137?",
+        "What objects, locations, or lore elements are explicitly depicted in the manga text for chapters 1 through 7 regarding Luffy and Zoro's journey?"
+      ],
+      "queries": [
+        "Monkey D. Luffy actions interactions crew recruitment places One Piece manga chapter 1 to 7",
+        "Roronoa Zoro introduction meeting Luffy original manga chapters 1 7 events"
+      ],
+      "source_ids": [
+        "86028016-f67a-56d2-a967-d27620c58470",
+        "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "accc8d41-195a-55ac-bcd2-2033d9d35a92",
+        "c9fdf74a-1610-5963-aa92-75956e395931"
+      ],
+      "reused_source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "accc8d41-195a-55ac-bcd2-2033d9d35a92"
+      ],
+      "candidates": 0,
+      "promoted": [],
+      "unresolved": [],
+      "coverage": {
+        "facets": [],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 5,
+        "source_groups": 0,
+        "contradictions": 0,
+        "missing_facets": [
+          "connections",
+          "events",
+          "identity"
+        ],
+        "relevant_facts": 0,
+        "unresolved_findings": 0
+      },
+      "narrative": {
+        "partial": true,
+        "journeys": 0,
+        "revision": "3017a52917c854c10c402cdc3e5275724ba5f6c490061477b1d7ad2ce11cf6c0",
+        "unordered": 0,
+        "ordering_gaps": 0
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 32378,
+          "model_call": true,
+          "input_tokens": 962,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 215,
+          "reservation_id": "2c3675ac-11fa-41be-831a-9de2c2a2dba0",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 4641,
+          "model_call": true,
+          "input_tokens": 994,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 6,
+          "reservation_id": "26c19a22-7160-48ff-b75e-23c31742d814",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 4472,
+          "model_call": true,
+          "input_tokens": 554,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 6,
+          "reservation_id": "ce175fa9-1922-4e2b-a3ce-b457e24e37af",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 4790,
+          "model_call": true,
+          "input_tokens": 671,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 6,
+          "reservation_id": "dd552516-13eb-4285-b17d-0fdf3ef8ca0f",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 4,
+      "returned_tokens": 3414
+    },
+    {
+      "id": "b6720bd5-3d93-4057-b801-74ea3d977e4a",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 150000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 4,
+        "dossier_tokens": 3500,
+        "max_model_calls": 48,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 2,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": true,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "deadline_at": 1794749826.058748,
+      "questions": [
+        "What specific locations, objects, or lore elements are explicitly depicted in the manga text for chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey?",
+        "Where do Monkey D. Luffy and Roronoa Zoro recruit their initial crew members within the Romance Dawn arc chapters 1\u20137 of the original One Piece manga?",
+        "What specific actions does Monkey D. Luffy perform in chapters 1 through 7 of the original One Piece manga excluding anime-only events?",
+        "How is Roronoa Zoro introduced and what interactions occur between him and Monkey D. Luffy in the first seven chapters of the original One Piece manga?"
+      ],
+      "queries": [],
+      "source_ids": [],
+      "reused_source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "accc8d41-195a-55ac-bcd2-2033d9d35a92"
+      ],
+      "candidates": 8,
+      "promoted": [
+        {
+          "kind": "entity",
+          "target_id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+          "claim_id": "0c8aab27-b98a-573c-950b-febfb7b3ac94",
+          "created": true
+        }
+      ],
+      "unresolved": [
+        {
+          "reason": "Insufficient independent publisher families for this claim strength.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "805955b8-e0a8-5726-a143-4ad8aa172b7e"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "706731f0-0a9a-5753-a9a5-551478c4dba5"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "8b9a1533-ec8a-59fa-aea9-ca45a8af3661"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "553779c7-c717-5356-854c-f72bb9d7dcc0"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "6a9705d6-b1f5-55c0-a8c2-68c586213284"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "98a1995f-e10a-5153-aecf-8de19933858e"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "dbf60715-dc27-5260-a61a-6cd893e84caf"
+        }
+      ],
+      "coverage": {
+        "facets": [],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 8,
+        "source_groups": 0,
+        "contradictions": 0,
+        "missing_facets": [
+          "connections",
+          "events",
+          "identity"
+        ],
+        "relevant_facts": 0,
+        "unresolved_findings": 7
+      },
+      "narrative": {
+        "partial": true,
+        "journeys": 0,
+        "revision": "e328de561ff066b1fc0d4d28d20f7431cd611661884e507bea05497ebb6c4e24",
+        "unordered": 0,
+        "ordering_gaps": 0
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9344,
+          "model_call": true,
+          "input_tokens": 1401,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 286,
+          "reservation_id": "d0c2bfb4-0ed3-4407-821a-cc32f5027329",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 4501,
+          "model_call": true,
+          "input_tokens": 671,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 6,
+          "reservation_id": "a536cef5-8dab-4339-92cb-577899c242b1",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8112,
+          "model_call": true,
+          "input_tokens": 1077,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 196,
+          "reservation_id": "c0f6b8e5-bafd-4b66-af22-ec00edda4954",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9908,
+          "model_call": true,
+          "input_tokens": 1961,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 290,
+          "reservation_id": "9e44945f-9c8d-48f4-a597-7d568d31c688",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5237,
+          "model_call": true,
+          "input_tokens": 686,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 57,
+          "reservation_id": "5cc55bc3-ca1f-426a-8ee4-076a95caa693",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5488,
+          "model_call": true,
+          "input_tokens": 619,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 59,
+          "reservation_id": "0c02a826-73b0-4d12-9b98-4b2c7d609823",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5707,
+          "model_call": true,
+          "input_tokens": 1044,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 53,
+          "reservation_id": "2528ffa8-7f19-4264-a233-58b9bc860899",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6709,
+          "model_call": true,
+          "input_tokens": 1383,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 107,
+          "reservation_id": "d0e64898-967e-4e6a-87a3-d53436807a19",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7360,
+          "model_call": true,
+          "input_tokens": 3030,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 107,
+          "reservation_id": "eb449f43-3311-4efb-b933-d65aa37aad88",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6837,
+          "model_call": true,
+          "input_tokens": 1952,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 95,
+          "reservation_id": "16401419-6f73-4cfd-812d-913cda6575eb",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7097,
+          "model_call": true,
+          "input_tokens": 1707,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 102,
+          "reservation_id": "5ffe2831-4fd4-47f0-9b9c-7e52ddc9d7ec",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6924,
+          "model_call": true,
+          "input_tokens": 1895,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 100,
+          "reservation_id": "1d5169ba-8e96-44b3-ab90-1215cb4de0f0",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6919,
+          "model_call": true,
+          "input_tokens": 1657,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 96,
+          "reservation_id": "17bc7fe2-b315-473c-8a46-8d8311220ad3",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6936,
+          "model_call": true,
+          "input_tokens": 1804,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 102,
+          "reservation_id": "4d6612bf-96da-40de-a9b0-1dbae9b07e6e",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6707,
+          "model_call": true,
+          "input_tokens": 1724,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 98,
+          "reservation_id": "766f25c8-9203-40aa-9ec5-23af606d1458",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6758,
+          "model_call": true,
+          "input_tokens": 1779,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 102,
+          "reservation_id": "46ddb4bf-765f-4210-b53d-13b96363a922",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6908,
+          "model_call": true,
+          "input_tokens": 1777,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 107,
+          "reservation_id": "feaa86b2-e949-4d8b-b5ce-572b54d56dc6",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 17,
+      "returned_tokens": 28130
+    },
+    {
+      "id": "c3cd59f3-74d5-4be7-a1e1-c6eab98ea692",
+      "status": "partial",
+      "error": null,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 150000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 4,
+        "dossier_tokens": 3500,
+        "max_model_calls": 48,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 2,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": true,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "deadline_at": 1794750564.064661,
+      "questions": [
+        "What specific locations, objects, or lore elements are explicitly depicted in the text of One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey?",
+        "What concrete actions does Monkey D. Luffy perform in the original One Piece manga text for chapters 1 through 7 excluding anime-only events?",
+        "Where do Monkey D. Luffy and Roronoa Zoro recruit their initial crew members within the text of One Piece manga chapters 1\u20137 of the Romance Dawn arc?",
+        "How is Roronoa Zoro introduced in the original One Piece manga text for chapters 1 through 7 and what specific interactions occur between him and Monkey D. Luffy?"
+      ],
+      "queries": [],
+      "source_ids": [],
+      "reused_source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "accc8d41-195a-55ac-bcd2-2033d9d35a92"
+      ],
+      "candidates": 10,
+      "promoted": [
+        {
+          "kind": "entity",
+          "target_id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+          "claim_id": "42981915-5d7a-5a46-91b1-fd4fb2ad41f0",
+          "created": false
+        }
+      ],
+      "unresolved": [
+        {
+          "reason": "Insufficient independent publisher families for this claim strength.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "1552ed68-88be-531b-8def-88b209ded211"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "df9dbbcd-c686-5e6e-9e6a-7c00ec7777dd"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "aeffbcc0-334e-5998-9f0c-92c0813af115"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "edf03e2c-b0ea-5eee-8e9e-fbdb583a094b"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "0a51dee3-edfa-58d6-bd1b-f04dbfe126f2"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "76bed990-fc27-5f20-b966-e7a77a1ba3ba"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "8e5799ff-8a2d-5c9a-9043-d6653d626b4d"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "f2bb7c43-b2ac-567a-8479-dc13cd96996a"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "f6cdcc3e-6193-5f89-93b9-170fe1321aff"
+        }
+      ],
+      "coverage": {
+        "facets": [],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 11,
+        "source_groups": 0,
+        "contradictions": 0,
+        "missing_facets": [
+          "connections",
+          "events",
+          "identity"
+        ],
+        "relevant_facts": 0,
+        "unresolved_findings": 9
+      },
+      "narrative": {
+        "reused": 0,
+        "partial": false,
+        "withheld": 0,
+        "generated": 1
+      },
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9415,
+          "model_call": true,
+          "input_tokens": 1605,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 280,
+          "reservation_id": "d589ee2e-a7e2-45b1-939d-b72d0f92157a",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 4510,
+          "model_call": true,
+          "input_tokens": 671,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 6,
+          "reservation_id": "9641b3c7-002e-4739-82da-0f2c7ad27820",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8105,
+          "model_call": true,
+          "input_tokens": 1077,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 196,
+          "reservation_id": "db91251a-36ab-4d8f-a612-32f2bf29385b",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "cache_hit",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 0,
+          "model_call": false,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": null,
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5174,
+          "model_call": true,
+          "input_tokens": 686,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 57,
+          "reservation_id": "41e73385-eaed-4439-a654-06c488234baf",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5976,
+          "model_call": true,
+          "input_tokens": 958,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 61,
+          "reservation_id": "46990228-904f-46f1-8e70-cad5537ec7d8",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5711,
+          "model_call": true,
+          "input_tokens": 1044,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 53,
+          "reservation_id": "fc631b31-26c7-4a66-873e-868780ecf59d",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6691,
+          "model_call": true,
+          "input_tokens": 1544,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 101,
+          "reservation_id": "d898d623-267c-4d46-a487-5b296b933b09",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9199,
+          "model_call": true,
+          "input_tokens": 3126,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 230,
+          "reservation_id": "24c977d2-957a-4f80-a737-7212d160adb8",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6811,
+          "model_call": true,
+          "input_tokens": 1954,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 102,
+          "reservation_id": "52bdde58-1e75-4354-a6dc-382017710470",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6692,
+          "model_call": true,
+          "input_tokens": 1705,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 100,
+          "reservation_id": "1d1c33d5-3fcb-4ca7-b762-d705b7dff5c8",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6800,
+          "model_call": true,
+          "input_tokens": 1982,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 96,
+          "reservation_id": "e9b6e32d-0ca2-458a-bc44-81be04da5a6b",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6870,
+          "model_call": true,
+          "input_tokens": 1759,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 102,
+          "reservation_id": "890aab09-8487-4e45-bdca-6fa68d1a4963",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7510,
+          "model_call": true,
+          "input_tokens": 1753,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 100,
+          "reservation_id": "f4daa6c2-a738-4a23-9177-61cabbf0c258",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7501,
+          "model_call": true,
+          "input_tokens": 1800,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 102,
+          "reservation_id": "92854303-008a-42e1-a2c5-47265f7327f6",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7583,
+          "model_call": true,
+          "input_tokens": 1819,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 97,
+          "reservation_id": "2d2e0abc-5cec-4349-8187-cd08fa577570",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7177,
+          "model_call": true,
+          "input_tokens": 1850,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 99,
+          "reservation_id": "40990068-1df1-46d4-8464-baeaaa45dc6e",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7400,
+          "model_call": true,
+          "input_tokens": 1781,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 104,
+          "reservation_id": "77612f32-6180-4ca9-80b8-28b054b30bbe",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6823,
+          "model_call": true,
+          "input_tokens": 1748,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 95,
+          "reservation_id": "8b63c6f5-5339-4092-9157-30acad794775",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6051,
+          "model_call": true,
+          "input_tokens": 1001,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 105,
+          "reservation_id": "a24ccfed-7cc3-4ae1-9247-b2e84942eb0d",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7711,
+          "model_call": true,
+          "input_tokens": 607,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 132,
+          "reservation_id": "cea7102b-065a-4fa6-afbe-3d735e4afdc0",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 20,
+      "returned_tokens": 32688
+    },
+    {
+      "id": "6703a75c-1b57-425a-9fd3-c1595d043c0f",
+      "status": "partial",
+      "error": "job_duration_exceeded",
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 150000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 4,
+        "dossier_tokens": 3500,
+        "max_model_calls": 48,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 2,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": true,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "deadline_at": 1794752535.6484559,
+      "questions": [
+        "Monkey D. Luffy's specific actions regarding food consumption and physical exertion in One Piece manga chapters 1 through 7 excluding anime-only events",
+        "Roronoa Zoro's introduction method and initial interactions with Monkey D. Luffy in the original One Piece manga text for chapters 1 through 7",
+        "Locations explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding Marine base courtyard references",
+        "Objects explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding anime-only items",
+        "Lore elements explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding later revelations"
+      ],
+      "queries": [],
+      "source_ids": [],
+      "reused_source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "accc8d41-195a-55ac-bcd2-2033d9d35a92"
+      ],
+      "candidates": 11,
+      "promoted": [],
+      "unresolved": [],
+      "coverage": {
+        "reason": "job_duration_exceeded",
+        "outcome": "BUDGET_EXHAUSTED"
+      },
+      "narrative": null,
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 11173,
+          "model_call": true,
+          "input_tokens": 1821,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 353,
+          "reservation_id": "54e4f9d2-35b5-415e-8d0f-a11b937b60e5",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2217,
+          "model_call": true,
+          "input_tokens": 1023,
+          "model_digest": null,
+          "output_tokens": 809,
+          "reservation_id": "f7764265-5d28-4a91-be93-7757cfbcb8e6",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2649,
+          "model_call": true,
+          "input_tokens": 1382,
+          "model_digest": null,
+          "output_tokens": 1013,
+          "reservation_id": "7c8ce2d6-81c4-4c09-8197-552a3386e365",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10013,
+          "model_call": true,
+          "input_tokens": 1961,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 290,
+          "reservation_id": "5ce5d3f6-475e-43dc-8113-3545448cfe96",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5328,
+          "model_call": true,
+          "input_tokens": 657,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 59,
+          "reservation_id": "4701bff8-096d-49ed-9b2a-d2b77c6d70aa",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6057,
+          "model_call": true,
+          "input_tokens": 805,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 70,
+          "reservation_id": "bd3b10aa-e0c7-49de-8e05-4bd8876fb2b5",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6274,
+          "model_call": true,
+          "input_tokens": 1030,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 58,
+          "reservation_id": "1cb0a478-ea4a-41a2-a6bc-402a8dd076b4",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5547,
+          "model_call": true,
+          "input_tokens": 1004,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 51,
+          "reservation_id": "76ac898b-def1-47fb-88e1-4e552ab45180",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6797,
+          "model_call": true,
+          "input_tokens": 1424,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 99,
+          "reservation_id": "cf2be30d-ba62-4e1d-9edf-85177fbfd7a8",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2856,
+          "model_call": true,
+          "input_tokens": 3028,
+          "model_digest": null,
+          "output_tokens": 1062,
+          "reservation_id": "8a1e8661-c07b-4ef4-b74f-88368c0fd2d0",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 893,
+          "model_call": true,
+          "input_tokens": 2275,
+          "model_digest": null,
+          "output_tokens": 286,
+          "reservation_id": "0dc3a438-c816-411c-8fe1-03e0fc043cd5",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 615,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "08148201-65a9-428c-8a92-d08b81012bb6",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6679,
+          "model_call": true,
+          "input_tokens": 1683,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 99,
+          "reservation_id": "02fcf2fd-2d99-4b5e-b701-59f3b41d6185",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6669,
+          "model_call": true,
+          "input_tokens": 1682,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 95,
+          "reservation_id": "853ed8b5-842c-4a0a-bc18-f7cd629c3668",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 14,
+      "returned_tokens": 24119
+    },
+    {
+      "id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "status": "failed",
+      "error": "research_execution_failed",
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 150000,
+        "max_queries": 0,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 4,
+        "dossier_tokens": 3500,
+        "max_model_calls": 48,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 2,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": true,
+        "max_candidates_per_pass": 24,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "deadline_at": 1794821365.2321694,
+      "questions": [
+        "Monkey D. Luffy's specific actions regarding food consumption and physical exertion in One Piece manga chapters 1 through 7 excluding anime-only events",
+        "Where do Monkey D. Luffy and Roronoa Zoro recruit their initial crew members within the Romance Dawn arc chapters 1\u20137 of the original One Piece manga?",
+        "Roronoa Zoro's introduction method and initial interactions with Monkey D. Luffy in the original One Piece manga text for chapters 1 through 7",
+        "How is Roronoa Zoro introduced in the original One Piece manga text for chapters 1 through 7 and what specific interactions occur between him and Monkey D. Luffy?",
+        "Locations explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding Marine base courtyard references"
+      ],
+      "queries": [],
+      "source_ids": [],
+      "reused_source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "accc8d41-195a-55ac-bcd2-2033d9d35a92"
+      ],
+      "candidates": 12,
+      "promoted": [
+        {
+          "kind": "entity",
+          "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+          "claim_id": "f9a0475d-8366-509b-b118-c7daaaae893c",
+          "created": true
+        }
+      ],
+      "unresolved": [
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "1c39965c-cec0-5259-93c6-50f323c97157"
+        },
+        {
+          "reason": "Insufficient independent publisher families for this claim strength.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "7c489adc-a66c-5807-83f5-a9941e29ed5a"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "c58b6757-a7ce-5761-8d24-301e08bdd790"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "45b83003-9725-5480-a980-9146bafd041d"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "4bc68f5a-76ca-53d4-b03c-4c0a0b8ffb6c"
+        },
+        {
+          "reason": "Missing supported exact evidence.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "b3348f7f-dade-564c-acab-70c93aeaae62"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "37127785-c3e9-5773-b4b8-83d0328a9c30"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "4821f0f2-6acc-57ad-b6bd-e824d3eaf4b2"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "68ac2072-9f48-5df4-a298-15c000090381"
+        },
+        {
+          "reason": "Identity or endpoint resolution is ambiguous.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "75e9ea2e-cece-53a4-b5a0-13144595692f"
+        },
+        {
+          "reason": "Unresolved material contradiction or continuity ambiguity.",
+          "outcome": "KEEP_UNRESOLVED",
+          "claim_id": "f379092c-ec5c-5dac-96e2-3316fba99cef"
+        }
+      ],
+      "coverage": {
+        "facets": [
+          "events"
+        ],
+        "reason": "Source-backed answers and facets; execution completion is not coverage",
+        "outcome": "BUDGET_EXHAUSTED",
+        "pending_leads": 16,
+        "source_groups": 1,
+        "contradictions": 0,
+        "missing_facets": [
+          "connections",
+          "identity"
+        ],
+        "relevant_facts": 1,
+        "unresolved_findings": 11
+      },
+      "narrative": null,
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 30019,
+          "model_call": true,
+          "input_tokens": 2160,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 297,
+          "reservation_id": "230724d7-7740-43e9-b52d-12bf606258e9",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2329,
+          "model_call": true,
+          "input_tokens": 1023,
+          "model_digest": null,
+          "output_tokens": 767,
+          "reservation_id": "ad253b09-c9df-45fd-8895-b8fabb4bf4da",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2834,
+          "model_call": true,
+          "input_tokens": 1382,
+          "model_digest": null,
+          "output_tokens": 1112,
+          "reservation_id": "5f1c7384-db81-411d-8cf1-9a21fc1582ea",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "cache_hit",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 0,
+          "model_call": false,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": null,
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5461,
+          "model_call": true,
+          "input_tokens": 657,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 59,
+          "reservation_id": "1986bc90-b365-412d-9144-bdf77902d4cd",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5681,
+          "model_call": true,
+          "input_tokens": 808,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 70,
+          "reservation_id": "e8c79422-bc70-442d-a344-9cda2a17cebb",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5825,
+          "model_call": true,
+          "input_tokens": 1139,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 65,
+          "reservation_id": "c820499a-b5e7-4c0b-8a65-b12785556f43",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5440,
+          "model_call": true,
+          "input_tokens": 1004,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 51,
+          "reservation_id": "75725587-e32c-43ab-9a00-529bd6b1555c",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6637,
+          "model_call": true,
+          "input_tokens": 1503,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 95,
+          "reservation_id": "3197d82f-2000-4ea3-b23d-6814be1557a1",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6471,
+          "model_call": true,
+          "input_tokens": 1418,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 94,
+          "reservation_id": "7a4cd166-0e12-4002-b492-b04d9bde0a74",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1626,
+          "model_call": true,
+          "input_tokens": 2952,
+          "model_digest": null,
+          "output_tokens": 548,
+          "reservation_id": "b88a6987-1c41-405d-a2c3-7680124f1738",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1396,
+          "model_call": true,
+          "input_tokens": 2274,
+          "model_digest": null,
+          "output_tokens": 315,
+          "reservation_id": "0fa85751-97ac-419b-a7ac-908f28947887",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 685,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "0af15317-a749-4b73-8740-e9ec262c3560",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6762,
+          "model_call": true,
+          "input_tokens": 1686,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 99,
+          "reservation_id": "13a1d1aa-2b24-43bb-ad74-dee6ed99e693",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6628,
+          "model_call": true,
+          "input_tokens": 1683,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 96,
+          "reservation_id": "250ee086-5a7c-4b69-8bc8-4c18dd70d4af",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7225,
+          "model_call": true,
+          "input_tokens": 1981,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 116,
+          "reservation_id": "1483e8a8-68d2-4e0d-8445-7a12096084b7",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6840,
+          "model_call": true,
+          "input_tokens": 1762,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 106,
+          "reservation_id": "9ca4a3da-1f5d-4c20-bb5f-3f2c6b68c0b3",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7025,
+          "model_call": true,
+          "input_tokens": 1947,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 99,
+          "reservation_id": "7a1dc032-e82e-4b78-a31d-3337fda2f49e",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6734,
+          "model_call": true,
+          "input_tokens": 1774,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 94,
+          "reservation_id": "970a3126-049a-4026-8069-0aac2d2d4845",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 6832,
+          "model_call": true,
+          "input_tokens": 1776,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 95,
+          "reservation_id": "b32ec500-0f1e-4e2a-b1ed-e9d4f2e8f642",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7106,
+          "model_call": true,
+          "input_tokens": 1791,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 119,
+          "reservation_id": "4d910675-bd15-49d0-9f0a-2e4d411f886e",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1401,
+          "model_call": true,
+          "input_tokens": 2123,
+          "model_digest": null,
+          "output_tokens": 352,
+          "reservation_id": "ac687b92-d673-4c90-b684-89dfbaa88d0c",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1366,
+          "model_call": true,
+          "input_tokens": 2127,
+          "model_digest": null,
+          "output_tokens": 389,
+          "reservation_id": "c0657360-0e05-480f-b727-bba4ca8fbabd",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 16196,
+          "model_call": true,
+          "input_tokens": 1253,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 719,
+          "reservation_id": "04dfc14b-0680-41e6-9158-cac4c46f54d7",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2673,
+          "model_call": true,
+          "input_tokens": 1149,
+          "model_digest": null,
+          "output_tokens": 965,
+          "reservation_id": "0104dcea-587a-4711-a566-40cab1d8416c",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2649,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "8531e807-671b-4f54-818c-bfd6f1da0564",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2252,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "fc1b692c-8cfa-42f7-a071-b53e4fbd7bf0",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7970,
+          "model_call": true,
+          "input_tokens": 461,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 130,
+          "reservation_id": "e2d7c048-3584-4a03-9a8c-8f3b457d9752",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1316,
+          "model_call": true,
+          "input_tokens": 1194,
+          "model_digest": null,
+          "output_tokens": 379,
+          "reservation_id": "56c632af-52fa-44b8-bf26-39299d688961",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1596,
+          "model_call": true,
+          "input_tokens": 590,
+          "model_digest": null,
+          "output_tokens": 540,
+          "reservation_id": "f1b3ce78-18da-4537-8ce6-c562ec330c35",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 29,
+      "returned_tokens": 47388
+    },
+    {
+      "id": "e3f2816b-c738-4771-9eaf-80541b4d0a35",
+      "status": "failed",
+      "error": "presentation_policy_storage_limit",
+      "policy": null,
+      "deadline_at": null,
+      "questions": [],
+      "queries": [],
+      "source_ids": [],
+      "reused_source_ids": [],
+      "candidates": 0,
+      "promoted": [],
+      "unresolved": [],
+      "coverage": null,
+      "narrative": null,
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1402,
+          "model_call": true,
+          "input_tokens": 1188,
+          "model_digest": null,
+          "output_tokens": 497,
+          "reservation_id": "8ab411f0-3faf-4824-a9b0-38488cec909e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2254,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "0dd3ae7e-b2ab-4a8f-9547-c57259bb303b",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2342,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "304c4ec0-0b36-457f-a9d2-2718b72709c6",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8752,
+          "model_call": true,
+          "input_tokens": 527,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 135,
+          "reservation_id": "a8e5885b-4b1e-443d-bae1-26b825d867c9",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1611,
+          "model_call": true,
+          "input_tokens": 1194,
+          "model_digest": null,
+          "output_tokens": 480,
+          "reservation_id": "262e8638-b84f-46ec-86d0-ea5b34bbb630",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1990,
+          "model_call": true,
+          "input_tokens": 591,
+          "model_digest": null,
+          "output_tokens": 772,
+          "reservation_id": "4a9a9c9d-e9c2-4b18-bdf7-b6aed6b2acef",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 6,
+      "returned_tokens": 5384
+    },
+    {
+      "id": "ac359631-2f7e-4358-b5c5-2fd4dc365ef9",
+      "status": "partial",
+      "error": null,
+      "policy": null,
+      "deadline_at": 1794821941.1842456,
+      "questions": [],
+      "queries": [],
+      "source_ids": [],
+      "reused_source_ids": [],
+      "candidates": 0,
+      "promoted": [],
+      "unresolved": [],
+      "coverage": null,
+      "narrative": {
+        "reused": 1,
+        "partial": true,
+        "withheld": 2,
+        "generated": 2
+      },
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1572,
+          "model_call": true,
+          "input_tokens": 1149,
+          "model_digest": null,
+          "output_tokens": 500,
+          "reservation_id": "99acca94-b5d3-41ec-8a44-7734a808cee0",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2076,
+          "model_call": true,
+          "input_tokens": 599,
+          "model_digest": null,
+          "output_tokens": 776,
+          "reservation_id": "4926f12b-4610-49b3-a018-8dec55597325",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1300,
+          "model_call": true,
+          "input_tokens": 1188,
+          "model_digest": null,
+          "output_tokens": 417,
+          "reservation_id": "3adced0b-6a7e-4cfd-a005-70891d151a13",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2458,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "ef1c4f35-3e77-4bf7-8f47-e556d166cd7a",
+          "validation_errors": [
+            "entailed:missing",
+            "english:missing",
+            "names_consistent:missing",
+            "agency_and_tense_preserved:missing",
+            "unsupported_relationships:missing",
+            "reason:missing"
+          ]
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1496,
+          "model_call": true,
+          "input_tokens": 760,
+          "model_digest": null,
+          "output_tokens": 443,
+          "reservation_id": "22450e7c-6f9f-48bd-9807-5f375d2a6c3f",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1383,
+          "model_call": true,
+          "input_tokens": 1148,
+          "model_digest": null,
+          "output_tokens": 463,
+          "reservation_id": "535c9847-a7d8-4644-8f8c-bc4ce8c54ef1",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 861,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "14ea61f1-b169-447a-9903-b5bd736e1d4e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 11174,
+          "model_call": true,
+          "input_tokens": 459,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 133,
+          "reservation_id": "f95618cd-55a4-4187-8567-28d55c4d3d9c",
+          "validation_errors": []
+        }
+      ],
+      "model_calls": 8,
+      "returned_tokens": 8035
+    }
+  ],
+  "registry": [
+    {
+      "id": "047abb08-84e1-51e2-b14f-8001727a0c3b",
+      "url": "https://www.thegamer.com/one-piece-crew-members-where-came-from-origins/",
+      "title": "One Piece: Every Crew Member And Where They Came From",
+      "category": "reference",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "09285061-f2b3-5024-8d7d-cf8756005081",
+      "url": "https://onepiece.fandom.com/wiki/Chapter_1",
+      "title": "Chapter 1 | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "0d852ac1-7ea6-5668-ae85-c67a8e1df31a",
+      "url": "https://onepiece.fandom.com/wiki/Monkey_D._Luffy/Relationships",
+      "title": "Monkey D. Luffy/Relationships | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "1d0fdf64-4c91-519f-b980-643208b51059",
+      "url": "https://onepiece.fandom.com/wiki/Chapter_3",
+      "title": "Chapter 3 | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "1f010656-3550-53cc-9c0d-50b414b4ca2f",
+      "url": "https://www.cbr.com/netflix-one-piece-improves-zoro-introduction/",
+      "title": "Netflix's One Piece Improves Zoro's Iconic Introduction",
+      "category": "reference",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "315f78c5-f94f-5aec-8f71-0fda5e72395d",
+      "url": "https://one-piece.com/comics/o1/index.html#selection-1a74bed51a50b604",
+      "title": "Romance Dawn official volume summary",
+      "category": "reference",
+      "authority": "primary",
+      "retrieval_policy": "permitted",
+      "cloud_content_allowed": false,
+      "selectors": {
+        "start_at": "\u5c11\u5e74\u6642\u4ee3\u306e\u30eb\u30d5\u30a3",
+        "end_before": "\u8a73\u7d30\u60c5\u5831"
+      }
+    },
+    {
+      "id": "38e611de-deed-5a7f-9eac-e8b847afabd2",
+      "url": "https://onepiece.fandom.com/wiki/Monkey_D._Luffy",
+      "title": "Monkey D. Luffy | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "3ea27fb3-6801-50d2-879f-10af11243e70",
+      "url": "https://daddyjim.ai/one-piece/character/Monkey-D-Luffy",
+      "title": "Monkey D. Luffy | One Piece Wiki | Daddy Jim Headquarters",
+      "category": "character-profile",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "43dd06b1-e886-58a5-8230-d9c1ddf4ad27",
+      "url": "https://en.wikipedia.org/wiki/List_of_One_Piece_chapters_(1%E2%80%93186)",
+      "title": "List of One Piece chapters (1\u2013186) - Wikipedia",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "4530cf18-10c4-541b-bc63-9a87c300fd0e",
+      "url": "https://animeandmangauniverse.fandom.com/wiki/Roronoa_Zoro/History",
+      "title": "Roronoa Zoro/History | Anime And Manga Universe Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "629b3a5c-a031-5c7a-b8a1-124a880b7714",
+      "url": "https://grandlinewiki.net/eastbluearcM.html#selection-6397754f5cda5a04",
+      "title": "Romance Dawn chapter index",
+      "category": "chapter-index",
+      "authority": "secondary",
+      "retrieval_policy": "permitted",
+      "cloud_content_allowed": false,
+      "selectors": {
+        "start_at": "Romance Dawn (Chapters 1-7):",
+        "end_before": "Orange Town (Chapters 8-21):"
+      }
+    },
+    {
+      "id": "64f75fdb-b0b9-54b0-ab2a-25c0a9cbb8f2",
+      "url": "https://blog.msabrookhaven.org/literary/2025/01/09/one-piece-character-analysis-straw-hats-luffy-post-time-skip/",
+      "title": "One Piece Character Analysis: Straw Hats: Luffy [Post time Skip] ...",
+      "category": "character-profile",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "6a2a8063-d807-5396-8d5a-09378ae30e60",
+      "url": "https://anilog.info/topic/roronoa-zoro-introduction/",
+      "title": "Roronoa Zoro introduction - anilog",
+      "category": "reference",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "76f2fefa-ccd4-52a4-b729-e54b2cd340cb",
+      "url": "https://en.wikipedia.org/wiki/Monkey_D._Luffy",
+      "title": "Monkey D. Luffy - Wikipedia",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "78877a3a-1219-5236-9135-7b5a7b9ce500",
+      "url": "https://onepiece.fandom.com/wiki/Chapter_7",
+      "title": "Chapter 7 | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "8e76e6d9-c99d-5259-9e05-32ea8dd91849",
+      "url": "https://onepiece.fandom.com/wiki/Roronoa_Zoro/History",
+      "title": "Roronoa Zoro/History | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "9c6ff939-f5e2-5d0f-894a-34a6d7291f97",
+      "url": "https://www.reddit.com/r/OnePiece/comments/l1mhti/i_got_bored_and_went_through_the_manga_to_figure/",
+      "title": "r/OnePiece on Reddit: I got bored and went through the manga to ...",
+      "category": "reference",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "9ebbcadb-a436-545f-a263-4db65b4d5c92",
+      "url": "https://en.wikipedia.org/wiki/Roronoa_Zoro",
+      "title": "Roronoa Zoro - Wikipedia",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+      "url": "https://uchihaluffy.com/one-piece-chapter-3/#selection-a6f3c1ed6c7b3ef0",
+      "title": "Chapter 3 commentary",
+      "category": "reference",
+      "authority": "secondary",
+      "retrieval_policy": "permitted",
+      "cloud_content_allowed": true,
+      "selectors": {
+        "start_at": "Chapter Overview: A Town in Trouble",
+        "end_before": "Themes and Symbolism in Chapter 3"
+      }
+    },
+    {
+      "id": "b0dbccaf-c6bb-505f-aff2-093ba56bb749",
+      "url": "https://onepiece.fandom.com/wiki/Story_Arcs",
+      "title": "Story Arcs | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+      "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+      "title": "Romance Dawn Arc | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "c9dd2786-da37-52ed-8404-07e6c3310c06",
+      "url": "https://onepiece.fandom.com/wiki/Straw_Hat_Pirates/Recruitment",
+      "title": "Straw Hat Pirates/Recruitment | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "d06398c4-be50-5df1-9ba2-e52e905df34a",
+      "url": "https://www.binderpirates.com/story/volumes/1#selection-547ce6183fe881af",
+      "title": "Manga introductions through chapter 3",
+      "category": "reference",
+      "authority": "secondary",
+      "retrieval_policy": "permitted",
+      "cloud_content_allowed": true,
+      "selectors": {
+        "start_at": "01 Introduced here",
+        "end_before": "08 Introduced here"
+      }
+    },
+    {
+      "id": "d2edec14-564e-5d91-bb97-4de9ebe96fb8",
+      "url": "https://onepiece.fandom.com/wiki/Straw_Hat_Pirates",
+      "title": "Straw Hat Pirates | One Piece Wiki | Fandom",
+      "category": "dedicated-wiki",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "e0cc0ffe-7a4f-5a95-9247-2dddddad413a",
+      "url": "https://baike.baidu.com/en/item/%E3%83%AD%E3%83%AD%E3%83%8E%E3%82%A2%E3%83%BB%E3%82%BE%E3%83%AD/1541160",
+      "title": "\u30ed\u30ed\u30ce\u30a2\u30fb\u30be\u30ed\uff08A character in the Japanese manga *One ...",
+      "category": "item-description",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    },
+    {
+      "id": "f044f805-c334-5b1d-a1b9-14fafd5fd991",
+      "url": "https://www.mangahorizon.fr/en/blogs/actualites/equipages-one-piece",
+      "title": "The Crews of One Piece: the Straw Hats Member by Member and Every ...",
+      "category": "reference",
+      "authority": "unverified",
+      "retrieval_policy": "navigation-only",
+      "cloud_content_allowed": false,
+      "selectors": {}
+    }
+  ],
+  "sources": [
+    {
+      "id": "86028016-f67a-56d2-a967-d27620c58470",
+      "url": "https://one-piece.com/comics/o1/index.html#scope-de5211f7e3f306de",
+      "title": "ONE PIECE 1\u5dfb ROMANCE DAWN - \u5192\u967a\u306e\u591c\u660e\u3051 - | \u539f\u4f5c\u30b3\u30df\u30c3\u30af\u30b9 | ONE PIECE.com\uff08\u30ef\u30f3\u30d4\u30fc\u30b9 \u30c9\u30c3\u30c8\u30b3\u30e0\uff09",
+      "publisher": "one-piece.com",
+      "characters": 174,
+      "hash": "53a950726a461e8b98c1ab1cda415af9f4e8feef2df83c7be43e9ef3886e6c2d",
+      "permission": "Publicly accessible textual reference selected for bounded private research; no manga image acquisition or access bypass.",
+      "scope": "Registry continuity: 9110bdd8-a094-570f-827b-ad75793989cd [selection: '\u5c11\u5e74\u6642\u4ee3\u306e\u30eb\u30d5\u30a3' to '\u8a73\u7d30\u60c5\u5831']",
+      "position": 8,
+      "basis": "manga-chapter",
+      "role": null,
+      "authority": "primary",
+      "retrieved_at": "2026-11-15 13:12:48.608980+00:00"
+    },
+    {
+      "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+      "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+      "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy",
+      "publisher": "uchihaluffy.com",
+      "characters": 2856,
+      "hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+      "permission": "Publicly accessible textual reference selected for bounded private research; no manga image acquisition or access bypass.",
+      "scope": "Registry continuity: 9110bdd8-a094-570f-827b-ad75793989cd [selection: 'Chapter Overview: A Town in Trouble' to 'Themes and Symbolism in Chapter 3']",
+      "position": 3,
+      "basis": "manga-chapter",
+      "role": null,
+      "authority": "secondary",
+      "retrieved_at": "2026-11-15 13:12:52.372644+00:00"
+    },
+    {
+      "id": "accc8d41-195a-55ac-bcd2-2033d9d35a92",
+      "url": "https://www.binderpirates.com/story/volumes/1#scope-fdca944ec6308316",
+      "title": "One Piece Volume 1 \u2014 Story | Binder Pirates",
+      "publisher": "www.binderpirates.com",
+      "characters": 180,
+      "hash": "b9713dec0a8c844129dd7cee2c0f6216cb1fd30864951eb7cd714de338f478a3",
+      "permission": "Publicly accessible textual reference selected for bounded private research; no manga image acquisition or access bypass.",
+      "scope": "Registry continuity: 9110bdd8-a094-570f-827b-ad75793989cd [selection: '01 Introduced here' to '08 Introduced here']",
+      "position": 3,
+      "basis": "manga-chapter",
+      "role": null,
+      "authority": "secondary",
+      "retrieved_at": "2026-11-15 13:12:54.630017+00:00"
+    },
+    {
+      "id": "c9fdf74a-1610-5963-aa92-75956e395931",
+      "url": "https://grandlinewiki.net/eastbluearcM.html#scope-ba4f998de3914d8e",
+      "title": "East Blue Arc - Manga",
+      "publisher": "grandlinewiki.net",
+      "characters": 483,
+      "hash": "073cbe4c6c36984e7645a23fe284002d53f53d56b28e9fcece7764f5a693a5bf",
+      "permission": "Publicly accessible textual reference selected for bounded private research; no manga image acquisition or access bypass.",
+      "scope": "Registry continuity: 9110bdd8-a094-570f-827b-ad75793989cd [selection: 'Romance Dawn (Chapters 1-7):' to 'Orange Town (Chapters 8-21):']",
+      "position": 7,
+      "basis": "manga-chapter",
+      "role": "navigation-index",
+      "authority": "secondary",
+      "retrieved_at": "2026-11-15 13:12:59.168036+00:00"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+      "type": "LOCATION",
+      "title": "Marine base courtyard",
+      "summary": "He is shown tied to a post in the Marine base courtyard,"
+    },
+    {
+      "id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+      "type": "EVENT",
+      "title": "arriving at a naval base",
+      "summary": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan."
+    }
+  ],
+  "edges": [],
+  "frontier": [
+    {
+      "id": "bc924a3d-8bbb-5ab5-bab4-4ca6db91ad68",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 85,
+      "question": "What objects, locations, or lore elements are explicitly depicted in the manga text for chapters 1 through 7 regarding Luffy and Zoro's journey?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 5,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.814679+00:00",
+      "related_questions": [
+        "What specific locations, objects, or lore elements are explicitly depicted in the manga text for chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey?"
+      ],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "016ae767-1a52-5dca-b9ec-e75b71998d41",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 80,
+      "question": "What specific actions does Monkey D. Luffy perform in chapters 1 through 7 of the original One Piece manga excluding anime-only events?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 4,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.742139+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "21fd4953-e248-5fc4-90b3-6c55e9a2683c",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 70,
+      "question": "What specific actions does Monkey D. Luffy perform in chapters 1 through 7 of the original One Piece manga?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 5,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.769512+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "0806820e-132a-554b-adaf-7bb21919c9b7",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 70,
+      "question": "Where do Luffy and Zoro recruit their initial crew members within the Romance Dawn arc chapters 1\u20137?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 5,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.762855+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "40b558d4-ba8e-50e9-abd6-5a458cd8ba8b",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 65,
+      "question": "How is Roronoa Zoro introduced and what interactions occur between him and Luffy in the first seven chapters?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 5,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.783120+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "fa403538-738a-584a-bc02-a35dfff56790",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 80,
+      "question": "Monkey D. Luffy's specific actions regarding food consumption and physical exertion in One Piece manga chapters 1 through 7 excluding anime-only events",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 2,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.837186+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "2b41e08d-8356-5bba-8af8-ed24a691c1b2",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 100,
+      "question": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do not import anime-only facts or later revelations.",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 5,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "objective",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.777035+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "05e1fa6a-a2c8-5ba2-aea3-a008af33b863",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 75,
+      "question": "Where do Monkey D. Luffy and Roronoa Zoro recruit their initial crew members within the Romance Dawn arc chapters 1\u20137 of the original One Piece manga?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 4,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.756485+00:00",
+      "related_questions": [
+        "Where do Monkey D. Luffy and Roronoa Zoro recruit their initial crew members within the text of One Piece manga chapters 1\u20137 of the Romance Dawn arc?"
+      ],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "53422290-9801-556c-bdca-f2d76920909b",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 85,
+      "question": "What specific locations, objects, or lore elements are explicitly depicted in the text of One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 3,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.790070+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "641c0136-7c6d-5753-bcdb-87c4fafd92c8",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 75,
+      "question": "Roronoa Zoro's introduction method and initial interactions with Monkey D. Luffy in the original One Piece manga text for chapters 1 through 7",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 2,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.797192+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "8096b36e-8422-5429-a4a0-020aca410196",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 75,
+      "question": "How is Roronoa Zoro introduced in the original One Piece manga text for chapters 1 through 7 and what specific interactions occur between him and Monkey D. Luffy?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 3,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.803707+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "a50cdaa2-213b-562a-ab7d-309e607f581b",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 70,
+      "question": "How is Roronoa Zoro introduced and what interactions occur between him and Monkey D. Luffy in the first seven chapters of the original One Piece manga?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 4,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.809190+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "c0c3388a-d8e1-54b8-be63-782580c43a3c",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 85,
+      "question": "Lore elements explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding later revelations",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 2,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.819880+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "d5ef74e6-45d1-5b79-a0c1-9d9d958b3437",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 80,
+      "question": "What concrete actions does Monkey D. Luffy perform in the original One Piece manga text for chapters 1 through 7 excluding anime-only events?",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 3,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.826362+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "f45e37b3-f235-525b-bb8e-2fcd08a36f75",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 70,
+      "question": "Locations explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding Marine base courtyard references",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 2,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.831914+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    },
+    {
+      "id": "fccfc128-380f-5d6f-bc44-3a0d9d59922d",
+      "depth": 0,
+      "topic": "Reconstruct only the supported early Romance Dawn manga story through chapter 7, focusing on Luffy and Zoro introductions, actual actions, interactions, recruitment and relevant places, objects and lore. Preserve interpretation and uncertainty. Chapter titles are navigation, not event evidence. Do n",
+      "status": "PARTIALLY_RESOLVED",
+      "priority": 85,
+      "question": "Objects explicitly depicted in One Piece manga chapters 1 through 7 regarding Monkey D. Luffy and Roronoa Zoro's journey excluding anime-only items",
+      "source_ids": [
+        "255333fa-631b-5110-9d04-8a79db2d3f31"
+      ],
+      "last_job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+      "boundary_key": "7902699be42c8a8e46fbbb4501726517e86b22c56a189f7625a6da49081b2451",
+      "evidence_ids": [
+        "f9a0475d-8366-509b-b118-c7daaaae893c"
+      ],
+      "attempt_count": 2,
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "objective_key": "11bdf96313c14d931712f2f158988ada8d6c1b622a204ce8f7b52d6539a7c6c3",
+      "estimated_cost": 1,
+      "expected_value": 0.5,
+      "discovery_origin": "planner",
+      "last_stop_reason": "research_execution_failed",
+      "missing_evidence": [
+        "Answer remains incomplete"
+      ],
+      "available_sources": [],
+      "last_attempted_at": "2026-11-16T09:17:30.842850+00:00",
+      "related_questions": [],
+      "related_entity_ids": [
+        "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      ]
+    }
+  ],
+  "publication_records": [
+    {
+      "id": "b5a24384-38d8-5ec6-b319-7d2bf9880ff2",
+      "claim_id": "0c8aab27-b98a-573c-950b-febfb7b3ac94",
+      "target_id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+      "kind": "entity",
+      "created": true,
+      "reversed": false,
+      "created_at": "2026-11-15 13:24:26.684535+00:00"
+    },
+    {
+      "id": "1837c011-7e36-598f-a855-bbb459abda75",
+      "claim_id": "42981915-5d7a-5a46-91b1-fd4fb2ad41f0",
+      "target_id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+      "kind": "entity",
+      "created": false,
+      "reversed": false,
+      "created_at": "2026-11-15 13:36:55.040732+00:00"
+    },
+    {
+      "id": "c2c78ac4-0a42-5bf5-ac7d-c98fe5bf0705",
+      "claim_id": "f9a0475d-8366-509b-b118-c7daaaae893c",
+      "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+      "kind": "entity",
+      "created": true,
+      "reversed": false,
+      "created_at": "2026-11-16 09:17:13.731546+00:00"
+    }
+  ],
+  "published_claims": [
+    {
+      "id": "0c8aab27-b98a-573c-950b-febfb7b3ac94",
+      "job_id": "b6720bd5-3d93-4057-b801-74ea3d977e4a",
+      "kind": "entity",
+      "payload": {
+        "name": "Marine base courtyard",
+        "type": "LOCATION",
+        "event": null,
+        "atomic": null,
+        "evidence": [
+          {
+            "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding.",
+            "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89"
+          }
+        ],
+        "knowledge": null,
+        "description": "He is shown tied to a post in the Marine base courtyard,"
+      },
+      "assessment": "supported",
+      "reason": "Exact evidence validated; model-assisted assessment (not canonical truth): The text explicitly states Zoro is shown tied to a post in the Marine base courtyard."
+    },
+    {
+      "id": "42981915-5d7a-5a46-91b1-fd4fb2ad41f0",
+      "job_id": "c3cd59f3-74d5-4be7-a1e1-c6eab98ea692",
+      "kind": "entity",
+      "payload": {
+        "name": "Marine base courtyard",
+        "type": "LOCATION",
+        "event": null,
+        "atomic": null,
+        "evidence": [
+          {
+            "quote": "Introduction of Roronoa Zoro: The Pirate Hunter The biggest highlight of One Piece Chapter 3 is undoubtedly the debut of Roronoa Zoro.",
+            "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89"
+          },
+          {
+            "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding.",
+            "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89"
+          }
+        ],
+        "knowledge": null,
+        "description": "He is shown tied to a post in the Marine base courtyard,"
+      },
+      "assessment": "supported",
+      "reason": "Exact evidence validated; model-assisted assessment (not canonical truth): The text explicitly states Zoro is shown tied to a post in the Marine base courtyard."
+    },
+    {
+      "id": "f9a0475d-8366-509b-b118-c7daaaae893c",
+      "job_id": "7a5c5ab8-6792-4a3e-bbbe-f23d7280d5b2",
+      "kind": "entity",
+      "payload": {
+        "name": "arriving at a naval base",
+        "type": "EVENT",
+        "event": {
+          "arc": null,
+          "trigger": "arriving at a naval base",
+          "location": null,
+          "outcomes": [],
+          "source_id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+          "trigger_end": 100,
+          "uncertainty": "",
+          "participants": [
+            "Luffy",
+            "Koby"
+          ],
+          "preconditions": [],
+          "trigger_start": 76,
+          "position_basis": "manga-chapter",
+          "identity_anchor": "af983645ab28570a55bb31dfa4cc1c18058e99fb06126ce3e29ce3260b35614a",
+          "reveal_position": null,
+          "source_position": 3,
+          "occurrence_status": "actual",
+          "participant_roles": {
+            "Koby": "actor",
+            "Luffy": "actor",
+            "Axe-Hand Morgan": "mentioned"
+          },
+          "chronological_position": null
+        },
+        "atomic": null,
+        "evidence": [
+          {
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388"
+          }
+        ],
+        "knowledge": null,
+        "description": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan."
+      },
+      "assessment": "supported",
+      "reason": "Exact evidence validated; model-assisted assessment (not canonical truth): Excerpt confirms Luffy and Koby actually arrive at the naval base."
+    }
+  ],
+  "published_claim_evidence": [
+    {
+      "claim_id": "0c8aab27-b98a-573c-950b-febfb7b3ac94",
+      "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89",
+      "quote_start": 134,
+      "quote_end": 219,
+      "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding."
+    },
+    {
+      "claim_id": "42981915-5d7a-5a46-91b1-fd4fb2ad41f0",
+      "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89",
+      "quote_start": 0,
+      "quote_end": 134,
+      "quote": "Introduction of Roronoa Zoro: The Pirate Hunter The biggest highlight of One Piece Chapter 3 is undoubtedly the debut of Roronoa Zoro."
+    },
+    {
+      "claim_id": "42981915-5d7a-5a46-91b1-fd4fb2ad41f0",
+      "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89",
+      "quote_start": 134,
+      "quote_end": 219,
+      "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding."
+    },
+    {
+      "claim_id": "f9a0475d-8366-509b-b118-c7daaaae893c",
+      "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+      "quote_start": 0,
+      "quote_end": 159,
+      "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan."
+    }
+  ],
+  "catalog": {
+    "schemaVersion": 1,
+    "identities": [
+      {
+        "id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+        "type": "LOCATION",
+        "names": [
+          "Marine base courtyard"
+        ]
+      },
+      {
+        "id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+        "type": "EVENT",
+        "names": [
+          "arriving at a naval base"
+        ]
+      }
+    ],
+    "journeys": [
+      {
+        "id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "universeId": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+        "continuityId": "9110bdd8-a094-570f-827b-ad75793989cd",
+        "title": "Romance Dawn",
+        "introduction": "Luffy and Koby reach a naval base controlled by Axe-Hand Morgan.",
+        "spoilerScope": "Through chapter source 7",
+        "ordering": {
+          "basis": "manga-chapter",
+          "explanation": "Chapter source order; within-chapter and in-world chronology remain separate.",
+          "sourceIds": [
+            "255333fa-631b-5110-9d04-8a79db2d3f31"
+          ]
+        },
+        "scopeReferences": [
+          "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc"
+        ],
+        "steps": [
+          {
+            "id": "fdc940f8-1b29-522e-84da-7070f684cdf6",
+            "eventNodeId": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+            "title": "arriving at a naval base",
+            "body": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "episodeLabel": "By chapter 3",
+            "sourceIds": [
+              "255333fa-631b-5110-9d04-8a79db2d3f31"
+            ],
+            "loreThreadIds": [],
+            "participantRoles": [],
+            "presentation": {
+              "relatedNodeIds": [],
+              "relationshipIds": []
+            },
+            "causes": [],
+            "consequences": [],
+            "participantIds": [],
+            "locationIds": [],
+            "underlyingEventIds": [
+              "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+            ],
+            "detailedRecap": "",
+            "presentationStatus": "unavailable",
+            "presentationState": {
+              "status": "withheld_grounding",
+              "reason": "Reader prose did not pass validation. Verified evidence remains available."
+            }
+          }
+        ],
+        "presentationState": {
+          "status": "validated",
+          "reason": "Validated partial arc recap."
+        },
+        "overview": "Luffy and Koby arrive at a naval base overseen by the corrupt Marine captain Axe-Hand Morgan.",
+        "presentation": {
+          "status": "validated",
+          "policy_version": "grounded-english-v12:arc-synthesis-v1",
+          "generated_at": "2026-11-16T09:24:30.781817+00:00",
+          "knowledge_revision": "4b48a167d3c34cd23125666cc043daf188fdf468300698e492cdd2152cf00e03",
+          "providers": [
+            {
+              "task": "presentation",
+              "model": "openai/gpt-oss-120b",
+              "retry": 0,
+              "status": "ok",
+              "provider": "groq",
+              "credential": "primary",
+              "elapsed_ms": 1383,
+              "model_call": true,
+              "input_tokens": 1148,
+              "model_digest": null,
+              "output_tokens": 463,
+              "reservation_id": "535c9847-a7d8-4644-8f8c-bc4ce8c54ef1",
+              "validation_errors": []
+            },
+            {
+              "task": "presentation_verification",
+              "model": "openai/gpt-oss-120b",
+              "retry": 0,
+              "status": "rate_limited",
+              "provider": "groq",
+              "credential": "primary",
+              "elapsed_ms": 861,
+              "model_call": true,
+              "input_tokens": 0,
+              "model_digest": null,
+              "output_tokens": 0,
+              "reservation_id": "14ea61f1-b169-447a-9903-b5bd736e1d4e",
+              "validation_errors": []
+            },
+            {
+              "task": "presentation_verification",
+              "model": "qwen3.5:4b",
+              "retry": 0,
+              "status": "ok",
+              "provider": "ollama",
+              "credential": "local",
+              "elapsed_ms": 11174,
+              "model_call": true,
+              "input_tokens": 459,
+              "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+              "output_tokens": 133,
+              "reservation_id": "f95618cd-55a4-4187-8567-28d55c4d3d9c",
+              "validation_errors": []
+            }
+          ],
+          "assembly": null,
+          "synthesis": {
+            "method": "grounded-dossier-v1",
+            "partial": true
+          }
+        }
+      }
+    ],
+    "loreThreads": [],
+    "discoveries": [],
+    "sources": [
+      {
+        "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+        "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy \u2014 uchihaluffy.com",
+        "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+        "locator": "passage 44c8331b-7f0d-5151-9b43-a9dc08804e89; normalized offsets 847:1571; passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342"
+      }
+    ],
+    "unorderedMilestones": [],
+    "orderingGaps": [],
+    "relations": [],
+    "partial": true,
+    "revision": "e4326e4982615261864fcc9c79ccc0064a3937d54a966fdad95d7880927aa3a3",
+    "coverage": {
+      "status": "partial",
+      "acceptedEvents": 1,
+      "validatedMilestones": 0,
+      "entries": 2,
+      "orderingGaps": 0
+    },
+    "researchScopes": [
+      {
+        "id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "title": "Romance Dawn",
+        "firstPosition": 1,
+        "lastPosition": 7,
+        "references": [
+          "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc"
+        ]
+      }
+    ],
+    "researchState": {
+      "status": "partial",
+      "jobId": "ac359631-2f7e-4358-b5c5-2fd4dc365ef9",
+      "error": null,
+      "coverage": null
+    },
+    "entryIndex": [
+      {
+        "id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+        "displayTitle": "Marine base courtyard"
+      },
+      {
+        "id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+        "displayTitle": "arriving at a naval base"
+      }
+    ]
+  },
+  "entries": [
+    {
+      "id": "a6735b0c-c971-522d-8918-d82cf17fbfc0",
+      "entry_type": "place",
+      "graph_type": "LOCATION",
+      "display_title": "Marine base courtyard",
+      "short_introduction": "Marine base courtyard is a location.",
+      "detailed_overview": "A character is shown tied to a post in the Marine base courtyard. The setting is identified as the Marine base courtyard.",
+      "aliases": [
+        "Marine base courtyard"
+      ],
+      "original_names": [
+        "Marine base courtyard"
+      ],
+      "sections": [
+        {
+          "name": "overview",
+          "statements": [
+            {
+              "text": "A character is shown tied to a post in the Marine base courtyard.",
+              "fact_ids": [
+                "1e7db565b033ce6d62e0905ca63ae42d3cb2a0ad8a84711556ea1e4e7995d2d1"
+              ]
+            },
+            {
+              "text": "The setting is identified as the Marine base courtyard.",
+              "fact_ids": [
+                "4c342f82da4131c911378002d2560198c3723404c790dbceaf423554cb50219f"
+              ]
+            }
+          ]
+        }
+      ],
+      "connections": [],
+      "source_references": [
+        {
+          "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+          "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+          "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy \u2014 uchihaluffy.com",
+          "locator": "passage 44c8331b-7f0d-5151-9b43-a9dc08804e89; normalized offsets 847:1571",
+          "quote_start_in_passage": "134",
+          "quote_end_in_passage": "219",
+          "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+          "source_language": "en",
+          "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding."
+        },
+        {
+          "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+          "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+          "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy \u2014 uchihaluffy.com",
+          "locator": "passage 44c8331b-7f0d-5151-9b43-a9dc08804e89; normalized offsets 847:1571",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "134",
+          "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+          "source_language": "en",
+          "quote": "Introduction of Roronoa Zoro: The Pirate Hunter The biggest highlight of One Piece Chapter 3 is undoubtedly the debut of Roronoa Zoro."
+        }
+      ],
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "language": "en",
+      "spoiler_position": 7,
+      "knowledge_revision": "73a267e28377447b55e750eadf8e6720c2ed855343631c0133dbcf6bf9e3f520",
+      "presentation": {
+        "status": "validated",
+        "state": {
+          "status": "validated",
+          "reason": "Validated source-backed presentation."
+        },
+        "policy_version": "grounded-english-v12",
+        "generated_at": "2026-11-16T09:24:15.279222+00:00",
+        "providers": [
+          {
+            "task": "presentation",
+            "model": "openai/gpt-oss-120b",
+            "retry": 0,
+            "status": "ok",
+            "provider": "groq",
+            "credential": "primary",
+            "elapsed_ms": 1300,
+            "model_call": true,
+            "input_tokens": 1188,
+            "model_digest": null,
+            "output_tokens": 417,
+            "reservation_id": "3adced0b-6a7e-4cfd-a005-70891d151a13",
+            "validation_errors": []
+          },
+          {
+            "task": "presentation_verification",
+            "model": "openai/gpt-oss-120b",
+            "retry": 0,
+            "status": "invalid_output",
+            "provider": "groq",
+            "credential": "primary",
+            "elapsed_ms": 2458,
+            "model_call": true,
+            "input_tokens": 0,
+            "model_digest": null,
+            "output_tokens": 0,
+            "reservation_id": "ef1c4f35-3e77-4bf7-8f47-e556d166cd7a",
+            "validation_errors": [
+              "entailed:missing",
+              "english:missing",
+              "names_consistent:missing",
+              "agency_and_tense_preserved:missing",
+              "unsupported_relationships:missing",
+              "reason:missing"
+            ]
+          },
+          {
+            "task": "presentation_verification",
+            "model": "openai/gpt-oss-120b",
+            "retry": 1,
+            "status": "ok",
+            "provider": "groq",
+            "credential": "primary",
+            "elapsed_ms": 1496,
+            "model_call": true,
+            "input_tokens": 760,
+            "model_digest": null,
+            "output_tokens": 443,
+            "reservation_id": "22450e7c-6f9f-48bd-9807-5f375d2a6c3f",
+            "validation_errors": []
+          }
+        ],
+        "translation": "source-grounded English; original names retained"
+      }
+    },
+    {
+      "id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+      "entry_type": "event",
+      "graph_type": "EVENT",
+      "display_title": "arriving at a naval base",
+      "short_introduction": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+      "detailed_overview": "",
+      "aliases": [
+        "arriving at a naval base"
+      ],
+      "original_names": [
+        "arriving at a naval base"
+      ],
+      "sections": [],
+      "connections": [],
+      "source_references": [
+        {
+          "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+          "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+          "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy \u2014 uchihaluffy.com",
+          "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+          "quote_start_in_passage": "0",
+          "quote_end_in_passage": "159",
+          "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+          "source_language": "en",
+          "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan."
+        }
+      ],
+      "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+      "language": "en",
+      "spoiler_position": 7,
+      "knowledge_revision": "4b48a167d3c34cd23125666cc043daf188fdf468300698e492cdd2152cf00e03",
+      "presentation": {
+        "status": "unavailable",
+        "state": {
+          "status": "withheld_grounding",
+          "reason": "Reader prose did not pass validation. Verified evidence remains available."
+        },
+        "policy_version": "grounded-english-v12",
+        "generated_at": null,
+        "providers": [],
+        "translation": "source-grounded English; original names retained"
+      }
+    }
+  ]
+}

@@ -48,9 +48,11 @@ export function resolveNarrative(
   const journeys = catalog.journeys.filter((j) => {
     const valid =
       scoped(j) &&
-      j.ordering.basis === "broadcast-presentation" &&
+      ["broadcast-presentation", "manga-chapter", "unresolved"].includes(
+        j.ordering.basis,
+      ) &&
       sourced(j.ordering.sourceIds) &&
-      j.steps.length >= 2 &&
+      j.steps.length >= 1 &&
       new Set(j.steps.map((s) => s.id)).size === j.steps.length &&
       j.steps.every(
         (s) =>
@@ -85,6 +87,15 @@ export function resolveNarrative(
   });
   const threadIds = new Set(loreThreads.map((t) => t.id));
   const resolved: NarrativeCatalog = {
+    coverage: catalog.coverage,
+    researchState: catalog.researchState,
+    researchScopes: catalog.researchScopes,
+    unorderedMilestones: catalog.unorderedMilestones?.filter(
+      (s) =>
+        nodes.get(s.eventNodeId)?.type === "EVENT" &&
+        hintValid(s.presentation) &&
+        sourced(s.sourceIds),
+    ),
     relations: catalog.relations?.filter(
       (edge) =>
         edges.has(edge.id) && nodes.has(edge.source) && nodes.has(edge.target),

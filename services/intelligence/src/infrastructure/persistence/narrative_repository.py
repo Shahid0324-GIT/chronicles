@@ -5,6 +5,7 @@ from sqlalchemy import or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.application.ports.narrative import NarrativeKnowledge
+from src.application.research_policy import UniverseResearchProfile
 from src.domain.entities import now
 from src.domain.exceptions import NotFoundError
 from src.infrastructure.persistence.models import ContinuityModel, NodeModel, RelationshipModel
@@ -15,11 +16,13 @@ from src.infrastructure.persistence.models.knowledge import (
 from src.infrastructure.persistence.models.research import (
     ClaimEvidenceModel,
     ResearchClaimModel,
+    ResearchJobModel,
     SourceDocumentModel,
     SourcePassageModel,
 )
 from src.infrastructure.persistence.models.source_intelligence import (
     NarrativeProjectionModel,
+    ResearchProfileModel,
     SourceRegistryModel,
 )
 from src.infrastructure.persistence.repositories import edge_entity, node_entity
@@ -165,11 +168,36 @@ class SqlNarrativeRepository:
                     "provenance": source.provenance or {},
                 }
             )
+        profile = await self.session.get(ResearchProfileModel, universe)
+        story_scopes = (
+            UniverseResearchProfile.model_validate(profile.configuration).story_scopes
+            if profile
+            else []
+        )
         return NarrativeKnowledge(
             nodes,
             edges,
             [f for identifier, f in facts.items() if identifier not in ineligible],
             list(interpretations.values()),
+            [
+                {
+                    "id": str(job.id),
+                    "status": job.status,
+                    "error": job.error,
+                    "spoiler_position": job.request.get("spoiler_position"),
+                    "coverage": job.checkpoint.get("coverage", {}).get("outcome"),
+                }
+                for job in await self.session.scalars(
+                    select(ResearchJobModel)
+                    .where(
+                        ResearchJobModel.universe_id == universe,
+                        ResearchJobModel.continuity_id == continuity,
+                    )
+                    .order_by(ResearchJobModel.created_at.desc())
+                    .limit(20)
+                )
+            ],
+            [arc for arc in story_scopes if arc.continuity_id == continuity],
         )
 
     async def save(

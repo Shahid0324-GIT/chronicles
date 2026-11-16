@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openUniverse } from "./universe";
 
 test("opens a real scoped entry, follows sources and restores the story bookmark", async ({
   page,
@@ -28,7 +29,7 @@ test("opens a real scoped entry, follows sources and restores the story bookmark
   expect(entryResponse.ok()).toBe(true);
   const entry = await entryResponse.json();
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await expect(page.getByLabel("Open encyclopedia entry")).toBeVisible();
   await page.getByLabel("Open encyclopedia entry").selectOption(character.id);
   const panel = page.getByRole("complementary", { name: "Story information" });

@@ -64,7 +64,9 @@ export class BackendNarrativeDataProvider implements NarrativeDataProvider {
         const raw: unknown = await response.json();
         const catalog = decodeNarrative(raw);
         if (
-          catalog.journeys.some((j) => j.steps.length >= 2) ||
+          catalog.sources.length > 0 ||
+          catalog.coverage !== undefined ||
+          catalog.journeys.some((j) => j.steps.length > 0) ||
           scope.spoilerPosition
         ) {
           const metadata = raw as Record<string, unknown>;

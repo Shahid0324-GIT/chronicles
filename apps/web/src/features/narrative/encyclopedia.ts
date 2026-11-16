@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 export interface EncyclopediaEntry {
+  presentation?: { status: string; state?: { status: string; reason: string } };
   id: string;
   display_title: string;
   short_introduction: string;
@@ -31,6 +32,15 @@ export function decodeEntry(v: unknown): EncyclopediaEntry {
     !id(v.id) ||
     !text(v.display_title) ||
     !text(v.short_introduction) ||
+    (v.presentation !== undefined &&
+      !(
+        object(v.presentation) &&
+        text(v.presentation.status) &&
+        (v.presentation.state === undefined ||
+          (object(v.presentation.state) &&
+            text(v.presentation.state.status) &&
+            text(v.presentation.state.reason)))
+      )) ||
     !list(v.aliases, text) ||
     !list(
       v.sections,

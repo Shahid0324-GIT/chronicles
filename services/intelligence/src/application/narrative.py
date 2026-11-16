@@ -3,6 +3,7 @@ from typing import Any
 from uuid import UUID, uuid5
 
 from src.application.ports.narrative import NarrativeKnowledge, NarrativeTransaction
+from src.application.story_position import POSITION_BASES, position_basis, source_position
 from src.domain.research import digest
 from src.domain.value_objects import NodeType, RelationshipType
 
@@ -28,6 +29,8 @@ class NarrativeBuilder:
         source_locators: dict[str, set[str]] = {}
         facts: dict[str, list[dict[str, Any]]] = {}
         positions: dict[str, int] = {}
+        basis = position_basis(knowledge.facts)
+        unit = POSITION_BASES.get(basis, "source")
         for f in knowledge.facts:
             sources = f["sources"]
             if not sources or any(
@@ -35,8 +38,8 @@ class NarrativeBuilder:
                 or (
                     spoiler_position is not None
                     and (
-                        s["provenance"].get("presentation_position") is None
-                        or s["provenance"]["presentation_position"] > spoiler_position
+                        source_position(s, basis) is None
+                        or (source_position(s, basis) or 100001) > spoiler_position
                     )
                 )
                 for s in sources
@@ -47,8 +50,8 @@ class NarrativeBuilder:
                 locators = source_locators.setdefault(s["id"], set())
                 locators.add(s["locator"])
                 source_map[s["id"]] = {**s, "locator": "; ".join(sorted(locators))}
-                if s["provenance"].get("position_basis") == "broadcast-presentation":
-                    pos = s["provenance"].get("presentation_position")
+                if s["provenance"].get("position_basis") == basis:
+                    pos = source_position(s, basis)
                     if isinstance(pos, int):
                         positions[f["target_id"]] = min(positions.get(f["target_id"], pos), pos)
         nodes = {str(n.id): n for n in knowledge.nodes}
@@ -108,7 +111,7 @@ class NarrativeBuilder:
                 "eventNodeId": identifier,
                 "title": assertion.get("name", node.title),
                 "body": assertion["description"],
-                "episodeLabel": f"By episode {positions[identifier]}"
+                "episodeLabel": f"By {unit} {positions[identifier]}"
                 if identifier in positions
                 else "Order unknown",
                 "sourceIds": citations,
@@ -178,7 +181,8 @@ class NarrativeBuilder:
                     if len(pending) == len(group):
                         representative = min(
                             pending,
-                            key=lambda i: (-len(pending[i]["presentation"]["relationshipIds"]), i),
+                            # Publication age chooses a stable representative, not story order.
+                            key=lambda i: (nodes[i].created_at, i),
                         )
                         ordered.append(pending.pop(representative))
                     unordered += list(pending.values())
@@ -253,16 +257,15 @@ class NarrativeBuilder:
                     "universeId": str(universe),
                     "continuityId": str(continuity),
                     "title": "Accepted story milestones",
-                    "introduction": "Partial journey across supporting episode sources.",
+                    "introduction": f"Partial journey across supporting {unit} sources.",
                     "spoilerScope": "Accepted source boundary",
                     "ordering": {
-                        "basis": "broadcast-presentation",
+                        "basis": basis,
                         "explanation": (
-                            "Earliest supporting episode source in this archive, not proof of "
+                            f"Earliest supporting {unit} source in this archive, not proof of "
                             "first reveal or in-world chronology. Synopses may recap earlier "
-                            "events. "
-                            "Ambiguous episode groups show one representative; other events remain "
-                            "unordered. Within-episode order requires accepted PRECEDES evidence."
+                            "events. Ambiguous source groups keep an explicit ordering gap; "
+                            "within-source order requires accepted PRECEDES evidence."
                         ),
                         "sourceIds": sorted({s for step in ordered for s in step["sourceIds"]}),
                     },
@@ -290,6 +293,41 @@ class NarrativeBuilder:
             ],
             "partial": bool(gaps) or not ordered,
         }
+        if knowledge.story_scopes:
+            catalog["journeys"] = []
+            for arc in knowledge.story_scopes:
+                arc_steps = [
+                    s
+                    for s in ordered
+                    if arc.first_position <= positions[s["eventNodeId"]] <= arc.last_position
+                    and basis == arc.position_basis
+                ]
+                if not arc_steps:
+                    continue
+                catalog["journeys"].append(
+                    {
+                        "id": arc.id,
+                        "universeId": str(universe),
+                        "continuityId": str(continuity),
+                        "title": arc.title,
+                        "introduction": "Verified partial account in this cited research scope.",
+                        "spoilerScope": (
+                            f"Chapters {arc.first_position}–"
+                            f"{min(arc.last_position, spoiler_position or arc.last_position)}"
+                            " · manga continuity"
+                        ),
+                        "ordering": {
+                            "basis": arc.position_basis,
+                            "explanation": (
+                                "Chapter source order; within-chapter and in-world chronology "
+                                "remain separate."
+                            ),
+                            "sourceIds": sorted({i for s in arc_steps for i in s["sourceIds"]}),
+                        },
+                        "scopeReferences": arc.references,
+                        "steps": arc_steps,
+                    }
+                )
         revision = digest(json.dumps(catalog, sort_keys=True, ensure_ascii=False))
         catalog["revision"] = revision
         boundary = digest(

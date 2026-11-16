@@ -470,7 +470,7 @@
   margin: 10px 0 14px;
 }
 .event-prose > p:not(.folio-eyebrow) {
-  font: 14px/1.7 var(--reading);
+  font: 17px/1.75 var(--reading);
   color: var(--muted);
 }
 .event-text-actions {
@@ -1487,6 +1487,39 @@
   justify-content: flex-end;
   padding: 0.25rem 0;
   font-size: 0.75rem;
+}
+.reader-coverage {
+  margin: 22px 3% 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-secondary, #d7c6a5);
+}
+.unplaced-events {
+  margin: 32px 4%;
+  max-width: 1050px;
+  line-height: 1.65;
+  font-size: 17px;
+}
+.unplaced-events article {
+  margin: 20px 0;
+  padding: 18px 0;
+  border-bottom: 1px solid #9b81475c;
+}
+.unplaced-events button {
+  font-size: 20px;
+  text-align: left;
+}
+.unplaced-events small {
+  display: block;
+  font-size: 14px;
+  color: #cbb99a;
+}
+.chronicle-shell .context-panel .node-summary,
+.chronicle-shell .context-panel .context-copy section p,
+.chronicle-shell .context-panel blockquote {
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
 }
 .story-scope-controls input {
   width: 5rem;

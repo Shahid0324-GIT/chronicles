@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { openUniverse } from "./universe";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
 
@@ -20,7 +21,7 @@ test("renders actual backend journey and preserves focus through graph refresh",
     "Requires an existing researched catalog; no seeded research is fabricated.",
   );
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await expect(
     page.getByText("RESEARCHED JOURNEY", { exact: false }),
   ).toBeVisible();
@@ -73,7 +74,7 @@ test("starts a job and presents bounded progress without a dashboard (synthetic 
       },
     }),
   );
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await page.getByRole("button", { name: "Research", exact: true }).click();
   await page
     .getByLabel("Research objective")
@@ -105,7 +106,7 @@ test("real repeated research reaches the illustrated atlas (explicit opt-in)", a
     )
   ).json();
   await page.setViewportSize({ width: 1920, height: 1080 });
-  await page.goto("/");
+  await openUniverse(page, /Re:Zero/, "7f3e5d50-2c7a-5bf7-942c-04094052a639");
   await expect(
     page.getByText("Research archive", { exact: true }),
   ).toBeVisible();

@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import Field, model_validator
 
 from src.application.research_contracts import StructuredModel
+from src.application.story_scope import ArcResearchScope
 
 
 class ResearchPolicy(StructuredModel):
@@ -73,6 +74,7 @@ class ResearchPolicy(StructuredModel):
 
 
 class UniverseResearchProfile(StructuredModel):
+    story_scopes: list[ArcResearchScope] = Field(default_factory=list, max_length=30)
     universe_id: UUID
     original_medium: Literal[
         "unknown", "manga", "light-novel", "web-novel", "game", "book", "anime"

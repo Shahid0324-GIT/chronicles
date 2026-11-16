@@ -106,6 +106,13 @@ export default function ContextPanel() {
                 : node.summary}
             </p>
             {generated &&
+              entry?.presentation?.state &&
+              entry.presentation.state.status !== "validated" && (
+                <p role="status">
+                  Verified knowledge · {entry.presentation.state.reason}
+                </p>
+              )}
+            {generated &&
               entry?.sections.map((section) => (
                 <section key={section.name}>
                   <h3>{humanize(section.name)}</h3>

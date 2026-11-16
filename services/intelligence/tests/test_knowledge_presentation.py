@@ -168,6 +168,37 @@ class FakeInference:
         )
 
 
+async def test_legacy_reader_cannot_borrow_unaccepted_attributes_from_a_longer_quote():
+    universe, continuity, knowledge = fixture_knowledge()
+    for fact in knowledge.facts:
+        fact["sources"][0]["quote"] = "Mira entered the observatory. Mira secretly rules the city."
+    atlas, _ = memory_atlas(knowledge)
+    contexts = []
+    fake = FakeInference()
+
+    async def infer(prompt, schema, task):
+        if task == "presentation":
+            contexts.append(json.loads(prompt.split("\n", 1)[1]))
+        return await fake(prompt, schema, task)
+
+    await atlas.rebuild(universe, continuity, infer)
+    assert contexts
+    for context in contexts:
+        assert "secretly rules" not in json.dumps(context["evidence"])
+        assert "Mira entered the observatory." in context["evidence"].values()
+
+
+async def test_all_reader_policy_variants_fit_the_actual_persistence_column():
+    from src.infrastructure.persistence.models.source_intelligence import KnowledgePresentationModel
+
+    universe, continuity, knowledge = fixture_knowledge()
+    atlas, _ = memory_atlas(knowledge)
+    limit = KnowledgePresentationModel.__table__.c.policy_version.type.length
+    for resource in atlas.resources(await atlas.scope(universe, continuity)):
+        for synthesis in [False, True]:
+            assert len(atlas.resource_policy({**resource, "synthesis": synthesis})) <= limit
+
+
 async def test_read_is_inference_free_and_repeated_rebuild_reuses_artifacts():
     universe, continuity, knowledge = fixture_knowledge()
     atlas, saved = memory_atlas(knowledge)
@@ -184,6 +215,53 @@ async def test_read_is_inference_free_and_repeated_rebuild_reuses_artifacts():
     catalog = await atlas.catalog(universe, continuity)
     assert catalog["journeys"][0]["steps"][0]["title"] == "Mira enters the observatory"
     assert "入った" not in json.dumps(catalog, ensure_ascii=False)
+
+
+async def test_partial_reader_keeps_verified_content_and_distinguishes_withheld_prose():
+    universe, continuity, knowledge = fixture_knowledge()
+    atlas, saved = memory_atlas(knowledge)
+    catalog = await atlas.catalog(universe, continuity)
+    step = catalog["journeys"][0]["steps"][0]
+    assert step["body"] == "Mira entered the observatory."
+    assert step["presentationState"]["status"] == "not_generated"
+    assert catalog["coverage"]["acceptedEvents"] == 1
+    assert "Story account pending" not in json.dumps(catalog)
+    await atlas.rebuild(universe, continuity, FakeInference())
+    for record in saved.values():
+        record["grounding_status"] = "withheld_grounding"
+    catalog = await atlas.catalog(universe, continuity)
+    assert catalog["journeys"][0]["steps"][0]["presentationState"]["status"] == "withheld_grounding"
+    assert catalog["coverage"]["validatedMilestones"] == 0
+
+
+async def test_reader_preserves_distinct_evidence_spans_from_one_publisher():
+    universe, continuity, knowledge = fixture_knowledge()
+    source = deepcopy(knowledge.facts[0]["sources"][0])
+    start = source["quote"].index("the observatory")
+    source.update(quote=source["quote"][start:], quote_start=start)
+    knowledge.facts[0]["sources"].append(source)
+    atlas, _ = memory_atlas(knowledge)
+    entry = next(
+        e for e in await atlas.entries(universe, continuity) if e["graph_type"] == "CHARACTER"
+    )
+    references = entry["source_references"]
+    assert {s["quote"] for s in references} == {"Mira entered the observatory.", "the observatory."}
+    assert len({s["id"] for s in references}) == 1  # Two spans are not independent corroboration.
+
+
+async def test_manga_position_and_unknown_or_mixed_bases_fail_bounded_reads():
+    universe, continuity, knowledge = fixture_knowledge()
+    for fact in knowledge.facts:
+        fact["sources"][0]["provenance"] = {
+            "presentation_position": 3,
+            "position_basis": "manga-chapter",
+        }
+    atlas, _ = memory_atlas(knowledge)
+    assert not (await atlas.catalog(universe, continuity, spoiler_position=2))["journeys"]
+    catalog = await atlas.catalog(universe, continuity, spoiler_position=3)
+    assert catalog["journeys"][0]["ordering"]["basis"] == "manga-chapter"
+    assert catalog["journeys"][0]["steps"][0]["episodeLabel"] == "By chapter 3"
+    assert "episode" not in catalog["journeys"][0]["spoilerScope"]
 
 
 async def test_character_history_has_only_accepted_participation_and_affected_cache_changes():
@@ -376,7 +454,8 @@ async def test_output_schema_rejects_invented_fact_references_and_wrong_named_su
         schema.model_validate(value)
     value["statements"][0]["fact_ids"] = ["1"]
     schema.model_validate(value)
-    resource["facts"][0]["payload"]["event"]["participant_roles"] = {"an unnamed visitor": "actor"}
+    event_fact = next(f for f in resource["facts"] if f["payload"].get("event"))
+    event_fact["payload"]["event"]["participant_roles"] = {"an unnamed visitor": "actor"}
     schema = RecapComposer.draft_schema(resource, ["1"])
     with pytest.raises(ValidationError):
         schema.model_validate(value)

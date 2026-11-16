@@ -34,6 +34,10 @@ const step = (v: unknown) =>
   ids(v.sourceIds) &&
   ids(v.loreThreadIds) &&
   hint(v.presentation) &&
+  (v.presentationState === undefined ||
+    (object(v.presentationState) &&
+      text(v.presentationState.status) &&
+      text(v.presentationState.reason))) &&
   (v.participantRoles === undefined ||
     list(
       v.participantRoles,
@@ -47,6 +51,48 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
   if (
     !object(value) ||
     value.schemaVersion !== 1 ||
+    (value.researchScopes !== undefined &&
+      !list(
+        value.researchScopes,
+        (s) =>
+          object(s) &&
+          id(s.id) &&
+          text(s.title) &&
+          Number.isInteger(s.firstPosition) &&
+          Number.isInteger(s.lastPosition) &&
+          Number(s.firstPosition) >= 1 &&
+          Number(s.lastPosition) >= Number(s.firstPosition) &&
+          list(s.references, (r) => text(r) && r.startsWith("https://")),
+      )) ||
+    (value.researchState !== undefined &&
+      !(
+        object(value.researchState) &&
+        text(value.researchState.status) &&
+        (value.researchState.jobId === null || id(value.researchState.jobId)) &&
+        (value.researchState.error === null ||
+          text(value.researchState.error)) &&
+        (value.researchState.coverage === undefined ||
+          value.researchState.coverage === null ||
+          text(value.researchState.coverage))
+      )) ||
+    (value.unorderedMilestones !== undefined &&
+      !list(value.unorderedMilestones, step)) ||
+    (value.coverage !== undefined &&
+      !(
+        object(value.coverage) &&
+        text(value.coverage.status) &&
+        [
+          "acceptedEvents",
+          "validatedMilestones",
+          "entries",
+          "orderingGaps",
+        ].every(
+          (k) =>
+            Number.isInteger(
+              value.coverage && (value.coverage as RecordValue)[k],
+            ) && Number((value.coverage as RecordValue)[k]) >= 0,
+        )
+      )) ||
     (value.relations !== undefined &&
       !list(
         value.relations,
@@ -80,10 +126,16 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
         scoped(j) &&
         text(j.title) &&
         text(j.introduction) &&
+        (j.presentationState === undefined ||
+          (object(j.presentationState) &&
+            text(j.presentationState.status) &&
+            text(j.presentationState.reason))) &&
         (j.overview === undefined || text(j.overview)) &&
         text(j.spoilerScope) &&
         object(j.ordering) &&
-        j.ordering.basis === "broadcast-presentation" &&
+        ["broadcast-presentation", "manga-chapter", "unresolved"].includes(
+          String(j.ordering.basis),
+        ) &&
         text(j.ordering.explanation) &&
         ids(j.ordering.sourceIds) &&
         list(j.steps, step),

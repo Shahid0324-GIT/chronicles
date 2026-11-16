@@ -12,6 +12,18 @@ from src.domain.knowledge import name_key
 from src.domain.research import SourcePassage, digest
 
 
+def action_score(text: str) -> int:
+    """Ranking only; lexical actions never count as verification or chronology."""
+    return len(
+        re.findall(
+            r"\b(arrived|arriving|rescued|saved|defeated|imprisoned|tied|freed|joined|"
+            r"met|helped|invented|created|attacked|escaped|returned)\b|助け|救っ|出会|同行",
+            text,
+            re.I,
+        )
+    )
+
+
 class EventParticipant(StructuredModel):
     name: str = Field(min_length=1, max_length=100)
     role: Literal["actor", "recipient", "witness", "opponent", "mentioned"]
@@ -35,6 +47,35 @@ class EventFrame(StructuredModel):
 
 class EventFrames(StructuredModel):
     events: list[EventFrame] = Field(default_factory=list, max_length=3)
+
+
+def immediate_pronoun_context(
+    frame: EventFrame,
+    units: list[dict[str, Any]],
+    selected: list[dict[str, Any]],
+    anchor: dict[str, Any],
+    subjects: list[str],
+) -> list[dict[str, Any]]:
+    """Retain adjacent evidence for assessment; never resolve an identity by this rule.
+
+    Only one named actor in the model frame and focal context is eligible. Competing
+    focal names, remote context or multiple participants stay unresolved. The semantic
+    verifier and publication guards still assess the expanded exact quotations.
+    """
+    people = [p.name for p in frame.participants if p.role != "mentioned"]
+    if not subjects or len(people) != 1 or not re.match(r"^(He|She)\b", anchor["text"]):
+        return selected
+    index = next((i for i, u in enumerate(units) if u["id"] == anchor["id"]), 0)
+    if index == 0 or len(selected) >= 3:
+        return selected
+    previous = units[index - 1]
+    actor = name_key(people[0])
+    if previous["passage_id"] != anchor["passage_id"] or actor not in name_key(previous["text"]):
+        return selected
+    competing = [name_key(n) for n in subjects if name_key(n) in name_key(previous["text"])]
+    if not competing or any(not (n.endswith(actor) or actor.endswith(n)) for n in competing):
+        return selected
+    return [previous, *selected] if previous not in selected else selected
 
 
 def evidence_units(passages: list[SourcePassage]) -> list[dict[str, Any]]:
@@ -128,6 +169,7 @@ async def extract_events(
             anchor = next((u for u in selected if frame.trigger in u["text"]), None)
             if anchor is None:
                 continue
+            selected = immediate_pronoun_context(frame, local, selected, anchor, subjects or [])
             evidence = [
                 Citation(passage_id=u["passage_id"], quote=u["text"]).model_dump(mode="json")
                 for u in selected

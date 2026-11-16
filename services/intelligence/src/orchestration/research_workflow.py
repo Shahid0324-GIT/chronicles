@@ -27,7 +27,7 @@ from src.application.connected_extraction import (
     extract_connected,
 )
 from src.application.encyclopedia_extraction import extract_encyclopedia
-from src.application.event_extraction import extract_events
+from src.application.event_extraction import action_score, extract_events
 from src.application.evidence_dossier import (
     EvidenceDossierBuilder,
     expand_queries,
@@ -1523,9 +1523,9 @@ class ResearchWorkflow:
                         ),
                         {},
                     )
-                    if context.get("position_basis") == "broadcast-presentation":
+                    if context.get("position_basis") in {"broadcast-presentation", "manga-chapter"}:
                         entity.event["source_position"] = context.get("presentation_position")
-                        entity.event["position_basis"] = "broadcast-presentation"
+                        entity.event["position_basis"] = context["position_basis"]
             extraction = await self.knowledge.ground_aliases(
                 UUID(state["job_id"]), extraction, passages
             )
@@ -2559,6 +2559,7 @@ class ResearchWorkflow:
         extraction_hits = sorted(
             (h for h in selected if h.source.provenance.get("category") != "discussion"),
             key=lambda h: (
+                -action_score(h.passage.text),
                 -sum(
                     name.casefold() in h.passage.text.casefold() for name in request.subject_names
                 ),
@@ -2571,7 +2572,11 @@ class ResearchWorkflow:
         remaining: list[str] = []
         seen_sources: set[UUID] = set()
         for h in extraction_hits:
-            (remaining if h.source.id in seen_sources else first).append(str(h.passage.id))
+            (
+                remaining
+                if h.source.id in seen_sources or not action_score(h.passage.text)
+                else first
+            ).append(str(h.passage.id))
             seen_sources.add(h.source.id)
         return await self.snapshot(
             "research_context",
@@ -2599,6 +2604,7 @@ class ResearchWorkflow:
             not state.get("policy")
             or not self.policy(state).presentation_requires_coverage
             or state.get("coverage", {}).get("outcome") == "SUFFICIENT_FOR_PRESENTATION"
+            or bool(state.get("publication", {}).get("promoted"))
         )
         resource_ids = request.presentation_resource_ids
         if request.relationship_subjects and state.get("investigation", {}).get(
@@ -2658,6 +2664,33 @@ class ResearchWorkflow:
                     **state.get("telemetry", {}),
                     "presentation_withheld": "no_relevant_accepted_resources",
                 }
+        promoted_ids = [
+            UUID(p["target_id"]) for p in state.get("publication", {}).get("promoted", [])
+        ]
+        if promoted_ids and not request.presentation_resource_ids:
+            resource_ids = list(dict.fromkeys([*resource_ids, *promoted_ids]))
+            enough = True
+            state.get("telemetry", {}).pop("presentation_withheld", None)
+        if resource_ids and not request.presentation_resource_ids and self.atlas:
+            # Focal entries are not the whole reader dependency graph. Rebuild affected
+            # milestones, connected entries and their arc in the same bounded worker job.
+            scope = await self.atlas.scope(
+                request.universe_id,
+                request.continuity_id,
+                spoiler_position=request.spoiler_position,
+            )
+            affected = {str(i) for i in resource_ids}
+            affected.update(
+                r["canonical_id"]
+                for r in state.get("resolutions", {}).values()
+                if r.get("accepted") and r.get("canonical_id")
+            )
+            resources = self.atlas.resources(scope)
+            resource_ids = [
+                UUID(r["id"])
+                for r in resources
+                if r["id"] in affected or any(f["target_id"] in affected for f in r["facts"])
+            ]
         if (request.presentation_only or request.compose_presentations and enough) and self.atlas:
 
             async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:

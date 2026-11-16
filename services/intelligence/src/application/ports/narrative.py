@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import Any, Protocol
 from uuid import UUID
 
+from src.application.story_scope import ArcResearchScope
 from src.domain.entities import GraphNode, GraphRelationship
 
 
@@ -12,6 +13,8 @@ class NarrativeKnowledge:
     edges: list[GraphRelationship]
     facts: list[dict[str, Any]]
     interpretations: list[dict[str, Any]] = field(default_factory=list)
+    research: list[dict[str, Any]] = field(default_factory=list)
+    story_scopes: list[ArcResearchScope] = field(default_factory=list)
 
 
 class NarrativeRepository(Protocol):

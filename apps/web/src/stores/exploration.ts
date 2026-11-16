@@ -242,6 +242,7 @@ export function createExplorationStore(
     },
     minimizePanel: () => set((s) => ({ panelMinimized: !s.panelMinimized })),
     setContinuity: (id) => {
+      if (id === get().continuityId) return;
       if (id && !get().graph?.continuities.some((c) => c.id === id)) return;
       get().resetNarrativeScope();
       set({

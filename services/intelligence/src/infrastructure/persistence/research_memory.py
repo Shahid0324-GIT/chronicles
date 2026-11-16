@@ -40,6 +40,11 @@ class SqlResearchMemory:
         if set(profile.continuity_media) - {s.id for s in scopes}:
             raise NotFoundError("Profile continuity does not belong to universe")
         if any(
+            not any(s.id == arc.continuity_id and s.medium.casefold() == "manga" for s in scopes)
+            for arc in profile.story_scopes
+        ):
+            raise ValueError("Manga arc boundaries require this universe's actual manga continuity")
+        if any(
             profile.continuity_media.get(scope.id, scope.medium).casefold()
             != scope.medium.casefold()
             for scope in scopes

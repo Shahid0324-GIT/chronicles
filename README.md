@@ -6,6 +6,10 @@ Phase 3 increment 4 connects PostgreSQL-backed researched journeys to the existi
 
 ## Prerequisites
 
+Increment 6.0 adds manga-aware One Piece research configuration and partial reader publication. The live Romance Dawn benchmark currently exposes two accepted nodes and a short grounded recap; it is not a complete arc reconstruction. See [implementation, actual research and limitations](docs/phase-3-increment-6-0.md) and the [persisted research audit](docs/phase-3-increment-6-0-results.json). The mandatory research-to-browser enrichment test uses explicitly owned fixtures, separately from real One Piece research.
+
+To add configuration without story seeds, run `..\..\.venv\Scripts\python -m src.infrastructure.persistence.configure_one_piece` from `services/intelligence` after migrations. This does not grant source or cloud-sharing permissions. Use the existing research worker and source controls; configuration alone creates no story content.
+
 - Windows 11, PowerShell, Python 3.11+, Node.js 20.9+ (Node 24 LTS recommended), npm, Docker Desktop using Linux containers.
 - Docker Desktop must be running. Ports 5432, 8000 and 3000 must be free.
 - Internet is needed for installation and public-source research. Graph browsing and research over imported permitted text run locally with Ollama. Groq is optional and requires explicit cloud-content permission.

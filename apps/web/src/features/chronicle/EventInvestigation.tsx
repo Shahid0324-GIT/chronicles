@@ -93,6 +93,12 @@ export default function EventInvestigation() {
           <div className="event-prose">
             <p className="folio-eyebrow">{step.episodeLabel}</p>
             <h2>{step.title}</h2>
+            {step.presentationState?.status !== "validated" &&
+              step.presentationState && (
+                <p role="status">
+                  Verified assertion · {step.presentationState.reason}
+                </p>
+              )}
             <p>
               {expanded && step.detailedRecap ? step.detailedRecap : step.body}
             </p>

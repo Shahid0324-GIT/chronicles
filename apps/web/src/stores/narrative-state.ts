@@ -252,7 +252,11 @@ export function createNarrativeState(
               ? current.journeyBookmark
               : null,
           layoutKind:
-            journey && current.layoutKind === "free" && !current.selectedId
+            (journey ||
+              (!current.narrative.availability &&
+                result.catalog.availability?.kind === "generated")) &&
+            current.layoutKind === "free" &&
+            !current.selectedId
               ? "narrative"
               : current.layoutKind,
         });
@@ -264,7 +268,11 @@ export function createNarrativeState(
           current.focusHistory.length === 0
         )
           get().beginJourney(journey.id);
-        else if (!journey && current.mode === "guided")
+        else if (
+          !journey &&
+          current.mode === "guided" &&
+          result.catalog.availability?.kind !== "generated"
+        )
           set({ mode: "explore", layoutKind: "free" });
       } catch (error) {
         if (signal?.aborted || get().narrativeRequest !== request) return;

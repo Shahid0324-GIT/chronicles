@@ -6,12 +6,23 @@ export default function ReaderControls() {
     setBoundary = useExploration((s) => s.setSpoilerPosition),
     entries = useExploration((s) => s.narrative.entryIndex),
     inspect = useExploration((s) => s.selectNode);
+  const medium = useExploration((s) =>
+    s.graph?.continuities
+      .find((c) => c.id === s.continuityId)
+      ?.medium.toUpperCase(),
+  );
+  const unit =
+    medium === "MANGA"
+      ? "chapter"
+      : medium === "ANIME"
+        ? "episode"
+        : "source position";
   return (
     <div className="story-scope-controls">
       <label>
-        Spoilers through episode{" "}
+        Spoilers through {unit}{" "}
         <input
-          aria-label="Spoilers through episode"
+          aria-label={`Spoilers through ${unit}`}
           type="number"
           min={1}
           max={100000}

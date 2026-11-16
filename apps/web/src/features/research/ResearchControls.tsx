@@ -35,6 +35,7 @@ export default function ResearchControls() {
         universe={universe}
         continuity={continuity}
         continuityName={continuities?.find((c) => c.id === continuity)?.name}
+        medium={continuities?.find((c) => c.id === continuity)?.medium}
         refresh={refresh}
       />
     </div>
@@ -44,11 +45,13 @@ function ResearchPanel({
   universe,
   continuity,
   continuityName,
+  medium,
   refresh,
 }: {
   universe: { id: string; title: string } | null;
   continuity: string | null;
   continuityName?: string;
+  medium?: string;
   refresh: () => Promise<void>;
 }) {
   const [open, setOpen] = useState(false),
@@ -61,6 +64,13 @@ function ResearchPanel({
     [busy, setBusy] = useState(false),
     [check, setCheck] = useState(0);
   const button = useRef<HTMLButtonElement>(null);
+  const unit =
+    medium?.toUpperCase() === "MANGA"
+      ? "chapter"
+      : medium?.toUpperCase() === "ANIME"
+        ? "episode"
+        : "source position";
+  const refreshedJob = useRef<string | null>(null);
   const scope = `${universe?.id}:${continuity}`;
   const restoredJob = useSyncExternalStore(
     subscribeResearchJobs,
@@ -88,7 +98,13 @@ function ResearchPanel({
         setSummary(next);
         setError(null);
         failures = 0;
-        if (terminal(next.status)) return;
+        if (terminal(next.status)) {
+          if (refreshedJob.current !== job) {
+            await refresh();
+            refreshedJob.current = job;
+          }
+          return;
+        }
       } catch (e) {
         if (controller.signal.aborted) return;
         setError(e instanceof Error ? e.message : "Status unavailable.");
@@ -107,7 +123,7 @@ function ResearchPanel({
       controller.abort();
       clearTimeout(timer);
     };
-  }, [job, check]);
+  }, [job, check, refresh]);
   const close = () => {
     setOpen(false);
     button.current?.focus();
@@ -200,9 +216,9 @@ function ResearchPanel({
               </select>
             </label>
             <label>
-              Through episode source (optional)
+              Through {unit} (optional)
               <input
-                aria-label="Research episode boundary"
+                aria-label={`Research ${unit} boundary`}
                 type="number"
                 min="1"
                 max="100000"
