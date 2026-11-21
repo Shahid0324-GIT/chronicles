@@ -163,6 +163,21 @@ async def test_reference_outline_is_exact_scoped_unverified_and_revocable(factor
     async with factory() as session:
         knowledge = await SqlNarrativeRepository(session).knowledge(scope.universe_id, scope.id)
     assert len(knowledge.reference_outline) == 2
+    saved_outline = knowledge.reference_outline
+    async with factory() as session, session.begin():
+        for index in range(25):
+            await SqlResearchRepository(session).create_job(
+                ResearchRequest(
+                    universe_id=scope.universe_id,
+                    continuity_id=scope.id,
+                    objective=f"Owned composition-only follow-up {index}",
+                    presentation_only=True,
+                )
+            )
+    async with factory() as session:
+        knowledge = await SqlNarrativeRepository(session).knowledge(scope.universe_id, scope.id)
+    assert knowledge.reference_outline == saved_outline
+    assert len(knowledge.research) == 20
     atlas, _ = memory_atlas(knowledge)
     assert not (await atlas.catalog(scope.universe_id, scope.id, spoiler_position=1))[
         "reconstruction"

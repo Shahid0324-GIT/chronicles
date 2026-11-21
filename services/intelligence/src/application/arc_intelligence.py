@@ -40,7 +40,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v11"
+POLICY = "arc-intelligence-v12"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -62,29 +62,8 @@ def prose_eligible(fact: dict[str, Any]) -> bool:
 
 
 def composition_context(section: ArcSectionDossier, facts: list[dict[str, Any]]) -> dict[str, Any]:
-    """Expose editorial links with the same numeric references as the licensed assertions."""
+    """Expose archive coordinates with the same references as the licensed assertions."""
     references = {f["id"]: str(i + 1) for i, f in enumerate(facts)}
-    developments = []
-    for development in section.narrative_developments:
-        refs = [references[i] for i in development.fact_ids if i in references]
-        if not refs:
-            continue
-        developments.append(
-            {
-                "key": development.key,
-                "stage": development.stage,
-                "fact_ids": refs,
-                "connections": [
-                    {
-                        "from_key": c.from_key,
-                        "relation": c.relation,
-                        "fact_ids": [references[i] for i in c.fact_ids if i in references],
-                    }
-                    for c in development.connections
-                    if all(i in references for i in c.fact_ids)
-                ],
-            }
-        )
     documents = sorted({s["id"] for f in facts for s in f.get("sources", [])})
     layout: dict[tuple[str, str], dict[str, Any]] = {}
     for fact in facts:
@@ -109,8 +88,10 @@ def composition_context(section: ArcSectionDossier, facts: list[dict[str, Any]])
     return {
         "title": section.plan.title,
         "objective": section.plan.objective,
-        "developments": developments,
-        "organization_status": "provisional editorial connections; assert only licensed facts",
+        "organization_status": (
+            "Editorial stage labels and connections are unverified; they do not establish "
+            "story order. Compose from accepted assertions and source layout only."
+        ),
         "source_layout": list(layout.values()),
         "source_layout_policy": (
             "Exact archive locations identify where accepted evidence appears in each source "
@@ -635,8 +616,8 @@ class ArcIntelligence:
                         "do not return paragraph fact_ids. Build a "
                         "paragraph as ordered, connected narrative claims. Reader text is derived "
                         "from those claims; do not return a separate text field. "
-                        "connected account "
-                        "around the supplied narrative developments and explicit connections. "
+                        "connected account from the accepted assertions and reference layout. "
+                        "Unverified dossier groups cannot establish story order or connections. "
                         "Do not add a motive, event or causal bridge to make it flow.\n"
                         + json.dumps(
                             {

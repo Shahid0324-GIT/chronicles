@@ -187,8 +187,19 @@ class SqlNarrativeRepository:
             )
         )
         outlines = {}
-        for job in jobs:
-            for item in job.checkpoint.get("reconstruction_outline", [])[:30]:
+        outline_jobs = await self.session.stream_scalars(
+            select(ResearchJobModel.checkpoint)
+            .where(
+                ResearchJobModel.universe_id == universe,
+                ResearchJobModel.continuity_id == continuity,
+                ResearchJobModel.checkpoint["reconstruction_outline"].as_string().is_not(None),
+            )
+            .order_by(ResearchJobModel.created_at.desc(), ResearchJobModel.id)
+            .execution_options(yield_per=20)
+        )
+        # Recent-job telemetry is bounded; durable reference progress must not be.
+        async for checkpoint in outline_jobs:
+            for item in checkpoint.get("reconstruction_outline", [])[:30]:
                 if (
                     not isinstance(item, dict)
                     or not isinstance(item.get("id"), str)
@@ -253,7 +264,7 @@ class SqlNarrativeRepository:
                 for job in jobs
             ],
             [arc for arc in story_scopes if arc.continuity_id == continuity],
-            list(outlines.values()),
+            [outlines[key] for key in sorted(outlines)],
         )
 
     async def save(
