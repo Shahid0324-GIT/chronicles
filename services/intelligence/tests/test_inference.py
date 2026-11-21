@@ -78,6 +78,27 @@ async def test_rate_limit_never_rotates_keys_and_cooldown_is_shared():
     assert router.status()["cloud_cooldown"] is True
 
 
+async def test_bounded_rate_limit_wait_retries_same_credential(monkeypatch):
+    waits = []
+
+    async def sleep(seconds):
+        waits.append(seconds)
+
+    monkeypatch.setattr(asyncio, "sleep", sleep)
+    local = Provider()
+    primary = Provider("groq", [InferenceFailure("rate_limited", 90)])
+    secondary = Provider("secondary")
+    router = InferenceRouter(
+        local, [primary, secondary], cloud_content_allowed=True, cloud_rate_limit_wait_seconds=120
+    )
+    result = await router.generate(
+        "Owned", "Owned", ResearchPlan, "verification", public_source_content=True
+    )
+    assert result.usage.provider == "groq"
+    assert waits == [60, 30]
+    assert primary.calls == 2 and secondary.calls == 0 and local.calls == 0
+
+
 async def test_timeout_and_invalid_output_have_bounded_local_fallback():
     local, cloud = (
         Provider(),
@@ -135,3 +156,23 @@ def test_credentials_are_masked_and_ollama_cannot_point_to_public_inference():
     assert "test-secret" not in repr(settings)
     with pytest.raises(ValueError):
         Settings(_env_file=None, ollama_base_url="https://example.org")
+
+
+def test_groq_response_format_is_configurable_without_changing_permissions():
+    from src.infrastructure.inference import create_inference
+
+    settings = Settings(
+        _env_file=None,
+        groq_api_key_primary="owned-test-key",
+        groq_model="owned-test-model",
+        groq_structured_output_method="json_schema",
+        groq_structured_output_strict=True,
+        ai_cloud_content_allowed=False,
+    )
+    router = create_inference(settings)
+    assert router.cloud[0].method == "json_schema"
+    assert router.cloud[0].strict
+    assert not router.local.strict
+    assert not router.cloud_content_allowed
+    with pytest.raises(ValueError):
+        Settings(_env_file=None, groq_structured_output_method="invented-format")

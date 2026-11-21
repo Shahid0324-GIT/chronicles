@@ -146,6 +146,11 @@ class EvidenceRetrieval:
             lexical = await repo.passages(
                 universe, continuity, eligible_sources, query=" ".join(names or []) + " " + query
             )
+        lexical = [
+            replace(h, source=replace(h.source, provenance=metadata[h.source.id]))
+            for h in lexical
+            if h.source.id in metadata
+        ]
         model = await self.embeddings.identity()
         vector = (await self.embeddings.embed([query[:2000]]))[0]
         async with self.transactions() as repo:

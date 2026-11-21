@@ -72,6 +72,26 @@ class OwnedProvider:
                 }
             )
         elif task == "identity_resolution":
+            if schema.__name__ == "ContextIdentityReview":
+                return InferenceResult(
+                    schema(
+                        decision="new",
+                        alternative_status="distinguished",
+                        evidence_indices=[0],
+                        hidden_identity=False,
+                        reason="Owned source identifies one new person",
+                    ),
+                    InferenceUsage(
+                        self.name,
+                        self.model,
+                        self.credential,
+                        task,
+                        "ok",
+                        1,
+                        input_tokens=100,
+                        output_tokens=30,
+                    ),
+                )
             value = schema.model_validate(
                 {
                     "decision": "NEW_ENTITY",

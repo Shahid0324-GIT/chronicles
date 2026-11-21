@@ -57,11 +57,14 @@ class SourceInput(StructuredModel):
 
 class ResearchRequest(StructuredModel):
     arc_id: UUID | None = None
+    arc_section_keys: list[str] = Field(default_factory=list, max_length=20)
+    extraction_source_ids: list[UUID] = Field(default_factory=list, max_length=20)
     relationship_subjects: list[InvestigationSubject] = Field(default_factory=list, max_length=8)
     adaptive_research: bool = True
     research_policy: ResearchPolicy | None = None
     presentation_only: bool = False
     presentation_resource_ids: list[UUID] = Field(default_factory=list, max_length=20)
+    presentation_source_ids: list[UUID] | None = Field(default=None, max_length=200)
     retry_withheld_presentations: bool = False
     compose_presentations: bool = False
     research_focus: Literal["story", "encyclopedia"] = "story"
@@ -79,6 +82,8 @@ class ResearchRequest(StructuredModel):
 
     @model_validator(mode="after")
     def relationship_mode(self) -> "ResearchRequest":
+        if self.arc_section_keys and self.arc_id is None:
+            raise ValueError("Focused arc sections require an arc_id")
         if self.relationship_subjects:
             if len(self.relationship_subjects) < 2:
                 raise ValueError(

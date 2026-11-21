@@ -16,6 +16,7 @@ from src.application.event_extraction import evidence_units
 from src.application.evidence_bundles import EvidenceBundleBuilder, connection_score
 from src.application.identity import IdentityResolver
 from src.application.inference import InferenceRouter
+from src.application.knowledge_contracts import ContextIdentityReview
 from src.application.relationship_contracts import ConnectedAssertions
 from src.application.research import ResearchRequest
 from src.application.research_contracts import InferenceResult, InferenceUsage
@@ -110,7 +111,7 @@ def test_matching_corroboration_preserves_separate_assertions_but_not_name_menti
     ).supported
 
 
-async def test_unrelated_same_type_identity_is_not_offered_as_a_match():
+async def test_model_can_distinguish_unrelated_same_type_identity_without_spelling_filter():
     hit = evidence("Mira D. Vale saves Ron.")
     candidate = {
         "id": str(uuid4()),
@@ -123,7 +124,16 @@ async def test_unrelated_same_type_identity_is_not_offered_as_a_match():
     }
 
     async def infer(prompt, schema):
-        assert schema.__name__ == "EmptyCatalogIdentityComparison"
+        if schema is ContextIdentityReview:
+            return schema(
+                decision="new",
+                alternative_status="distinguished",
+                evidence_indices=[0],
+                hidden_identity=False,
+                reason="Owned source identifies one new person",
+            )
+        assert schema.__name__ == "IndexedIdentityComparison"
+        assert '"name": "Taro"' in prompt
         return schema.model_validate(
             {
                 "decision": "NEW_ENTITY",
@@ -319,6 +329,14 @@ async def test_cached_new_identity_rebinds_to_current_claim_without_changing_bud
 
     async def infer(prompt, schema, task):
         calls.append(task)
+        if schema is ContextIdentityReview:
+            return schema(
+                decision="new",
+                alternative_status="distinguished",
+                evidence_indices=[0],
+                hidden_identity=False,
+                reason="Owned source identifies one new person",
+            )
         return schema.model_validate(
             {
                 "decision": "NEW_ENTITY",
@@ -346,7 +364,7 @@ async def test_cached_new_identity_rebinds_to_current_claim_without_changing_bud
         grounded=True,
         completed=cached,
     )
-    assert calls == ["identity_resolution"]
+    assert calls == ["identity_resolution", "identity_resolution"]
     assert initial[a]["canonical_id"] == str(uuid5(scope.id, "entity:" + a))
     assert repeated[b]["canonical_id"] == str(uuid5(scope.id, "entity:" + b))
 

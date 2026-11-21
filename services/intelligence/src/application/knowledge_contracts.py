@@ -45,6 +45,14 @@ class IndexedIdentityComparison(StructuredModel):
     # cannot be expressed in this provider's JSON schema; retrying them is wasteful.
 
 
+class ContextIdentityReview(StructuredModel):
+    reason: str = Field(min_length=3, max_length=400)
+    evidence_indices: list[int] = Field(min_length=1, max_length=3)
+    decision: Literal["same", "different", "ambiguous", "new"]
+    alternative_status: Literal["distinguished", "unresolved", "none_supplied"]
+    hidden_identity: bool
+
+
 class EventIdentityComparison(IndexedIdentityComparison):
     same_occurrence: bool
     same_granularity: bool
@@ -155,3 +163,11 @@ class NarrativeAssessment(Assessment):
 
 class NarrativeVerification(StructuredModel):
     assessments: list[NarrativeAssessment] = Field(min_length=1, max_length=1)
+
+
+class SectionAssessment(NarrativeAssessment):
+    supporting_unit_ids: list[int] = Field(default_factory=list, max_length=6)
+
+
+class SectionVerification(StructuredModel):
+    assessments: list[SectionAssessment] = Field(min_length=1, max_length=1)

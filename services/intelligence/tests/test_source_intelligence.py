@@ -82,6 +82,19 @@ async def test_embeddings_reuse_unchanged_passages_and_reindex_model_revision(fa
         assert await session.scalar(select(func.count()).select_from(PassageEmbeddingModel)) == 4
 
 
+async def test_current_source_metadata_exposes_content_hash_not_publisher_revision(factory):
+    from src.infrastructure.persistence.models.research import SourceDocumentModel
+
+    scope, ids, _, _ = await prepare_index(factory)
+    async with factory() as session, session.begin():
+        source = await session.get(SourceDocumentModel, ids[0])
+        source.provenance = {**source.provenance, "revision_id": "publisher-revision-12"}
+        await session.flush()
+        metadata = await SqlEvidenceIndex(session).source_metadata(scope.universe_id, scope.id, ids)
+        assert metadata[ids[0]]["revision_id"] == "publisher-revision-12"
+        assert metadata[ids[0]]["content_hash"] == digest(source.text)
+
+
 async def test_hybrid_retrieval_exact_name_and_scope_source_filters(factory):
     scope, ids, service, _ = await prepare_index(factory)
     await service.index(scope.universe_id, scope.id)
@@ -94,6 +107,18 @@ async def test_hybrid_retrieval_exact_name_and_scope_source_filters(factory):
     assert not await service.retrieve(
         scope.universe_id, scope.id, "arrival", authorities=["secondary"]
     )
+
+
+async def test_lexical_only_hit_uses_current_cloud_permissions_not_archived_flags(factory):
+    from src.infrastructure.persistence.models.research import SourceDocumentModel
+
+    scope, ids, service, _ = await prepare_index(factory)
+    async with factory() as session, session.begin():
+        source = await session.get(SourceDocumentModel, ids[0])
+        source.provenance = {**source.provenance, "cloud_content_allowed": True}
+    # SQLite supplies the lexical path, with no semantic vectors indexed.
+    hits = await service.retrieve(scope.universe_id, scope.id, "arrival", allowed_sources=[ids[0]])
+    assert hits and not hits[0].source.provenance["cloud_content_allowed"]
 
 
 async def test_invalid_vector_dimensions_do_not_persist(factory):

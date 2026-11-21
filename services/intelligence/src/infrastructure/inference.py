@@ -38,10 +38,12 @@ class LangChainProvider:
         health_url: str,
         api_key: str | None = None,
         method: str = "json_schema",
+        strict: bool = False,
         lease: ModelLease | None = None,
     ) -> None:
         self.client, self.name, self.model, self.credential = client, name, model, credential
         self.health_url, self.api_key, self.method = health_url, api_key, method
+        self.strict = strict
         self.lease = lease
         self.revision: str | None = None
 
@@ -106,11 +108,20 @@ class LangChainProvider:
                     "extraction": 3000,
                     "relationship_analysis": 2500,
                     "verification": 900,
-                    "presentation": 1300,
-                    "presentation_verification": 700,
+                    "presentation": 4000,
+                    "presentation_verification": 2500,
                 }
                 client = self.client.model_copy(update={"num_predict": budgets[task]})
-            runnable = client.with_structured_output(schema, method=self.method, include_raw=True)
+            if self.strict and self.method != "json_schema":
+                raise InferenceFailure(
+                    "provider_invalid_request", issues=("strict_requires_json_schema",)
+                )
+            runnable = client.with_structured_output(
+                schema,
+                method=self.method,
+                include_raw=True,
+                **({"strict": True} if self.strict else {}),
+            )
             # Environment-enabled tracing must never bypass the local-content boundary.
             with tracing_context(enabled=False):
                 async with self.lease() if self.lease and self.name == "ollama" else nullcontext():
@@ -244,7 +255,7 @@ def create_inference(
                             api_key=secret,
                             temperature=0,
                             max_retries=0,
-                            max_tokens=3000,
+                            max_tokens=4000,
                             timeout=settings.ai_timeout_seconds,
                         ),
                         "groq",
@@ -252,7 +263,8 @@ def create_inference(
                         label,
                         health_url="https://api.groq.com/openai/v1/models",
                         api_key=key,
-                        method="function_calling",
+                        method=settings.groq_structured_output_method,
+                        strict=settings.groq_structured_output_strict,
                     )
                 )
     return InferenceRouter(
@@ -266,4 +278,5 @@ def create_inference(
         cache=cache,
         max_calls=settings.agent_max_model_calls,
         stage_limits=settings.agent_stage_model_calls,
+        cloud_rate_limit_wait_seconds=settings.ai_cloud_rate_limit_wait_seconds,
     )

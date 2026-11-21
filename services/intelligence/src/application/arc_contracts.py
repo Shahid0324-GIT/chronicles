@@ -3,7 +3,7 @@
 from typing import Any, Literal
 from uuid import UUID
 
-from pydantic import Field, model_validator
+from pydantic import Field, computed_field, model_validator
 
 from src.application.research_contracts import StructuredModel
 
@@ -69,6 +69,36 @@ class DevelopmentBinding(StructuredModel):
 
 class ArcUnderstanding(StructuredModel):
     bindings: list[DevelopmentBinding] = Field(default_factory=list, max_length=200)
+    developments: list["NarrativeDevelopment"] = Field(default_factory=list, max_length=80)
+    omissions: list["DevelopmentOmission"] = Field(default_factory=list, max_length=80)
+
+
+class DevelopmentOmission(StructuredModel):
+    fact_ids: list[str] = Field(min_length=1, max_length=40)
+    reason: Literal["duplicate", "incomplete", "unrelated", "insufficient_context"]
+    explanation: str = Field(min_length=8, max_length=400)
+
+
+class DevelopmentConnection(StructuredModel):
+    from_key: str
+    relation: Literal["context", "source_sequence", "consequence", "contrast", "resolution"]
+    fact_ids: list[str] = Field(min_length=1, max_length=16)
+
+
+class NarrativeDevelopment(StructuredModel):
+    section_key: str
+    key: str = Field(pattern=r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+    stage: Literal[
+        "circumstance",
+        "interaction",
+        "action",
+        "development",
+        "decision",
+        "conflict",
+        "consequence",
+    ]
+    fact_ids: list[str] = Field(min_length=1, max_length=16)
+    connections: list[DevelopmentConnection] = Field(default_factory=list, max_length=8)
 
 
 class ArcSectionCoverage(StructuredModel):
@@ -83,6 +113,7 @@ class ArcSectionDossier(StructuredModel):
     id: UUID
     plan: ArcSectionPlan
     developments: list[DevelopmentBinding]
+    narrative_developments: list[NarrativeDevelopment] = Field(default_factory=list)
     coverage: ArcSectionCoverage
     revision: str
 
@@ -97,6 +128,9 @@ class ArcDossier(StructuredModel):
     spoiler_position: int | None
     source_range: tuple[int, int]
     plan_status: Literal["provisional_not_canon"] = "provisional_not_canon"
+    section_focus: list[str] = Field(default_factory=list)
+    organization_warnings: list[str] = Field(default_factory=list)
+    organization_omissions: list[DevelopmentOmission] = Field(default_factory=list)
     status: Literal["partial"] = "partial"
     sections: list[ArcSectionDossier]
     accepted_facts: list[dict[str, Any]]
@@ -104,9 +138,65 @@ class ArcDossier(StructuredModel):
     revision: str
 
 
+class ArcClaim(StructuredModel):
+    text: str = Field(min_length=8, max_length=1000)
+    fact_ids: list[str] = Field(min_length=1, max_length=12)
+
+
 class ArcParagraph(StructuredModel):
-    text: str = Field(min_length=20, max_length=5000)
-    fact_ids: list[str] = Field(min_length=1, max_length=40)
+    claims: list[ArcClaim] = Field(min_length=1, max_length=20)
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def fact_ids(self) -> list[str]:
+        return list(dict.fromkeys(i for claim in self.claims for i in claim.fact_ids))
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def text(self) -> str:
+        return " ".join(c.text for c in self.claims)
+
+    @model_validator(mode="before")
+    @classmethod
+    def compatible_grounded_text(cls, value: Any) -> Any:
+        if isinstance(value, dict) and "fact_ids" in value:
+            value = dict(value)
+            supplied = value.pop("fact_ids")
+            expected_ids = {
+                i
+                for claim in value.get("claims", [])
+                for i in (
+                    claim.fact_ids if isinstance(claim, ArcClaim) else claim.get("fact_ids", [])
+                )
+            }
+            if set(supplied) != expected_ids:
+                raise ValueError("Paragraph citations must match its individually cited claims")
+        if isinstance(value, dict) and "text" in value:
+            value = dict(value)
+            text = value.pop("text")
+            claims = value.get("claims", [])
+            expected = " ".join(
+                c.text if isinstance(c, ArcClaim) else c.get("text", "") for c in claims
+            )
+            if " ".join(str(text).split()) != " ".join(expected.split()):
+                raise ValueError(
+                    "Reader text must equal its individually grounded narrative claims"
+                )
+        return value
+
+
+class ClaimReview(StructuredModel):
+    index: int = Field(ge=0)
+    verdict: Literal["supported", "unsupported", "uncertain"]
+    reason: str = Field(min_length=3, max_length=400)
+
+
+class ArcSemanticReview(StructuredModel):
+    claims: list[ClaimReview]
+    paragraphs_faithful: bool
+    coherent: bool
+    coherence_issues: list[str] = Field(default_factory=list, max_length=12)
+    unsupported_connections: list[str] = Field(default_factory=list)
 
 
 class ArcSectionDraft(StructuredModel):

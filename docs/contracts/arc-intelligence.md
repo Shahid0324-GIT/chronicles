@@ -10,7 +10,15 @@ Optional repeated `allowed_source_id` restricts sources. Omit the boundary for f
 
 `article` is a separate `ArcArticle` artifact: section headings, paragraphs with exact fact references, coverage, perspective and dossier revision. Its status is `withheld` when no section is validated, otherwise `partial`. No complete-arc state is currently asserted. Withheld drafts expose no paragraph prose. Historical model-approved artifacts do not override current revision/policy eligibility.
 
+Organization must account for every accepted input assertion in a section assignment or in `organization_omissions` with its fact IDs, reason and explanation. This exposes excluded duplicate, incomplete, unrelated or context-poor assertions. Omission reasons and editorial connections remain provisional model assessments; they are not canonical facts or a completeness certificate. Missing accounting fails the bounded organization repair instead of silently losing developments.
+
 Research commands opt in with `arc_id`. A `presentation_only` arc command can reuse accepted evidence without supplying new sources. `retry_withheld_presentations` explicitly retries withheld sections; unchanged validated sections are reused. Existing short narrative and encyclopedia endpoints remain compatible. The independent worker and existing budgets remain mandatory.
+
+`arc_section_keys` limits work to existing provisional section keys. Optional `presentation_source_ids` limits dossier facts, reconstruction and article composition to the named archived sources; `null` means all eligible sources and `[]` means none. It does not grant retrieval or cloud permission. Source-bounded artifacts have separate cache identities and never fall back to broader prose. Only the provisional section plan may be reused from the broader view. Read the matching artifact with repeated `allowed_source_id` query parameters, or export it with repeated `--allowed-source` arguments. `extraction_source_ids` separately selects primary extraction material from the job's acquired sources; other acquired material remains available for corroboration.
+
+Paragraphs contain individually cited `claims`. Their displayed `text` and paragraph-level `fact_ids` are computed from those claims. Model input supplies claims only. Legacy representations are accepted only when their duplicated text and references agree exactly. Semantic review still checks each claim against its own accepted assertions, including roles, modality, sequence and causation, and must pass owned adversarial qualification cases. Model approval is not independent source verification or a claim of whole-arc completeness.
+
+A qualified semantic rejection permits one bounded revision with the same assertions and the review's concrete `coherence_issues`. Fresh validation and review are mandatory afterward. `assessment.review_attempts` retains the original and subsequent verdicts, including when a later inference fails. A model/provider change requires reviewer requalification. Unchanged validated sections remain reusable; GET performs neither revision nor inference.
 
 Export current backend artifacts without inference:
 

@@ -13,6 +13,7 @@ from src.application.knowledge_contracts import IndexedRelationships, Relationsh
 from src.application.ports.knowledge import KnowledgeTransaction
 from src.application.promotion import CanonicalGraphPromotionService
 from src.application.research_contracts import Citation, Extraction, InferenceFailure, Task
+from src.domain.identity_evidence import sourced_identity_catalog
 from src.domain.knowledge import name_key, short_name_bridge, source_name_bridge
 from src.domain.research import SourcePassage, digest
 
@@ -73,12 +74,15 @@ class KnowledgePipeline:
         grounded: bool = False,
         completed: dict[str, dict[str, Any]] | None = None,
         progress: Callable[[str, dict[str, Any]], Awaitable[None]] | None = None,
+        source_infer: InferRole | None = None,
+        source_revisions: dict[str, str] | None = None,
     ) -> dict[str, dict[str, Any]]:
         async with self.transactions() as unit:
             job = await unit.archive.get_job(job_id)
             assert job
             continuity = UUID(job["continuity_id"])
             catalog = await unit.graph.catalog(UUID(job["universe_id"]), continuity)
+            identity_records = await unit.graph.records()
         results: dict[str, dict[str, Any]] = {}
         ordered = sorted(
             candidates, key=lambda c: c["kind"] != "entity" or c["payload"].get("type") == "EVENT"
@@ -86,22 +90,45 @@ class KnowledgePipeline:
         for claim in ordered:
             if claim["kind"] != "entity":
                 continue
+            contextual_catalog = (
+                sourced_identity_catalog(
+                    catalog,
+                    identity_records,
+                    claim["payload"]["evidence"],
+                    job["universe_id"],
+                    str(continuity),
+                    source_revisions,
+                )
+                if grounded
+                else catalog
+            )
+            source_only = bool(
+                grounded
+                and source_infer
+                and claim["payload"]["type"] == "CHARACTER"
+                and any(n.get("source_identity_context") for n in contextual_catalog)
+            )
             cache_key = digest(
                 json.dumps(
                     {
-                        "policy": "scoped-identity-progress-v1",
+                        "policy": "scoped-context-identity-v4",
                         "candidate": claim["payload"],
-                        "catalog": catalog,
+                        "catalog": contextual_catalog,
                         "passages": [(str(p.id), p.content_hash) for p in passages],
                         "continuity": str(continuity),
+                        "source_only": source_only,
                     },
                     sort_keys=True,
                     default=str,
                 )
             )
 
-            async def compare(prompt: str, schema: type[BaseModel]) -> BaseModel:
-                return await infer(prompt, schema, "identity_resolution")
+            async def compare(
+                prompt: str,
+                schema: type[BaseModel],
+                callback: InferRole = source_infer if source_only and source_infer else infer,
+            ) -> BaseModel:
+                return await callback(prompt, schema, "identity_resolution")
 
             try:
                 actors = (claim["payload"].get("event") or {}).get("participants", [])
@@ -130,12 +157,13 @@ class KnowledgePipeline:
                     if cached and cached.get("accepted")
                     else await self.resolver.resolve(
                         claim,
-                        catalog,
+                        contextual_catalog,
                         passages,
                         compare,
                         continuity,
                         indexed_evidence=grounded,
                         participant_ids=participant_ids,
+                        source_only=source_only,
                     )
                 )
             except InferenceFailure:
@@ -156,6 +184,10 @@ class KnowledgePipeline:
                 target = next((n for n in catalog if n["id"] == decision["canonical_id"]), None)
                 if target is not None:
                     target.setdefault("aliases", []).append(claim["payload"]["name"])
+                    if decision.get("proof") == "source_context_identity":
+                        target.setdefault("native_alias_proofs", {})[claim["payload"]["name"]] = (
+                            decision
+                        )
         return results
 
     async def relationships(
@@ -180,6 +212,22 @@ class KnowledgePipeline:
         if len(resolved) < 2:
             return candidates
         if grounded:
+            grouped: dict[str, dict[str, Any]] = {}
+            for item in resolved:
+                record = grouped.setdefault(
+                    item["canonical_id"],
+                    {
+                        **item,
+                        "names": [],
+                        "claim_ids": [],
+                    },
+                )
+                if item["name"] not in record["names"]:
+                    record["names"].append(item["name"])
+                record["claim_ids"].append(item["claim_id"])
+            resolved = list(grouped.values())
+            if len(resolved) < 2:
+                return candidates
             units = evidence_units(passages)
             prompt = (
                 "Propose only explicit typed relationships among these indexed identities. "
@@ -191,7 +239,10 @@ class KnowledgePipeline:
                 "For two CHARACTER endpoints, use RELATED_TO for explicitly stated assistance "
                 "or another explicit relationship; describe the exact interaction, not vague "
                 "co-participation. Never use PARTICIPATED_IN between two characters. "
-                "or future revelations. Return empty when evidence is insufficient.\n"
+                "or future revelations. Return empty when evidence is insufficient. "
+                "Each indexed identity is one canonical entity, possibly with several source "
+                "names and claim IDs. Different assertions about that entity are not different "
+                "entities. Missing detail is not a contradiction.\n"
                 + json.dumps(
                     {
                         "identities": [{**n, "index": i} for i, n in enumerate(resolved)],
@@ -234,7 +285,7 @@ class KnowledgePipeline:
                     matches = [
                         r["canonical_id"]
                         for r in resolved
-                        if r["name"] == payload[endpoint + "_name"]
+                        if payload[endpoint + "_name"] in [r["name"], *r.get("names", [])]
                     ]
                     if len(set(matches)) == 1:
                         payload[endpoint + "_id"] = matches[0]

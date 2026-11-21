@@ -8,6 +8,7 @@ from sqlalchemy import func, select
 
 from src.application.identity import IdentityResolver
 from src.application.knowledge_contracts import (
+    ContextIdentityReview,
     EmptyCatalogIdentityComparison,
     IdentityComparison,
 )
@@ -68,6 +69,14 @@ async def test_empty_catalog_cannot_supply_invented_identity_targets():
     }
 
     async def infer(prompt, schema):
+        if schema is ContextIdentityReview:
+            return schema(
+                decision="new",
+                alternative_status="distinguished",
+                evidence_indices=[0],
+                hidden_identity=False,
+                reason="Owned source identifies one new person",
+            )
         assert schema is EmptyCatalogIdentityComparison
         values = dict(
             entity_type_valid=True,

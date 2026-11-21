@@ -10,6 +10,7 @@ from src.domain.atomic_evidence import atomic_payload_support
 from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.event_support import event_support_issue
 from src.domain.exceptions import NotFoundError
+from src.domain.identity_evidence import current_context_identity, sourced_identity_catalog
 from src.domain.knowledge import (
     PromotionPolicy,
     direct_primary_claim,
@@ -326,7 +327,27 @@ class CanonicalGraphPromotionService:
                             == 1
                         )
                         accepted = accepted and (
-                            exact_name or bridge or same_event or contextual_name or event_context
+                            exact_name
+                            or bridge
+                            or same_event
+                            or contextual_name
+                            or event_context
+                            or current_context_identity(
+                                resolution,
+                                payload,
+                                str(node.id),
+                                node.title,
+                                str(continuity),
+                                [e["quote"] for e in evidence],
+                                sourced_identity_catalog(
+                                    catalog,
+                                    records,
+                                    payload["evidence"],
+                                    str(universe),
+                                    str(continuity),
+                                    {e["source_id"]: e["content_hash"] for e in evidence},
+                                ),
+                            )
                         )
                         cross_source_event = (
                             event_context
@@ -568,6 +589,11 @@ class CanonicalGraphPromotionService:
                             )
                         )
                     bound.setdefault(payload["name"], set()).add(target)
+                    # A newly published, sourced alias is available to later claims
+                    # in this same transaction; a rejected claim never adds one.
+                    current_entry = next((n for n in catalog if n["id"] == str(target)), None)
+                    if current_entry is not None:
+                        current_entry.setdefault("aliases", []).append(payload["name"])
                 else:
                     assert source_node and target_node
                     kind = RelationshipType(payload["type"])

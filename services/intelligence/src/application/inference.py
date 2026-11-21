@@ -36,6 +36,7 @@ class InferenceRouter:
         cache: InferenceCache | None = None,
         max_calls: int = 1000,
         stage_limits: dict[str, int] | None = None,
+        cloud_rate_limit_wait_seconds: float = 0,
     ) -> None:
         self.local, self.cloud = local, cloud
         self.mode, self.cloud_content_allowed = mode, cloud_content_allowed
@@ -46,6 +47,7 @@ class InferenceRouter:
         self.usage: list[InferenceUsage] = []
         self.cache, self.max_calls, self.stage_limits = cache, max_calls, stage_limits or {}
         self.total_used = 0
+        self.cloud_rate_limit_wait_seconds = cloud_rate_limit_wait_seconds
         self.stage_used: dict[str, int] = {}
         self.before_call: Callable[[str, str, str, int], Awaitable[str]] | None = None
 
@@ -193,7 +195,17 @@ class InferenceRouter:
                         )
                         if provider is not self.local and code == "rate_limited":
                             delay = error.retry_after if isinstance(error, InferenceFailure) else 60
-                            self.cloud_until = self.clock() + max(60, delay)
+                            delay = max(60, delay or 60)
+                            self.cloud_until = self.clock() + delay
+                            if (
+                                delay <= self.cloud_rate_limit_wait_seconds
+                                and attempt + 1 < self.attempts
+                            ):
+                                remaining = delay
+                                while remaining > 0:
+                                    await asyncio.sleep(min(60, remaining))
+                                    remaining -= min(60, remaining)
+                                continue
                             break  # shared account budget: never try the other key to bypass this
                         if code == "authentication":
                             self.disabled.add(provider.credential)

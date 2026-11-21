@@ -67,7 +67,10 @@ class SqlEvidenceIndex:
             )
         }
         query = select(
-            SourceDocumentModel.id, SourceDocumentModel.provenance, SourceDocumentModel.public_web
+            SourceDocumentModel.id,
+            SourceDocumentModel.provenance,
+            SourceDocumentModel.public_web,
+            SourceDocumentModel.content_hash,
         ).where(
             SourceDocumentModel.universe_id == universe,
             SourceDocumentModel.continuity_id == continuity,
@@ -75,7 +78,9 @@ class SqlEvidenceIndex:
         if source_ids is not None:
             query = query.where(SourceDocumentModel.id.in_(source_ids))
         values = {}
-        for identifier, provenance, public in (await self.session.execute(query)).all():
+        for identifier, provenance, public, content_hash in (
+            await self.session.execute(query)
+        ).all():
             if provenance.get("document_role") == "navigation-index":
                 continue
             registration = provenance.get("registry_id")
@@ -91,6 +96,7 @@ class SqlEvidenceIndex:
                 continue
             values[identifier] = {
                 **provenance,
+                "content_hash": content_hash,
                 "public_web": public,
                 "import_cloud_allowed": bool(
                     not public

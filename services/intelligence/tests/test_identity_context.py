@@ -5,7 +5,11 @@ from uuid import uuid4
 import pytest
 
 from src.application.identity import IdentityResolver
-from src.application.knowledge_contracts import EventIdentityComparison, IdentityComparison
+from src.application.knowledge_contracts import (
+    ContextIdentityReview,
+    EventIdentityComparison,
+    IdentityComparison,
+)
 from src.domain.entities import now
 from src.domain.research import SourceDocument, digest, passages_for
 
@@ -17,7 +21,7 @@ from src.domain.research import SourceDocument, digest, passages_for
         ("Mira met ミラ in the owned story.", False),
     ],
 )
-async def test_multilingual_identity_requires_an_explicit_bridge(text, expected):
+async def test_multilingual_identity_uses_contextual_review(text, expected):
     scope, universe, target = uuid4(), uuid4(), uuid4()
     source = SourceDocument(
         uuid4(),
@@ -49,6 +53,14 @@ async def test_multilingual_identity_requires_an_explicit_bridge(text, expected)
 
     async def compare(prompt, schema):
         calls.append(prompt)
+        if schema is ContextIdentityReview:
+            return schema(
+                decision="same" if expected else "different",
+                evidence_indices=[0],
+                alternative_status="none_supplied" if expected else "unresolved",
+                hidden_identity=False,
+                reason="Owned review of the source's identity context",
+            )
         return schema.model_validate(
             {
                 "decision": "SAME_ENTITY",
@@ -56,7 +68,7 @@ async def test_multilingual_identity_requires_an_explicit_bridge(text, expected)
                 "entity_type_valid": True,
                 "evidence_indices": [0],
                 "hidden_identity": False,
-                "reason": "Owned model proposes a match; Python must check the bridge.",
+                "reason": "Owned model proposes a match; contextual review must assess it.",
             }
         )
 
@@ -64,8 +76,10 @@ async def test_multilingual_identity_requires_an_explicit_bridge(text, expected)
         candidate, catalog, [passage], compare, scope, indexed_evidence=True
     )
     assert result["accepted"] == expected
+    assert len(calls) == 2
     if expected:
-        assert result["canonical_id"] == str(target) and not calls
+        assert result["canonical_id"] == str(target)
+        assert result["proof"] == "source_context_identity"
 
 
 @pytest.mark.parametrize(

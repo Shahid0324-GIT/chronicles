@@ -18,12 +18,13 @@ async def main() -> None:
     parser.add_argument("--continuity", required=True, type=UUID)
     parser.add_argument("--arc", required=True, type=UUID)
     parser.add_argument("--through", type=int)
+    parser.add_argument("--allowed-source", action="append", type=UUID)
     parser.add_argument("--output", required=True, type=Path)
     args = parser.parse_args()
     engine, factory = create_database(get_settings().database_url)
     try:
         result = await build_arc_intelligence(factory).read(
-            args.universe, args.continuity, args.arc, args.through
+            args.universe, args.continuity, args.arc, args.through, args.allowed_source
         )
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(article_markdown(result), encoding="utf8")

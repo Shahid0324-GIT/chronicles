@@ -265,7 +265,11 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
             await page.get_by_role("button", name="Research", exact=True).click()
             await page.get_by_role("button", name="Refresh story atlas", exact=True).click()
             await page.get_by_role("button", name="Close research").click()
-            await page.get_by_text("Mira and Ron became partners.", exact=False).first.wait_for()
+            await (
+                page.locator("p:visible")
+                .filter(has_text="Mira and Ron became partners.")
+                .first.wait_for()
+            )
             response = await page.request.get(
                 f"/api/atlas/universes/one-piece/narrative?continuity_id={MANGA_ID}&spoiler_position=7"
             )
@@ -297,7 +301,7 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
             await page.get_by_role("button", name="Research", exact=True).click()
             await page.get_by_role("button", name="Refresh story atlas", exact=True).click()
             await page.get_by_role("button", name="Close research").click()
-            await page.get_by_text("Mira helped Ron.", exact=False).first.wait_for()
+            await page.locator("p:visible").filter(has_text="Mira helped Ron.").first.wait_for()
             async with factory() as session:
                 stored = await session.get(ResearchJobModel, enrichment_job)
                 assert stored.checkpoint["narrative"]["generated"] > 0

@@ -7,9 +7,14 @@ from uuid import UUID
 
 import pytest
 
-from src.application.arc_contracts import ArcPlan, ArcSectionDraft, ArcUnderstanding
+from src.application.arc_contracts import (
+    ArcPlan,
+    ArcSectionDraft,
+    ArcSemanticReview,
+    ArcUnderstanding,
+)
+from src.application.arc_grounding import CALIBRATION
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
-from src.application.encyclopedia_contracts import GroundingAssessment
 from src.application.story_scope import ArcResearchScope
 from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.event_support import event_support_issue
@@ -104,25 +109,51 @@ def inference(calls):
                     dict(
                         section_key="entry",
                         facet="action",
-                        fact_ids=[f["id"] for f in facts if f.get("type") == "EVENT"],
+                        fact_ids=[
+                            f["id"]
+                            for f in facts
+                            if f["statement"] == "Mira entered the observatory."
+                        ],
                     )
+                ]
+                + [
+                    dict(section_key="entry", facet="retrospective", fact_ids=[f["id"]])
+                    for f in facts
+                    if f["statement"] != "Mira entered the observatory."
                 ]
             )
         if schema is ArcSectionDraft:
             facts = json.loads(prompt.split("\n", 1)[1])["facts"]
+            facts = [f for f in facts if f["statement"] == "Mira entered the observatory."]
             return ArcSectionDraft(
                 heading="Mira's arrival",
-                paragraphs=[dict(text="Mira entered the observatory.", fact_ids=[facts[0]["id"]])],
+                paragraphs=[
+                    dict(
+                        text="Mira entered the observatory.",
+                        fact_ids=[facts[0]["id"]],
+                        claims=[
+                            dict(text="Mira entered the observatory.", fact_ids=[facts[0]["id"]])
+                        ],
+                    )
+                ],
             )
-        if schema is GroundingAssessment:
-            return GroundingAssessment(
-                entailed=True,
-                english=True,
-                names_consistent=True,
-                agency_and_tense_preserved=True,
-                unsupported_relationships=False,
-                reason="Owned exact accepted action",
-            )
+        if schema is ArcSemanticReview:
+            context = json.loads(prompt.split("\n", 1)[1])
+            if "cases" in context:
+                verdicts = [
+                    dict(
+                        index=i,
+                        verdict="supported" if c["expected"] else "unsupported",
+                        reason="Owned calibration truth",
+                    )
+                    for i, c in enumerate(CALIBRATION)
+                ]
+            else:
+                verdicts = [
+                    dict(index=c["index"], verdict="supported", reason="Owned supported assertion")
+                    for c in context["claims"]
+                ]
+            return ArcSemanticReview(claims=verdicts, paragraphs_faithful=True, coherent=True)
         raise AssertionError(schema)
 
     return infer
@@ -152,7 +183,58 @@ async def test_dossier_survives_jobs_and_unchanged_sections_reuse_without_infere
     )
     assert len(calls) == first_calls
     assert len(knowledge.nodes) == 2 and len(knowledge.edges) == 1
-    assert "https://example.org/owned" in article_markdown(result)
+
+
+async def test_prose_policy_change_reuses_unchanged_organization(monkeypatch):
+    from src.application import arc_intelligence
+
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    await service.rebuild(universe, continuity, arc, 7, inference([]), lambda: [])
+    monkeypatch.setattr(arc_intelligence, "POLICY", "owned-prose-policy-revision")
+    calls = []
+    result = await service.rebuild(universe, continuity, arc, 7, inference(calls), lambda: [])
+    assert "planning" not in calls and "relationship_analysis" not in calls
+    assert "presentation" in calls and result["article"]["quality"]["validated_sections"] == 1
+
+
+async def test_focused_rebuild_preserves_other_unchanged_validated_sections():
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    calls = []
+    base = inference(calls)
+
+    async def two_sections(prompt, schema, task):
+        result = await base(prompt, schema, task)
+        if schema is ArcPlan:
+            result.sections.append(
+                result.sections[0].model_copy(
+                    update={
+                        "key": "aftermath",
+                        "title": "The same supported context",
+                    }
+                )
+            )
+        if schema is ArcUnderstanding:
+            data = json.loads(prompt.split("\n", 1)[1])
+            if not data["requested_section_keys"]:
+                result.bindings.append(
+                    result.bindings[0].model_copy(
+                        update={
+                            "section_key": "aftermath",
+                        }
+                    )
+                )
+        return result
+
+    first = await service.rebuild(universe, continuity, arc, 7, two_sections, lambda: [])
+    assert len(first["article"]["sections"]) == 2
+    before = len(calls)
+    second = await service.rebuild(
+        universe, continuity, arc, 7, two_sections, lambda: [], section_keys=["entry"]
+    )
+    assert second["article"]["sections"] == first["article"]["sections"]
+    assert calls[before:] == ["relationship_analysis"]
+    assert all(c["presentation"] == "validated" for c in second["article"]["coverage"])
+    assert "https://example.org/owned" in article_markdown(second)
 
 
 async def test_changed_evidence_invalidates_reads_and_bounded_views_do_not_reuse_full_lore():
@@ -162,6 +244,25 @@ async def test_changed_evidence_invalidates_reads_and_bounded_views_do_not_reuse
     assert bounded["dossier"] is None
     knowledge.facts[1]["payload"]["description"] = "Mira entered a different observatory."
     assert (await service.read(universe, continuity, arc, None))["article"] is None
+
+
+async def test_source_bounded_composition_reuses_only_provisional_plan_and_never_broader_prose():
+    service, universe, continuity, arc, knowledge, _ = arc_fixture()
+    await service.rebuild(universe, continuity, arc, 7, inference([]), lambda: [])
+    source = UUID(knowledge.facts[0]["sources"][0]["id"])
+    calls = []
+    result = await service.rebuild(
+        universe, continuity, arc, 7, inference(calls), lambda: [], allowed_sources=[source]
+    )
+    assert "planning" not in calls
+    assert "presentation" in calls
+    assert result["article"]["quality"]["validated_sections"] == 1
+    empty = await service.rebuild(
+        universe, continuity, arc, 7, inference([]), lambda: [], allowed_sources=[]
+    )
+    assert empty["dossier"]["accepted_facts"] == []
+    assert not empty["article"]["sections"]
+    assert (await service.read(universe, continuity, arc, 7))["article"]["sections"]
 
 
 async def test_unknown_fact_cannot_become_dossier_knowledge():
@@ -186,14 +287,11 @@ async def test_failed_prose_grounding_preserves_dossier_and_withholds_paragraphs
     base = inference([])
 
     async def reject(prompt, schema, task):
-        if schema is GroundingAssessment:
-            return GroundingAssessment(
-                entailed=False,
-                english=True,
-                names_consistent=True,
-                agency_and_tense_preserved=True,
-                unsupported_relationships=True,
-                reason="Invented causal bridge",
+        if schema is ArcSemanticReview and '"cases"' not in prompt:
+            return ArcSemanticReview(
+                claims=[dict(index=0, verdict="unsupported", reason="Invented causal bridge")],
+                paragraphs_faithful=False,
+                coherent=True,
             )
         return await base(prompt, schema, task)
 
@@ -206,6 +304,33 @@ async def test_failed_prose_grounding_preserves_dossier_and_withholds_paragraphs
         universe, continuity, arc, 7, base, lambda: [], retry_withheld=True
     )
     assert repaired["article"]["quality"]["validated_sections"] == 1
+
+
+async def test_editorial_feedback_gets_one_revision_and_a_fresh_review():
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    base = inference([])
+    reviews = 0
+    drafts = 0
+
+    async def revise(prompt, schema, task):
+        nonlocal reviews, drafts
+        if schema is ArcSectionDraft:
+            drafts += 1
+            if drafts == 2:
+                assert '"review"' in prompt and "Disconnected presentation" in prompt
+        result = await base(prompt, schema, task)
+        if schema is ArcSemanticReview and '"cases"' not in prompt:
+            reviews += 1
+            if reviews == 1:
+                result.coherent = False
+                result.coherence_issues = ["Disconnected presentation"]
+        return result
+
+    result = await service.rebuild(universe, continuity, arc, 7, revise, lambda: [])
+    section = result["article"]["sections"][0]
+    assert section["status"] == "validated" and drafts == reviews == 2
+    assert len(section["assessment"]["review_attempts"]) == 2
+    assert not section["assessment"]["review_attempts"][0]["coherent"]
 
 
 async def test_explicit_source_failure_does_not_extract_unrelated_archive_material():
@@ -298,11 +423,15 @@ async def test_model_cannot_approve_uncited_subject_or_temporal_bridge(text):
     base = inference([])
 
     async def invalid_prose(prompt, schema, task):
-        if schema is GroundingAssessment:
-            raise AssertionError("Deterministic rejection must precede model approval")
+        if schema is ArcSemanticReview and '"cases"' not in prompt:
+            return ArcSemanticReview(
+                claims=[dict(index=0, verdict="unsupported", reason="Unsupported subject")],
+                paragraphs_faithful=False,
+                coherent=True,
+            )
         draft = await base(prompt, schema, task)
         if schema is ArcSectionDraft:
-            draft.paragraphs[0].text = text
+            draft.paragraphs[0].claims[0].text = text
         return draft
 
     result = await service.rebuild(universe, continuity, arc, 7, invalid_prose, lambda: [])

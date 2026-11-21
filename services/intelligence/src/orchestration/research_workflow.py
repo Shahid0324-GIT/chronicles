@@ -29,7 +29,7 @@ from src.application.connected_extraction import (
     repair_connected,
 )
 from src.application.encyclopedia_extraction import extract_encyclopedia
-from src.application.event_extraction import action_score, extract_events
+from src.application.event_extraction import action_score, evidence_units, extract_events
 from src.application.evidence_dossier import (
     EvidenceDossierBuilder,
     expand_queries,
@@ -42,6 +42,7 @@ from src.application.knowledge_contracts import (
     KnowledgeAssessment,
     KnowledgeVerification,
     NarrativeVerification,
+    SectionVerification,
 )
 from src.application.knowledge_presentation import KnowledgeAtlas
 from src.application.narrative import NarrativeBuilder
@@ -121,6 +122,7 @@ Return exactly the requested JSON structure. No tools or external knowledge are 
 
 
 class ResearchState(TypedDict, total=False):
+    arc_inference_source_ids: list[str]
     arc_research: dict[str, Any]
     reconstruction_outline: list[dict[str, Any]]
     reconstruction: dict[str, Any]
@@ -405,6 +407,10 @@ class ResearchWorkflow:
             identifiers = {
                 UUID(value["source_id"]) for value in state.get("passage_context", {}).values()
             }
+            if request.arc_id:
+                identifiers.update(UUID(i) for i in state.get("arc_inference_source_ids", []))
+                if request.arc_section_keys:
+                    identifiers.update(UUID(i) for i in state.get("source_ids", []))
             if self.retrieval and identifiers:
                 async with self.retrieval.transactions() as index:
                     metadata = await index.source_metadata(
@@ -541,7 +547,7 @@ class ResearchWorkflow:
 
     async def planner(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
-        if request.arc_id and self.atlas:
+        if request.arc_id and self.atlas and not request.arc_section_keys:
             state = await self.arc_stage(state, request, compose=False)
         async with self.transactions() as archive:
             context = await archive.context(request.universe_id, request.continuity_id)
@@ -894,10 +900,12 @@ class ResearchWorkflow:
             await self.check(state)
             if spec.registry_id:
                 entry = next((e for e in registry_entries if e.id == spec.registry_id), None)
+                imported = bool(spec.text and entry and entry.access_method == "import")
+                reference = spec.reference_url if imported else spec.url
                 if (
                     entry is None
-                    or not spec.url
-                    or spec.url.partition("#")[0] != entry.url.partition("#")[0]
+                    or not reference
+                    or reference.partition("#")[0] != entry.url.partition("#")[0]
                     or spec.start_at != entry.selectors.get("start_at")
                     or spec.end_before != entry.selectors.get("end_before")
                     or spec.render_javascript != entry.render_javascript
@@ -906,7 +914,7 @@ class ResearchWorkflow:
                 ):
                     errors.append("source_registry_permission_changed")
                     continue
-                if isinstance(self.fetcher, RegisteredDocumentFetcher):
+                if spec.url and isinstance(self.fetcher, RegisteredDocumentFetcher):
                     self.fetcher.authorize_registered([spec.url])
             locator = spec.url or "local:" + digest(spec.text or "")
             if spec.text and spec.reference_url:
@@ -979,7 +987,14 @@ class ResearchWorkflow:
                 identifier = str(cached.id)
                 public_only = (
                     public_only
-                    and cached.public_web
+                    and (
+                        cached.public_web
+                        or bool(request.arc_id)
+                        and any(
+                            e.id == spec.registry_id and e.imported_content_cloud_allowed
+                            for e in registry_entries
+                        )
+                    )
                     and any(
                         e.id == spec.registry_id and e.cloud_content_allowed
                         for e in registry_entries
@@ -1067,6 +1082,12 @@ class ResearchWorkflow:
                         begin += len(segment) - len(segment.lstrip())
                         fetched_metadata = scope_structure(fetched_metadata, begin, finish)
                         text = normalize(text[begin:finish])
+                    if spec.text and spec.registry_id:
+                        permission = next(e for e in registry_entries if e.id == spec.registry_id)
+                        if permission.access_method != "import" or permission.revision != digest(
+                            text
+                        ):
+                            raise SourceRejected("import_permission_revision_mismatch")
                         if len(text) < 12:
                             raise SourceRejected("source_selection_too_short")
                         url = url.partition("#")[0] + "#" + locator.partition("#")[2]
@@ -1157,7 +1178,14 @@ class ResearchWorkflow:
                     identifier = str(source_id)
                     public_only = (
                         public_only
-                        and bool(spec.url)
+                        and (
+                            bool(spec.url)
+                            or bool(request.arc_id)
+                            and any(
+                                e.id == spec.registry_id and e.imported_content_cloud_allowed
+                                for e in registry_entries
+                            )
+                        )
                         and source.provenance.get("cloud_content_allowed", False)
                     )
                 except InferenceFailure:
@@ -1295,6 +1323,9 @@ class ResearchWorkflow:
                         await memory.save_lead(lead)
 
     async def selected_passages(self, state: ResearchState) -> list[SourcePassage]:
+        request = await self.check(state)
+        if request.arc_section_keys:
+            return await self.acquired_passages(state, request)
         async with self.transactions() as archive:
             values = await archive.get_passages(
                 [
@@ -1322,6 +1353,30 @@ class ResearchWorkflow:
                 size += cost
         return selected
 
+    async def acquired_passages(
+        self, state: ResearchState, request: ResearchRequest
+    ) -> list[SourcePassage]:
+        identifiers = [UUID(i) for i in state.get("source_ids", [])]
+        if self.retrieval and identifiers:
+            async with self.retrieval.transactions() as index:
+                metadata = await index.source_metadata(
+                    request.universe_id, request.continuity_id, identifiers
+                )
+            identifiers = [
+                i
+                for i in identifiers
+                if i in metadata
+                and (
+                    request.spoiler_position is None
+                    or (
+                        isinstance(metadata[i].get("presentation_position"), int)
+                        and metadata[i]["presentation_position"] <= request.spoiler_position
+                    )
+                )
+            ]
+        async with self.transactions() as archive:
+            return await archive.get_passages(identifiers)
+
     async def extractor(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
         if (
@@ -1339,13 +1394,31 @@ class ResearchWorkflow:
             if state.get("iteration", 1) == 1
             else (state.get("plan", {}).get("focus") or request.research_focus)
         )
-        if request.sources and not request.use_registry and not request.allow_search:
+        if request.arc_section_keys:
+            passages = await self.acquired_passages(state, request)
+        elif request.sources and not request.use_registry and not request.allow_search:
             async with self.transactions() as archive:
                 passages = await archive.get_passages(
                     [UUID(i) for i in state.get("source_ids", [])]
                 )
         else:
             passages = await self.selected_passages(state)
+        if request.extraction_source_ids:
+            requested = set(request.extraction_source_ids)
+            active = {UUID(i) for i in state.get("source_ids", [])}
+            if not requested <= active:
+                return await self.snapshot(
+                    "extractor",
+                    {
+                        **state,
+                        "candidates": [],
+                        "errors": [
+                            *state.get("errors", []),
+                            "extraction_source_not_acquired",
+                        ],
+                    },
+                )
+            passages = [p for p in passages if p.source_id in requested]
         if not passages:
             return await self.snapshot("extractor", {**state, "candidates": []})
         if request.relationship_subjects and state.get("investigation"):
@@ -1381,7 +1454,11 @@ class ResearchWorkflow:
 
             async def entry_infer(prompt: str, schema: type[BaseModel]) -> BaseModel:
                 return await self.infer(
-                    state, prompt, schema, "extraction", state.get("public_only", False)
+                    state,
+                    prompt,
+                    schema,
+                    "extraction",
+                    state.get("public_only", False),
                 )
 
             extraction = await extract_encyclopedia(
@@ -1390,6 +1467,7 @@ class ResearchWorkflow:
                 entry_infer,
                 request.extraction_types,
                 request.subject_names,
+                section_developments=bool(request.arc_section_keys),
             )
         elif self.knowledge and request.narrative_research and focus == "story":
 
@@ -1540,7 +1618,7 @@ class ResearchWorkflow:
             extraction = Extraction.model_validate(
                 (await self.infer(state, prompt, Extraction, "extraction")).model_dump()
             )
-        if request.narrative_research and self.knowledge:
+        if (request.narrative_research or request.arc_section_keys) and self.knowledge:
             for entity in extraction.entities:
                 if entity.event:
                     context = next(
@@ -1554,9 +1632,10 @@ class ResearchWorkflow:
                     if context.get("position_basis") in {"broadcast-presentation", "manga-chapter"}:
                         entity.event["source_position"] = context.get("presentation_position")
                         entity.event["position_basis"] = context["position_basis"]
-            extraction = await self.knowledge.ground_aliases(
-                UUID(state["job_id"]), extraction, passages
-            )
+            if not request.arc_section_keys:
+                extraction = await self.knowledge.ground_aliases(
+                    UUID(state["job_id"]), extraction, passages
+                )
         candidates = []
         for kind, values in [
             ("entity", list[BaseModel](extraction.entities)),
@@ -1584,6 +1663,11 @@ class ResearchWorkflow:
         if request.relationship_subjects and state.get("investigation"):
             return await self.atomic_verifier(state, request)
         passages = {str(p.id): p for p in await self.selected_passages(state)}
+        if request.arc_section_keys:
+            # Retrieval rank/window is not a validity boundary for exact citations
+            # acquired by this job. Context prompts remain bounded separately below.
+            acquired = await self.acquired_passages(state, request)
+            passages.update({str(p.id): p for p in acquired})
         valid: dict[str, list[dict[str, Any]]] = {}
         reasons: dict[str, str] = {}
         nodes: dict[str, GraphNode] = {}
@@ -1665,12 +1749,41 @@ class ResearchWorkflow:
                     "Nonactual or unconfirmed reported event requires actual supporting evidence."
                 )
                 continue
+            story_verification = request.narrative_research or bool(request.arc_section_keys)
+            comparison_passages = list(passages.values())
+            if request.arc_section_keys:
+                comparison_passages = [
+                    p
+                    for p in comparison_passages
+                    if str(p.source_id) in state.get("source_ids", [])
+                ]
+                if self.retrieval and state.get("source_ids"):
+                    hits = await self.retrieval.retrieve(
+                        request.universe_id,
+                        request.continuity_id,
+                        current["payload"]["description"],
+                        allowed_sources=[UUID(i) for i in state["source_ids"]],
+                        spoiler_position=request.spoiler_position,
+                        limit=4,
+                        token_budget=min(self.policy(state).dossier_tokens, 2000),
+                    )
+                    comparison_passages = [h.passage for h in hits]
+            support_units = []
+            if request.arc_section_keys:
+                support_passages = {
+                    p.id: p
+                    for p in [
+                        *[passages[c["passage_id"]] for c in valid[current["id"]]],
+                        *comparison_passages,
+                    ]
+                }
+                support_units = evidence_units(list(support_passages.values()))
             content_instruction = (
                 "For content_kind choose fictional-story for people or occurrences INSIDE THE "
                 "FICTIONAL STORY, even though they do not exist in real life. Choose "
                 "real-world-publication for cast, production, merchandise, publicity or broadcast "
                 "metadata; otherwise uncertain. "
-                if request.narrative_research
+                if story_verification
                 else "Set in_universe=true for fictional story claims; false only for real-world "
                 "production, cast, publicity or broadcast metadata. "
             )
@@ -1696,6 +1809,15 @@ class ResearchWorkflow:
                 "cite them in contradiction_evidence. "
                 "Set continuity_matches=false for adaptation mismatches. "
                 + content_instruction
+                + (
+                    "For a supported section claim, return supporting_unit_ids selecting the "
+                    "exact units that jointly support EVERY attribute, role and connection. "
+                    "These units become persisted evidence. A nearby event is not automatically "
+                    "support for the claim. If the attached excerpts omit necessary context, "
+                    "select the additional units explicitly; otherwise choose insufficient. "
+                    if request.arc_section_keys
+                    else ""
+                )
                 + "EVENT names are descriptive action labels; no official event title is required. "
                 "Evaluate whether the occurrence and its participants are stated. "
                 "Keep the reason to one short sentence, under 160 characters. "
@@ -1704,8 +1826,11 @@ class ResearchWorkflow:
                 + json.dumps(
                     {
                         "continuity": state["context"]["continuity"],
-                        "cross_source_passages": [
-                            {"id": str(p.id), "text": p.text} for p in passages.values()
+                        "cross_source_passages": []
+                        if request.arc_section_keys
+                        else [{"id": str(p.id), "text": p.text} for p in comparison_passages],
+                        "support_units": [
+                            {"id": u["id"], "text": u["text"]} for u in support_units
                         ],
                         "candidates": [
                             {
@@ -1721,8 +1846,10 @@ class ResearchWorkflow:
                 )
             )
             verification_schema = (
-                NarrativeVerification
-                if request.narrative_research
+                SectionVerification
+                if request.arc_section_keys
+                else NarrativeVerification
+                if story_verification
                 else KnowledgeVerification
                 if self.knowledge
                 else Verification
@@ -1743,10 +1870,36 @@ class ResearchWorkflow:
                 reasons[current["id"]] = "Verifier inference unavailable: " + failure.code
                 continue
             for assessment in verification.assessments:
-                if request.narrative_research:
+                if request.arc_section_keys:
+                    selected_ids = set(getattr(assessment, "supporting_unit_ids", []))
+                    if assessment.decision == "supported" and (
+                        not selected_ids or not selected_ids <= {u["id"] for u in support_units}
+                    ):
+                        reasons[current["id"]] = (
+                            "Verifier did not select valid complete support units."
+                        )
+                    elif assessment.decision == "supported":
+                        for unit in support_units:
+                            if unit["id"] in selected_ids:
+                                valid[current["id"]].append(
+                                    {
+                                        "passage_id": unit["passage_id"],
+                                        "quote": unit["text"],
+                                        "start": unit["start"],
+                                        "end": unit["start"] + len(unit["text"]),
+                                    }
+                                )
+                        valid[current["id"]] = list(
+                            {
+                                (e["passage_id"], e["start"]): e for e in valid[current["id"]]
+                            }.values()
+                        )
+                if story_verification:
                     assessment = KnowledgeAssessment.model_validate(
                         {
-                            **assessment.model_dump(exclude={"content_kind"}),
+                            **assessment.model_dump(
+                                exclude={"content_kind", "supporting_unit_ids"}
+                            ),
                             "in_universe": getattr(assessment, "content_kind", None)
                             == "fictional-story",
                         }
@@ -2026,11 +2179,30 @@ class ResearchWorkflow:
     async def identity_resolver(self, state: ResearchState) -> ResearchState:
         assert self.knowledge
         request = await self.check(state)
+        passages = await self.selected_passages(state)
+        source_revisions = {}
+        if self.retrieval:
+            async with self.retrieval.transactions() as index:
+                metadata = await index.source_metadata(
+                    request.universe_id,
+                    request.continuity_id,
+                    list({p.source_id for p in passages}),
+                )
+            source_revisions = {
+                str(i): value["content_hash"]
+                for i, value in metadata.items()
+                if value.get("content_hash")
+            }
 
         async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
             # Identity context can contain user edits; source retrieval permission alone
             # cannot authorize exporting that context.
             return await self.infer(state, prompt, schema, task)
+
+        async def source_infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+            # Called only for the resolver's source-only catalog projection. Editable
+            # graph titles, summaries and unsourced aliases never enter this prompt.
+            return await self.infer(state, prompt, schema, task, state.get("public_only", False))
 
         async def identity_progress(key: str, decision: dict[str, Any]) -> None:
             investigation = dict(state.get("investigation", {}))
@@ -2044,13 +2216,15 @@ class ResearchWorkflow:
         resolutions = await self.knowledge.resolve(
             UUID(state["job_id"]),
             state.get("candidates", []),
-            await self.selected_passages(state),
+            passages,
             infer,
-            grounded=request.narrative_research,
+            grounded=request.narrative_research or bool(request.arc_section_keys),
             completed=state.get("investigation", {}).get("resolution_progress")
             if request.relationship_subjects
             else None,
             progress=identity_progress if request.relationship_subjects else None,
+            source_infer=source_infer if request.arc_section_keys else None,
+            source_revisions=source_revisions,
         )
         return await self.snapshot("identity_resolver", {**state, "resolutions": resolutions})
 
@@ -2086,7 +2260,7 @@ class ResearchWorkflow:
                 state.get("resolutions", {}),
                 await self.selected_passages(state),
                 infer,
-                grounded=request.narrative_research,
+                grounded=request.narrative_research or bool(request.arc_section_keys),
             )
         except InferenceFailure as failure:
             if failure.code != "stage_model_budget_exhausted":
@@ -2575,6 +2749,9 @@ class ResearchWorkflow:
             request.universe_id,
             request.continuity_id,
             request.objective + " " + " ".join(state.get("plan", {}).get("questions", [])),
+            allowed_sources=[UUID(i) for i in state["source_ids"]]
+            if request.arc_section_keys and state.get("source_ids")
+            else None,
             spoiler_position=request.spoiler_position,
             names=names,
             limit=64 if state.get("policy") else 8,
@@ -2628,7 +2805,14 @@ class ResearchWorkflow:
                 },
                 "public_only": state.get("public_only", False)
                 and all(
-                    h.source.public_web and h.source.provenance.get("cloud_content_allowed", False)
+                    (
+                        h.source.public_web
+                        and h.source.provenance.get("cloud_content_allowed", False)
+                    )
+                    or (
+                        bool(request.arc_id)
+                        and h.source.provenance.get("import_cloud_allowed", False)
+                    )
                     for h in selected
                 ),
             },
@@ -2638,7 +2822,9 @@ class ResearchWorkflow:
         request = await self.check(state)
         state = await self.reconstruction_stage(state, request)
         if request.arc_id:
-            state = await self.arc_stage(state, request, compose=True)
+            state = await self.arc_stage(
+                state, request, compose=request.compose_presentations or request.presentation_only
+            )
             return await self.snapshot("narrative_builder", state)
         enough = (
             not state.get("policy")
@@ -2819,6 +3005,7 @@ class ResearchWorkflow:
                 request.continuity_id,
                 arc_id,
                 request.spoiler_position,
+                request.presentation_source_ids,
             )
             sources = {UUID(s["id"]) for f in facts for s in f["sources"]}
             public = False
@@ -2835,19 +3022,41 @@ class ResearchWorkflow:
             # Provisional outline text may have a separate, local-only source.
             if "reference_outline" in prompt:
                 public = False
-            return await self.infer(state, prompt, schema, task, public)
+            state["arc_inference_source_ids"] = [str(i) for i in sources]
+            try:
+                return await self.infer(state, prompt, schema, task, public)
+            finally:
+                state.pop("arc_inference_source_ids", None)
 
         offset = len(self.inference.usage)
-        result = await service.rebuild(
-            request.universe_id,
-            request.continuity_id,
-            request.arc_id,
-            request.spoiler_position,
-            infer,
-            lambda: [asdict(u) for u in self.inference.usage[offset:]],
-            compose=compose,
-            retry_withheld=request.retry_withheld_presentations,
-        )
+        try:
+            result = await service.rebuild(
+                request.universe_id,
+                request.continuity_id,
+                request.arc_id,
+                request.spoiler_position,
+                infer,
+                lambda: [asdict(u) for u in self.inference.usage[offset:]],
+                compose=compose,
+                retry_withheld=request.retry_withheld_presentations,
+                section_keys=request.arc_section_keys,
+                allowed_sources=request.presentation_source_ids,
+            )
+        except ValueError as error:
+            # Editorial validation failure cannot erase accepted research or hide
+            # behind the worker's generic execution-error category.
+            state["arc_research"] = {
+                "arc_id": str(request.arc_id),
+                "status": "withheld",
+                "reason": "arc_organization_validation_failed",
+                "detail": str(error)[:200],
+            }
+            state["errors"] = [*state.get("errors", []), "arc_organization_validation_failed"]
+            async with self.transactions() as archive:
+                await archive.event(
+                    UUID(state["job_id"]), "research.arc_withheld", state["arc_research"]
+                )
+            return state
         dossier = result.get("dossier") or {}
         questions = [g for s in dossier.get("sections", []) for g in s["coverage"]["gaps"]]
         state["arc_research"] = {
