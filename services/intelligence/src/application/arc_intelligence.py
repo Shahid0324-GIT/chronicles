@@ -16,6 +16,7 @@ from src.application.arc_contracts import (
     ArcSectionCoverage,
     ArcSectionDossier,
     ArcSectionDraft,
+    ArcSemanticReview,
     ArcUnderstanding,
     Facet,
 )
@@ -26,6 +27,7 @@ from src.application.arc_grounding import (
     qualify_reviewer,
     review_ok,
     review_section,
+    supported_projection,
     validate_claims,
 )
 from src.application.knowledge_presentation import Infer, KnowledgeAtlas, fingerprint
@@ -40,7 +42,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v12"
+POLICY = "arc-intelligence-v15"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -631,6 +633,7 @@ class ArcIntelligence:
                     )
                 )
                 assessment_payload: dict[str, Any] = {}
+                assessment: ArcSemanticReview | None = None
                 for revision_attempt in range(2):
                     if revision_attempt:
                         draft = ArcSectionDraft.model_validate(
@@ -700,6 +703,34 @@ class ArcIntelligence:
                     review_attempts.append(dict(assessment_payload))
                     if status == "validated" or not qualified:
                         break
+                if status == "withheld" and qualified and assessment is not None:
+                    partial = supported_projection(draft, assessment)
+                    if partial is not None:
+                        removed = [
+                            c.model_dump(mode="json")
+                            for c in assessment.claims
+                            if c.verdict != "supported"
+                        ]
+                        validate_claims(partial, facts, dossier.accepted_facts)
+                        partial_review = await review_section(partial, facts, infer)
+                        assessed_model = reviewer_model()
+                        if assessed_model != qualified_model:
+                            qualified, qualification = await qualify_reviewer(infer)
+                            qualified_model = reviewer_model()
+                            qualification["passed"] = qualified
+                            qualified = qualified and qualified_model == assessed_model
+                        status = (
+                            "validated"
+                            if qualified
+                            and review_ok(
+                                partial_review, sum(len(p.claims) for p in partial.paragraphs)
+                            )
+                            else "withheld"
+                        )
+                        draft = partial
+                        assessment_payload = partial_review.model_dump(mode="json")
+                        assessment_payload["partial_projection"] = {"removed_claims": removed}
+                        review_attempts.append(dict(assessment_payload))
                 assessment_payload["reviewer_qualification"] = qualification
                 assessment_payload["review_attempts"] = review_attempts
                 payload = {

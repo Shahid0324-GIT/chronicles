@@ -20,6 +20,8 @@ Paragraphs contain individually cited `claims`. Their displayed `text` and parag
 
 A qualified semantic rejection permits one bounded revision with the same assertions and the review's concrete `coherence_issues`. Fresh validation and review are mandatory afterward. `assessment.review_attempts` retains the original and subsequent verdicts, including when a later inference fails. A model/provider change requires reviewer requalification. Unchanged validated sections remain reusable; GET performs neither revision nor inference.
 
+After that revision, a faithful/coherent draft with mixed claim verdicts may propose one partial projection that drops rejected/uncertain claims without adding text. It preserves paragraph structure and drops empty paragraphs. Publication requires a fresh complete claim/coherence review of that projection; failure leaves prose withheld. `assessment.partial_projection.removed_claims` retains original review indices and reasons. This does not mark the section or arc complete. A failed reviewer qualification never permits projection or publication.
+
 Export current backend artifacts without inference:
 
 ```powershell

@@ -81,9 +81,41 @@ def review_ok(review: ArcSemanticReview, count: int) -> bool:
     )
 
 
+def supported_projection(
+    draft: ArcSectionDraft, review: ArcSemanticReview
+) -> ArcSectionDraft | None:
+    """Propose a partial projection; it still requires fresh validation and review."""
+    count = sum(len(p.claims) for p in draft.paragraphs)
+    if (
+        not review.paragraphs_faithful
+        or not review.coherent
+        or len(review.claims) != count
+        or {c.index for c in review.claims} != set(range(count))
+    ):
+        return None
+    keep = {c.index for c in review.claims if c.verdict == "supported"}
+    if not keep or len(keep) == count:
+        return None
+    paragraphs = []
+    index = 0
+    for paragraph in draft.paragraphs:
+        claims = [
+            c.model_dump() for offset, c in enumerate(paragraph.claims) if index + offset in keep
+        ]
+        index += len(paragraph.claims)
+        if claims:
+            paragraphs.append({"claims": claims})
+    return ArcSectionDraft.model_validate({"heading": draft.heading, "paragraphs": paragraphs})
+
+
 CALIBRATION = [
     {"text": "Mira rescued Ron.", "evidence": ["Mira rescued Ron."], "expected": True},
     {"text": "Later, Mira rescued Ron.", "evidence": ["Mira rescued Ron."], "expected": False},
+    {
+        "text": "Mira proved her courage by jumping.",
+        "evidence": ["Mira jumped to try to prove her courage."],
+        "expected": False,
+    },
     {
         "text": "After lunch, Mira entered the observatory.",
         "evidence": ["After lunch, Mira entered the observatory."],
@@ -127,7 +159,10 @@ async def qualify_reviewer(infer: Infer) -> tuple[bool, dict[str, Any]]:
             "only against its own evidence. Do not infer a pronoun's identity, reverse roles, add "
             "motives, or infer cross-event sequence from separate assertions. An explicit source "
             "temporal phrase IS supported without a graph PRECEDES edge. Common capitalization "
-            "is not a new entity. Return one verdict for every index. Set paragraphs_faithful and "
+            "is not a new entity. Ordinary faithful paraphrase is supported: deciding to perform "
+            "an action establishes an intention or plan to perform it, but never its completion. "
+            "Trying to demonstrate a quality does not establish that the attempt succeeded. "
+            "Return one verdict for every index. Set paragraphs_faithful and "
             "coherent true for this isolated-case test, coherence_issues and "
             "unsupported_connections empty.\n"
             + json.dumps(

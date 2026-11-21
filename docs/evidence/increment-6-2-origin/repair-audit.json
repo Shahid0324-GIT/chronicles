@@ -1,0 +1,3950 @@
+{
+  "kind": "Real-source research/composition jobs; reviewer qualification uses owned synthetic cases and actual provider calls.",
+  "jobs": [
+    {
+      "id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+      "status": "partial",
+      "presentation_only": false,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 150000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 48,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "ollama:planning:ok": 1,
+        "groq:extraction:ok": 1,
+        "ollama:identity_resolution:ok": 1,
+        "groq:relationship_analysis:provider_invalid_request": 1,
+        "ollama:relationship_analysis:ok": 3,
+        "groq:verification:ok": 4,
+        "groq:verification:rate_limited": 2,
+        "ollama:verification:ok": 8,
+        "ollama:verification:invalid_output": 3,
+        "ollama:presentation:ok": 1
+      },
+      "started_model_calls": 25,
+      "returned_input_tokens": 52092,
+      "returned_output_tokens": 7806,
+      "unsettled_or_failed_reservations": 6,
+      "unsettled_or_failed_reserved_tokens": 53284,
+      "usage": [
+        {
+          "task": "planning",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 10741,
+          "model_call": true,
+          "input_tokens": 5891,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 226,
+          "reservation_id": "411036bf-d484-410d-a8f3-9c0c861cdd35",
+          "validation_errors": []
+        },
+        {
+          "task": "extraction",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4943,
+          "model_call": true,
+          "input_tokens": 2951,
+          "model_digest": null,
+          "output_tokens": 2075,
+          "reservation_id": "c8b119a9-d443-4fee-9c94-7d9c2551bb7b",
+          "validation_errors": []
+        },
+        {
+          "task": "identity_resolution",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 5615,
+          "model_call": true,
+          "input_tokens": 804,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 64,
+          "reservation_id": "76b0d366-b438-4202-8860-8dac6657cb9e",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "provider_invalid_request",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 706,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "e139fbeb-db1c-411d-8eb8-7bd7bdbf024c",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 15337,
+          "model_call": true,
+          "input_tokens": 4098,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 550,
+          "reservation_id": "dc70a48c-218e-4614-a818-a8344172932d",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1306,
+          "model_call": true,
+          "input_tokens": 2717,
+          "model_digest": null,
+          "output_tokens": 440,
+          "reservation_id": "d0fd9cae-720f-42d1-989c-28470e790a90",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2054,
+          "model_call": true,
+          "input_tokens": 2717,
+          "model_digest": null,
+          "output_tokens": 624,
+          "reservation_id": "d59957db-c298-4d01-8357-7aac075bec84",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 608,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "51bcbc84-326a-4573-8f93-d7f9971a853b",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1821,
+          "model_call": true,
+          "input_tokens": 2863,
+          "model_digest": null,
+          "output_tokens": 573,
+          "reservation_id": "78df85a8-e9ec-424b-b2a0-f57b40550a11",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 1821,
+          "model_call": true,
+          "input_tokens": 2831,
+          "model_digest": null,
+          "output_tokens": 706,
+          "reservation_id": "37dad676-2c87-48ef-bb72-0e1f97e1fd4a",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 628,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "bbf6d6a3-f16e-47de-b566-32646e6914a6",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8260,
+          "model_call": true,
+          "input_tokens": 2967,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 148,
+          "reservation_id": "2c6cd75c-93a5-4203-83b8-a0aaa9a23823",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7610,
+          "model_call": true,
+          "input_tokens": 2641,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 132,
+          "reservation_id": "cad29e66-84e1-4aa3-bca9-8ef03f39b8aa",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8089,
+          "model_call": true,
+          "input_tokens": 3058,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 152,
+          "reservation_id": "a62c0bb3-a600-4ebd-9f3f-f8fa260bffbc",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 8004,
+          "model_call": true,
+          "input_tokens": 2607,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 134,
+          "reservation_id": "100e934f-1e29-49a8-8935-d6433b214760",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7984,
+          "model_call": true,
+          "input_tokens": 2980,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 140,
+          "reservation_id": "f1f83734-e6c6-4f38-afc4-e604942a6f1f",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7599,
+          "model_call": true,
+          "input_tokens": 2357,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 137,
+          "reservation_id": "2d5ddb0f-aa9c-4097-bc52-9b96c52ff15c",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7961,
+          "model_call": true,
+          "input_tokens": 2499,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 128,
+          "reservation_id": "6bb7bf44-bd7d-41cd-8995-fb1d661c84dd",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 7475,
+          "model_call": true,
+          "input_tokens": 2010,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 135,
+          "reservation_id": "576940bc-bce7-4008-829c-2a59e292d000",
+          "validation_errors": []
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 19928,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "5fc13f4f-ab81-4022-b987-36e79a25f15a",
+          "validation_errors": [
+            "answers.27.lead_index:missing",
+            "answers.27.fact_indices:missing",
+            "answers.27.fully_answered:missing"
+          ]
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 1,
+          "status": "invalid_output",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 20192,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "2849b07b-8591-4dab-bbc8-7527f07caf05",
+          "validation_errors": [
+            "answers.27.lead_index:missing",
+            "answers.27.fact_indices:missing",
+            "answers.27.fully_answered:missing"
+          ]
+        },
+        {
+          "task": "verification",
+          "model": "qwen3.5:4b",
+          "retry": 2,
+          "status": "invalid_output",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 19976,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "f17eac41-5db5-4187-a420-b0f2f821fa85",
+          "validation_errors": [
+            "answers.27.lead_index:missing",
+            "answers.27.fact_indices:missing",
+            "answers.27.fully_answered:missing"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9193,
+          "model_call": true,
+          "input_tokens": 2231,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 227,
+          "reservation_id": "9a6d6a51-e232-469f-831c-45a565edc150",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 12265,
+          "model_call": true,
+          "input_tokens": 2005,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 421,
+          "reservation_id": "db2bc80f-2d8f-47e6-823e-7396d3411c29",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 17692,
+          "model_call": true,
+          "input_tokens": 1865,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 794,
+          "reservation_id": "2bd62a7d-1651-4834-aa52-58d08c667cf6",
+          "validation_errors": []
+        }
+      ],
+      "publication": {
+        "promoted": [
+          {
+            "id": "37093254-7b66-5c31-8db4-b6c708a99d8f",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "24d2f2cd-f3a4-5067-8c82-6ce29ab685ab",
+            "reversed": false,
+            "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+            "created_at": "2026-11-17T05:55:45.053750+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "041c5dc3-90d7-5566-a2a1-e5bbbab0d9c7",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "309dd506-c45f-56e6-9c79-6da8e08be074",
+            "reversed": false,
+            "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+            "created_at": "2026-11-17T05:55:45.106077+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "81e69cf5-ed8b-5eaf-af0f-716897ee2875",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "6bf844f2-b5d5-5b47-aa54-69fdb6ca9f34",
+            "reversed": false,
+            "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+            "created_at": "2026-11-17T05:55:45.169202+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "b4f809f8-e432-51af-9a3b-267c0f9ea382",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "824ba487-781f-527b-bed2-39569731ae76",
+            "reversed": false,
+            "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+            "created_at": "2026-11-17T05:55:45.193201+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "5d37a91e-eba0-57f4-ba5b-5861c97b8dcc",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "b47afc50-7f3e-5fed-aa63-fb09c238926c",
+            "reversed": false,
+            "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+            "created_at": "2026-11-17T05:55:45.214293+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "91d25924-c4e2-5f3e-8da4-a10466718764",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "b623b637-95ff-5e61-b6b2-02956aa2504a",
+            "reversed": false,
+            "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+            "created_at": "2026-11-17T05:55:45.236347+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "4cb3ef84-d2aa-586f-98e8-8bf39b609dec",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "cd4231f7-5b36-5a96-b31a-514a6584e807",
+            "reversed": false,
+            "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+            "created_at": "2026-11-17T05:55:45.256823+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          },
+          {
+            "id": "6afe1e7b-e95a-5da8-bdd2-3d1e7b44e1c4",
+            "kind": "entity",
+            "job_id": "da958660-2b77-47c3-83ee-01fae0131bb1",
+            "created": false,
+            "claim_id": "f9f80dff-8e1c-50ac-99ae-a87923119003",
+            "reversed": false,
+            "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+            "created_at": "2026-11-17T05:55:45.277948+00:00",
+            "reversed_at": null,
+            "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+            "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+            "correction_reason": null
+          }
+        ],
+        "unresolved": [
+          {
+            "reason": "Unresolved material contradiction or continuity ambiguity.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "763374d8-5987-5020-a48f-56160471ea48"
+          },
+          {
+            "reason": "Missing supported exact evidence.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "3453edc3-a43a-5125-b82e-3b98bf51b7b8"
+          },
+          {
+            "reason": "Unresolved material contradiction or continuity ambiguity.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "3fb77f58-fd70-5f48-86f7-f8ac3e021948"
+          },
+          {
+            "reason": "Unresolved material contradiction or continuity ambiguity.",
+            "outcome": "KEEP_UNRESOLVED",
+            "claim_id": "66509b9f-f0e4-54cf-b85e-e3e3894678a2"
+          }
+        ]
+      },
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "d1dc9ef4d8734c0827dad0a319c157df2b2df78ea46972d32203539d1ac4568c",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes action in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes decision in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes action in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes decision in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": [
+        "coverage_review_unavailable"
+      ]
+    },
+    {
+      "id": "b28caa33-4dad-47e6-9bf1-67db5c3fba5f",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:relationship_analysis:ok": 2,
+        "groq:relationship_analysis:invalid_output": 1,
+        "groq:relationship_analysis:rate_limited": 1,
+        "groq:presentation:invalid_output": 2,
+        "groq:presentation:rate_limited": 1,
+        "ollama:presentation:timeout": 1,
+        "ollama:presentation:ok": 1,
+        "groq:presentation_verification:ok": 2
+      },
+      "started_model_calls": 11,
+      "returned_input_tokens": 9410,
+      "returned_output_tokens": 5744,
+      "unsettled_or_failed_reservations": 6,
+      "unsettled_or_failed_reserved_tokens": 41764,
+      "usage": [
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4290,
+          "model_call": true,
+          "input_tokens": 2161,
+          "model_digest": null,
+          "output_tokens": 1828,
+          "reservation_id": "70425003-5768-4beb-bb37-fa55f09712f5",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5698,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "d076ba1a-d751-40f9-b151-bd468f4d94a0",
+          "validation_errors": [
+            "bindings.3.facet:literal_error"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 625,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "a7f27485-da5b-4646-b9e0-7dc55776e30f",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2821,
+          "model_call": true,
+          "input_tokens": 2088,
+          "model_digest": null,
+          "output_tokens": 1198,
+          "reservation_id": "6328a6c8-b080-4ae4-af6c-a7a0b73e03f4",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4563,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "920f1b28-fc19-4659-af6b-2370025f3ebc",
+          "validation_errors": [
+            "provider:tool_schema_validation"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 620,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "6aea2214-fc5d-45f0-af98-d7f0a88b4cc5",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 6814,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "b85cd75c-6462-47f8-b8b2-effe52f32494",
+          "validation_errors": [
+            "paragraphs.1:model_type",
+            "paragraphs.2:model_type",
+            "paragraphs.3:model_type"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "timeout",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 120011,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "09f8147c-aeca-44e5-8b2f-ee52c6bfa5e5",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "qwen3.5:4b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 70785,
+          "model_call": true,
+          "input_tokens": 2917,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 490,
+          "reservation_id": "84afdba6-5d43-4fc9-8344-6ad0893a80a8",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2809,
+          "model_call": true,
+          "input_tokens": 823,
+          "model_digest": null,
+          "output_tokens": 1130,
+          "reservation_id": "0418bc2d-34d2-483e-be5f-db374fa73ed3",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2562,
+          "model_call": true,
+          "input_tokens": 1421,
+          "model_digest": null,
+          "output_tokens": 1098,
+          "reservation_id": "3b292b92-3aed-48f8-8989-3c7c4d060465",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "2864a9ad8b04aa673c636ad0b38ea27e906fe54acb82a5b225241a9b6d6869c6",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes action in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "validated",
+              "missing_facets": [
+                "action",
+                "conflict"
+              ],
+              "supported_facets": [
+                "circumstances",
+                "consequence",
+                "decision",
+                "development"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes action in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 1
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "5bc5db85-8c4c-4a72-b6ec-a07fd6b3f3e4",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:relationship_analysis:ok": 2,
+        "groq:relationship_analysis:invalid_output": 1,
+        "groq:relationship_analysis:rate_limited": 1,
+        "groq:presentation:invalid_output": 1,
+        "groq:presentation:rate_limited": 1,
+        "groq:presentation:ok": 1,
+        "groq:presentation_verification:ok": 2,
+        "groq:presentation_verification:rate_limited": 1
+      },
+      "started_model_calls": 10,
+      "returned_input_tokens": 8553,
+      "returned_output_tokens": 7557,
+      "unsettled_or_failed_reservations": 5,
+      "unsettled_or_failed_reserved_tokens": 33263,
+      "usage": [
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 6867,
+          "model_call": true,
+          "input_tokens": 2191,
+          "model_digest": null,
+          "output_tokens": 3100,
+          "reservation_id": "07d1b19a-49da-49c3-81ea-b8b82c757102",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5405,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "f999fcfe-33b2-4e8b-9446-6b51ff2fade8",
+          "validation_errors": [
+            "bindings.1.facet:literal_error"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 636,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "d2c6e7f7-f7a7-4f42-a691-3233ae6f38a6",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3351,
+          "model_call": true,
+          "input_tokens": 2088,
+          "model_digest": null,
+          "output_tokens": 1325,
+          "reservation_id": "1b39c4c3-beb5-4afd-bf0c-3e4d853446a6",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4762,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "80d96fb9-d628-45a2-a3c7-09820173d032",
+          "validation_errors": [
+            "paragraphs.1:model_type",
+            "paragraphs.2:model_type",
+            "paragraphs.3:model_type"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 606,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "7faf7bb9-d794-411d-a801-cd19cd6d4377",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2582,
+          "model_call": true,
+          "input_tokens": 1590,
+          "model_digest": null,
+          "output_tokens": 976,
+          "reservation_id": "15e55df8-9aba-4ff9-8006-ec3ae388f557",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2907,
+          "model_call": true,
+          "input_tokens": 823,
+          "model_digest": null,
+          "output_tokens": 1216,
+          "reservation_id": "a4d85879-368f-4aac-abef-1107e39239ab",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 595,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "2f95f2e5-2831-4540-b973-eb24067b69a2",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2287,
+          "model_call": true,
+          "input_tokens": 1861,
+          "model_digest": null,
+          "output_tokens": 940,
+          "reservation_id": "c0675bbf-a860-4dd5-98e3-8973fd536494",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "2864a9ad8b04aa673c636ad0b38ea27e906fe54acb82a5b225241a9b6d6869c6",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "validated",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": [
+                "action",
+                "decision",
+                "lore"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 1
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "84e53c5e-200c-4482-8b50-2fdd83a9580b",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:relationship_analysis:ok": 1,
+        "groq:relationship_analysis:invalid_output": 2,
+        "groq:relationship_analysis:rate_limited": 1,
+        "ollama:relationship_analysis:ok": 1,
+        "groq:presentation:ok": 1,
+        "groq:presentation_verification:ok": 2
+      },
+      "started_model_calls": 8,
+      "returned_input_tokens": 7835,
+      "returned_output_tokens": 6215,
+      "unsettled_or_failed_reservations": 3,
+      "unsettled_or_failed_reserved_tokens": 21219,
+      "usage": [
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 6702,
+          "model_call": true,
+          "input_tokens": 2201,
+          "model_digest": null,
+          "output_tokens": 2940,
+          "reservation_id": "8ae66910-723b-40e6-bd91-e1544f92866e",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3841,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "fe26d76b-a63a-4d01-b4c4-d5395d3f43b2",
+          "validation_errors": [
+            "bindings.0.facet:literal_error",
+            "bindings.1.facet:literal_error"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 626,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "481c528f-e3c4-4e41-a61c-bdc26da7eef0",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3650,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "d960088f-503e-4d12-aea7-0f1446130550",
+          "validation_errors": [
+            "bindings.1.facet:literal_error"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 9468,
+          "model_call": true,
+          "input_tokens": 1566,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 236,
+          "reservation_id": "19126ddd-cd0a-4217-ac74-378b8c3e1c6b",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2397,
+          "model_call": true,
+          "input_tokens": 1485,
+          "model_digest": null,
+          "output_tokens": 1003,
+          "reservation_id": "28545990-64ae-4d1d-8ae3-9639d88ec7ca",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3449,
+          "model_call": true,
+          "input_tokens": 826,
+          "model_digest": null,
+          "output_tokens": 1186,
+          "reservation_id": "5696f5a3-9fbf-41b9-8562-16e26659dd26",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2310,
+          "model_call": true,
+          "input_tokens": 1757,
+          "model_digest": null,
+          "output_tokens": 850,
+          "reservation_id": "0d6f62c7-7413-4cf3-86e9-04068767ccd4",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "2864a9ad8b04aa673c636ad0b38ea27e906fe54acb82a5b225241a9b6d6869c6",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "validated",
+              "missing_facets": [
+                "circumstances",
+                "development"
+              ],
+              "supported_facets": [
+                "action",
+                "conflict",
+                "consequence",
+                "decision",
+                "lore"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 1
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "d02035f7-8522-442b-9b39-e9cdb72d4bd2",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:relationship_analysis:invalid_output": 1,
+        "groq:relationship_analysis:rate_limited": 1,
+        "groq:relationship_analysis:ok": 1,
+        "groq:presentation:invalid_output": 1,
+        "groq:presentation:rate_limited": 1,
+        "groq:presentation:ok": 1,
+        "groq:presentation_verification:ok": 2,
+        "groq:presentation_verification:rate_limited": 1
+      },
+      "started_model_calls": 9,
+      "returned_input_tokens": 6964,
+      "returned_output_tokens": 7879,
+      "unsettled_or_failed_reservations": 5,
+      "unsettled_or_failed_reserved_tokens": 35024,
+      "usage": [
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 9569,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "925aaabf-66bd-46ed-a850-1414c2659d7b",
+          "validation_errors": [
+            "developments.3.key:string_pattern_mismatch"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 605,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "1251e263-a1fb-4b01-99b0-c48dc1e8c905",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 11059,
+          "model_call": true,
+          "input_tokens": 2389,
+          "model_digest": null,
+          "output_tokens": 3696,
+          "reservation_id": "daf3e2c4-837b-43f4-8438-9ca7179be14c",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4142,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "a9aa505d-59ee-4332-aaec-7eedf9eabd31",
+          "validation_errors": [
+            "provider:tool_schema_validation"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 614,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "13ac38a1-8824-4153-bb40-f9658daded91",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3188,
+          "model_call": true,
+          "input_tokens": 1623,
+          "model_digest": null,
+          "output_tokens": 1305,
+          "reservation_id": "ac2890aa-2e55-4040-b520-4587ae374d8e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3036,
+          "model_call": true,
+          "input_tokens": 826,
+          "model_digest": null,
+          "output_tokens": 1229,
+          "reservation_id": "1dcaec4a-7aac-4609-a31b-e9133087cf8e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 653,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "b02e0b68-e2ea-4844-9bad-11bec29fbdff",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3970,
+          "model_call": true,
+          "input_tokens": 2126,
+          "model_digest": null,
+          "output_tokens": 1649,
+          "reservation_id": "e7957f9a-f876-4fc0-9426-0db3f44f4805",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "2864a9ad8b04aa673c636ad0b38ea27e906fe54acb82a5b225241a9b6d6869c6",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "development",
+                "consequence"
+              ],
+              "supported_facets": [
+                "action",
+                "circumstances",
+                "conflict",
+                "decision",
+                "lore",
+                "retrospective"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "ed8a1616-bcf7-4ef8-828f-4007f526833f",
+      "status": "failed",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:relationship_analysis:invalid_output": 2,
+        "groq:relationship_analysis:rate_limited": 1,
+        "ollama:relationship_analysis:ok": 2
+      },
+      "started_model_calls": 5,
+      "returned_input_tokens": 3323,
+      "returned_output_tokens": 873,
+      "unsettled_or_failed_reservations": 3,
+      "unsettled_or_failed_reserved_tokens": 22995,
+      "usage": [
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 7339,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "c7e9ed9f-a22f-455d-a282-1b43d24802e6",
+          "validation_errors": [
+            "developments.5.stage:literal_error"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 9548,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "0f34d6fa-0847-4c35-96b2-d5e4bb4add4c",
+          "validation_errors": [
+            "provider:tool_schema_validation"
+          ]
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 620,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "939e5f58-09c4-49b0-9a88-291f78891af7",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 12732,
+          "model_call": true,
+          "input_tokens": 1760,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 430,
+          "reservation_id": "a0d70714-395d-41d2-aed6-15f3612f22ad",
+          "validation_errors": []
+        },
+        {
+          "task": "relationship_analysis",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 12109,
+          "model_call": true,
+          "input_tokens": 1563,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 443,
+          "reservation_id": "c6b14177-ae2b-4c71-839b-b95a5e0dc2b1",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "outcome": "PARTIAL_COVERAGE",
+        "reconstruction": {
+          "verifiedSegments": 6,
+          "explicitCausalLinks": 0,
+          "candidateTransitions": 5,
+          "segmentsWithLocations": 0,
+          "unexplainedTransitions": 5,
+          "explicitPrecedenceLinks": 0,
+          "segmentsWithParticipants": 4,
+          "causallyExplainedTransitions": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "aeeadb1e-95b3-45be-be56-31123b0970e4",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:presentation:invalid_output": 1,
+        "groq:presentation:ok": 2,
+        "groq:presentation_verification:ok": 3,
+        "groq:presentation:rate_limited": 1
+      },
+      "started_model_calls": 7,
+      "returned_input_tokens": 9097,
+      "returned_output_tokens": 7228,
+      "unsettled_or_failed_reservations": 2,
+      "unsettled_or_failed_reserved_tokens": 13470,
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4323,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "aae5c7e5-1661-4f8d-be72-aa2dfda826c9",
+          "validation_errors": [
+            "provider:tool_schema_validation"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2993,
+          "model_call": true,
+          "input_tokens": 1623,
+          "model_digest": null,
+          "output_tokens": 1207,
+          "reservation_id": "f1034bcc-854e-4ef0-b19c-0ea41cf86a1f",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2584,
+          "model_call": true,
+          "input_tokens": 885,
+          "model_digest": null,
+          "output_tokens": 1039,
+          "reservation_id": "f221a366-c377-430c-878f-2203c2db262c",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4010,
+          "model_call": true,
+          "input_tokens": 2076,
+          "model_digest": null,
+          "output_tokens": 1619,
+          "reservation_id": "d1db6c45-e520-4a27-a075-8033bc9f95a9",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 615,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "34de5501-27f8-425a-8929-3880f42d0eaf",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3622,
+          "model_call": true,
+          "input_tokens": 2556,
+          "model_digest": null,
+          "output_tokens": 1506,
+          "reservation_id": "ce7f9014-1123-40c6-80e5-8b360bf06efd",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4363,
+          "model_call": true,
+          "input_tokens": 1957,
+          "model_digest": null,
+          "output_tokens": 1857,
+          "reservation_id": "57e84757-c381-4183-817e-28b81a3b2004",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "2864a9ad8b04aa673c636ad0b38ea27e906fe54acb82a5b225241a9b6d6869c6",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "development",
+                "consequence"
+              ],
+              "supported_facets": [
+                "action",
+                "circumstances",
+                "conflict",
+                "decision",
+                "lore",
+                "retrospective"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "7f6b5a02-8c5f-474f-a77b-20b116d01b48",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:presentation:ok": 2,
+        "groq:presentation_verification:ok": 3,
+        "groq:presentation_verification:rate_limited": 2,
+        "groq:presentation:rate_limited": 1
+      },
+      "started_model_calls": 8,
+      "returned_input_tokens": 11571,
+      "returned_output_tokens": 8531,
+      "unsettled_or_failed_reservations": 3,
+      "unsettled_or_failed_reserved_tokens": 22875,
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3543,
+          "model_call": true,
+          "input_tokens": 2500,
+          "model_digest": null,
+          "output_tokens": 1432,
+          "reservation_id": "692b4d12-625f-41ac-9ffe-ce7afaf4386d",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2702,
+          "model_call": true,
+          "input_tokens": 885,
+          "model_digest": null,
+          "output_tokens": 1163,
+          "reservation_id": "6a460ca0-9057-4018-8da6-bd2dc6fabba8",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 585,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "23be5061-d34d-4f96-8afc-95ce9f70d02e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4732,
+          "model_call": true,
+          "input_tokens": 2310,
+          "model_digest": null,
+          "output_tokens": 1961,
+          "reservation_id": "a6f78c33-f950-48a9-afe9-9691b7403144",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 636,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "3b1ec5b2-97c1-4b57-a029-5139d020c30b",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5703,
+          "model_call": true,
+          "input_tokens": 3859,
+          "model_digest": null,
+          "output_tokens": 1982,
+          "reservation_id": "290683b6-ec9f-4167-8ba6-b7335ddc529e",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 603,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "3054084d-fe60-4ca1-aa44-45dfae2c95cc",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5286,
+          "model_call": true,
+          "input_tokens": 2017,
+          "model_digest": null,
+          "output_tokens": 1993,
+          "reservation_id": "13b649a4-2764-4457-b13b-f71e6d7e57c9",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "2864a9ad8b04aa673c636ad0b38ea27e906fe54acb82a5b225241a9b6d6869c6",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "development",
+                "consequence"
+              ],
+              "supported_facets": [
+                "action",
+                "circumstances",
+                "conflict",
+                "decision",
+                "lore",
+                "retrospective"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "c5c418a9-b144-4206-b74d-3d8057179ed1",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:relationship_analysis:ok": 1,
+        "groq:presentation:rate_limited": 2,
+        "groq:presentation:ok": 2,
+        "groq:presentation_verification:ok": 3,
+        "groq:presentation_verification:rate_limited": 2
+      },
+      "started_model_calls": 10,
+      "returned_input_tokens": 13570,
+      "returned_output_tokens": 13935,
+      "unsettled_or_failed_reservations": 4,
+      "unsettled_or_failed_reserved_tokens": 29850,
+      "usage": [
+        {
+          "task": "relationship_analysis",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 8651,
+          "model_call": true,
+          "input_tokens": 2338,
+          "model_digest": null,
+          "output_tokens": 3854,
+          "reservation_id": "5745bd89-1555-4cc1-a4d1-3f2a41afd5a1",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 591,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "5a901f15-2e49-4394-8464-02b8cc3d0a17",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 6501,
+          "model_call": true,
+          "input_tokens": 2212,
+          "model_digest": null,
+          "output_tokens": 2551,
+          "reservation_id": "b0afed67-f652-4fe2-8fd3-86e1a53183c6",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 2624,
+          "model_call": true,
+          "input_tokens": 885,
+          "model_digest": null,
+          "output_tokens": 1042,
+          "reservation_id": "f7f790fc-ed45-48a7-9746-c2bd0012d6dd",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 585,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "4b412cef-e11b-4691-acf5-cb1bc9635dac",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 7480,
+          "model_call": true,
+          "input_tokens": 2397,
+          "model_digest": null,
+          "output_tokens": 2592,
+          "reservation_id": "fd5edd8a-9402-48fd-84ef-7a0ababde8ed",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 605,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "c69ed35c-0b23-46d2-8d4b-550eeb6f8a8a",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5002,
+          "model_call": true,
+          "input_tokens": 3489,
+          "model_digest": null,
+          "output_tokens": 2173,
+          "reservation_id": "4ec86374-838d-42bb-a783-4d17962eb400",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 613,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "09ce5f46-5e2b-4b49-8e43-850a4b86c707",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 4151,
+          "model_call": true,
+          "input_tokens": 2249,
+          "model_digest": null,
+          "output_tokens": 1723,
+          "reservation_id": "0e1a304c-f808-4dfb-af82-47cfb198c507",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "ea3105ce080c3b65e7a2d9992bd0afc715fa068c67e897983be4736d60d7f23e",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "validated",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "conflict"
+              ],
+              "supported_facets": [
+                "action",
+                "consequence",
+                "decision"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 1
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "f6ec6e17-d938-402d-96af-32a4754cfdf7",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:presentation:invalid_output": 1,
+        "groq:presentation:rate_limited": 1,
+        "groq:presentation:ok": 1,
+        "groq:presentation_verification:ok": 1
+      },
+      "started_model_calls": 4,
+      "returned_input_tokens": 3291,
+      "returned_output_tokens": 3692,
+      "unsettled_or_failed_reservations": 2,
+      "unsettled_or_failed_reserved_tokens": 13680,
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "invalid_output",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 6468,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "cb42ede0-615e-47e8-a4ae-4e82111fe890",
+          "validation_errors": [
+            "provider:tool_schema_validation"
+          ]
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 611,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "774f6d40-d54c-43a9-b8bc-ab8e1f046fe9",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 2,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5158,
+          "model_call": true,
+          "input_tokens": 2318,
+          "model_digest": null,
+          "output_tokens": 2203,
+          "reservation_id": "63e6011b-3bbc-4c2a-8026-7f999c2dbc47",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3404,
+          "model_call": true,
+          "input_tokens": 973,
+          "model_digest": null,
+          "output_tokens": 1489,
+          "reservation_id": "4e54826b-09cf-4f07-9132-441cdb32ed76",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "ea3105ce080c3b65e7a2d9992bd0afc715fa068c67e897983be4736d60d7f23e",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "conflict"
+              ],
+              "supported_facets": [
+                "action",
+                "consequence",
+                "decision"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "6ef5e15f-642b-41a8-b9b5-c3ad1b2326f4",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:presentation:ok": 2,
+        "groq:presentation_verification:rate_limited": 2,
+        "groq:presentation_verification:ok": 3,
+        "groq:presentation:rate_limited": 1
+      },
+      "started_model_calls": 8,
+      "returned_input_tokens": 12288,
+      "returned_output_tokens": 10346,
+      "unsettled_or_failed_reservations": 3,
+      "unsettled_or_failed_reserved_tokens": 21071,
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 7047,
+          "model_call": true,
+          "input_tokens": 2265,
+          "model_digest": null,
+          "output_tokens": 3102,
+          "reservation_id": "4fd70935-6ce1-49ef-8a62-91d5c3c5fcad",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 599,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "3f316e03-c781-4869-8302-891b4b56bc20",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3238,
+          "model_call": true,
+          "input_tokens": 1012,
+          "model_digest": null,
+          "output_tokens": 1297,
+          "reservation_id": "3b4ac7b6-862e-4c99-9bfb-9bdbbb0c2eea",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5517,
+          "model_call": true,
+          "input_tokens": 2731,
+          "model_digest": null,
+          "output_tokens": 2318,
+          "reservation_id": "46e47edf-ad8e-4835-84e0-130928710fe2",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 631,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "285a87b5-2b3d-4697-a272-7448104d5249",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5360,
+          "model_call": true,
+          "input_tokens": 4045,
+          "model_digest": null,
+          "output_tokens": 2031,
+          "reservation_id": "16a0cd8f-24f9-41f9-b9d5-632dc61f7722",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 609,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "62e87bb0-de18-4cd7-a7eb-e119eec0e8d2",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 1,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 3903,
+          "model_call": true,
+          "input_tokens": 2235,
+          "model_digest": null,
+          "output_tokens": 1598,
+          "reservation_id": "6e2d8acc-9f08-4be9-863a-bb20eb02c0bd",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "ea3105ce080c3b65e7a2d9992bd0afc715fa068c67e897983be4736d60d7f23e",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "conflict"
+              ],
+              "supported_facets": [
+                "action",
+                "consequence",
+                "decision"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": []
+    },
+    {
+      "id": "8b87a85b-9bfa-47bf-a104-008d7975a3b8",
+      "status": "partial",
+      "presentation_only": true,
+      "policy": {
+        "depth": "focused",
+        "version": "adaptive-v2",
+        "max_bytes": 20000000,
+        "max_leads": 40,
+        "max_passes": 1,
+        "max_tokens": 100000,
+        "max_queries": 8,
+        "max_seconds": 900,
+        "max_requests": 60,
+        "max_documents": 3,
+        "dossier_tokens": 3500,
+        "max_model_calls": 32,
+        "required_facets": [
+          "identity",
+          "events",
+          "connections"
+        ],
+        "min_source_groups": 1,
+        "results_per_query": 12,
+        "max_document_chars": 500000,
+        "min_relevant_facts": 3,
+        "max_follow_up_depth": 2,
+        "event_extraction_calls": 4,
+        "max_links_per_document": 12,
+        "complex_event_reasoning": false,
+        "max_candidates_per_pass": 16,
+        "verification_batch_size": 2,
+        "investigation_bundle_limit": 2,
+        "verification_reserve_fraction": 0.35,
+        "presentation_requires_coverage": true
+      },
+      "provider_outcomes": {
+        "groq:presentation:ok": 1,
+        "groq:presentation_verification:rate_limited": 1,
+        "ollama:presentation_verification:ok": 1
+      },
+      "started_model_calls": 3,
+      "returned_input_tokens": 2977,
+      "returned_output_tokens": 3050,
+      "unsettled_or_failed_reservations": 1,
+      "unsettled_or_failed_reserved_tokens": 5334,
+      "usage": [
+        {
+          "task": "presentation",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 5628,
+          "model_call": true,
+          "input_tokens": 2265,
+          "model_digest": null,
+          "output_tokens": 2406,
+          "reservation_id": "2309e9d8-06f1-43cf-9deb-9b50c4d83bb0",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "openai/gpt-oss-120b",
+          "retry": 0,
+          "status": "rate_limited",
+          "provider": "groq",
+          "credential": "primary",
+          "elapsed_ms": 603,
+          "model_call": true,
+          "input_tokens": 0,
+          "model_digest": null,
+          "output_tokens": 0,
+          "reservation_id": "c268409f-cae4-4977-a3b7-9e56de1ae286",
+          "validation_errors": []
+        },
+        {
+          "task": "presentation_verification",
+          "model": "qwen3.5:4b",
+          "retry": 0,
+          "status": "ok",
+          "provider": "ollama",
+          "credential": "local",
+          "elapsed_ms": 15320,
+          "model_call": true,
+          "input_tokens": 712,
+          "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04",
+          "output_tokens": 644,
+          "reservation_id": "311a0f61-24bf-4096-bb2d-9bd0b6151b75",
+          "validation_errors": []
+        }
+      ],
+      "publication": null,
+      "coverage": {
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "revision": "ea3105ce080c3b65e7a2d9992bd0afc715fa068c67e897983be4736d60d7f23e",
+        "sections": [
+          {
+            "key": "setup",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+                "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+              ],
+              "research": "partial",
+              "presentation": "withheld",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "conflict"
+              ],
+              "supported_facets": [
+                "action",
+                "consequence",
+                "decision"
+              ]
+            },
+            "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities."
+          },
+          {
+            "key": "development",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+                "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida."
+          },
+          {
+            "key": "conflict",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+                "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan."
+          },
+          {
+            "key": "resolution",
+            "coverage": {
+              "gaps": [
+                "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+                "What evidence establishes development in Formation of the Straw Hat Crew?",
+                "What evidence establishes action in Formation of the Straw Hat Crew?",
+                "What evidence establishes decision in Formation of the Straw Hat Crew?",
+                "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+                "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+              ],
+              "research": "not_researched",
+              "presentation": "not_ready",
+              "missing_facets": [
+                "circumstances",
+                "development",
+                "action",
+                "decision",
+                "conflict",
+                "consequence"
+              ],
+              "supported_facets": []
+            },
+            "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures."
+          }
+        ],
+        "questions": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ],
+        "article_quality": {
+          "gate": "Requires real narrative review; generation success is not completeness",
+          "complete": false,
+          "validated_sections": 0
+        }
+      },
+      "errors": []
+    }
+  ],
+  "sources": [
+    {
+      "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+      "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy",
+      "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+      "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+      "characters": 1330,
+      "position_basis": "manga-chapter",
+      "evidence_ceiling": 1
+    },
+    {
+      "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "title": "One Piece Chapter 1 Review - \"Romance Dawn\"",
+      "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+      "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "characters": 5432,
+      "position_basis": "manga-chapter",
+      "evidence_ceiling": 1
+    },
+    {
+      "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "title": "Approved supplied origin section",
+      "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+      "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "characters": 3967,
+      "position_basis": "manga-chapter",
+      "evidence_ceiling": 7
+    }
+  ],
+  "accounting_note": "Returned tokens are measured usage only. Failed/incomplete attempts have unknown actual usage; their pre-call reservations are reported separately and are not zeroed or replenished. Jobs before quality11 are preserved in the database but outside this compact latest-pass audit."
+}

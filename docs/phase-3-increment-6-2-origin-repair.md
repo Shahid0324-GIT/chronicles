@@ -13,7 +13,10 @@ This pass keeps the frontend frozen. The acceptance target is a connected, evide
 - Paragraph text and references derive from individually cited claims. Legacy duplicated fields must agree exactly. The composer receives compact numeric references, not repeated graph hashes and bookkeeping. Claim review checks roles, modality, chronology and causation against accepted assertions; it also evaluates repetition and disconnected prose. A reviewer must first distinguish owned supported and adversarial examples. Passing that calibration is a limited capability check, not proof that all subsequent judgments are correct.
 - Organization must assign or explicitly explain omission of every input assertion. This addresses the observed loss of accepted contextual developments. Editorial omissions remain visible and provisional, not a substitute for substantive article review. Referent handling uses semantic assessment rather than a new pronoun-pattern filter.
 - A qualified review can trigger exactly one semantic revision inside the existing composer, using the same accepted assertions and concrete review feedback. The revised text must pass fresh claim and coherence checks; both review attempts remain in the artifact. A failed reviewer qualification cannot authorize revision or publication. Budgets and deadlines apply to both attempts.
+- After that revision, a faithful, coherent draft with individually rejected claims can propose one partial projection containing only its supported claims. The existing paragraph structure is preserved and empty paragraphs are removed. A fresh claim/coherence review and current evidence checks are mandatory before publication. Removed claim indices and reasons are retained. This path passes an owned regression; its live acceptance remains unproven because the last real run failed reviewer qualification before reaching it.
+- Arc composition uses a dedicated connected-section editing prompt in the existing workflow, instead of the short entity/action presentation prompt. Reviewer qualification tests both legitimate paraphrases and unsupported temporal wording, role reversal, invented motives, omitted arguments, intended-to-achieved changes and arm-loss referents. Positive calibration failures remain failures; no verdict is manually flipped.
 - Groq structured-output mode, optional strict decoding and bounded same-key rate-limit waiting are configurable. Defaults and source permissions remain restrictive. Credentials are never switched to bypass a rate limit. Failed and incomplete inference reservations retain their existing accounting. Strict decoding is not a semantic guarantee; actual attempts still exercise application validation and bounded repair.
+- Pre-call output-token reservations now match the configured 4,000-token Groq ceiling and the updated local presentation/review ceilings, including the existing relationship investigation path. Returned tokens and unknown failed/incomplete reservations remain distinct in the audit.
 
 ## Real evidence and quality assessment
 
@@ -27,10 +30,32 @@ The subsequent v9 job `d02035f7-8522-442b-9b39-e9cdb72d4bd2` accounted for all 2
 
 The follow-up composition uses already accepted evidence; it does not repeat extraction to inflate counts. Current results and exact usage must be read from the accompanying benchmark audit. Whole-arc completeness is never inferred from section validation.
 
+## Final live outcome — 2026-11-21
+
+**The narrative acceptance gate remains unmet.** Actual FastAPI GET returns HTTP 200 with a partial dossier, `article.status=withheld` and **zero currently validated sections**. The [current API inspection copy](evidence/increment-6-2-origin/origin-current.json) includes 26 scoped accepted assertions and their canonical target IDs, archived passage IDs, hashes and offsets. Its [Markdown export](evidence/increment-6-2-origin/origin-current.md) contains coverage only and explicitly says it failed the article gate. It is not a successful Arc Article.
+
+The final job `8b87a85b-9bfa-47bf-a104-008d7975a3b8` made three actual calls: one successful Groq composition call, one rate-limited Groq qualification call, and one local Ollama qualification call. The local assessment contradicted its own explanation on an intention-versus-achievement case and failed qualification. No failed verdict was changed to publish prose. Returned usage was 2,977 input / 3,050 output tokens; the failed cloud attempt retains a separate 5,334-token reservation with unknown actual usage. The [per-job audit](evidence/increment-6-2-origin/repair-audit.json) preserves the earlier failures, repairs, provider calls and token accounting as well. Reviewer qualification uses owned synthetic examples inside these real jobs; those calls are not source discoveries.
+
+The preceding real job `6ef5e15f-642b-41a8-b9b5-c3ad1b2326f4` passed all 12 qualification cases and performed a semantic revision. The revision passed coherence but still contained an unlicensed interpretation that the stretched arm "confirmed the fruit's effect," so the section remained withheld. A [historical model-approved draft](evidence/increment-6-2-origin/origin-rejected-draft.md) is retained with an explicit human-rejection label to show the earlier disconnected-prose problem. Model approval alone did not satisfy the requested quality gate.
+
+The fresh, read-only [native identity demonstration](evidence/increment-6-2-origin/native-identity-audit.json) **did pass**, using current approved evidence and two actual Groq `openai/gpt-oss-120b` calls: 1,398 input / 750 output tokens. It resolved **Monkey D. Luffy → Luffy** using source-context identity. It neither manually inserted a fact nor wrote a canonical alias. This single-reference success is not a guarantee that arbitrary nicknames or ambiguous references will resolve.
+
+Original manga pages were not automatically ingested. Available reference/context evidence and software/reviewer defects are separate limitations: more source volume is not presented as a remedy for failed narrative organization or review. Remaining work is the substantial, validated origin account; generalizing it to the other Romance Dawn sections and the whole chapter-1–7 article; and then the real retrospective-lore benchmark. None of those gates is claimed complete, and the frontend stays frozen.
+
 ## Verification
 
 The mandatory propagation test exercises an owned synthetic investigation through canonical publication, dependent presentation regeneration, FastAPI, the Next.js provider and an actual Chrome browser, then checks incremental enrichment. It does not demonstrate real One Piece article content in the frontend. A hidden duplicate paragraph initially caused the test to time out; visible-paragraph selectors repaired the test, with no frontend implementation changes.
 
-The final full backend suite with explicit `TEST_DATABASE_URL=.../universe_atlas_test` passed **304 tests, one opt-in case skipped**, including PostgreSQL upgrade/downgrade and the actual Chrome propagation test. The actual SQL source-content-hash adapter and durable-outline regression are included. Ruff check, Ruff format (153 files) and mypy (100 modules) pass. `alembic check` reports no new upgrade operations. LangSmith emits the existing Python 3.14 `asyncio.iscoroutinefunction` deprecation warnings. No schema migration or database reset is required by this repair.
+The final full backend suite with explicit `TEST_DATABASE_URL=.../universe_atlas_test` passed **305 tests, one opt-in case skipped**, including PostgreSQL upgrade/downgrade and the actual Chrome propagation test. The actual SQL source-content-hash adapter, durable-outline regression and fresh-review requirement for partial projection are included. Ruff check, Ruff format (153 files) and mypy (100 modules) pass. `alembic check` reports no new upgrade operations. LangSmith emits the existing Python 3.14 `asyncio.iscoroutinefunction` deprecation warnings. No schema migration or database reset is required by this repair.
+
+Executed from `services/intelligence`, with the explicit test database configured and credentials omitted here:
+
+```powershell
+..\..\.venv\Scripts\python -m pytest -q
+..\..\.venv\Scripts\python -m ruff check .
+..\..\.venv\Scripts\python -m ruff format --check .
+..\..\.venv\Scripts\python -m mypy -p src
+..\..\.venv\Scripts\python -m alembic check
+```
 
 No deployment is part of this work. Exact source archives and private local configuration are excluded from commits; inspection artifacts should carry citation references and hashes instead of republishing long external source quotations.

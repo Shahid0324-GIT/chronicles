@@ -333,6 +333,36 @@ async def test_editorial_feedback_gets_one_revision_and_a_fresh_review():
     assert not section["assessment"]["review_attempts"][0]["coherent"]
 
 
+async def test_partial_claim_projection_requires_fresh_review_and_retains_rejection_audit():
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    base = inference([])
+    reviews = 0
+
+    async def partial(prompt, schema, task):
+        nonlocal reviews
+        result = await base(prompt, schema, task)
+        if schema is ArcSectionDraft:
+            claim = result.paragraphs[0].claims[0]
+            result.paragraphs[0].claims.append(
+                claim.model_copy(update={"text": "Mira stole treasure."})
+            )
+        if schema is ArcSemanticReview and '"cases"' not in prompt:
+            reviews += 1
+            if reviews < 3:
+                result.claims[1].verdict = "unsupported"
+                result.claims[1].reason = "No theft is present in the accepted assertion"
+            else:
+                assert len(result.claims) == 1
+        return result
+
+    result = await service.rebuild(universe, continuity, arc, 7, partial, lambda: [])
+    section = result["article"]["sections"][0]
+    assert section["status"] == "validated" and reviews == 3
+    assert section["paragraphs"][0]["text"] == "Mira entered the observatory."
+    assert len(section["assessment"]["review_attempts"]) == 3
+    assert section["assessment"]["partial_projection"]["removed_claims"][0]["index"] == 1
+
+
 async def test_explicit_source_failure_does_not_extract_unrelated_archive_material():
     from types import SimpleNamespace
     from uuid import uuid4

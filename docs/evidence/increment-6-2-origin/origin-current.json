@@ -1,0 +1,1640 @@
+{
+  "status": "partial",
+  "dossier": {
+    "version": "arc-dossier-v1",
+    "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+    "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+    "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+    "title": "Romance Dawn",
+    "perspective": "bounded",
+    "spoiler_position": 7,
+    "source_range": [
+      1,
+      7
+    ],
+    "plan_status": "provisional_not_canon",
+    "section_focus": [
+      "setup"
+    ],
+    "organization_warnings": [],
+    "organization_omissions": [
+      {
+        "fact_ids": [
+          "4576e67198281ea081dae874f2d805154aafff483d6658edf380fb16d267b24a",
+          "61673febb0901f2eb8f9ca96645db245d90d142a25304d53d19a825f6fd083fd",
+          "7ed17b2db07d66240cdd3d7cbf9f9d50ffae84fc579bb0d03e32c68dc02ba9f4",
+          "e7c2dcc905f8f865a69b8c26dfd608a6b6b5c48e03292e2769fa407db89cdadf",
+          "ea57ec87fe942fa074823974f78d351ad02ede910f9ca4d0ce87940afbb13418"
+        ],
+        "reason": "duplicate",
+        "explanation": "These assertions repeat the claim that Shanks saves Luffy without adding new information."
+      },
+      {
+        "fact_ids": [
+          "787fa28399f4c19157b35a1f3c21cd51b991bcce6e63d2631f8719f280eebd47",
+          "892c6289084afe2c09b842e00d65fb711f6c373312c65e0838926bb4b4f0ef15",
+          "db24cba08cd46d02ec63009b08780a1c1fe6d9e9b8b122addabff6805e369630"
+        ],
+        "reason": "unrelated",
+        "explanation": "These assertions describe events involving Higuma and do not pertain to Luffy's origin or Devil Fruit acquisition."
+      }
+    ],
+    "status": "partial",
+    "sections": [
+      {
+        "id": "e5b635af-20e9-5316-9492-6475fa922eb0",
+        "plan": {
+          "key": "setup",
+          "title": "Luffy's Origin and Devil Fruit Acquisition",
+          "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "What specific events or motivations led to Luffy acquiring the Devil Fruit?",
+            "How did Luffy's desire to become a pirate develop prior to this arc?",
+            "What is the nature of the 'rubber man' abilities and how do they function in combat?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [
+          {
+            "section_key": "setup",
+            "facet": "action",
+            "fact_ids": [
+              "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65",
+              "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2",
+              "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77",
+              "6fe6e60d14188dbd23023bec44c1a014b5b6a26a106425f8e641344481b38a06",
+              "8b29375bbc26b8a876fee956f2afdbd6c3de0e16e396cb08f0b9c6a950725d70",
+              "91a88538aae5ab78cabf5006a7db3dd86e06beff24fca50d32376b2babbfedf0",
+              "b7eed7add4899ebd9f30782a5d82f995c8c99ab4845b6bc4b88ff05b4ec84aa6",
+              "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "decision",
+            "fact_ids": [
+              "71b929416233bddd1f83fc9a171d598513e86adcfdea46e79d94494b2d08ef60",
+              "9b5c67e7ec608fa8ce96928300055c9652240818ffe99a02a0f1be92a1ba7327",
+              "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5",
+              "ce114d843aa1ab56e358f03f27b54f7b46ebcad519b7baf204815b4af0cfa35d",
+              "ef110e139d70d293db83fee10081f933ed208ed27353bbb96d9fc882a2bfc9c7",
+              "efd2a0238d014035d24c416e07b2981643e658f7c0b34bb4e701d857ab56d458"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "consequence",
+            "fact_ids": [
+              "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738",
+              "2dea5e7764827b88a77bfc12dab12744fa8e6930602101fb4d0aaa4caf628d75",
+              "c2df6cff591364405e48f271993f445cee64212047954a6f3ba3ae6852ead959",
+              "edf35b117c5ea02f37ccb846bf428020b3a91c95b224ec8e5d8e1ad8221b4a74"
+            ]
+          }
+        ],
+        "narrative_developments": [
+          {
+            "section_key": "setup",
+            "key": "origin-1",
+            "stage": "action",
+            "fact_ids": [
+              "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65",
+              "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "origin-2",
+            "stage": "action",
+            "fact_ids": [
+              "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2",
+              "8b29375bbc26b8a876fee956f2afdbd6c3de0e16e396cb08f0b9c6a950725d70",
+              "91a88538aae5ab78cabf5006a7db3dd86e06beff24fca50d32376b2babbfedf0"
+            ],
+            "connections": [
+              {
+                "from_key": "origin-1",
+                "relation": "source_sequence",
+                "fact_ids": [
+                  "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2"
+                ]
+              }
+            ]
+          },
+          {
+            "section_key": "setup",
+            "key": "origin-3",
+            "stage": "decision",
+            "fact_ids": [
+              "71b929416233bddd1f83fc9a171d598513e86adcfdea46e79d94494b2d08ef60",
+              "9b5c67e7ec608fa8ce96928300055c9652240818ffe99a02a0f1be92a1ba7327"
+            ],
+            "connections": [
+              {
+                "from_key": "origin-2",
+                "relation": "source_sequence",
+                "fact_ids": [
+                  "71b929416233bddd1f83fc9a171d598513e86adcfdea46e79d94494b2d08ef60"
+                ]
+              }
+            ]
+          },
+          {
+            "section_key": "setup",
+            "key": "origin-4",
+            "stage": "decision",
+            "fact_ids": [
+              "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5",
+              "ce114d843aa1ab56e358f03f27b54f7b46ebcad519b7baf204815b4af0cfa35d",
+              "ef110e139d70d293db83fee10081f933ed208ed27353bbb96d9fc882a2bfc9c7",
+              "efd2a0238d014035d24c416e07b2981643e658f7c0b34bb4e701d857ab56d458"
+            ],
+            "connections": [
+              {
+                "from_key": "origin-3",
+                "relation": "source_sequence",
+                "fact_ids": [
+                  "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5"
+                ]
+              }
+            ]
+          },
+          {
+            "section_key": "setup",
+            "key": "origin-5",
+            "stage": "action",
+            "fact_ids": [
+              "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e"
+            ],
+            "connections": [
+              {
+                "from_key": "origin-4",
+                "relation": "source_sequence",
+                "fact_ids": [
+                  "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e"
+                ]
+              }
+            ]
+          },
+          {
+            "section_key": "setup",
+            "key": "origin-6",
+            "stage": "consequence",
+            "fact_ids": [
+              "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738",
+              "2dea5e7764827b88a77bfc12dab12744fa8e6930602101fb4d0aaa4caf628d75",
+              "c2df6cff591364405e48f271993f445cee64212047954a6f3ba3ae6852ead959",
+              "edf35b117c5ea02f37ccb846bf428020b3a91c95b224ec8e5d8e1ad8221b4a74"
+            ],
+            "connections": [
+              {
+                "from_key": "origin-5",
+                "relation": "source_sequence",
+                "fact_ids": [
+                  "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+                ]
+              }
+            ]
+          }
+        ],
+        "coverage": {
+          "research": "partial",
+          "presentation": "withheld",
+          "supported_facets": [
+            "action",
+            "consequence",
+            "decision"
+          ],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "conflict"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+            "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+            "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+          ]
+        },
+        "revision": "51631cc3a86cb1956a510321c2d3fa226ffe26ebfb2c8e3df3bbf2b19b3bd882"
+      },
+      {
+        "id": "450b434e-c4f9-553e-b1aa-5d293775aa54",
+        "plan": {
+          "key": "development",
+          "title": "Luffy's Early Pirate Adventure and Meeting Koby",
+          "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "What are the specific circumstances of Luffy meeting Koby?",
+            "How does Luffy assist Koby in escaping from Alvida?",
+            "What role does Alvida play as an antagonist in this segment?",
+            "How do Luffy and Koby's interactions evolve during their time together?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [],
+        "narrative_developments": [],
+        "coverage": {
+          "research": "not_researched",
+          "presentation": "not_ready",
+          "supported_facets": [],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "action",
+            "decision",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+          ]
+        },
+        "revision": "6358942f101dd2934364a8185dd0bca567773f29ffd716c9d97d4b67b5aaad5a"
+      },
+      {
+        "id": "7755d968-308d-5d8f-90d1-8b14f92d1b3d",
+        "plan": {
+          "key": "conflict",
+          "title": "Recruiting Zoro and Confronting Axe-Hand Morgan",
+          "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "What specific actions or dialogue led to Luffy recruiting Roronoa Zoro?",
+            "Who is Axe-Hand Morgan, and what is his significance as a Marine Captain?",
+            "How does the conflict with Morgan unfold?",
+            "What are the implications of this battle for Luffy's growth and crew formation?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [],
+        "narrative_developments": [],
+        "coverage": {
+          "research": "not_researched",
+          "presentation": "not_ready",
+          "supported_facets": [],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "action",
+            "decision",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+          ]
+        },
+        "revision": "77fcf6788577c62495be6bb030647602ba78a8893bd0b18ad4979120257e2136"
+      },
+      {
+        "id": "caa511c6-2fe6-5265-8160-f6a5412cb908",
+        "plan": {
+          "key": "resolution",
+          "title": "Formation of the Straw Hat Crew",
+          "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "How is the final composition of Luffy's crew established?",
+            "What are the immediate aftermaths of the conflict with Morgan?",
+            "How does this arc conclude in relation to the broader East Blue saga?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [],
+        "narrative_developments": [],
+        "coverage": {
+          "research": "not_researched",
+          "presentation": "not_ready",
+          "supported_facets": [],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "action",
+            "decision",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+            "What evidence establishes development in Formation of the Straw Hat Crew?",
+            "What evidence establishes action in Formation of the Straw Hat Crew?",
+            "What evidence establishes decision in Formation of the Straw Hat Crew?",
+            "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+            "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+          ]
+        },
+        "revision": "8f2fb9cf86e5c7af82c683174f29e4cd831603b5c07a6c1748c760e43586b73e"
+      }
+    ],
+    "accepted_facts": [
+      {
+        "id": "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65",
+        "kind": "relationship",
+        "payload": {
+          "type": "RELATED_TO",
+          "atomic": {
+            "id": "081f79324104f8505970a5ad069b7a05b8fd1438cf6424f3fde656ca19e7bb78",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "gives",
+            "statement": "Shanks gives Luffy",
+            "event_name": "gives \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              1
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "description": "Shanks gives Luffy",
+          "source_name": "Shanks",
+          "target_name": "Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 295,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 149,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+      },
+      {
+        "id": "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "knowledge": null,
+          "description": "Shanks saves Luffy"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" \u2014 healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "ability",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy's body became rubber due to eating the Devil Fruit, making him unable to swim for the rest of his life."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 942,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 798,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Shanks gave Luffy his straw hat and told him to return it once he had surpassed Shanks."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 1293,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 1181,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "2dea5e7764827b88a77bfc12dab12744fa8e6930602101fb4d0aaa4caf628d75",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": null,
+          "description": "Shanks revealed Luffy's body was made of rubber and he would be unable to swim for the rest of his life."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 942,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 798,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "4576e67198281ea081dae874f2d805154aafff483d6658edf380fb16d267b24a",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "target_id": "541a9375-7b31-5d93-8de8-d094dfc95dee",
+          "description": "Shanks saves Luffy",
+          "source_name": "Luffy",
+          "target_name": "saves \u00b7 Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" \u2014 healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "652b5879-4f01-5871-93f2-25c2788218c8"
+      },
+      {
+        "id": "61673febb0901f2eb8f9ca96645db245d90d142a25304d53d19a825f6fd083fd",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "target_id": "541a9375-7b31-5d93-8de8-d094dfc95dee",
+          "description": "Shanks saves Luffy",
+          "source_name": "Shanks",
+          "target_name": "saves \u00b7 Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" \u2014 healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "d994712b-92b3-5ec5-81ef-3fc709664937"
+      },
+      {
+        "id": "6fe6e60d14188dbd23023bec44c1a014b5b6a26a106425f8e641344481b38a06",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy tried to convince Shanks to let him join the crew."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "71b929416233bddd1f83fc9a171d598513e86adcfdea46e79d94494b2d08ef60",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy decided not to join the Red Hair Pirates and declared he would form his own crew to become stronger than Shanks and find the greatest treasure."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 1180,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 990,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "787fa28399f4c19157b35a1f3c21cd51b991bcce6e63d2631f8719f280eebd47",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "After a fight with Higuma's gang, Luffy was kidnapped; Higuma initially planned to sell him to a circus before deciding to kill him."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 122,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 0,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 1228,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 1130,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 1360,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 1229,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "7ed17b2db07d66240cdd3d7cbf9f9d50ffae84fc579bb0d03e32c68dc02ba9f4",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "knowledge": null,
+          "description": "Shanks saves Luffy"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" \u2014 healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "892c6289084afe2c09b842e00d65fb711f6c373312c65e0838926bb4b4f0ef15",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Shanks and his crew intervened, with Lucky Roux shooting a bandit and Beckman subduing the others, though Higuma fled with Luffy."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 122,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 0,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 265,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 123,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 524,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 375,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "8b29375bbc26b8a876fee956f2afdbd6c3de0e16e396cb08f0b9c6a950725d70",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "While Higuma tried to drown Luffy at sea, a Sea King called Lord of the Coast attacked, but Shanks arrived in time to rescue Luffy and scare the beast away."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 122,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 0,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 692,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 525,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 799,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 693,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "91a88538aae5ab78cabf5006a7db3dd86e06beff24fca50d32376b2babbfedf0",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "history",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Shanks arrived in time to save Luffy from a Sea King that was about to eat him."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 799,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 693,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "9b5c67e7ec608fa8ce96928300055c9652240818ffe99a02a0f1be92a1ba7327",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy announced he would not join the Red Hair Pirates and vowed to form his own crew, find the greatest treasure, and become Pirate King."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 1180,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "quote_start": 990,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "\"Red-Haired\" Shanks gently refused Luffy's request to join his crew due to Luffy being too young and unable to swim."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 41,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 0,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 70,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 42,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "b7eed7add4899ebd9f30782a5d82f995c8c99ab4845b6bc4b88ff05b4ec84aa6",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy came to the Red Hair Pirates' ship to prove he was tough enough to join them by stabbing his face under his left eye."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 653,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 484,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "c2df6cff591364405e48f271993f445cee64212047954a6f3ba3ae6852ead959",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Eating the Gomu Gomu no Mi turned Luffy's body into rubber, making him permanently unable to swim."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 942,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 798,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "ce114d843aa1ab56e358f03f27b54f7b46ebcad519b7baf204815b4af0cfa35d",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": null,
+          "description": "Shanks refused Luffy's request to join due to Luffy being too young and unable to swim."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "db24cba08cd46d02ec63009b08780a1c1fe6d9e9b8b122addabff6805e369630",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "history",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy was kidnapped by Higuma's gang after picking a fight with them."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 1360,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 1229,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "e7c2dcc905f8f865a69b8c26dfd608a6b6b5c48e03292e2769fa407db89cdadf",
+        "kind": "entity",
+        "payload": {
+          "name": "saves \u00b7 Luffy",
+          "type": "EVENT",
+          "event": {
+            "trigger": "saves",
+            "outcomes": [],
+            "source_id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "trigger_end": 939,
+            "uncertainty": "",
+            "participants": [
+              "Shanks",
+              "Luffy"
+            ],
+            "preconditions": [],
+            "trigger_start": 934,
+            "identity_anchor": "bca11457f22cc91276821a41b72019d45d21fdc8a4f16d49f5182e61f1465b95",
+            "reveal_position": null,
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "recipient",
+              "Shanks": "actor"
+            },
+            "chronological_position": null
+          },
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "knowledge": null,
+          "description": "Shanks saves Luffy"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" \u2014 healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "541a9375-7b31-5d93-8de8-d094dfc95dee"
+      },
+      {
+        "id": "ea57ec87fe942fa074823974f78d351ad02ede910f9ca4d0ce87940afbb13418",
+        "kind": "relationship",
+        "payload": {
+          "type": "RELATED_TO",
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves \u00b7 Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "description": "Shanks saves Luffy",
+          "source_name": "Shanks",
+          "target_name": "Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" \u2014 healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy \u2014 uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+      },
+      {
+        "id": "edf35b117c5ea02f37ccb846bf428020b3a91c95b224ec8e5d8e1ad8221b4a74",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy was angry at Shanks for not confronting Higuma, and when Shanks tried to hold his arm, Luffy's arm stretched like rubber."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 227,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 0,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 363,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 228,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 473,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 364,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 621,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 474,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "ef110e139d70d293db83fee10081f933ed208ed27353bbb96d9fc882a2bfc9c7",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy asked Shanks to let him join the Red Hair Pirates, but Shanks refused, citing Luffy's youth and inability to swim."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "efd2a0238d014035d24c416e07b2981643e658f7c0b34bb4e701d857ab56d458",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "origin",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Shanks declined Luffy's request to join, explaining that Luffy was too young and could not swim."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "history",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy ate the Gomu Gomu no Mi, a Devil Fruit the Red Hair Pirates had stolen, for dessert."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "title": "Approved supplied origin section \u2014 onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 797,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "quote_start": 622,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      }
+    ],
+    "reconstruction": {},
+    "revision": "ea3105ce080c3b65e7a2d9992bd0afc715fa068c67e897983be4736d60d7f23e"
+  },
+  "article": {
+    "title": "Romance Dawn",
+    "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+    "status": "withheld",
+    "quality": {
+      "gate": "Requires real narrative review; generation success is not completeness",
+      "complete": false,
+      "validated_sections": 0
+    },
+    "version": "arc-article-v1",
+    "coverage": [
+      {
+        "research": "partial",
+        "presentation": "withheld",
+        "supported_facets": [
+          "action",
+          "consequence",
+          "decision"
+        ],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "conflict"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes development in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?"
+        ]
+      },
+      {
+        "research": "not_researched",
+        "presentation": "not_ready",
+        "supported_facets": [],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "action",
+          "decision",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+        ]
+      },
+      {
+        "research": "not_researched",
+        "presentation": "not_ready",
+        "supported_facets": [],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "action",
+          "decision",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+        ]
+      },
+      {
+        "research": "not_researched",
+        "presentation": "not_ready",
+        "supported_facets": [],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "action",
+          "decision",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "id": "e5b635af-20e9-5316-9492-6475fa922eb0",
+        "status": "withheld",
+        "heading": "Luffy's Origin and Devil Fruit Acquisition",
+        "revision": "51631cc3a86cb1956a510321c2d3fa226ffe26ebfb2c8e3df3bbf2b19b3bd882",
+        "assessment": {
+          "reason": "Semantic reviewer qualification failed",
+          "review_attempts": [
+            {
+              "reason": "Semantic reviewer qualification failed"
+            }
+          ],
+          "reviewer_qualification": {
+            "claims": [
+              {
+                "index": 0,
+                "reason": "The text explicitly states 'Mira rescued Ron.'",
+                "verdict": "supported"
+              },
+              {
+                "index": 1,
+                "reason": "While the evidence contains 'Mira rescued Ron,' there is no explicit temporal phrase indicating this event occurred later than another event; therefore, the addition of 'Later' cannot be verified.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 2,
+                "reason": "The text states Mira jumped to try to prove her courage, which establishes an intention or plan to demonstrate a quality. The claim that she proved her courage is not supported because trying to demonstrate a quality does not establish success.",
+                "verdict": "supported"
+              },
+              {
+                "index": 3,
+                "reason": "The evidence explicitly contains the phrase 'After lunch,' establishing the temporal context for Mira entering the observatory.",
+                "verdict": "supported"
+              },
+              {
+                "index": 4,
+                "reason": "The evidence states 'Mira rescued Ron.' There is no information indicating that Ron rescued Mira; reversing the roles contradicts the provided text.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 5,
+                "reason": "The evidence contains only 'Mira rescued Ron.' It does not mention any desire for treasure or provide a reason for the action. Inferring motives is not supported.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 6,
+                "reason": "The evidence lists two separate events: Mira entering the observatory and Ron leaving it. There is no explicit source temporal phrase connecting these events to establish that one occurred after the other.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 7,
+                "reason": "The evidence states 'He was tied to a post.' It does not identify the subject as Kira; inferring the identity of the pronoun is not supported.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 8,
+                "reason": "The evidence contains 'Mira gives Ron,' which establishes an intention or plan to give a gift. The claim that she gave the gift implies completion, which is not established by the act of deciding to perform it.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 9,
+                "reason": "The text states 'Ron decided he would build his own ship,' which establishes an intention or plan to build a ship. The claim that he planned to do so is faithful to this evidence.",
+                "verdict": "supported"
+              },
+              {
+                "index": 10,
+                "reason": "The evidence contains only 'Ron decided he would build his own ship.' There is no information indicating that the decision resulted in the actual construction of the ship.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 11,
+                "reason": "The evidence states 'Mira rescued Ron' and notes Ron was upset about losing an arm. It does not explicitly state that Ron lost an arm; inferring this specific consequence from his emotional reaction is not supported.",
+                "verdict": "unsupported"
+              }
+            ],
+            "passed": false,
+            "coherent": true,
+            "coherence_issues": [],
+            "paragraphs_faithful": true,
+            "unsupported_connections": []
+          }
+        },
+        "paragraphs": []
+      }
+    ],
+    "perspective": "bounded",
+    "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+    "dossier_revision": "ea3105ce080c3b65e7a2d9992bd0afc715fa068c67e897983be4736d60d7f23e",
+    "spoiler_position": 7
+  },
+  "audit_note": "Read-only actual FastAPI response over the developer research database. Exact archived quotations are omitted from this public inspection copy; UUIDs, hashes and offsets preserve references. Model validation alone is not the long-form editorial acceptance gate.",
+  "http_status": 200,
+  "editorial_acceptance": {
+    "passed": false,
+    "reason": "No currently validated section. The final live job fell back after a Groq rate limit; its local semantic reviewer failed qualification. Earlier model-validated drafts also failed human narrative review.",
+    "partial_projection_live_demonstrated": false,
+    "remaining_scope": [
+      "substantial validated origin prose",
+      "other Romance Dawn sections and complete arc article",
+      "real retrospective-lore benchmark"
+    ]
+  }
+}
