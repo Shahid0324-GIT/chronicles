@@ -35,7 +35,8 @@ from src.application.arc_grounding import (
 )
 from src.application.arc_prose import (
     Propositions,
-    assess_written_section,
+    assess_in_batches,
+    clarify_note_roles,
     originality_candidates,
     prepare_propositions,
     revision_note_targets,
@@ -62,7 +63,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v19"
+POLICY = "arc-intelligence-v20"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -867,6 +868,26 @@ class ArcIntelligence:
             notes: Propositions | None = None
             plan = section.development_plan
             resumed = False
+            cached_batches: dict[str, dict[str, object]] = {}
+
+            async def save_batches(
+                key: UUID = section_id,
+                revision: str = section.revision,
+                batches: dict[str, dict[str, object]] = cached_batches,
+                call_offset: int = offset,
+            ) -> None:
+                await self.save(
+                    dossier.universe_id,
+                    dossier.continuity_id,
+                    key,
+                    "arc_prose_batches",
+                    boundary_key,
+                    revision,
+                    batches,
+                    "withheld",
+                    providers()[call_offset:],
+                )
+
             if plan is not None:
                 async with self.presentations() as repo:
                     pending = await repo.get(
@@ -875,6 +896,11 @@ class ArcIntelligence:
                     stored_notes = await repo.get(
                         self.identifier(section_id, "arc_writing_notes", boundary_key)
                     )
+                    stored_batches = await repo.get(
+                        self.identifier(section_id, "arc_prose_batches", boundary_key)
+                    )
+                if stored_batches and stored_batches["knowledge_revision"] == section.revision:
+                    cached_batches.update(stored_batches["payload"])
                 if pending and pending["knowledge_revision"] == section.revision:
                     draft = ArcSectionDraft.model_validate(pending["payload"]["draft"])
                     resumed = True
@@ -882,12 +908,14 @@ class ArcIntelligence:
                     notes = Propositions.model_validate(stored_notes["payload"])
             try:
                 if plan is not None:
-                    writing_calls = 0 if draft else (1 if notes else 2)
-                    review_calls = 1
+                    writing_calls = 0 if draft else (1 if notes else len(plan.developments) + 1)
+                    review_calls = 1 if draft else len(plan.developments) + 1
                     if self.can_review and not await self.can_review(writing_calls, review_calls):
                         raise InferenceFailure("publication_review_budget_reserved")
                     if notes is None and draft is None:
-                        notes = await prepare_propositions(plan, infer)
+                        notes = await prepare_propositions(
+                            plan, infer, cached_batches, save_batches
+                        )
                         await self.save(
                             dossier.universe_id,
                             dossier.continuity_id,
@@ -904,6 +932,30 @@ class ArcIntelligence:
                         if draft is None:
                             if self.can_review and not await self.can_review(1, review_calls):
                                 raise InferenceFailure("publication_review_budget_reserved")
+                            role_key = fingerprint(
+                                ["arc-role-notes-v1", notes.model_dump(mode="json")]
+                            )
+                            if role_key in cached_batches:
+                                notes = Propositions.model_validate(cached_batches[role_key])
+                            else:
+                                notes = await clarify_note_roles(plan, notes, infer)
+                                cached_batches[role_key] = notes.model_dump(mode="json")
+                                corrected_key = fingerprint(
+                                    ["arc-role-notes-v1", notes.model_dump(mode="json")]
+                                )
+                                cached_batches[corrected_key] = cached_batches[role_key]
+                                await save_batches()
+                                await self.save(
+                                    dossier.universe_id,
+                                    dossier.continuity_id,
+                                    section_id,
+                                    "arc_writing_notes",
+                                    boundary_key,
+                                    section.revision,
+                                    notes.model_dump(mode="json"),
+                                    "withheld",
+                                    providers()[offset:],
+                                )
                             draft = await write_section(plan, notes, section.plan.title, infer)
                 draft = draft or ArcSectionDraft.model_validate(
                     await infer(
@@ -1020,8 +1072,10 @@ class ArcIntelligence:
                     if plan:
                         if self.can_review and not await self.can_review(0, 1):
                             raise InferenceFailure("publication_review_budget_reserved")
-                        assessment = await assess_written_section(
-                            draft, plan, infer, notes, calibrate=True
+                        if notes is None:
+                            raise ValueError("Planned prose is missing its writing notes")
+                        assessment = await assess_in_batches(
+                            draft, plan, notes, infer, cached_batches, save_batches
                         )
                         qualified = assessment.qualification_passed is True
                         qualification = {"passed": qualified, "model": reviewer_model()}
@@ -1125,8 +1179,8 @@ class ArcIntelligence:
                             "withheld",
                             providers()[offset:],
                         )
-                        assessment = await assess_written_section(
-                            draft, plan, infer, notes, calibrate=True
+                        assessment = await assess_in_batches(
+                            draft, plan, notes, infer, cached_batches, save_batches
                         )
                         qualified = assessment.qualification_passed is True
                         qualification = {"passed": qualified, "model": reviewer_model()}

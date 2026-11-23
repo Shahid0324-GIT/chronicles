@@ -12,9 +12,11 @@ from src.application.arc_prose import (
     ROLE_CALIBRATION,
     Propositions,
     ProseDraft,
+    assess_in_batches,
     assess_written_section,
     bind_draft,
     bind_writing_notes,
+    clarify_note_roles,
     originality_candidates,
     revision_note_targets,
     validate_propositions,
@@ -313,6 +315,129 @@ async def test_planned_review_requires_the_same_response_to_pass_role_calibratio
     review = await assess_written_section(draft, plan, reviewer, calibrate=True)
     assert review.qualification_passed is False
     assert not review_ok(review, 1)
+
+
+async def test_batched_grounding_resumes_without_repeating_completed_sentences():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    refs = list(clause_map(plan))
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": ref,
+                    "actor": "Mira",
+                    "action": "try",
+                    "target": "gate",
+                    "modality": "attempted",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                }
+                for ref in refs
+            ]
+        }
+    )
+    draft = bind_writing_notes(
+        ProseDraft.model_validate(
+            {
+                "paragraphs": [
+                    {"claims": [{"text": "The gate stayed closed.", "clauses": ["1"]}]},
+                    {"claims": [{"text": "Mira tried to open it.", "clauses": ["2"]}]},
+                ]
+            }
+        ),
+        plan,
+        notes,
+        "Gate",
+    )
+    cache: dict[str, dict[str, object]] = {}
+    calls: list[str] = []
+    checkpoints: list[int] = []
+
+    async def checkpoint() -> None:
+        checkpoints.append(len(cache))
+
+    async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.split("\n", 1)[1])
+        if "paragraphs" in packet:
+            return schema.model_validate(
+                {
+                    "editorial_issues": [],
+                    "originality_issues": [],
+                    "coverage_issues": [],
+                    "revise_paragraphs": [],
+                }
+            )
+        sentence = packet["s1"]["sentence"]
+        calls.append(sentence)
+        decisions = [
+            {
+                "id": i,
+                "verdict": "unsupported" if i == "check-a" else "supported",
+                "reason": "Evidence checked",
+            }
+            for i in packet
+        ]
+        if len(calls) == 2:
+            decisions.pop()
+        return schema.model_validate({"decisions": decisions})
+
+    with pytest.raises(ValueError, match="incomplete or duplicate"):
+        await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
+    assert checkpoints == [1]
+    result = await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
+    assert result.qualification_passed
+    assert calls == ["The gate stayed closed.", "Mira tried to open it.", "Mira tried to open it."]
+    assert checkpoints == [1, 2, 3]
+
+
+async def test_role_correction_uses_the_explicit_cited_actor():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref, (_, clause) = next(iter(clause_map(plan).items()))
+    clause.clause = "Mira was saddened that she lost her glove during the rescue."
+    statement = "Mira was sad that Ada lost a glove while rescuing her."
+    plan.evidence.append(
+        evidence[0].model_copy(
+            update={
+                "id": "3",
+                "source_id": uuid4(),
+                "text": statement,
+            }
+        )
+    )
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": ref,
+                    "actor": "Mira",
+                    "action": "lost",
+                    "target": "glove",
+                    "modality": "completed",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                    "context": ["e3"],
+                }
+            ]
+        }
+    )
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.split("\n", 1)[1])
+        assert packet["1"]["explicit_context"] == [statement]
+        return schema.model_validate(
+            {
+                "fixes": [
+                    {"note": 1, "actor": "Ada", "action": "lost", "target": "glove"},
+                ]
+            }
+        )
+
+    fixed = await clarify_note_roles(plan, notes, infer)
+    assert fixed.notes[0].actor == "Ada"
+    assert fixed.notes[0].context == ["e3"]
+    assert fixed.notes[0].modality == "completed"
 
 
 def test_source_phrasing_is_rejected_before_writing():

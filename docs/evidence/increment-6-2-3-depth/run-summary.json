@@ -1,0 +1,398 @@
+{
+  "status": "withheld",
+  "evidence_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "human_reviewed_notes": false,
+  "paragraphs": 5,
+  "words": 334,
+  "verbatim_paragraphs": [],
+  "near_overlap_paragraphs": [],
+  "validation_stages": {
+    "factual": {
+      "status": "blocked"
+    },
+    "structural": {
+      "status": "passed",
+      "issues": []
+    },
+    "editorial": {
+      "status": "blocked"
+    },
+    "originality": {
+      "status": "passed",
+      "issues": []
+    },
+    "coverage": {
+      "status": "passed",
+      "issues": []
+    }
+  },
+  "grounding_batches_saved": 12,
+  "assessment": {
+    "paragraphs_faithful": true,
+    "coherent": false,
+    "coherence_issues": [
+      "Paragraph 2: abrupt sequence of events (pirates arriving, Luffy stabbing his face, attempting to join Shanks, and rejection) lacks connective explanation and logical flow.",
+      "Paragraph 3: sudden introduction of Higuma and bar scene without context; transitions between actions are unclear.",
+      "Paragraph 4: overloaded with multiple actions (gang demands, kidnapping alert, sale plan, shooting, escape, Sea King attack) that are compressed without narrative bridges, causing confusion.",
+      "Paragraph 5: rapid shift from departure preparation to Luffy\u2019s declaration of his own crew and Shanks\u2019 hat exchange; missing transitional cues."
+    ],
+    "unsupported_connections": [],
+    "originality_issues": [],
+    "revision_paragraphs": [
+      2,
+      3,
+      4,
+      5
+    ],
+    "qualification_passed": true,
+    "coverage_issues": [],
+    "reviewer_qualification": {
+      "passed": true,
+      "model": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ]
+    }
+  },
+  "unsupported_claims": [
+    {
+      "index": 28,
+      "verdict": "unsupported",
+      "reason": "No evidence mentions the Sea King approaching Higuma.",
+      "conclusion": null,
+      "observed_modality": null,
+      "observed_negated": null,
+      "issues": []
+    },
+    {
+      "index": 31,
+      "verdict": "unsupported",
+      "reason": "Evidence shows Shanks saved Luffy, not the ambiguous \"He\"",
+      "conclusion": null,
+      "observed_modality": null,
+      "observed_negated": null,
+      "issues": []
+    },
+    {
+      "index": 33,
+      "verdict": "unsupported",
+      "reason": "Subject \"He\" is ambiguous; evidence attributes arm loss to Shanks",
+      "conclusion": null,
+      "observed_modality": null,
+      "observed_negated": null,
+      "issues": []
+    },
+    {
+      "index": 44,
+      "verdict": "unsupported",
+      "reason": "Evidence mentions leaving an island but does not specify Foosha Village.",
+      "conclusion": null,
+      "observed_modality": null,
+      "observed_negated": null,
+      "issues": []
+    }
+  ],
+  "provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 1036,
+      "output_tokens": 245,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 1156,
+      "output_tokens": 644,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "invalid_output",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": [
+        "notes.2.context:too_long",
+        "notes.3.context:too_long",
+        "notes.4.context:too_long",
+        "notes.9.context:too_long"
+      ]
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 1550,
+      "output_tokens": 678,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 1577,
+      "output_tokens": 1755,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 1270,
+      "output_tokens": 1165,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "invalid_output",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": [
+        "notes.0.context:too_long",
+        "notes.1.context:too_long",
+        "notes.4.context:too_long",
+        "notes.5.context:too_long",
+        "notes.6.context:too_long",
+        "notes.7.context:too_long"
+      ]
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 1653,
+      "output_tokens": 1117,
+      "validation_errors": []
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2750,
+      "output_tokens": 2255,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2388,
+      "output_tokens": 735,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2969,
+      "output_tokens": 1472,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 526,
+      "output_tokens": 350,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 777,
+      "output_tokens": 668,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 934,
+      "output_tokens": 708,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 666,
+      "output_tokens": 509,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 848,
+      "output_tokens": 816,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 973,
+      "output_tokens": 735,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 753,
+      "output_tokens": 445,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 1056,
+      "output_tokens": 597,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 514,
+      "output_tokens": 441,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 1721,
+      "output_tokens": 462,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 3435,
+      "output_tokens": 1442,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 775,
+      "output_tokens": 506,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 937,
+      "output_tokens": 678,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 848,
+      "output_tokens": 801,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 1722,
+      "output_tokens": 439,
+      "validation_errors": []
+    }
+  ]
+}

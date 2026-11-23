@@ -115,6 +115,8 @@ async def main() -> None:
     phase.add_argument("--original", action="store_true")
     parser.add_argument("--follow-up", action="store_true")
     parser.add_argument("--autonomous", action="store_true")
+    parser.add_argument("--deep", action="store_true")
+    parser.add_argument("--finish-review", action="store_true")
     parser.add_argument("--refresh-notes", action="store_true")
     parser.add_argument("--resume-automatic-notes", action="store_true")
     parser.add_argument("--reviewed-notes", type=Path)
@@ -123,12 +125,20 @@ async def main() -> None:
         parser.error("Autonomous runs cannot load reviewed notes")
     if args.resume_automatic_notes and not (args.autonomous and args.compose):
         parser.error("Resuming automatic notes requires --autonomous --compose")
+    if args.finish_review and (
+        not (args.deep and args.compose) or args.refresh_notes or args.reviewed_notes
+    ):
+        parser.error("Finishing review requires --deep --compose and a saved draft")
     section_key = args.section
     title, ranges = SCOPES[section_key]
     baseline = Path("../../.tmp/benchmark621") / section_key
     folder = Path("../../.tmp") / ("benchmark623-follow-up" if args.follow_up else "benchmark623")
     if args.autonomous:
         folder = Path("../../.tmp/benchmark623-autonomous")
+    if args.deep:
+        if not args.autonomous:
+            parser.error("Deep runs require --autonomous")
+        folder = Path("../../.tmp/benchmark623-deep")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -141,7 +151,11 @@ async def main() -> None:
             ),
             "groq_structured_output_strict": False,
             "ai_max_attempts": 2 if args.autonomous else 1,
-            "agent_max_model_calls": 12 if args.follow_up or args.autonomous else 6,
+            "agent_max_model_calls": 32
+            if args.deep
+            else 12
+            if args.follow_up or args.autonomous
+            else 6,
             "ai_cloud_rate_limit_wait_seconds": 75 if args.autonomous else 0,
         }
     )
@@ -300,10 +314,30 @@ async def main() -> None:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
             ] = writing_notes
+        if saved.get("review_batches"):
+            memory.rows[
+                ArcIntelligence.identifier(section.id, "arc_prose_batches", evidence.revision)
+            ] = saved["review_batches"]
     router = create_inference(settings)
     router.restore_budget(prior)
+    review_continuation = 0
+    if args.finish_review:
+        if not pending or not writing_notes or not saved.get("review_batches"):
+            raise ValueError("Finishing review requires a saved draft, notes and review batches")
+        if saved.get("review_continuation"):
+            raise ValueError("This draft already received its bounded review continuation")
+        review_continuation = 8
+        router.max_calls = router.total_used + review_continuation
+        router.stage_limits = {
+            **router.stage_limits,
+            "presentation_verification": (
+                router.stage_used.get("presentation_verification", 0) + review_continuation
+            ),
+        }
 
     async def can_review(writing: int, checking: int) -> bool:
+        if args.finish_review and writing:
+            return False
         return (
             router.total_used + writing + checking <= router.max_calls
             and router.stage_used.get("presentation", 0) + writing
@@ -413,6 +447,10 @@ async def main() -> None:
             "provider_usage": prior + providers(),
             "input_revision": evidence.revision,
             "reviewed_notes_input": bool(args.reviewed_notes),
+            "review_continuation": review_continuation,
+            "review_batches": memory.rows.get(
+                service.identifier(section.id, "arc_prose_batches", evidence.revision)
+            ),
             "pending_review": memory.rows.get(
                 service.identifier(section.id, "arc_pending_review", evidence.revision)
             ),
