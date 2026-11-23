@@ -1,5 +1,9 @@
 # Backend arc artifacts — Increment 6.2 checkpoint
 
+Increment 6.2.1 adds a section `development_plan` to the existing dossier. It includes exact archive coordinates and provenance, scoped clause references, action modality and negation, unresolved context, and separately assessed factual, structural and editorial stages. `reference_presentation` orders anchors within a source. Chronology, revelation, causation and prerequisites use distinct relations and require explicit support. Chapter ceilings continue to govern eligibility.
+
+The worker saves development-plan decisions independently of prose. An unavailable or blocked plan withholds the section before any composition call. An eligible pending review can reuse a draft that already passed deterministic checks for the matching section revision. Reader-facing artifacts exclude pending prose. The fixed archive benchmark and its measured outcomes are documented in the [controlled reconstruction report](../increment-6-2-1-controlled-benchmark.md).
+
 This is an additive backend contract. Frontend integration is deliberately absent.
 
 `GET /api/universes/{slug}/arcs/{arc_id}?continuity_id={uuid}&spoiler_position=7`

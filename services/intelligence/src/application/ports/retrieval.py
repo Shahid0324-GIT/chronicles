@@ -3,7 +3,19 @@ from dataclasses import dataclass
 from typing import Any, Protocol
 from uuid import UUID
 
+from src.application.arc_contracts import DevelopmentEvidence
 from src.domain.research import SourceDocument, SourcePassage
+
+
+class DevelopmentEvidenceProvider(Protocol):
+    async def development_evidence(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        facts: list[dict[str, Any]],
+        spoiler_position: int | None,
+        token_budget: int = 3200,
+    ) -> tuple[list[DevelopmentEvidence], list[str]]: ...
 
 
 @dataclass(frozen=True)

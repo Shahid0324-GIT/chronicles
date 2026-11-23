@@ -3,7 +3,12 @@
 import json
 from typing import Any
 
-from src.application.arc_contracts import ArcSectionDraft, ArcSemanticReview, ArcUnderstanding
+from src.application.arc_contracts import (
+    ArcSectionDraft,
+    ArcSemanticReview,
+    ArcUnderstanding,
+    NarrativeDevelopmentPlan,
+)
 from src.application.knowledge_presentation import Infer
 
 
@@ -189,11 +194,23 @@ async def qualify_reviewer(infer: Infer) -> tuple[bool, dict[str, Any]]:
 
 
 async def review_section(
-    draft: ArcSectionDraft, facts: list[dict[str, Any]], infer: Infer
+    draft: ArcSectionDraft,
+    facts: list[dict[str, Any]],
+    infer: Infer,
+    plan: NarrativeDevelopmentPlan | None = None,
 ) -> ArcSemanticReview:
     by_id = {f["id"]: f for f in facts}
     claims = [c for p in draft.paragraphs for c in p.claims]
-    return ArcSemanticReview.model_validate(
+    commitments = (
+        {
+            f"{di + 1}.{ci + 1}": {"text": c.clause, "modality": c.modality, "negated": c.negated}
+            for di, d in enumerate(plan.developments)
+            for ci, c in enumerate(d.clauses)
+        }
+        if plan
+        else {}
+    )
+    result = ArcSemanticReview.model_validate(
         await infer(
             "Review narrative CLAIMS against their OWN accepted assertion text. The assertions "
             "are already accepted story knowledge, not a request to reclassify graph entity types. "
@@ -219,11 +236,22 @@ async def review_section(
                             "index": i,
                             "text": c.text,
                             "accepted_assertions": [assertion(by_id[k]) for k in c.fact_ids],
+                            "clause_commitments": [
+                                commitments[k] for k in c.source_clause_ids if k in commitments
+                            ],
                         }
                         for i, c in enumerate(claims)
                     ],
                     "paragraphs": [p.text for p in draft.paragraphs],
                     "available_section_assertions": assertion_context(facts),
+                    "structured_verdict_rule": (
+                        "For each claim return conclusion entailed/not_entailed/uncertain and "
+                        "specific issues. Verdict supported requires entailed and no issues. "
+                        "For a single clause commitment report observed_modality and "
+                        "observed_negated."
+                        if plan
+                        else "Use ordinary claim verdicts."
+                    ),
                 },
                 ensure_ascii=False,
             ),
@@ -231,3 +259,25 @@ async def review_section(
             "presentation_verification",
         )
     )
+    if plan:
+        for review in result.claims:
+            if not 0 <= review.index < len(claims):
+                raise ValueError("Invalid prose review index")
+            expected = {
+                "supported": "entailed",
+                "unsupported": "not_entailed",
+                "uncertain": "uncertain",
+            }
+            if review.conclusion != expected[review.verdict] or (
+                review.verdict == "supported" and review.issues
+            ):
+                raise ValueError("Inconsistent prose review conclusion")
+            refs = claims[review.index].source_clause_ids
+            if review.verdict == "supported" and len(refs) == 1:
+                commitment = commitments[refs[0]]
+                if (
+                    review.observed_modality != commitment["modality"]
+                    or review.observed_negated != commitment["negated"]
+                ):
+                    raise ValueError("Prose review changes action modality or negation")
+    return result

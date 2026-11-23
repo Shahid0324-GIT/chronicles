@@ -1,0 +1,1120 @@
+{
+  "input": {
+    "section": "Luffy's First Voyage and Meeting Koby",
+    "input_revision": "0534e26f563bb3523516bdf627bfab721980b1bad7bef93566b97c3c8a4cb74c",
+    "sources": {
+      "6bb24512-ba6b-5c63-8c7c-96c70e88a689": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7"
+    },
+    "units": [
+      {
+        "id": "4821f0affbe8a1595576a0e570c2aae10b83dea714698b96c53e8eb697610e0f",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 3968,
+        "end": 4069,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "4362a68b97319c6e7ec385842fdc48c063b8303a8d0d5a400a25298d4499d7ce",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4070,
+        "end": 4235,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "66a0505a58187ab8ae23ac84ca8a3c4eb2fd80eaaf421a38b87cc00480cee605",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4236,
+        "end": 4357,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "d8c530d629d99573322ec2806bfa93b0415fea80e385bcf396db1d3f782fab6c",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4357,
+        "end": 4462,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "b498c960fb0cca8b5e2f7f4abf3a2ff72ef8dec1d216f7d06708be26dc2c0461",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4462,
+        "end": 4521,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "a819e4d1efa4700c5cc4ce561245303ba1f0b93b5dac57c984519180d88f7d72",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4522,
+        "end": 4668,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "5e45881b7f816abfbf4929a9b15c1454b8ddb022808104e1946c7c57efbcf71f",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4669,
+        "end": 4852,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "1439e9c0af57c3806879637353e98cc56b2b1c117206d031118687f606d5bb72",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4853,
+        "end": 4938,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "5cf7e78290a3be135aa34eb77861252f37200a1b0ced28375065e27cbd3d9c18",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4939,
+        "end": 5131,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "4bb1c7b8476b57dba9f2e57edbf3fa2ef4325a20769e0d5975d4228fcc22e244",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 5131,
+        "end": 5154,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "7894fcf4657799d464829533edabb32b0558562906ab2ecedb306ad53919ba1a",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 5155,
+        "end": 5174,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "a60e8828c0055b48e4eb258b57526b14bbb6d32e4d67fc319c9c4c142640d0d9",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5175,
+        "end": 5274,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "45b5e89a44756e7b78c77a7c1640e6b88fec018d898ac4fd1430db78a034440b",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5275,
+        "end": 5499,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "6d1dd6b2e492b7c538c2e90e387b9ac638f120aa7d14b4c666ea9c8b196ea306",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5500,
+        "end": 5674,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "21a7449c256849c276a3cc771db8c91e5d4dee13698f429f5eea35d0c771ea4c",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5675,
+        "end": 5807,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "915503afc3ad4c6791f9cda8d50d3121265b5e47237af69ed158095751b74fc4",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5808,
+        "end": 5905,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "831c3347ba1ca61bd9e1c49d4999a06848f82aa9a54ecf9dd22cb6529919af67",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5906,
+        "end": 6068,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "637d5900575ba69e95ae5754f79d694d4700423a0fa20902ffc97859b69681ce",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 6069,
+        "end": 6206,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "3a003ecb9dd66dac60c6043344817fec03eee3b5a8987f177fd693d7822f1a0c",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 6207,
+        "end": 6361,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "cf0b44cbb4a1e8b0c17d1d7c00b1a02849dbff19792c50b3538560c663e206e2",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "24125976-bf68-5e69-95ce-331cf9346e3b",
+        "passage_hash": "c25c0ae48376750c87f7d3eb0978ffbe138dced5d6ff9e9fc0ea2cb032c40d31",
+        "passage_start": 6362,
+        "start": 6362,
+        "end": 6489,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      }
+    ],
+    "live_web_requests": 0
+  },
+  "plan": {
+    "version": "development-plan-v1",
+    "section_id": "5bcc17b8-ce24-5553-b086-decf7aea7dd5",
+    "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+    "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+    "developments": [
+      {
+        "id": "6430b326-edce-5162-8078-c37223f5d3a5",
+        "key": "development-1",
+        "title": "Luffy's departure and early peril",
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "section_id": "5bcc17b8-ce24-5553-b086-decf7aea7dd5",
+        "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+        "clauses": [
+          {
+            "fact_id": "4821f0affbe8a1595576a0e570c2aae10b83dea714698b96c53e8eb697610e0f",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "4821f0affbe8a1595576a0e570c2aae10b83dea714698b96c53e8eb697610e0f"
+            ],
+            "clause_sha256": "b48a049f6d5c870bbfb04c9e819caa0b1c4dfbdf5ec230fe489c75b935cc2ff2"
+          },
+          {
+            "fact_id": "4362a68b97319c6e7ec385842fdc48c063b8303a8d0d5a400a25298d4499d7ce",
+            "facet": "conflict",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "4362a68b97319c6e7ec385842fdc48c063b8303a8d0d5a400a25298d4499d7ce"
+            ],
+            "clause_sha256": "8110c4d7df0816c90d63409fc1c8421a3c5b96b4ed1478d25ef97f28db73a7c7"
+          },
+          {
+            "fact_id": "66a0505a58187ab8ae23ac84ca8a3c4eb2fd80eaaf421a38b87cc00480cee605",
+            "facet": "decision",
+            "modality": "intended",
+            "negated": false,
+            "evidence_ids": [
+              "66a0505a58187ab8ae23ac84ca8a3c4eb2fd80eaaf421a38b87cc00480cee605"
+            ],
+            "clause_sha256": "0966870ca2875303373fd07bdf4232e7e5289425de26816144a9eec731324752"
+          },
+          {
+            "fact_id": "d8c530d629d99573322ec2806bfa93b0415fea80e385bcf396db1d3f782fab6c",
+            "facet": "conflict",
+            "modality": "threatened",
+            "negated": false,
+            "evidence_ids": [
+              "d8c530d629d99573322ec2806bfa93b0415fea80e385bcf396db1d3f782fab6c"
+            ],
+            "clause_sha256": "cd10d09196e143c42c8e4b5063b6665c1a86836dd403f7f91ac21bfde766b9d9"
+          }
+        ],
+        "participants": [],
+        "anchor_ids": [
+          "4821f0affbe8a1595576a0e570c2aae10b83dea714698b96c53e8eb697610e0f"
+        ],
+        "unresolved": [],
+        "narrative_position": null,
+        "in_world_position": null,
+        "revelation_position": null
+      },
+      {
+        "id": "47d15f9b-4917-5bbf-858b-04f6148ea722",
+        "key": "development-2",
+        "title": "Alvida's tyranny and Koby's accidental discovery",
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "section_id": "5bcc17b8-ce24-5553-b086-decf7aea7dd5",
+        "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+        "clauses": [
+          {
+            "fact_id": "b498c960fb0cca8b5e2f7f4abf3a2ff72ef8dec1d216f7d06708be26dc2c0461",
+            "facet": "circumstances",
+            "modality": "reported",
+            "negated": false,
+            "evidence_ids": [
+              "b498c960fb0cca8b5e2f7f4abf3a2ff72ef8dec1d216f7d06708be26dc2c0461"
+            ],
+            "clause_sha256": "04cc31c76a11d5b004993e85142de384e5aa3c75429135e1991f4970758d9357"
+          },
+          {
+            "fact_id": "a819e4d1efa4700c5cc4ce561245303ba1f0b93b5dac57c984519180d88f7d72",
+            "facet": "conflict",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "a819e4d1efa4700c5cc4ce561245303ba1f0b93b5dac57c984519180d88f7d72"
+            ],
+            "clause_sha256": "347cc6377b9236bdf84cc6b999f6cb3935f87e64d6a408a64d08e6b03f4a7a66"
+          },
+          {
+            "fact_id": "5e45881b7f816abfbf4929a9b15c1454b8ddb022808104e1946c7c57efbcf71f",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "5e45881b7f816abfbf4929a9b15c1454b8ddb022808104e1946c7c57efbcf71f"
+            ],
+            "clause_sha256": "86bea07c7b824ef1859a4337816ad6d567bb360e7c5cdb46254971bf3a83864c"
+          },
+          {
+            "fact_id": "1439e9c0af57c3806879637353e98cc56b2b1c117206d031118687f606d5bb72",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "1439e9c0af57c3806879637353e98cc56b2b1c117206d031118687f606d5bb72"
+            ],
+            "clause_sha256": "672be630bf094b06b744b5ccca7761ee794b580cf0c8940d42c1ecf3fe4607af"
+          },
+          {
+            "fact_id": "5cf7e78290a3be135aa34eb77861252f37200a1b0ced28375065e27cbd3d9c18",
+            "facet": "consequence",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "5cf7e78290a3be135aa34eb77861252f37200a1b0ced28375065e27cbd3d9c18"
+            ],
+            "clause_sha256": "bf95c58ec0d43d2ce97f7f4ef491c3ee8607452b7042054ede1fcaefc9efadfb"
+          }
+        ],
+        "participants": [],
+        "anchor_ids": [
+          "b498c960fb0cca8b5e2f7f4abf3a2ff72ef8dec1d216f7d06708be26dc2c0461"
+        ],
+        "unresolved": [],
+        "narrative_position": null,
+        "in_world_position": null,
+        "revelation_position": null
+      },
+      {
+        "id": "98a90c52-06bf-5e89-8ca7-970136a256b4",
+        "key": "development-3",
+        "title": "Luffy and Koby's pact, dreams, and resolve",
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "section_id": "5bcc17b8-ce24-5553-b086-decf7aea7dd5",
+        "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+        "clauses": [
+          {
+            "fact_id": "4bb1c7b8476b57dba9f2e57edbf3fa2ef4325a20769e0d5975d4228fcc22e244",
+            "facet": "conflict",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "4bb1c7b8476b57dba9f2e57edbf3fa2ef4325a20769e0d5975d4228fcc22e244"
+            ],
+            "clause_sha256": "db650399c6d5d41d56226c1b47462cbec79d2fe471a7757ce0b52efa197a1fd6"
+          },
+          {
+            "fact_id": "a60e8828c0055b48e4eb258b57526b14bbb6d32e4d67fc319c9c4c142640d0d9",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "a60e8828c0055b48e4eb258b57526b14bbb6d32e4d67fc319c9c4c142640d0d9"
+            ],
+            "clause_sha256": "ad2c648ca2fd84aefaab65cf2d9e8a44d4888fd69abb9a8b0177990423288f86"
+          },
+          {
+            "fact_id": "45b5e89a44756e7b78c77a7c1640e6b88fec018d898ac4fd1430db78a034440b",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "45b5e89a44756e7b78c77a7c1640e6b88fec018d898ac4fd1430db78a034440b"
+            ],
+            "clause_sha256": "7a31bb69dede9d538467f2abdba827e653952713f948652d0434e45cb7442514"
+          },
+          {
+            "fact_id": "6d1dd6b2e492b7c538c2e90e387b9ac638f120aa7d14b4c666ea9c8b196ea306",
+            "facet": "character_journey",
+            "modality": "reported",
+            "negated": false,
+            "evidence_ids": [
+              "6d1dd6b2e492b7c538c2e90e387b9ac638f120aa7d14b4c666ea9c8b196ea306"
+            ],
+            "clause_sha256": "d1a4c686df1105f95ebabc927421b24b1eba60836779e87f2c0fa7aebba72728"
+          },
+          {
+            "fact_id": "21a7449c256849c276a3cc771db8c91e5d4dee13698f429f5eea35d0c771ea4c",
+            "facet": "consequence",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "21a7449c256849c276a3cc771db8c91e5d4dee13698f429f5eea35d0c771ea4c"
+            ],
+            "clause_sha256": "9e968375d0d36b5909173b140fe4ab0564048a4804ae2710f20268af751ebf0a"
+          }
+        ],
+        "participants": [],
+        "anchor_ids": [
+          "4bb1c7b8476b57dba9f2e57edbf3fa2ef4325a20769e0d5975d4228fcc22e244"
+        ],
+        "unresolved": [],
+        "narrative_position": null,
+        "in_world_position": null,
+        "revelation_position": null
+      },
+      {
+        "id": "36785642-00aa-584d-8fae-7d503b105b88",
+        "key": "development-4",
+        "title": "Final showdown with Alvida",
+        "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+        "section_id": "5bcc17b8-ce24-5553-b086-decf7aea7dd5",
+        "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+        "clauses": [
+          {
+            "fact_id": "915503afc3ad4c6791f9cda8d50d3121265b5e47237af69ed158095751b74fc4",
+            "facet": "conflict",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "915503afc3ad4c6791f9cda8d50d3121265b5e47237af69ed158095751b74fc4"
+            ],
+            "clause_sha256": "30c355fee25bff1c765ad95062df657c71acd83ba8eef17607f8f0b13504b9c7"
+          },
+          {
+            "fact_id": "831c3347ba1ca61bd9e1c49d4999a06848f82aa9a54ecf9dd22cb6529919af67",
+            "facet": "decision",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "831c3347ba1ca61bd9e1c49d4999a06848f82aa9a54ecf9dd22cb6529919af67"
+            ],
+            "clause_sha256": "563cddc1ae8ef5c038af4621ec2b0a6bda48b644e7ff61d16831c98cf7e00dca"
+          },
+          {
+            "fact_id": "637d5900575ba69e95ae5754f79d694d4700423a0fa20902ffc97859b69681ce",
+            "facet": "decision",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "637d5900575ba69e95ae5754f79d694d4700423a0fa20902ffc97859b69681ce"
+            ],
+            "clause_sha256": "d139003b39a34b40263c9a505f77b087b70a50d23374f6905c8e9385d19a6582"
+          },
+          {
+            "fact_id": "3a003ecb9dd66dac60c6043344817fec03eee3b5a8987f177fd693d7822f1a0c",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "3a003ecb9dd66dac60c6043344817fec03eee3b5a8987f177fd693d7822f1a0c"
+            ],
+            "clause_sha256": "112ecf3198a9b0245e4c1a39ed38abd65148afe331b66601ad38bac7db95015f"
+          },
+          {
+            "fact_id": "cf0b44cbb4a1e8b0c17d1d7c00b1a02849dbff19792c50b3538560c663e206e2",
+            "facet": "action",
+            "modality": "completed",
+            "negated": false,
+            "evidence_ids": [
+              "cf0b44cbb4a1e8b0c17d1d7c00b1a02849dbff19792c50b3538560c663e206e2"
+            ],
+            "clause_sha256": "61dfa455921fe40d0e8488e3db531740adbd5216a6de4d2cabc2baa6d4414769"
+          }
+        ],
+        "participants": [],
+        "anchor_ids": [
+          "915503afc3ad4c6791f9cda8d50d3121265b5e47237af69ed158095751b74fc4"
+        ],
+        "unresolved": [],
+        "narrative_position": null,
+        "in_world_position": null,
+        "revelation_position": null
+      }
+    ],
+    "ordering": [
+      {
+        "before": "6430b326-edce-5162-8078-c37223f5d3a5",
+        "after": "47d15f9b-4917-5bbf-858b-04f6148ea722",
+        "kind": "reference_presentation",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "fact_ids": [],
+        "evidence_ids": []
+      },
+      {
+        "before": "6430b326-edce-5162-8078-c37223f5d3a5",
+        "after": "98a90c52-06bf-5e89-8ca7-970136a256b4",
+        "kind": "reference_presentation",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "fact_ids": [],
+        "evidence_ids": []
+      },
+      {
+        "before": "6430b326-edce-5162-8078-c37223f5d3a5",
+        "after": "36785642-00aa-584d-8fae-7d503b105b88",
+        "kind": "reference_presentation",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "fact_ids": [],
+        "evidence_ids": []
+      },
+      {
+        "before": "47d15f9b-4917-5bbf-858b-04f6148ea722",
+        "after": "98a90c52-06bf-5e89-8ca7-970136a256b4",
+        "kind": "reference_presentation",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "fact_ids": [],
+        "evidence_ids": []
+      },
+      {
+        "before": "47d15f9b-4917-5bbf-858b-04f6148ea722",
+        "after": "36785642-00aa-584d-8fae-7d503b105b88",
+        "kind": "reference_presentation",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "fact_ids": [],
+        "evidence_ids": []
+      },
+      {
+        "before": "98a90c52-06bf-5e89-8ca7-970136a256b4",
+        "after": "36785642-00aa-584d-8fae-7d503b105b88",
+        "kind": "reference_presentation",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "fact_ids": [],
+        "evidence_ids": []
+      }
+    ],
+    "source_lanes": {
+      "6bb24512-ba6b-5c63-8c7c-96c70e88a689": [
+        [
+          "6430b326-edce-5162-8078-c37223f5d3a5"
+        ],
+        [
+          "47d15f9b-4917-5bbf-858b-04f6148ea722"
+        ],
+        [
+          "98a90c52-06bf-5e89-8ca7-970136a256b4"
+        ],
+        [
+          "36785642-00aa-584d-8fae-7d503b105b88"
+        ]
+      ]
+    },
+    "evidence": [
+      {
+        "id": "4821f0affbe8a1595576a0e570c2aae10b83dea714698b96c53e8eb697610e0f",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 3968,
+        "end": 4069,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "4362a68b97319c6e7ec385842fdc48c063b8303a8d0d5a400a25298d4499d7ce",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4070,
+        "end": 4235,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "66a0505a58187ab8ae23ac84ca8a3c4eb2fd80eaaf421a38b87cc00480cee605",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4236,
+        "end": 4357,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "d8c530d629d99573322ec2806bfa93b0415fea80e385bcf396db1d3f782fab6c",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4357,
+        "end": 4462,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "b498c960fb0cca8b5e2f7f4abf3a2ff72ef8dec1d216f7d06708be26dc2c0461",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4462,
+        "end": 4521,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "a819e4d1efa4700c5cc4ce561245303ba1f0b93b5dac57c984519180d88f7d72",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4522,
+        "end": 4668,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "5e45881b7f816abfbf4929a9b15c1454b8ddb022808104e1946c7c57efbcf71f",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4669,
+        "end": 4852,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "1439e9c0af57c3806879637353e98cc56b2b1c117206d031118687f606d5bb72",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4853,
+        "end": 4938,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "5cf7e78290a3be135aa34eb77861252f37200a1b0ced28375065e27cbd3d9c18",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 4939,
+        "end": 5131,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "4bb1c7b8476b57dba9f2e57edbf3fa2ef4325a20769e0d5975d4228fcc22e244",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 5131,
+        "end": 5154,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "7894fcf4657799d464829533edabb32b0558562906ab2ecedb306ad53919ba1a",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+        "passage_hash": "4e9d893ef1a14de58b43abe11e897023a4a54d1a860c34c0e4420000647b4adb",
+        "passage_start": 3857,
+        "start": 5155,
+        "end": 5174,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "a60e8828c0055b48e4eb258b57526b14bbb6d32e4d67fc319c9c4c142640d0d9",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5175,
+        "end": 5274,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "45b5e89a44756e7b78c77a7c1640e6b88fec018d898ac4fd1430db78a034440b",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5275,
+        "end": 5499,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "6d1dd6b2e492b7c538c2e90e387b9ac638f120aa7d14b4c666ea9c8b196ea306",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5500,
+        "end": 5674,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "21a7449c256849c276a3cc771db8c91e5d4dee13698f429f5eea35d0c771ea4c",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5675,
+        "end": 5807,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "915503afc3ad4c6791f9cda8d50d3121265b5e47237af69ed158095751b74fc4",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5808,
+        "end": 5905,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "831c3347ba1ca61bd9e1c49d4999a06848f82aa9a54ecf9dd22cb6529919af67",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 5906,
+        "end": 6068,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "637d5900575ba69e95ae5754f79d694d4700423a0fa20902ffc97859b69681ce",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 6069,
+        "end": 6206,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "3a003ecb9dd66dac60c6043344817fec03eee3b5a8987f177fd693d7822f1a0c",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "72e8d2b4-e4f2-5f9a-9fc3-a8f869b55274",
+        "passage_hash": "5bd0b339e0b61364583bb9a9eae6af4816012b2e9797002751a8155bf191298a",
+        "passage_start": 5175,
+        "start": 6207,
+        "end": 6361,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      },
+      {
+        "id": "cf0b44cbb4a1e8b0c17d1d7c00b1a02849dbff19792c50b3538560c663e206e2",
+        "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+        "source_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+        "passage_id": "24125976-bf68-5e69-95ce-331cf9346e3b",
+        "passage_hash": "c25c0ae48376750c87f7d3eb0978ffbe138dced5d6ff9e9fc0ea2cb032c40d31",
+        "passage_start": 6362,
+        "start": 6362,
+        "end": 6489,
+        "eligibility_boundary": 7,
+        "position_basis": "manga-chapter",
+        "authority": "secondary",
+        "source_group": "onepiece.fandom.com"
+      }
+    ],
+    "omissions": [
+      {
+        "fact_ids": [
+          "7894fcf4657799d464829533edabb32b0558562906ab2ecedb306ad53919ba1a"
+        ],
+        "reason": "insufficient_context",
+        "explanation": "Unselected reference unit awaits exclusion review"
+      }
+    ],
+    "gaps": [
+      "[1]",
+      "[2]"
+    ],
+    "factual": {
+      "status": "passed",
+      "issues": []
+    },
+    "structural": {
+      "status": "blocked",
+      "issues": [
+        "Missing context for gap [1]",
+        "Missing context for gap [2]",
+        "Insufficient context for assertion 'Luffy faces Alvida.'",
+        "Incomplete or duplicate action-anchor assessment"
+      ]
+    },
+    "editorial": {
+      "status": "pending",
+      "issues": [
+        "Prose has not been composed"
+      ]
+    },
+    "revision": "8c2efb6c03de9a689ca219016ec1fe1ee7211406bf35376c61c23e8227428414"
+  },
+  "coverage": {
+    "research": "blocked",
+    "presentation": "withheld",
+    "supported_facets": [
+      "action",
+      "character_journey",
+      "circumstances",
+      "conflict",
+      "consequence",
+      "decision"
+    ],
+    "missing_facets": [
+      "development"
+    ],
+    "gaps": [
+      "[1]",
+      "[2]",
+      "Missing context for gap [1]",
+      "Missing context for gap [2]",
+      "Insufficient context for assertion 'Luffy faces Alvida.'",
+      "Incomplete or duplicate action-anchor assessment",
+      "What evidence establishes development in Luffy's First Voyage and Meeting Koby?"
+    ]
+  },
+  "initial_diagnostics": [
+    "Incomplete or duplicate clause assessment",
+    "Unsupported development clause: (\"Luffy's_initial_voyage_and_setback\", 0): Clause 1 subject is 'boat', not 'Luffy'. Clause 4 describes a passive event ('boat was pulled') without explicit agent confirmation.",
+    "Unsupported development clause: ('Alvida_crew_incident_and_Luffy_rescue', 1): Clause 2 subject is 'barrel', not 'Luffy'. Clause 8 describes a passive event ('Luffy burst out') without explicit agent confirmation.",
+    "Unsupported development clause: (\"Koby's_cowardice_and_Luffy's_response\", 2): Clause 3 subject is 'Koby', not 'Luffy'. Clause 14 describes a passive state ('Luffy did not think') without explicit agent confirmation.",
+    "Unsupported development clause: ('Alvida_confrontation_and_Luffy_victory', 3): Clause 4 subject is 'Alvida', not 'Luffy'. Clause 19 describes a passive state ('club not hurting him') without explicit agent confirmation.",
+    "All clauses have unsupported subjects or actions.",
+    "No supported conclusions found.",
+    "Incomplete or duplicate action-anchor assessment",
+    "A context/caption/uncertain mention cannot anchor an occurrence"
+  ],
+  "diagnostics": [
+    "Missing context for gap [1]",
+    "Missing context for gap [2]",
+    "Insufficient context for assertion 'Luffy faces Alvida.'",
+    "Incomplete or duplicate action-anchor assessment"
+  ],
+  "provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "credential": "primary",
+      "task": "relationship_analysis",
+      "status": "invalid_output",
+      "elapsed_ms": 5053,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "retry": 0,
+      "validation_errors": [
+        "developments.4.anchor_ids:too_long"
+      ],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "relationship_analysis",
+      "status": "ok",
+      "elapsed_ms": 32240,
+      "input_tokens": 2130,
+      "output_tokens": 1596,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "credential": "primary",
+      "task": "verification",
+      "status": "invalid_output",
+      "elapsed_ms": 9816,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "retry": 0,
+      "validation_errors": [
+        "structural_issues:missing",
+        "omitted_context:missing"
+      ],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "verification",
+      "status": "ok",
+      "elapsed_ms": 21963,
+      "input_tokens": 4830,
+      "output_tokens": 805,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "credential": "primary",
+      "task": "relationship_analysis",
+      "status": "ok",
+      "elapsed_ms": 5658,
+      "input_tokens": 2050,
+      "output_tokens": 2309,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "credential": "primary",
+      "task": "verification",
+      "status": "rate_limited",
+      "elapsed_ms": 610,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "verification",
+      "status": "invalid_output",
+      "elapsed_ms": 24004,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "retry": 0,
+      "validation_errors": [
+        "anchors:missing",
+        "structural_issues:missing",
+        "omitted_context:missing"
+      ],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "credential": "primary",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 4577,
+      "input_tokens": 3197,
+      "output_tokens": 1878,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    }
+  ],
+  "validated_prose": false,
+  "web_requests": 0,
+  "canonical_writes": 0,
+  "factual_plan_validation": "No complete release decision for prose",
+  "editorial_validation": "not_run"
+}

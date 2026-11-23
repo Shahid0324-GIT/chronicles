@@ -18,7 +18,9 @@ from src.application.arc_contracts import (
     ArcSectionDraft,
     ArcSemanticReview,
     ArcUnderstanding,
+    DevelopmentBinding,
     Facet,
+    NarrativeDevelopmentPlan,
 )
 from src.application.arc_grounding import (
     assertion,
@@ -30,8 +32,16 @@ from src.application.arc_grounding import (
     supported_projection,
     validate_claims,
 )
+from src.application.development_plan import (
+    assess_plan,
+    plan_from_proposal,
+    propose_fixed_plan,
+    propose_plan,
+    review_plan,
+)
 from src.application.knowledge_presentation import Infer, KnowledgeAtlas, fingerprint
 from src.application.ports.presentation import PresentationTransaction
+from src.application.ports.retrieval import DevelopmentEvidenceProvider
 from src.application.research_contracts import InferenceFailure
 
 REQUIRED: list[Facet] = [
@@ -42,7 +52,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v15"
+POLICY = "arc-intelligence-v16"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -66,6 +76,58 @@ def prose_eligible(fact: dict[str, Any]) -> bool:
 def composition_context(section: ArcSectionDossier, facts: list[dict[str, Any]]) -> dict[str, Any]:
     """Expose archive coordinates with the same references as the licensed assertions."""
     references = {f["id"]: str(i + 1) for i, f in enumerate(facts)}
+    plan = section.development_plan
+    if plan is not None:
+        unit_refs = {u.id: str(i + 1) for i, u in enumerate(plan.evidence)}
+        source = max(
+            plan.source_lanes,
+            key=lambda s: sum(len(layer) for layer in plan.source_lanes[s]),
+            default=None,
+        )
+        by_id = {d.id: d for d in plan.developments}
+        return {
+            "title": section.plan.title,
+            "objective": section.plan.objective,
+            "validated_developments": [
+                {
+                    "key": d.key,
+                    "title": d.title,
+                    "participants": [p.model_dump(mode="json") for p in d.participants],
+                    "clauses": [
+                        {
+                            "id": f"{di + 1}.{ci + 1}",
+                            "text": c.clause,
+                            "fact_id": references[c.fact_id],
+                            "modality": c.modality,
+                            "negated": c.negated,
+                            "facet": c.facet,
+                            "evidence_ids": [unit_refs[i] for i in c.evidence_ids],
+                        }
+                        for ci, c in enumerate(d.clauses)
+                    ],
+                }
+                for di, d in enumerate(plan.developments)
+            ],
+            "reference_presentation_layers": [
+                [by_id[i].key for i in layer] for layer in plan.source_lanes.get(source or "", [])
+            ],
+            "order_policy": (
+                "Follow the layers of the reference account. Each layer is internally unordered. "
+                "These positions establish reference presentation only. Preserve explicit "
+                "retrospective explanations."
+            ),
+            "evidence": [
+                {
+                    "id": unit_refs[u.id],
+                    "text": u.text,
+                    "start": u.start,
+                    "end": u.end,
+                    "source": str(u.source_id),
+                }
+                for u in plan.evidence
+            ],
+            "unresolved": plan.gaps,
+        }
     documents = sorted({s["id"] for f in facts for s in f.get("sources", [])})
     layout: dict[tuple[str, str], dict[str, Any]] = {}
     for fact in facts:
@@ -105,13 +167,20 @@ def composition_context(section: ArcSectionDossier, facts: list[dict[str, Any]])
 
 
 class ArcIntelligence:
-    def __init__(self, atlas: KnowledgeAtlas, presentations: PresentationTransaction) -> None:
-        self.atlas, self.presentations = atlas, presentations
+    def __init__(
+        self,
+        atlas: KnowledgeAtlas,
+        presentations: PresentationTransaction,
+        evidence: DevelopmentEvidenceProvider | None = None,
+    ) -> None:
+        self.atlas, self.presentations, self.evidence = atlas, presentations, evidence
 
     @staticmethod
     def artifact_policy(kind: str) -> str:
         if kind == "arc_plan":
             return "arc-intelligence-v2"
+        if kind == "arc_development_plan":
+            return "development-plan-v2"
         return ORGANIZATION_POLICY if kind == "arc_dossier" else POLICY
 
     @staticmethod
@@ -181,6 +250,7 @@ class ArcIntelligence:
         payload: dict[str, Any],
         status: str,
         providers: list[dict[str, Any]],
+        evidence_revision: str | None = None,
     ) -> None:
         async with self.presentations() as repo:
             await repo.save(
@@ -191,7 +261,7 @@ class ArcIntelligence:
                 kind,
                 boundary,
                 revision,
-                revision,
+                evidence_revision or revision,
                 "en",
                 self.artifact_policy(kind),
                 payload,
@@ -347,7 +417,7 @@ class ArcIntelligence:
         else:
             understanding = ArcUnderstanding(bindings=[])
             organization_warnings: list[str] = []
-            if facts:
+            if facts and self.evidence is None:
                 understanding = ArcUnderstanding.model_validate(
                     await infer(
                         "Reconstruct a connected section using ONLY accepted assertions. "
@@ -401,31 +471,34 @@ class ArcIntelligence:
                     )
                 )
             permitted_sections = set(section_keys or [s.key for s in plan.sections])
-            try:
-                ground_understanding(understanding, facts, permitted_sections)
-            except ValueError as error:
-                understanding = ArcUnderstanding.model_validate(
-                    await infer(
-                        "Repair editorial organization references, not story content. Use ONLY "
-                        "the supplied section keys and accepted fact IDs. Connections reference "
-                        "earlier development keys inside the same section. Keep unsupported "
-                        "developments absent. Account for EVERY input ID with a section assignment "
-                        "or an explicit omission and reason. Do not add new story facts. "
-                        "Untrusted data follows.\n"
-                        + json.dumps(
-                            {
-                                "reason": str(error),
-                                "section_keys": sorted(permitted_sections),
-                                "facts": licensed_context(facts),
-                                "previous": understanding.model_dump(mode="json"),
-                            },
-                            ensure_ascii=False,
-                        ),
-                        ArcUnderstanding,
-                        "relationship_analysis",
+            if self.evidence is None:
+                try:
+                    ground_understanding(understanding, facts, permitted_sections)
+                except ValueError as error:
+                    understanding = ArcUnderstanding.model_validate(
+                        await infer(
+                            "Repair editorial organization references, not story content. Use ONLY "
+                            "the supplied section keys and accepted fact IDs. Connections "
+                            "reference "
+                            "earlier development keys inside the same section. Keep unsupported "
+                            "developments absent. Account for EVERY input ID with a section "
+                            "assignment "
+                            "or an explicit omission and reason. Do not add new story facts. "
+                            "Untrusted data follows.\n"
+                            + json.dumps(
+                                {
+                                    "reason": str(error),
+                                    "section_keys": sorted(permitted_sections),
+                                    "facts": licensed_context(facts),
+                                    "previous": understanding.model_dump(mode="json"),
+                                },
+                                ensure_ascii=False,
+                            ),
+                            ArcUnderstanding,
+                            "relationship_analysis",
+                        )
                     )
-                )
-                ground_understanding(understanding, facts, permitted_sections)
+                    ground_understanding(understanding, facts, permitted_sections)
             if section_keys and existing:
                 previous = ArcDossier.model_validate(existing["payload"])
                 old_facts = {f["id"]: f for f in previous.accepted_facts}
@@ -528,6 +601,27 @@ class ArcIntelligence:
                 "partial",
                 providers(),
             )
+        if self.evidence is not None:
+            await self.prepare_developments(
+                dossier,
+                scope.boundary,
+                infer,
+                providers,
+                section_keys,
+                retry_withheld=retry_withheld,
+            )
+            await self.save(
+                universe,
+                continuity,
+                arc,
+                "arc_dossier",
+                scope.boundary,
+                dossier.revision,
+                dossier.model_dump(mode="json"),
+                "partial",
+                providers(),
+                evidence_revision=evidence_revision,
+            )
         if compose:
             await self.compose(
                 dossier,
@@ -540,6 +634,139 @@ class ArcIntelligence:
             )
         return await self.read(universe, continuity, arc, boundary, allowed_sources)
 
+    async def prepare_developments(
+        self,
+        dossier: ArcDossier,
+        boundary: str,
+        infer: Infer,
+        providers: Callable[[], list[dict[str, Any]]],
+        section_keys: list[str] | None,
+        *,
+        retry_withheld: bool = False,
+    ) -> None:
+        assert self.evidence is not None
+        if not dossier.accepted_facts:
+            return
+        units, issues = await self.evidence.development_evidence(
+            dossier.universe_id,
+            dossier.continuity_id,
+            dossier.accepted_facts,
+            dossier.spoiler_position,
+        )
+        for section in dossier.sections:
+            if section_keys and section.plan.key not in section_keys:
+                continue
+            revision = fingerprint(
+                [
+                    dossier.accepted_facts,
+                    section.plan.model_dump(mode="json"),
+                    [u.model_dump(mode="json") for u in units],
+                    issues,
+                ]
+            )
+            async with self.presentations() as repo:
+                stored = await repo.get(
+                    self.identifier(section.id, "arc_development_plan", boundary)
+                )
+            cached = stored if stored and stored["evidence_fingerprint"] == revision else None
+            plan: NarrativeDevelopmentPlan | None = None
+            if cached and cached["payload"].get("plan"):
+                plan = NarrativeDevelopmentPlan.model_validate(cached["payload"]["plan"])
+            diagnostics = (cached or {}).get("payload", {}).get("diagnostics", [])
+            if cached and not (retry_withheld and plan and plan.structural.status == "unavailable"):
+                pass
+            else:
+                proposal = (cached or {}).get("payload", {}).get("candidate")
+                try:
+                    if issues:
+                        raise ValueError("; ".join(issues))
+                    if plan is None:
+                        if dossier.claims_origin == "controlled_reference_dossier":
+                            proposed = await propose_fixed_plan(
+                                units, section.plan.objective, infer
+                            )
+                        else:
+                            proposed = await propose_plan(
+                                dossier.accepted_facts, units, section.plan.objective, infer
+                            )
+                        proposal = proposed.model_dump(mode="json")
+                        plan = plan_from_proposal(
+                            proposed,
+                            dossier.accepted_facts,
+                            units,
+                            dossier.arc_id,
+                            section.id,
+                            dossier.continuity_id,
+                        )
+                    review = await review_plan(plan, infer, dossier.accepted_facts)
+                    plan = assess_plan(plan, review)
+                    diagnostics = [*plan.factual.issues, *plan.structural.issues]
+                except InferenceFailure as error:
+                    diagnostics = [error.code]
+                    if plan:
+                        plan.structural.status = "unavailable"
+                        plan.structural.issues = diagnostics
+                except ValueError as error:
+                    diagnostics = [str(error)]
+                    if plan:
+                        plan.structural.status = "blocked"
+                        plan.structural.issues = diagnostics
+                await self.save(
+                    dossier.universe_id,
+                    dossier.continuity_id,
+                    section.id,
+                    "arc_development_plan",
+                    boundary,
+                    revision,
+                    {
+                        "plan": plan.model_dump(mode="json") if plan else None,
+                        "candidate": proposal,
+                        "diagnostics": diagnostics,
+                    },
+                    "validated"
+                    if plan and plan.factual.status == plan.structural.status == "passed"
+                    else "withheld",
+                    providers(),
+                )
+            section.development_plan = plan
+            section.coverage.gaps = list(
+                dict.fromkeys([*(plan.gaps if plan else []), *diagnostics])
+            )
+            if plan:
+                section.developments = [
+                    DevelopmentBinding(
+                        section_key=section.plan.key, facet=c.facet, fact_ids=[c.fact_id]
+                    )
+                    for d in plan.developments
+                    for c in d.clauses
+                ]
+                section.narrative_developments = []
+                section.coverage.supported_facets = sorted(
+                    {c.facet for d in plan.developments for c in d.clauses}
+                )
+                section.coverage.missing_facets = [
+                    f for f in REQUIRED if f not in section.coverage.supported_facets
+                ]
+                section.coverage.gaps.extend(
+                    f"What evidence establishes {facet} in {section.plan.title}?"
+                    for facet in section.coverage.missing_facets
+                )
+                section.revision = fingerprint(
+                    [section.plan.model_dump(mode="json"), plan.revision]
+                )
+            ready = plan and plan.factual.status == plan.structural.status == "passed"
+            section.coverage.presentation = "ready" if ready else "withheld"
+            section.coverage.research = "partial" if ready else "blocked"
+        dossier.revision = fingerprint(
+            [
+                dossier.accepted_facts,
+                [
+                    (s.plan.key, s.revision, s.coverage.model_dump(), s.development_plan)
+                    for s in dossier.sections
+                ],
+            ]
+        )
+
     async def compose(
         self,
         dossier: ArcDossier,
@@ -551,7 +778,7 @@ class ArcIntelligence:
         section_keys: list[str] | None = None,
         allowed_sources: list[UUID] | None = None,
     ) -> None:
-        sections = []
+        sections: list[dict[str, Any]] = []
         qualification = None
         qualified_model = None
 
@@ -573,6 +800,30 @@ class ArcIntelligence:
                 if stored and stored["knowledge_revision"] == section.revision:
                     sections.append(stored["payload"])
                 continue
+            if self.evidence is not None and (
+                section.development_plan is None
+                or section.development_plan.factual.status != "passed"
+                or section.development_plan.structural.status != "passed"
+            ):
+                sections.append(
+                    {
+                        "id": str(section.id),
+                        "heading": section.plan.title,
+                        "paragraphs": [],
+                        "status": "withheld",
+                        "revision": section.revision,
+                        "assessment": {
+                            "reason": "development_plan_not_validated",
+                            "stages": {
+                                key: getattr(section.development_plan, key).model_dump(mode="json")
+                                for key in ("factual", "structural", "editorial")
+                            }
+                            if section.development_plan
+                            else None,
+                        },
+                    }
+                )
+                continue
             if not section.developments and not section.narrative_developments:
                 continue
             if (
@@ -592,8 +843,18 @@ class ArcIntelligence:
             offset = len(providers())
             stop_after_section = False
             review_attempts: list[dict[str, Any]] = []
+            draft: ArcSectionDraft | None = None
+            resumed = False
+            if section.development_plan is not None:
+                async with self.presentations() as repo:
+                    pending = await repo.get(
+                        self.identifier(section_id, "arc_pending_review", boundary_key)
+                    )
+                if pending and pending["knowledge_revision"] == section.revision:
+                    draft = ArcSectionDraft.model_validate(pending["payload"]["draft"])
+                    resumed = True
             try:
-                draft = ArcSectionDraft.model_validate(
+                draft = draft or ArcSectionDraft.model_validate(
                     await infer(
                         "Write original, connected encyclopedia prose for this arc section "
                         "using ONLY "
@@ -620,6 +881,11 @@ class ArcIntelligence:
                         "from those claims; do not return a separate text field. "
                         "connected account from the accepted assertions and reference layout. "
                         "Unverified dossier groups cannot establish story order or connections. "
+                        "If a validated development plan is supplied, follow its reference layers "
+                        "and cite source_clause_ids on EVERY claim using its numeric clause IDs. "
+                        "Use its exact source context to understand the accepted clauses; preserve "
+                        "intent, negation and perspective. Do not copy source wording "
+                        "unnecessarily. "
                         "Do not add a motive, event or causal bridge to make it flow.\n"
                         + json.dumps(
                             {
@@ -634,7 +900,7 @@ class ArcIntelligence:
                 )
                 assessment_payload: dict[str, Any] = {}
                 assessment: ArcSemanticReview | None = None
-                for revision_attempt in range(2):
+                for revision_attempt in range(1 if section.development_plan else 2):
                     if revision_attempt:
                         draft = ArcSectionDraft.model_validate(
                             await infer(
@@ -676,6 +942,22 @@ class ArcIntelligence:
                     if any(not set(p.fact_ids) <= selected for p in draft.paragraphs):
                         raise ValueError("Unlicensed article citations")
                     validate_claims(draft, facts, dossier.accepted_facts)
+                    if section.development_plan is not None:
+                        from src.application.development_plan import validate_draft_structure
+
+                        validate_draft_structure(draft, section.development_plan)
+                        if not resumed:
+                            await self.save(
+                                dossier.universe_id,
+                                dossier.continuity_id,
+                                section_id,
+                                "arc_pending_review",
+                                boundary_key,
+                                section.revision,
+                                {"draft": draft.model_dump(mode="json")},
+                                "withheld",
+                                providers()[offset:],
+                            )
                     if qualification is None:
                         qualified, qualification = await qualify_reviewer(infer)
                         qualified_model = reviewer_model()
@@ -683,7 +965,9 @@ class ArcIntelligence:
                         qualified = qualification.get("passed", False)
                     qualification["passed"] = qualified
                     if qualified:
-                        assessment = await review_section(draft, facts, infer)
+                        assessment = await review_section(
+                            draft, facts, infer, section.development_plan
+                        )
                         assessed_model = reviewer_model()
                         if assessed_model != qualified_model:
                             qualified, qualification = await qualify_reviewer(infer)
@@ -712,7 +996,9 @@ class ArcIntelligence:
                             if c.verdict != "supported"
                         ]
                         validate_claims(partial, facts, dossier.accepted_facts)
-                        partial_review = await review_section(partial, facts, infer)
+                        partial_review = await review_section(
+                            partial, facts, infer, section.development_plan
+                        )
                         assessed_model = reviewer_model()
                         if assessed_model != qualified_model:
                             qualified, qualification = await qualify_reviewer(infer)
@@ -742,7 +1028,22 @@ class ArcIntelligence:
                     "status": status,
                     "assessment": assessment_payload,
                     "revision": section.revision,
+                    "reused_draft": resumed,
                 }
+                if section.development_plan is not None:
+                    from src.application.development_plan import validate_draft_structure
+
+                    validate_draft_structure(draft, section.development_plan)
+                    payload["validation_stages"] = {
+                        "factual": {"status": "passed" if status == "validated" else "blocked"},
+                        "structural": section.development_plan.structural.model_dump(mode="json"),
+                        "editorial": {
+                            "status": "passed"
+                            if assessment_payload.get("coherent")
+                            and not assessment_payload.get("coherence_issues")
+                            else "blocked"
+                        },
+                    }
             except InferenceFailure as error:
                 stop_after_section = "budget" in error.code
                 status = "withheld"
@@ -829,6 +1130,11 @@ def article_markdown(result: dict[str, Any]) -> str:
         "Status: partial; coverage is assessed separately from prose validation.",
         "",
     ]
+    if dossier.get("claims_origin") == "controlled_reference_dossier":
+        lines += [
+            "Controlled reconstruction from the fixed reference dossier.",
+            "",
+        ]
     if article["status"] == "withheld":
         lines += [
             "Article quality gate: FAILED. No validated narrative paragraphs are available.",

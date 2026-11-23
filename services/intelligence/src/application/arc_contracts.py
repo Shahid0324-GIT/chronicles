@@ -116,6 +116,107 @@ class ArcSectionDossier(StructuredModel):
     narrative_developments: list[NarrativeDevelopment] = Field(default_factory=list)
     coverage: ArcSectionCoverage
     revision: str
+    development_plan: "NarrativeDevelopmentPlan | None" = None
+
+
+ActionModality = Literal[
+    "completed",
+    "attempted",
+    "intended",
+    "proposed",
+    "threatened",
+    "prevented",
+    "reported",
+    "hypothetical",
+    "denied",
+    "unknown",
+]
+
+
+class DevelopmentEvidence(StructuredModel):
+    id: str
+    source_id: UUID
+    source_hash: str
+    passage_id: UUID
+    passage_hash: str
+    passage_start: int = Field(ge=0)
+    start: int = Field(ge=0)
+    end: int = Field(gt=0)
+    text: str
+    eligibility_boundary: int | None = None
+    position_basis: str | None = None
+    authority: str | None = None
+    source_group: str
+
+
+class DevelopmentParticipant(StructuredModel):
+    name: str
+    role: Literal["actor", "recipient", "opponent", "witness", "mentioned"]
+    identity_fact_id: str | None = None
+
+
+class DevelopmentClause(StructuredModel):
+    fact_id: str
+    clause: str = ""
+    facet: Facet
+    modality: ActionModality
+    negated: bool
+    evidence_ids: list[str] = Field(min_length=1, max_length=6)
+
+
+class PlannedDevelopment(StructuredModel):
+    id: UUID
+    key: str
+    title: str
+    arc_id: UUID
+    section_id: UUID
+    continuity_id: UUID
+    clauses: list[DevelopmentClause]
+    participants: list[DevelopmentParticipant] = Field(default_factory=list)
+    anchor_ids: list[str] = Field(min_length=1)
+    unresolved: list[str] = Field(default_factory=list)
+    # A reference's placement is not an original manga page/reveal coordinate.
+    narrative_position: int | None = None
+    in_world_position: str | None = None
+    revelation_position: int | None = None
+
+
+class DevelopmentOrdering(StructuredModel):
+    before: UUID
+    after: UUID
+    kind: Literal[
+        "reference_presentation",
+        "narrative_presentation",
+        "chronology",
+        "revelation",
+        "causal",
+        "prerequisite",
+    ]
+    source_id: UUID | None = None
+    fact_ids: list[str] = Field(default_factory=list)
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class ValidationStage(StructuredModel):
+    status: Literal["pending", "passed", "blocked", "unavailable"]
+    issues: list[str] = Field(default_factory=list)
+
+
+class NarrativeDevelopmentPlan(StructuredModel):
+    version: Literal["development-plan-v1"] = "development-plan-v1"
+    section_id: UUID
+    arc_id: UUID
+    continuity_id: UUID
+    developments: list[PlannedDevelopment]
+    ordering: list[DevelopmentOrdering]
+    source_lanes: dict[str, list[list[UUID]]]
+    evidence: list[DevelopmentEvidence]
+    omissions: list[DevelopmentOmission]
+    gaps: list[str]
+    factual: ValidationStage
+    structural: ValidationStage
+    editorial: ValidationStage
+    revision: str
 
 
 class ArcDossier(StructuredModel):
@@ -124,6 +225,7 @@ class ArcDossier(StructuredModel):
     universe_id: UUID
     continuity_id: UUID
     title: str
+    claims_origin: Literal["canonical_graph", "controlled_reference_dossier"] = "canonical_graph"
     perspective: Literal["bounded", "full_lore"]
     spoiler_position: int | None
     source_range: tuple[int, int]
@@ -141,6 +243,7 @@ class ArcDossier(StructuredModel):
 class ArcClaim(StructuredModel):
     text: str = Field(min_length=8, max_length=1000)
     fact_ids: list[str] = Field(min_length=1, max_length=12)
+    source_clause_ids: list[str] = Field(default_factory=list, max_length=12)
 
 
 class ArcParagraph(StructuredModel):
@@ -189,6 +292,10 @@ class ClaimReview(StructuredModel):
     index: int = Field(ge=0)
     verdict: Literal["supported", "unsupported", "uncertain"]
     reason: str = Field(min_length=3, max_length=400)
+    conclusion: Literal["entailed", "not_entailed", "uncertain"] | None = None
+    observed_modality: ActionModality | None = None
+    observed_negated: bool | None = None
+    issues: list[str] = Field(default_factory=list)
 
 
 class ArcSemanticReview(StructuredModel):

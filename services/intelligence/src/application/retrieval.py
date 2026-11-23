@@ -1,12 +1,16 @@
 import json
 import re
 from dataclasses import replace
+from typing import Any
 from uuid import UUID
 
+from src.application.arc_contracts import DevelopmentEvidence
+from src.application.event_extraction import evidence_units
 from src.application.evidence_bundles import EvidenceBundleBuilder
 from src.application.evidence_dossier import token_estimate
 from src.application.ports.retrieval import EmbeddingProvider, EvidenceHit, EvidenceIndexTransaction
 from src.application.relationship_contracts import EvidenceBundle, InvestigationSubject
+from src.domain.research import digest
 
 
 class EvidenceRetrieval:
@@ -14,6 +18,111 @@ class EvidenceRetrieval:
         self, transactions: EvidenceIndexTransaction, embeddings: EmbeddingProvider
     ) -> None:
         self.transactions, self.embeddings = transactions, embeddings
+
+    async def development_evidence(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        facts: list[dict[str, Any]],
+        spoiler_position: int | None,
+        token_budget: int = 3200,
+    ) -> tuple[list[DevelopmentEvidence], list[str]]:
+        """Exact archived support plus neighboring context; no embedding/model call."""
+        identifiers = list({UUID(s["id"]) for f in facts for s in f.get("sources", [])})
+        async with self.transactions() as repo:
+            metadata = await repo.source_metadata(universe, continuity, identifiers)
+            hits = await repo.passages(universe, continuity, identifiers)
+        eligible = {
+            str(h.passage.id): h
+            for h in hits
+            if h.source.id in metadata
+            and h.source.universe_id == universe
+            and h.source.continuity_id == continuity
+            and metadata[h.source.id].get("content_hash") == h.source.content_hash
+            and (
+                spoiler_position is None
+                or (
+                    type(metadata[h.source.id].get("presentation_position")) is int
+                    and metadata[h.source.id]["presentation_position"] <= spoiler_position
+                )
+            )
+        }
+        citations = [s for f in facts for s in f.get("sources", [])]
+        issues = []
+        anchors: dict[str, list[tuple[int, int]]] = {}
+        for citation in citations:
+            hit = eligible.get(citation.get("passage_id"))
+            if not hit or str(hit.source.id) != citation["id"]:
+                issues.append("missing_or_ineligible_archived_evidence")
+                continue
+            start, end = citation.get("quote_start"), citation.get("quote_end")
+            if (
+                type(start) is not int
+                or type(end) is not int
+                or not 0 <= start < end <= len(hit.passage.text)
+                or hit.passage.text[start:end] != citation.get("quote")
+                or hit.source.content_hash != citation.get("content_hash")
+            ):
+                issues.append("changed_or_inexact_archived_evidence")
+                continue
+            anchors.setdefault(str(hit.passage.id), []).append((start, end))
+        selected = []
+        for passage_id, spans in anchors.items():
+            hit = eligible[passage_id]
+            units = evidence_units([hit.passage])
+            direct = {
+                i
+                for i, u in enumerate(units)
+                if any(
+                    u["start"] < end and u["start"] + len(u["text"]) > start for start, end in spans
+                )
+            }
+            neighbors = {j for i in direct for j in (i - 1, i, i + 1) if 0 <= j < len(units)}
+            for i in neighbors:
+                sentence = units[i]
+                start = hit.passage.start + sentence["start"]
+                text = sentence["text"]
+                if hit.source.text[start : start + len(text)] != text:
+                    issues.append("archive_coordinates_do_not_match_document")
+                    continue
+                meta = metadata[hit.source.id]
+                selected.append(
+                    (
+                        i not in direct,
+                        DevelopmentEvidence(
+                            id=digest(f"{hit.source.id}:{hit.source.content_hash}:{start}:{text}"),
+                            source_id=hit.source.id,
+                            source_hash=hit.source.content_hash,
+                            passage_id=hit.passage.id,
+                            passage_hash=hit.passage.content_hash,
+                            passage_start=hit.passage.start,
+                            start=start,
+                            end=start + len(text),
+                            text=text,
+                            eligibility_boundary=meta.get("presentation_position"),
+                            position_basis=meta.get("position_basis"),
+                            authority=meta.get("authority"),
+                            source_group=str(
+                                meta.get("derived_from")
+                                or hit.source.independence_key
+                                or hit.source.publisher
+                            ),
+                        ),
+                    )
+                )
+        result: list[DevelopmentEvidence] = []
+        used = 0
+        for context, unit in sorted(
+            selected, key=lambda pair: (pair[0], str(pair[1].source_id), pair[1].start)
+        ):
+            size = token_estimate(unit.text)
+            if used + size > token_budget:
+                if not context:
+                    issues.append("direct_evidence_exceeds_context_budget")
+                continue
+            used += size
+            result.append(unit)
+        return sorted(result, key=lambda u: (str(u.source_id), u.start)), sorted(set(issues))
 
     async def bundles(
         self,

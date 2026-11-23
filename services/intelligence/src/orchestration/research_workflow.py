@@ -3008,7 +3008,7 @@ class ResearchWorkflow:
         if not self.atlas or not request.arc_id:
             return state
         arc_id = request.arc_id
-        service = ArcIntelligence(self.atlas, self.atlas.presentations)
+        service = ArcIntelligence(self.atlas, self.atlas.presentations, self.retrieval)
 
         async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
             # The whole current dossier participates in organization. Permission
