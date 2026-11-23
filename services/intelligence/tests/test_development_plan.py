@@ -30,9 +30,11 @@ from src.application.development_plan import (
     PlanProposal,
     assess_plan,
     clause_map,
+    explicit_chronology,
     fence_repeated_anchors,
     layers,
     plan_from_proposal,
+    reconstruct_relationships,
     review_developments,
 )
 from src.application.research_contracts import Task
@@ -85,6 +87,120 @@ def material():
         }
     )
     return proposal, facts, evidence, arc, section, continuity
+
+
+async def test_reconstruction_checks_links_within_compound_clauses_before_writing():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    clause = plan.developments[0].clauses[0]
+    unit = next(u for u in plan.evidence if u.id in clause.evidence_ids)
+    clause.clause = unit.text = "After Mira knocked, Ron opened the gate."
+    candidate = {
+        "before": "c1",
+        "after": "c1",
+        "before_excerpt": "Mira knocked",
+        "after_excerpt": "Ron opened the gate",
+        "evidence": [],
+        "statement": "Ron opened the gate after Mira knocked.",
+    }
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        payload = json.loads(prompt.split("\n", 1)[1])
+        if task == "presentation":
+            assert payload["actions"]["c1"]["text"] == clause.clause
+            return schema.model_validate(
+                {
+                    "links": [
+                        {**candidate, "kind": "chronology"},
+                        {
+                            **candidate,
+                            "kind": "causal",
+                            "statement": "The knock caused the gate to open.",
+                        },
+                        {**candidate, "kind": "chronology", "before_excerpt": "Mira fell"},
+                    ],
+                    "gaps": [],
+                }
+            )
+        assert payload["r1"]["archive"] == [unit.text]
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "id": "r1",
+                        "verdict": "supported",
+                        "reason": "Explicit after clause.",
+                        "observed_kind": "chronology",
+                    },
+                    {"id": "r2", "verdict": "unsupported", "reason": "Only an order is stated."},
+                    {
+                        "id": "control",
+                        "verdict": "unsupported",
+                        "reason": "Only an order is stated.",
+                    },
+                ]
+            }
+        )
+
+    updated = await reconstruct_relationships(plan, infer)
+    assert updated.relationship_review.status == "passed"
+    links = [o for o in updated.ordering if o.statement]
+    assert [link.kind for link in links] == ["chronology"]
+    assert links[0].before == links[0].after == plan.developments[0].id
+    assert links[0].evidence_ids == [unit.id]
+    assert any("not bound" in issue for issue in updated.relationship_review.issues)
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": "1.1",
+                    "actor": "Mira",
+                    "action": "knocked",
+                    "target": "gate",
+                    "modality": "completed",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                }
+            ]
+        }
+    )
+    links_in_packet = writing_packet(updated, notes)["supported_links"]
+    assert isinstance(links_in_packet, list)
+    assert len(links_in_packet) == 1 and links_in_packet[0]["kind"] == "chronology"
+    bound = bind_writing_notes(
+        ProseDraft.model_validate(
+            {
+                "paragraphs": [
+                    {
+                        "claims": [
+                            {
+                                "text": "Ron opened the gate after Mira knocked.",
+                                "clauses": ["1"],
+                                "relations": [links_in_packet[0]["id"]],
+                            }
+                        ]
+                    }
+                ]
+            }
+        ),
+        updated,
+        notes,
+        "Gate",
+    )
+    claim = bound.paragraphs[0].claims[0]
+    assert claim.context_evidence_ids == [unit.id]
+    assert claim.relationship_ids == [links_in_packet[0]["id"]]
+
+
+def test_chronology_cannot_borrow_a_later_cue_across_intervening_evidence():
+    _, _, evidence, *_ = material()
+    before, after = evidence
+    after.text = "Then Ron opened the gate."
+    intervening = before.model_copy(update={"start": before.end + 1, "id": "intervening"})
+    assert explicit_chronology("Mira tried", "Ron opened", evidence, evidence)
+    assert not explicit_chronology(
+        "Mira tried", "Ron opened", evidence, [before, intervening, after]
+    )
 
 
 def test_prose_packet_is_source_isolated_and_only_binds_licensed_notes():

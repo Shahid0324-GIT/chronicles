@@ -19,10 +19,12 @@ from src.application.arc_contracts import (
     ArcSectionDossier,
     ArcSectionPlan,
     DevelopmentEvidence,
+    NarrativeDevelopmentPlan,
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.arc_prose import Propositions, ProseRevision, SceneDraft, validate_propositions
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
+from src.application.development_plan import clause_map
 from src.application.event_extraction import evidence_units
 from src.application.research_contracts import Task
 from src.domain.research import SourcePassage, digest
@@ -117,6 +119,8 @@ async def main() -> None:
     parser.add_argument("--autonomous", action="store_true")
     parser.add_argument("--deep", action="store_true")
     parser.add_argument("--scene", action="store_true")
+    parser.add_argument("--relationships", action="store_true")
+    parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
     parser.add_argument("--refresh-notes", action="store_true")
@@ -145,11 +149,16 @@ async def main() -> None:
         if not args.autonomous:
             parser.error("Scene runs require --autonomous")
         folder = Path("../../.tmp/benchmark624")
+    if args.relationships:
+        if not args.scene:
+            parser.error("Relationship benchmarks require --scene")
+        folder = Path("../../.tmp/benchmark624-relationships")
     folder /= section_key
     if args.freeze:
         folder = baseline
     folder.mkdir(parents=True, exist_ok=True)
-    settings = Settings().model_copy(
+    settings = Settings()
+    settings = settings.model_copy(
         update={
             "ai_provider_mode": "cloud",
             "groq_structured_output_method": (
@@ -157,7 +166,16 @@ async def main() -> None:
             ),
             "groq_structured_output_strict": False,
             "ai_max_attempts": 2 if args.autonomous else 1,
-            "agent_max_model_calls": 30
+            "agent_stage_model_calls": {
+                **settings.agent_stage_model_calls,
+                "presentation": 20,
+                "presentation_verification": 26,
+            }
+            if args.relationships
+            else settings.agent_stage_model_calls,
+            "agent_max_model_calls": 44
+            if args.relationships
+            else 30
             if args.scene
             else 32
             if args.deep
@@ -287,12 +305,15 @@ async def main() -> None:
         yield memory
 
     prior = []
+    writing_notes = None
     result_path = folder / "result.json"
     if result_path.exists() and not (args.resume_review or args.compose):
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
         saved_path = (
-            Path("../../.tmp/benchmark623-deep") / section_key / "result.json"
+            Path("../../.tmp/benchmark624") / section_key / "result.json"
+            if args.relationships and args.original
+            else Path("../../.tmp/benchmark623-deep") / section_key / "result.json"
             if args.scene and args.original
             else Path("../../.tmp/benchmark622") / section_key / "result.json"
             if args.original
@@ -402,6 +423,9 @@ async def main() -> None:
         if schema.__name__ == "PlannedProseReview":
             with (folder / "reviews.jsonl").open("a", encoding="utf8") as reviews:
                 reviews.write(result.value.model_dump_json() + "\n")
+        if schema.__name__ in {"RelationshipCandidates", "RelationshipVerdicts"}:
+            with (folder / "relationship-review.jsonl").open("a", encoding="utf8") as log:
+                log.write(result.value.model_dump_json() + "\n")
         return result.value
 
     try:
@@ -411,13 +435,27 @@ async def main() -> None:
             infer,
             providers,
             [section_key],
-            retry_withheld=args.resume_review or args.stabilize,
+            retry_withheld=args.resume_review or args.stabilize or args.retry_relationships,
+            refresh_relationships=args.retry_relationships,
         )
         plan = dossier.sections[0].development_plan
+        if args.relationships and plan and writing_notes:
+            old_plan = NarrativeDevelopmentPlan.model_validate(
+                saved["dossier"]["sections"][0]["development_plan"]
+            )
+            if clause_map(old_plan) == clause_map(plan):
+                memory.rows[
+                    ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
+                ] = {**writing_notes, "knowledge_revision": section.revision}
         print(
             "plan",
             plan and (plan.factual.status, plan.structural.status),
-            dossier.sections[0].coverage.gaps,
+            plan
+            and (
+                "relationships",
+                plan.relationship_review.status,
+                sum(o.statement is not None for o in plan.ordering),
+            ),
             flush=True,
         )
         if args.reviewed_notes:
@@ -445,6 +483,7 @@ async def main() -> None:
             (args.compose or args.original)
             and plan
             and plan.factual.status == plan.structural.status == "passed"
+            and (not args.relationships or plan.relationship_review.status == "passed")
         ):
             await service.compose(
                 dossier, evidence.revision, infer, providers, section_keys=[section_key]

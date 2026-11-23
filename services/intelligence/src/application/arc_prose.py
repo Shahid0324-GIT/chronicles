@@ -16,6 +16,7 @@ from src.application.arc_contracts import (
     ArcSectionDraft,
     ArcSemanticReview,
     ClaimReview,
+    DevelopmentOrdering,
     NarrativeDevelopmentPlan,
 )
 from src.application.arc_grounding import CALIBRATION, copied_paragraphs, word_spans
@@ -44,6 +45,7 @@ class Propositions(StructuredModel):
 class ProseClaim(StructuredModel):
     text: str = Field(min_length=8, max_length=1000)
     clauses: list[str] = Field(min_length=1, max_length=12)
+    relations: list[str] = Field(default_factory=list, max_length=6)
 
 
 class ProseParagraph(StructuredModel):
@@ -254,6 +256,9 @@ def writing_packet(plan: NarrativeDevelopmentPlan, notes: Propositions) -> dict[
     )
     lanes = plan.source_lanes.get(source, [])
     scene_ids = {d.id: f"scene-{i}" for i, d in enumerate(plan.developments, 1)}
+    notes_by_clause = {
+        ref: [str(i) for i, note in enumerate(notes.notes, 1) if note.id == ref] for ref in refs
+    }
     return {
         "developments": [
             {
@@ -276,10 +281,28 @@ def writing_packet(plan: NarrativeDevelopmentPlan, notes: Propositions) -> dict[
         ],
         "reference_order_layers": [[scene_ids[dev] for dev in layer] for layer in lanes],
         "supported_links": [
-            {"before": scene_ids[o.before], "after": scene_ids[o.after], "kind": o.kind}
-            for o in plan.ordering
-            if o.kind != "reference_presentation"
+            {
+                "id": link_id,
+                "before": scene_ids[o.before],
+                "after": scene_ids[o.after],
+                "from_notes": notes_by_clause.get(o.before_clause or "", []),
+                "to_notes": notes_by_clause.get(o.after_clause or "", []),
+                "kind": o.kind,
+                "connection": o.statement,
+            }
+            for link_id, o in story_links(plan).items()
         ],
+        "relationship_review": plan.relationship_review.status,
+    }
+
+
+def story_links(plan: NarrativeDevelopmentPlan) -> dict[str, DevelopmentOrdering]:
+    if plan.relationship_review.status != "passed":
+        return {}
+    return {
+        f"link-{i}": item
+        for i, item in enumerate(plan.ordering, 1)
+        if item.statement and item.evidence_ids and item.kind != "reference_presentation"
     }
 
 
@@ -402,6 +425,8 @@ async def write_section(
         "it must support. The article is those passages joined verbatim. Write enough for "
         "the supported details, avoiding reciting notes one at a time. "
         'Use only decimal note IDs in clauses, like ["7","8"]. Cite every factual detail. '
+        "If a passage expresses a verified connection, cite its link ID in relations. "
+        "Use the supplied connection and its direction, and keep open questions unresolved. "
         "Keep scene order and ensure essential notes appear meaningfully. No copied wording, "
         "invented facts, or quotation. For repair replace only the specified paragraphs, "
         "staying within the supplied note IDs and preserving flow with their neighbors. "
@@ -446,24 +471,46 @@ def bind_writing_notes(
 ) -> ArcSectionDraft:
     by_id = {str(i): note for i, note in enumerate(notes.notes, 1)}
     evidence = {f"e{i}": u.id for i, u in enumerate(plan.evidence, 1)}
+    links = story_links(plan)
     used = {i for p in draft.paragraphs for c in p.claims for i in c.clauses}
     if not used <= by_id.keys():
         raise ValueError("Prose used an unknown writing note")
-    contexts = [
-        list(dict.fromkeys(evidence[j] for i in c.clauses for j in by_id[i].context))
-        for p in draft.paragraphs
-        for c in p.claims
-    ]
+    contexts = []
+    joined_links = []
+    for p in draft.paragraphs:
+        for c in p.claims:
+            refs = {by_id[i].id for i in c.clauses}
+            if any(
+                r not in links or not refs & {links[r].before_clause, links[r].after_clause}
+                for r in c.relations
+            ):
+                raise ValueError("Prose cited a relationship outside its licensed notes")
+            contexts.append(
+                list(
+                    dict.fromkeys(
+                        [
+                            *(evidence[j] for i in c.clauses for j in by_id[i].context),
+                            *(u for r in c.relations for u in links[r].evidence_ids),
+                        ]
+                    )
+                )
+            )
+            joined_links.append(c.relations)
     note_ids = [c.clauses for p in draft.paragraphs for c in p.claims]
     for p in draft.paragraphs:
         for c in p.claims:
             c.clauses = list(dict.fromkeys(by_id[i].id for i in c.clauses))
     bound = bind_draft(draft, plan, {n.id for n in notes.notes}, heading)
-    for claim, context, ids in zip(
-        (claim for p in bound.paragraphs for claim in p.claims), contexts, note_ids, strict=True
+    for claim, context, ids, relation_ids in zip(
+        (claim for p in bound.paragraphs for claim in p.claims),
+        contexts,
+        note_ids,
+        joined_links,
+        strict=True,
     ):
         claim.context_evidence_ids = context
         claim.writing_note_ids = ids
+        claim.relationship_ids = relation_ids
     return bound
 
 

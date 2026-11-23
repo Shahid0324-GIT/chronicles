@@ -21,6 +21,7 @@ from src.application.arc_contracts import (
     DevelopmentBinding,
     Facet,
     NarrativeDevelopmentPlan,
+    ValidationStage,
 )
 from src.application.arc_grounding import (
     assertion,
@@ -45,9 +46,11 @@ from src.application.arc_prose import (
 )
 from src.application.development_plan import (
     fence_repeated_anchors,
+    link_focus,
     plan_from_proposal,
     propose_fixed_plan,
     propose_plan,
+    reconstruct_relationships,
     review_developments,
 )
 from src.application.knowledge_presentation import Infer, KnowledgeAtlas, fingerprint
@@ -63,7 +66,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v21"
+POLICY = "arc-intelligence-v22"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -659,6 +662,7 @@ class ArcIntelligence:
         section_keys: list[str] | None,
         *,
         retry_withheld: bool = False,
+        refresh_relationships: bool = False,
     ) -> None:
         assert self.evidence is not None
         if not dossier.accepted_facts:
@@ -691,10 +695,10 @@ class ArcIntelligence:
                 if plan.structural.status == "passed":
                     plan = fence_repeated_anchors(plan)
             diagnostics = (cached or {}).get("payload", {}).get("diagnostics", [])
+            proposal = (cached or {}).get("payload", {}).get("candidate")
             if cached and not (retry_withheld and plan and plan.structural.status == "unavailable"):
                 pass
             else:
-                proposal = (cached or {}).get("payload", {}).get("candidate")
                 try:
                     if issues:
                         raise ValueError("; ".join(issues))
@@ -749,9 +753,55 @@ class ArcIntelligence:
                     else "withheld",
                     providers(),
                 )
+            if (
+                plan
+                and plan.factual.status == plan.structural.status == "passed"
+                and (
+                    refresh_relationships
+                    or plan.relationship_review.status == "pending"
+                    or retry_withheld
+                    and (
+                        plan.relationship_review.status in {"blocked", "unavailable"}
+                        or not any(
+                            o.kind == "chronology" and o.before == o.after == link_focus(plan).id
+                            for o in plan.ordering
+                        )
+                    )
+                )
+            ):
+                if self.can_review and not await self.can_review(1, 1):
+                    plan.relationship_review = ValidationStage(
+                        status="unavailable",
+                        issues=["Insufficient inference budget for relationship evidence review"],
+                    )
+                else:
+                    plan = await reconstruct_relationships(
+                        plan, infer, chronology_only=plan.relationship_review.status != "pending"
+                    )
+                await self.save(
+                    dossier.universe_id,
+                    dossier.continuity_id,
+                    section.id,
+                    "arc_development_plan",
+                    boundary,
+                    revision,
+                    {
+                        "plan": plan.model_dump(mode="json"),
+                        "candidate": proposal,
+                        "diagnostics": diagnostics,
+                    },
+                    "validated",
+                    providers(),
+                )
             section.development_plan = plan
             section.coverage.gaps = list(
-                dict.fromkeys([*(plan.gaps if plan else []), *diagnostics])
+                dict.fromkeys(
+                    [
+                        *(plan.gaps if plan else []),
+                        *(plan.relationship_review.issues if plan else []),
+                        *diagnostics,
+                    ]
+                )
             )
             if plan:
                 section.developments = [

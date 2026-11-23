@@ -191,10 +191,19 @@ class DevelopmentOrdering(StructuredModel):
         "revelation",
         "causal",
         "prerequisite",
+        "motivation",
+        "conflict",
+        "consequence",
+        "resolution",
     ]
     source_id: UUID | None = None
     fact_ids: list[str] = Field(default_factory=list)
     evidence_ids: list[str] = Field(default_factory=list)
+    before_clause: str | None = None
+    after_clause: str | None = None
+    before_excerpt: str | None = None
+    after_excerpt: str | None = None
+    statement: str | None = None
 
 
 class ValidationStage(StructuredModel):
@@ -216,6 +225,9 @@ class NarrativeDevelopmentPlan(StructuredModel):
     factual: ValidationStage
     structural: ValidationStage
     editorial: ValidationStage
+    relationship_review: ValidationStage = Field(
+        default_factory=lambda: ValidationStage(status="pending")
+    )
     revision: str
 
 
@@ -246,6 +258,7 @@ class ArcClaim(StructuredModel):
     source_clause_ids: list[str] = Field(default_factory=list, max_length=12)
     context_evidence_ids: list[str] = Field(default_factory=list)
     writing_note_ids: list[str] = Field(default_factory=list, max_length=12)
+    relationship_ids: list[str] = Field(default_factory=list, max_length=6)
 
 
 class ArcParagraph(StructuredModel):

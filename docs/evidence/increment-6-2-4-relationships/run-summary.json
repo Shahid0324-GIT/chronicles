@@ -1,0 +1,104 @@
+{
+  "evidence_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "strict_relationship_review": {
+    "status": "passed",
+    "issues": [
+      "4.5 to 4.7: Relationship statement must name people explicitly",
+      "4.7 to 4.8: Relationship statement must name people explicitly",
+      "4.9 to 4.10: Relationship statement must name people explicitly",
+      "4.5 to 4.9: Chronology lacks an explicit evidenced transition",
+      "4.5 to 4.10: Relationship statement must name people explicitly"
+    ]
+  },
+  "strict_links": [
+    {
+      "before": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "after": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "kind": "chronology",
+      "source_id": null,
+      "fact_ids": [
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba"
+      ],
+      "evidence_ids": [
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba"
+      ],
+      "before_clause": "4.8",
+      "after_clause": "4.9",
+      "before_excerpt": "Higuma took Luffy out to sea and kicked him off the boat to drown him, and as Luffy struggled to stay afloat, a Sea King known as Lord of the Coast came to eat Higuma.",
+      "after_excerpt": "It then moved to eat Luffy, but Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+      "statement": "The Sea King moved to eat Luffy, but Shanks arrived in time to scare the beast away."
+    }
+  ],
+  "source_order_links": 10,
+  "draft_status": "withheld",
+  "draft_word_count": 342,
+  "draft_relationship_ids": [
+    "link-11",
+    "link-12",
+    "link-13",
+    "link-14",
+    "link-15",
+    "link-16",
+    "link-17",
+    "link-18",
+    "link-19",
+    "link-20",
+    "link-21"
+  ],
+  "draft_validation": {
+    "factual": {
+      "status": "blocked"
+    },
+    "structural": {
+      "status": "passed",
+      "issues": []
+    },
+    "editorial": {
+      "status": "blocked"
+    },
+    "originality": {
+      "status": "blocked",
+      "issues": [
+        "Paragraph 4: The phrasing 'Higuma planned to sell Luffy to a circus and then decided to kill him' closely mirrors the overlap candidate provided, suggesting potential plagiarism or insufficient paraphrasing.",
+        "Paragraph 5: The phrase 'He aims to find the greatest treasure and become Pirate King' is a direct copy of common tropes found in the overlap candidates without unique expression."
+      ]
+    },
+    "coverage": {
+      "status": "blocked",
+      "issues": [
+        "Paragraph 2: The note regarding Shanks refusing entry due to Luffy's age and inability to swim (note 6/7) is partially covered by the essential notes but lacks the specific detail about the Devil Fruit causing the swimming issue.",
+        "Paragraph 3: The note about Luffy storming out and revealing his rubber body (note 12-14, 16-17) is incomplete as it does not explicitly state that the Devil Fruit caused the inability to swim, which is a key detail in the essential notes."
+      ]
+    }
+  },
+  "draft_review_qualification": false,
+  "draft_rejections": [
+    {
+      "index": 26,
+      "verdict": "unsupported",
+      "reason": "The evidence states Shanks and his crew leave the island, but does not explicitly state that Shanks alone decided to leave. The decision is attributed to the group ('they'), making the specific proposition about Shanks's individual decision unentailed.",
+      "conclusion": null,
+      "observed_modality": null,
+      "observed_negated": null,
+      "issues": [],
+      "additional_evidence_ids": []
+    }
+  ],
+  "strict_composition": {
+    "reason": "publication_review_budget_reserved",
+    "review_attempts": []
+  },
+  "api": {
+    "http_status": 200,
+    "status": "pending",
+    "article_present": false
+  },
+  "request_totals": {
+    "groq ok": 21,
+    "groq rate_limited": 8,
+    "groq invalid_output": 3,
+    "ollama ok": 9
+  }
+}
