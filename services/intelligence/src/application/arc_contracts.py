@@ -324,6 +324,8 @@ class ArcSemanticReview(StructuredModel):
     revision_paragraphs: list[int] = Field(default_factory=list)
     qualification_passed: bool | None = None
     coverage_issues: list[str] = Field(default_factory=list)
+    relationship_issues: list[str] = Field(default_factory=list)
+    editorial_review_available: bool = True
 
 
 class ArcSectionDraft(StructuredModel):

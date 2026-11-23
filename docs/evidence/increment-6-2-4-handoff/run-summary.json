@@ -1,0 +1,69 @@
+{
+  "evidence_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "human_reviewed_notes": false,
+  "status": "withheld",
+  "words": 409,
+  "paragraphs": 5,
+  "links_supplied": [
+    "link-11",
+    "link-12",
+    "link-13",
+    "link-14"
+  ],
+  "links_cited": [],
+  "relation_issues": [
+    "Incomplete or uncalibrated authored relationship review"
+  ],
+  "factual_reviewer_qualified": false,
+  "validation": {
+    "factual": {
+      "status": "blocked"
+    },
+    "relationships": {
+      "status": "blocked",
+      "issues": [
+        "Incomplete or uncalibrated authored relationship review"
+      ]
+    },
+    "structural": {
+      "status": "passed",
+      "issues": []
+    },
+    "editorial": {
+      "status": "blocked"
+    },
+    "originality": {
+      "status": "blocked",
+      "issues": []
+    },
+    "coverage": {
+      "status": "blocked",
+      "issues": [
+        "Unrepresented required note 18: Luffy | enjoys | new rubber body |  | ",
+        "Unrepresented required note 24: Shanks | stated acceptance of insult | himself |  | ",
+        "Unrepresented required note 26: Higuma | escaped with | Luffy |  | ",
+        "Verified relationship not cited in the draft: link-11",
+        "Verified relationship not cited in the draft: link-12",
+        "Verified relationship not cited in the draft: link-13",
+        "Verified relationship not cited in the draft: link-14",
+        "Paragraph 2 notes [6, 7] do not fully capture the predicate 'refused entry because he was too young and could not swim' as a single coherent action.",
+        "Paragraph 3 notes [14, 15] omit the causal link between Luffy's departure and the realization of missing the Devil Fruit."
+      ]
+    }
+  },
+  "verbatim_paragraphs": [],
+  "near_overlap_paragraphs": [
+    5
+  ],
+  "api": {
+    "status": "pending",
+    "http_status": 200,
+    "article_present": false
+  },
+  "provider_requests": {
+    "groq ok": 1,
+    "groq rate_limited": 2,
+    "ollama provider_invalid_request": 1,
+    "ollama ok": 15
+  }
+}

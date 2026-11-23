@@ -21,7 +21,9 @@ from src.application.arc_prose import (
     flatten_scenes,
     originality_candidates,
     revision_note_targets,
+    scene_inputs,
     validate_propositions,
+    verify_link_use,
     writing_packet,
 )
 from src.application.development_plan import (
@@ -192,6 +194,29 @@ async def test_reconstruction_checks_links_within_compound_clauses_before_writin
     claim = bound.paragraphs[0].claims[0]
     assert claim.context_evidence_ids == [unit.id]
     assert claim.relationship_ids == [links_in_packet[0]["id"]]
+    claim.text = "Ron opened the gate before Mira knocked."
+
+    async def review_usage(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.split("\n", 1)[1])
+        link_id = links_in_packet[0]["id"]
+        assert packet[link_id]["authored_passages"] == [claim.text]
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {"id": key, "verdict": "reversed", "reason": "The prose reverses the order"}
+                    for key in packet
+                ]
+            }
+        )
+
+    async def checkpoint() -> None:
+        pass
+
+    issues, missing, repair = await verify_link_use(
+        bound, updated, notes, review_usage, {}, checkpoint
+    )
+    assert issues and "reversed" in issues[0]
+    assert not missing and repair == {1}
 
 
 def test_chronology_cannot_borrow_a_later_cue_across_intervening_evidence():
@@ -448,11 +473,11 @@ async def test_planned_review_requires_the_same_response_to_pass_role_calibratio
         "Gate",
     )
     calibration = [c["expected"] for c in [*CALIBRATION, *ROLE_CALIBRATION]]
-    calibration[-2] = True  # Fails to notice rescue and drive share the wrong object.
+    calibration[len(CALIBRATION)] = True  # Rescue and drive share the wrong object.
 
     async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
         cases = json.loads(prompt.split("\n", 1)[1])["calibration"]
-        assert cases[-2]["text"] == "Mira rescued and drove away the wolf."
+        assert cases[len(CALIBRATION)]["text"] == "Mira rescued and drove away the wolf."
         assert "grammatical subject and object" in prompt
         return schema.model_validate(
             {
@@ -525,7 +550,7 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
         decisions = [
             {
                 "id": i,
-                "verdict": "unsupported" if i == "check-a" else "supported",
+                "verdict": "unsupported" if i in {"check-a", "check-c", "check-d"} else "supported",
                 "reason": "Evidence checked",
             }
             for i in packet
@@ -541,6 +566,48 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
     assert result.qualification_passed
     assert calls == ["The gate stayed closed.", "Mira tried to open it.", "Mira tried to open it."]
     assert checkpoints == [1, 2, 3]
+
+    for key, value in list(cache.items()):
+        if "editorial_issues" in value:
+            del cache[key]
+
+    async def malformed_editor(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.split("\n", 1)[1])
+        assert "paragraphs" in packet  # Factual batches are still reusable.
+        return schema.model_validate(
+            {
+                "editorial_issues": [],
+                "originality_issues": ["A sentence is awkward."],
+                "coverage_issues": [],
+                "revise_paragraphs": [],
+            }
+        )
+
+    result = await assess_in_batches(draft, plan, notes, malformed_editor, cache, checkpoint)
+    assert result.qualification_passed
+    assert not result.editorial_review_available
+    assert not result.originality_issues
+    assert not review_ok(result, 2)
+
+
+def test_scene_checkpoint_depends_on_neighbor_relationships_and_notes():
+    packet = {
+        "developments": [
+            {"id": f"scene-{i}", "notes": [{"actor": "Mira", "action": str(i), "essential": True}]}
+            for i in range(1, 4)
+        ],
+        "reference_order_layers": [["scene-1"], ["scene-2"], ["scene-3"]],
+        "supported_links": [
+            {"before": "scene-1", "after": "scene-1", "connection": "A then B"},
+        ],
+    }
+    before = {i: key for i, key, _ in scene_inputs(packet)}
+    packet["supported_links"][0]["connection"] = "A precedes C"
+    after = {i: key for i, key, _ in scene_inputs(packet)}
+    assert {i for i in before if before[i] != after[i]} == {"scene-1", "scene-2"}
+    packet["developments"][1]["notes"][0]["action"] = "changed note"
+    changed = {i: key for i, key, _ in scene_inputs(packet)}
+    assert all(changed[i] != after[i] for i in after)
 
 
 async def test_scene_review_preserves_context_and_rejects_unknown_archive_anchor():

@@ -121,6 +121,7 @@ async def main() -> None:
     parser.add_argument("--scene", action="store_true")
     parser.add_argument("--relationships", action="store_true")
     parser.add_argument("--recovery", action="store_true")
+    parser.add_argument("--handoff", action="store_true")
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
@@ -158,6 +159,10 @@ async def main() -> None:
         if not args.relationships:
             parser.error("Recovery runs require --relationships")
         folder = Path("../../.tmp/benchmark624-recovery")
+    if args.handoff:
+        if not args.recovery:
+            parser.error("Handoff runs require --recovery")
+        folder = Path("../../.tmp/benchmark624-handoff")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -178,7 +183,9 @@ async def main() -> None:
             }
             if args.relationships
             else settings.agent_stage_model_calls,
-            "agent_max_model_calls": 44
+            "agent_max_model_calls": 30
+            if args.handoff
+            else 44
             if args.recovery
             else 44
             if args.relationships
@@ -318,7 +325,9 @@ async def main() -> None:
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
         saved_path = (
-            Path("../../.tmp/benchmark624-relationships") / section_key / "result.json"
+            Path("../../.tmp/benchmark624-recovery") / section_key / "result.json"
+            if args.handoff and args.original
+            else Path("../../.tmp/benchmark624-relationships") / section_key / "result.json"
             if args.recovery and args.original
             else Path("../../.tmp/benchmark624") / section_key / "result.json"
             if args.relationships and args.original
@@ -435,6 +444,7 @@ async def main() -> None:
             "RelationshipCandidates",
             "RelationshipVerdicts",
             "FocusDecisions",
+            "RoleFixes",
         }:
             with (folder / "relationship-review.jsonl").open("a", encoding="utf8") as log:
                 log.write(result.value.model_dump_json() + "\n")
@@ -448,7 +458,8 @@ async def main() -> None:
             providers,
             [section_key],
             retry_withheld=args.resume_review or args.stabilize or args.retry_relationships,
-            refresh_relationships=args.retry_relationships or (args.recovery and args.original),
+            refresh_relationships=args.retry_relationships
+            or (args.recovery and args.original and not args.handoff),
         )
         plan = dossier.sections[0].development_plan
         if args.relationships and plan and writing_notes:

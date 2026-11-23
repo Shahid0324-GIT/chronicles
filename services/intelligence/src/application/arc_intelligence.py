@@ -42,6 +42,7 @@ from src.application.arc_prose import (
     pending_scene_calls,
     prepare_propositions,
     revision_note_targets,
+    story_links,
     validate_propositions,
     write_section,
 )
@@ -968,7 +969,15 @@ class ArcIntelligence:
                             else len(plan.developments) * 2
                         )
                     )
-                    review_calls = 1 if draft else len(plan.developments) + 1
+                    review_calls = (
+                        1
+                        if draft
+                        else (
+                            len(plan.developments)
+                            + 1
+                            + len({o.after for o in story_links(plan).values()})
+                        )
+                    )
                     if self.can_review and not await self.can_review(writing_calls, review_calls):
                         raise InferenceFailure("publication_review_budget_reserved")
                     if notes is None and draft is None:
@@ -994,15 +1003,21 @@ class ArcIntelligence:
                             ):
                                 raise InferenceFailure("publication_review_budget_reserved")
                             role_key = fingerprint(
-                                ["arc-role-notes-v1", notes.model_dump(mode="json")]
+                                ["arc-role-notes-v3", notes.model_dump(mode="json")]
                             )
                             if role_key in cached_batches:
                                 notes = Propositions.model_validate(cached_batches[role_key])
                             else:
-                                notes = await clarify_note_roles(plan, notes, infer)
+                                notes = await clarify_note_roles(
+                                    plan,
+                                    notes,
+                                    infer,
+                                    cached=cached_batches,
+                                    checkpoint=save_batches,
+                                )
                                 cached_batches[role_key] = notes.model_dump(mode="json")
                                 corrected_key = fingerprint(
-                                    ["arc-role-notes-v1", notes.model_dump(mode="json")]
+                                    ["arc-role-notes-v3", notes.model_dump(mode="json")]
                                 )
                                 cached_batches[corrected_key] = cached_batches[role_key]
                                 await save_batches()
@@ -1227,6 +1242,7 @@ class ArcIntelligence:
                                 "editorial_issues": assessment.coherence_issues,
                                 "originality_issues": assessment.originality_issues,
                                 "coverage_issues": assessment.coverage_issues,
+                                "relationship_issues": assessment.relationship_issues,
                             },
                         )
                         if len(replacements.paragraphs) != len(indices):
@@ -1356,23 +1372,34 @@ class ArcIntelligence:
                             and all(claim.verdict == "supported" for claim in assessment.claims)
                             else "blocked"
                         },
+                        "relationships": {
+                            "status": "passed"
+                            if qualified and assessment and not assessment.relationship_issues
+                            else "blocked",
+                            "issues": assessment.relationship_issues if assessment else [],
+                        },
                         "structural": section.development_plan.structural.model_dump(mode="json"),
                         "editorial": {
                             "status": "passed"
-                            if qualified
+                            if assessment
+                            and assessment.editorial_review_available
                             and assessment_payload.get("coherent")
                             and not assessment_payload.get("coherence_issues")
                             else "blocked"
                         },
                         "originality": {
                             "status": "passed"
-                            if qualified and assessment and not assessment.originality_issues
+                            if assessment
+                            and assessment.editorial_review_available
+                            and not assessment.originality_issues
                             else "blocked",
                             "issues": assessment.originality_issues if assessment else [],
                         },
                         "coverage": {
                             "status": "passed"
-                            if qualified and assessment and not assessment.coverage_issues
+                            if assessment
+                            and assessment.editorial_review_available
+                            and not assessment.coverage_issues
                             else "blocked",
                             "issues": assessment.coverage_issues if assessment else [],
                         },
