@@ -38,6 +38,7 @@ from src.application.arc_prose import (
     assess_written_section,
     originality_candidates,
     prepare_propositions,
+    revision_note_targets,
     validate_propositions,
     write_section,
 )
@@ -61,7 +62,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v18"
+POLICY = "arc-intelligence-v19"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -882,7 +883,7 @@ class ArcIntelligence:
             try:
                 if plan is not None:
                     writing_calls = 0 if draft else (1 if notes else 2)
-                    review_calls = 1 if qualification and qualification.get("passed") else 2
+                    review_calls = 1
                     if self.can_review and not await self.can_review(writing_calls, review_calls):
                         raise InferenceFailure("publication_review_budget_reserved")
                     if notes is None and draft is None:
@@ -1016,20 +1017,22 @@ class ArcIntelligence:
                                 f"Editorial originality check found verbatim source wording in "
                                 f"paragraphs {repeated_source}"
                             )
-                    if qualification is None:
-                        if plan and self.can_review and not await self.can_review(0, 2):
+                    if plan:
+                        if self.can_review and not await self.can_review(0, 1):
                             raise InferenceFailure("publication_review_budget_reserved")
+                        assessment = await assess_written_section(
+                            draft, plan, infer, notes, calibrate=True
+                        )
+                        qualified = assessment.qualification_passed is True
+                        qualification = {"passed": qualified, "model": reviewer_model()}
+                    elif qualification is None:
                         qualified, qualification = await qualify_reviewer(infer)
                         qualified_model = reviewer_model()
                     else:
-                        qualified = qualification.get("passed", False)
+                        qualified = qualification.get("passed") is True
                     qualification["passed"] = qualified
-                    if qualified:
-                        assessment = (
-                            await assess_written_section(draft, plan, infer, notes)
-                            if plan
-                            else await review_section(draft, facts, infer)
-                        )
+                    if qualified and not plan:
+                        assessment = await review_section(draft, facts, infer)
                         assessed_model = reviewer_model()
                         if assessed_model != qualified_model:
                             review_attempts.append(
@@ -1042,6 +1045,7 @@ class ArcIntelligence:
                             qualified_model = reviewer_model()
                             qualification["passed"] = qualified
                             qualified = qualified and qualified_model == assessed_model
+                    if assessment is not None:
                         status = (
                             "validated"
                             if qualified
@@ -1073,6 +1077,7 @@ class ArcIntelligence:
                     # A general editorial concern without an identified failing paragraph
                     # does not authorize regeneration of the entire section.
                     if indices and (not self.can_review or await self.can_review(1, 1)):
+                        targets = revision_note_targets(draft, plan, notes)
                         replacements = await write_section(
                             plan,
                             notes,
@@ -1082,13 +1087,7 @@ class ArcIntelligence:
                                 "targets": [
                                     {
                                         "paragraph": i,
-                                        "note_ids": sorted(
-                                            {
-                                                note
-                                                for claim in draft.paragraphs[i - 1].claims
-                                                for note in claim.writing_note_ids
-                                            }
-                                        ),
+                                        "note_ids": sorted(targets[i], key=int),
                                     }
                                     for i in sorted(indices)
                                 ],
@@ -1105,6 +1104,13 @@ class ArcIntelligence:
                         for i, paragraph in zip(
                             sorted(indices), replacements.paragraphs, strict=True
                         ):
+                            if (
+                                not {
+                                    r for claim in paragraph.claims for r in claim.writing_note_ids
+                                }
+                                <= targets[i]
+                            ):
+                                raise ValueError("Paragraph repair used notes outside its scope")
                             draft.paragraphs[i - 1] = paragraph
                         validate_claims(draft, facts, dossier.accepted_facts)
                         validate_draft_structure(draft, plan)
@@ -1119,8 +1125,11 @@ class ArcIntelligence:
                             "withheld",
                             providers()[offset:],
                         )
-                        assessment = await assess_written_section(draft, plan, infer, notes)
-                        qualified = reviewer_model() == qualified_model
+                        assessment = await assess_written_section(
+                            draft, plan, infer, notes, calibrate=True
+                        )
+                        qualified = assessment.qualification_passed is True
+                        qualification = {"passed": qualified, "model": reviewer_model()}
                         status = (
                             "validated"
                             if qualified

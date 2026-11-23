@@ -308,6 +308,7 @@ class ArcSemanticReview(StructuredModel):
     unsupported_connections: list[str] = Field(default_factory=list)
     originality_issues: list[str] = Field(default_factory=list)
     revision_paragraphs: list[int] = Field(default_factory=list)
+    qualification_passed: bool | None = None
     coverage_issues: list[str] = Field(default_factory=list)
 
 

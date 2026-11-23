@@ -1,0 +1,169 @@
+{
+  "origin": "withheld",
+  "human_reviewed_notes": false,
+  "evidence_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "plan_revision": "b888bf33b2a0748b38815a38f037bf16c0d819c18d35e106d80f59b14785750e",
+  "paragraphs": 5,
+  "word_count": 146,
+  "stages": {
+    "factual": {
+      "status": "blocked"
+    },
+    "structural": {
+      "status": "passed",
+      "issues": []
+    },
+    "editorial": {
+      "status": "blocked"
+    },
+    "originality": {
+      "status": "blocked",
+      "issues": []
+    },
+    "coverage": {
+      "status": "blocked",
+      "issues": []
+    }
+  },
+  "verbatim_paragraphs": [],
+  "near_overlap_paragraphs": [
+    "4"
+  ],
+  "reviewer_calibration_received": [
+    true,
+    false,
+    true,
+    true,
+    false,
+    false,
+    true,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true,
+    true
+  ],
+  "reviewer_calibration_expected": [
+    true,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    false,
+    false,
+    true,
+    false,
+    false,
+    false,
+    true
+  ],
+  "provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2603,
+      "output_tokens": 1486,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2768,
+      "output_tokens": 1439,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2075,
+      "output_tokens": 846,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 3020,
+      "output_tokens": 395,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "invalid_output",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": [
+        "notes.5.context:too_long",
+        "notes.6.context:too_long",
+        "notes.10.context:too_long",
+        "notes.11.context:too_long",
+        "notes.12.context:too_long",
+        "notes.14.context:too_long"
+      ]
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2271,
+      "output_tokens": 958,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "rate_limited",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "input_tokens": 2122,
+      "output_tokens": 942,
+      "validation_errors": []
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "input_tokens": 3015,
+      "output_tokens": 587,
+      "validation_errors": []
+    }
+  ],
+  "backend_api": {
+    "http_status": 200,
+    "status": "pending",
+    "article_present": false
+  }
+}

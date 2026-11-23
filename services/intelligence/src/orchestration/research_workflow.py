@@ -3085,11 +3085,9 @@ class ResearchWorkflow:
                     schema,
                     task,
                     public,
-                    reserve_review_calls=1
-                    if schema is ProseRevision
-                    else 2
-                    if schema in (Propositions, ProseDraft)
-                    else 0,
+                    reserve_review_calls=2
+                    if schema is Propositions
+                    else (1 if schema in (ProseDraft, ProseRevision) else 0),
                 )
             finally:
                 state.pop("arc_inference_source_ids", None)

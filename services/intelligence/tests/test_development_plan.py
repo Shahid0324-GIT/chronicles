@@ -7,14 +7,16 @@ import pytest
 from pydantic import BaseModel
 
 from src.application.arc_contracts import ArcSectionDraft, DevelopmentEvidence
-from src.application.arc_grounding import copied_paragraphs
+from src.application.arc_grounding import CALIBRATION, copied_paragraphs, review_ok
 from src.application.arc_prose import (
+    ROLE_CALIBRATION,
     Propositions,
     ProseDraft,
     assess_written_section,
     bind_draft,
     bind_writing_notes,
     originality_candidates,
+    revision_note_targets,
     validate_propositions,
     writing_packet,
 )
@@ -146,7 +148,7 @@ async def test_planned_prose_review_binds_original_wording_and_rejects_incomplet
             "reason": "The evidence supports an attempt and establishes no motive.",
         }
     ]
-    supported: list[int] = []
+    verdicts = ["unsupported"]
 
     async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
         assert task == "presentation_verification"
@@ -155,7 +157,7 @@ async def test_planned_prose_review_binds_original_wording_and_rejects_incomplet
         return schema.model_validate(
             {
                 "rejected": rejected,
-                "supported": supported,
+                "verdicts": verdicts,
                 "originality_issues": [],
                 "editorial_issues": [],
             }
@@ -163,7 +165,7 @@ async def test_planned_prose_review_binds_original_wording_and_rejects_incomplet
 
     assessment = await assess_written_section(draft, plan, reviewer)
     assert assessment.claims[0].verdict == "unsupported"
-    supported.append(0)
+    verdicts[0] = "supported"
     with pytest.raises(ValueError, match="contradictory"):
         await assess_written_section(draft, plan, reviewer)
 
@@ -254,7 +256,7 @@ async def test_archive_context_is_cited_without_exposing_it_to_the_writer():
         assert payload["context"] == {"1": evidence[1].text}
         return schema.model_validate(
             {
-                "supported": [0],
+                "verdicts": ["supported"],
                 "rejected": [],
                 "editorial_issues": [],
                 "originality_issues": ["Close rephrasing"],
@@ -265,6 +267,52 @@ async def test_archive_context_is_cited_without_exposing_it_to_the_writer():
     result = await assess_written_section(draft, plan, reviewer, notes)
     assert "Missing essential writing notes: 2" in result.coverage_issues
     assert result.revision_paragraphs == [1]
+    assert revision_note_targets(draft, plan, notes) == {1: {"1"}}
+
+
+async def test_planned_review_requires_the_same_response_to_pass_role_calibration():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref = next(iter(clause_map(plan)))
+    draft = bind_draft(
+        ProseDraft.model_validate(
+            {
+                "paragraphs": [
+                    {
+                        "claims": [
+                            {
+                                "text": "Mira walked around the gate.",
+                                "clauses": [ref],
+                            }
+                        ]
+                    }
+                ]
+            }
+        ),
+        plan,
+        {ref},
+        "Gate",
+    )
+    calibration = [c["expected"] for c in [*CALIBRATION, *ROLE_CALIBRATION]]
+    calibration[-2] = True  # Fails to notice rescue and drive share the wrong object.
+
+    async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        cases = json.loads(prompt.split("\n", 1)[1])["calibration"]
+        assert cases[-2]["text"] == "Mira rescued and drove away the wolf."
+        assert "grammatical subject and object" in prompt
+        return schema.model_validate(
+            {
+                "verdicts": ["unsupported"],
+                "rejected": [{"index": 0, "kind": "unsupported", "reason": "Wrong action."}],
+                "editorial_issues": [],
+                "originality_issues": [],
+                "calibration": calibration,
+            }
+        )
+
+    review = await assess_written_section(draft, plan, reviewer, calibrate=True)
+    assert review.qualification_passed is False
+    assert not review_ok(review, 1)
 
 
 def test_source_phrasing_is_rejected_before_writing():

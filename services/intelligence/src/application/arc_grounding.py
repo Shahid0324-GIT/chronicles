@@ -97,6 +97,7 @@ def review_ok(review: ArcSemanticReview, count: int) -> bool:
         and not review.unsupported_connections
         and not review.originality_issues
         and not review.coverage_issues
+        and review.qualification_passed is not False
     )
 
 

@@ -114,13 +114,21 @@ async def main() -> None:
     phase.add_argument("--stabilize", action="store_true")
     phase.add_argument("--original", action="store_true")
     parser.add_argument("--follow-up", action="store_true")
+    parser.add_argument("--autonomous", action="store_true")
     parser.add_argument("--refresh-notes", action="store_true")
+    parser.add_argument("--resume-automatic-notes", action="store_true")
     parser.add_argument("--reviewed-notes", type=Path)
     args = parser.parse_args()
+    if args.autonomous and args.reviewed_notes:
+        parser.error("Autonomous runs cannot load reviewed notes")
+    if args.resume_automatic_notes and not (args.autonomous and args.compose):
+        parser.error("Resuming automatic notes requires --autonomous --compose")
     section_key = args.section
     title, ranges = SCOPES[section_key]
     baseline = Path("../../.tmp/benchmark621") / section_key
     folder = Path("../../.tmp") / ("benchmark623-follow-up" if args.follow_up else "benchmark623")
+    if args.autonomous:
+        folder = Path("../../.tmp/benchmark623-autonomous")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -128,11 +136,13 @@ async def main() -> None:
     settings = Settings().model_copy(
         update={
             "ai_provider_mode": "cloud",
-            "groq_structured_output_method": "json_mode" if args.follow_up else "json_schema",
+            "groq_structured_output_method": (
+                "json_mode" if args.follow_up or args.autonomous else "json_schema"
+            ),
             "groq_structured_output_strict": False,
-            "ai_max_attempts": 1,
-            "agent_max_model_calls": 12 if args.follow_up else 6,
-            "ai_cloud_rate_limit_wait_seconds": 0,
+            "ai_max_attempts": 2 if args.autonomous else 1,
+            "agent_max_model_calls": 12 if args.follow_up or args.autonomous else 6,
+            "ai_cloud_rate_limit_wait_seconds": 75 if args.autonomous else 0,
         }
     )
     engine, factory = create_database(settings.database_url)
@@ -269,6 +279,8 @@ async def main() -> None:
         saved = json.loads(saved_path.read_text(encoding="utf8"))
         if saved["input_revision"] != evidence.revision:
             raise ValueError("Fixed dossier fingerprint changed")
+        if args.autonomous and saved.get("reviewed_notes_input"):
+            raise ValueError("Autonomous runs cannot resume a human-reviewed benchmark")
         row = saved["stored_plan"]
         if not row or not row["payload"].get("plan"):
             raise ValueError("Resume requires a saved structured plan")
@@ -307,6 +319,15 @@ async def main() -> None:
         return [asdict(u) for u in router.usage]
 
     async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        if (
+            args.autonomous
+            and args.resume_automatic_notes
+            and schema is Propositions
+            and prompt.startswith("Make compact writing notes")
+        ):
+            return Propositions.model_validate_json(
+                (folder / "generated-notes.json").read_text(encoding="utf8")
+            )
         result = await router.generate(
             "Use only the permitted evidence and preserve its reference scope. "
             "Output exactly the requested structure.",
@@ -314,11 +335,9 @@ async def main() -> None:
             schema,
             task,
             public_source_content=True,
-            reserve_calls=1
-            if schema is ProseRevision
-            else 2
-            if schema in (Propositions, ProseDraft)
-            else 0,
+            reserve_calls=2
+            if schema is Propositions
+            else (1 if schema in (ProseDraft, ProseRevision) else 0),
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
         if schema.__name__ in {"ProseDraft", "ProseRevision", "ArcSectionDraft"}:
@@ -326,9 +345,13 @@ async def main() -> None:
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
         if schema is Propositions:
-            (folder / "generated-notes.json").write_text(
+            name = "generated-notes" if prompt.startswith("Make compact") else "note-revisions"
+            (folder / f"{name}.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
+        if schema.__name__ == "PlannedProseReview":
+            with (folder / "reviews.jsonl").open("a", encoding="utf8") as reviews:
+                reviews.write(result.value.model_dump_json() + "\n")
         return result.value
 
     try:
