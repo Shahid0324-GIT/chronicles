@@ -21,6 +21,7 @@ from src.application.arc_contracts import (
     DevelopmentEvidence,
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
+from src.application.arc_prose import Propositions, ProseDraft
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.event_extraction import evidence_units
 from src.application.research_contracts import Task
@@ -111,11 +112,12 @@ async def main() -> None:
     phase.add_argument("--resume-review", action="store_true")
     phase.add_argument("--compose", action="store_true")
     phase.add_argument("--stabilize", action="store_true")
+    phase.add_argument("--original", action="store_true")
     args = parser.parse_args()
     section_key = args.section
     title, ranges = SCOPES[section_key]
     baseline = Path("../../.tmp/benchmark621") / section_key
-    folder = Path("../../.tmp/benchmark622") / section_key
+    folder = Path("../../.tmp/benchmark623") / section_key
     if args.freeze:
         folder = baseline
     folder.mkdir(parents=True, exist_ok=True)
@@ -252,8 +254,14 @@ async def main() -> None:
     result_path = folder / "result.json"
     if result_path.exists() and not (args.resume_review or args.compose):
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
-    if args.resume_review or args.compose or args.stabilize:
-        saved_path = baseline / "result.json" if args.stabilize else result_path
+    if args.resume_review or args.compose or args.stabilize or args.original:
+        saved_path = (
+            Path("../../.tmp/benchmark622") / section_key / "result.json"
+            if args.original
+            else baseline / "result.json"
+            if args.stabilize
+            else result_path
+        )
         saved = json.loads(saved_path.read_text(encoding="utf8"))
         if saved["input_revision"] != evidence.revision:
             raise ValueError("Fixed dossier fingerprint changed")
@@ -263,16 +271,31 @@ async def main() -> None:
         memory.rows[
             ArcIntelligence.identifier(section.id, "arc_development_plan", evidence.revision)
         ] = row
-        if not args.stabilize:
+        if not (args.stabilize or args.original):
             prior = saved["provider_usage"]
-        pending = saved.get("pending_review")
+        pending = saved.get("pending_review") if not args.original else None
         if pending:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_pending_review", evidence.revision)
             ] = pending
+        writing_notes = saved.get("writing_notes") if not args.original else None
+        if writing_notes:
+            memory.rows[
+                ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
+            ] = writing_notes
     router = create_inference(settings)
-    router.max_calls = max(0, router.max_calls - len(prior))
-    service = BenchmarkArc(build_atlas(factory), transaction, evidence)
+    router.restore_budget(prior)
+
+    async def can_review(writing: int, checking: int) -> bool:
+        return (
+            router.total_used + writing + checking <= router.max_calls
+            and router.stage_used.get("presentation", 0) + writing
+            <= router.stage_limits.get("presentation", router.max_calls)
+            and router.stage_used.get("presentation_verification", 0) + checking
+            <= router.stage_limits.get("presentation_verification", router.max_calls)
+        )
+
+    service = BenchmarkArc(build_atlas(factory), transaction, evidence, can_review)
     service.dossier = dossier
 
     def providers() -> list[dict[str, Any]]:
@@ -286,9 +309,10 @@ async def main() -> None:
             schema,
             task,
             public_source_content=True,
+            reserve_calls=2 if schema in (Propositions, ProseDraft) else 0,
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
-        if task == "presentation":
+        if schema.__name__ in {"ProseDraft", "ArcSectionDraft"}:
             (folder / "generated-draft.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
@@ -310,7 +334,11 @@ async def main() -> None:
             dossier.sections[0].coverage.gaps,
             flush=True,
         )
-        if args.compose and plan and plan.factual.status == plan.structural.status == "passed":
+        if (
+            (args.compose or args.original)
+            and plan
+            and plan.factual.status == plan.structural.status == "passed"
+        ):
             await service.compose(
                 dossier, evidence.revision, infer, providers, section_keys=[section_key]
             )
@@ -329,6 +357,9 @@ async def main() -> None:
             "input_revision": evidence.revision,
             "pending_review": memory.rows.get(
                 service.identifier(section.id, "arc_pending_review", evidence.revision)
+            ),
+            "writing_notes": memory.rows.get(
+                service.identifier(section.id, "arc_writing_notes", evidence.revision)
             ),
         }
         result_path.write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf8")

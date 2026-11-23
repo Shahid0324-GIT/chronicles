@@ -69,6 +69,7 @@ class InferenceRouter:
         task: Task,
         *,
         public_source_content: bool = False,
+        reserve_calls: int = 0,
     ) -> InferenceResult:
         async with self.gate:
             contract = schema.model_json_schema()
@@ -144,6 +145,8 @@ class InferenceRouter:
                                         return InferenceResult(value, usage)
                             if self.total_used >= self.max_calls:
                                 raise InferenceFailure("job_model_budget_exhausted")
+                            if reserve_calls and self.total_used + reserve_calls >= self.max_calls:
+                                raise InferenceFailure("publication_review_budget_reserved")
                             if self.stage_used.get(task, 0) >= self.stage_limits.get(
                                 task, self.max_calls
                             ):
@@ -172,7 +175,10 @@ class InferenceRouter:
                             else "timeout"
                         )
                         last_code = code
-                        if "budget_exhausted" in code:
+                        if (
+                            "budget_exhausted" in code
+                            or code == "publication_review_budget_reserved"
+                        ):
                             raise
                         issues = (
                             error.issues

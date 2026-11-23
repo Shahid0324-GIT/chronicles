@@ -1,21 +1,34 @@
 """Owned deterministic controls, not evidence of real research quality."""
 
+import json
 from uuid import uuid4
 
 import pytest
+from pydantic import BaseModel
 
 from src.application.arc_contracts import ArcSectionDraft, DevelopmentEvidence
 from src.application.arc_grounding import copied_paragraphs
+from src.application.arc_prose import (
+    Propositions,
+    ProseDraft,
+    assess_written_section,
+    bind_draft,
+    originality_candidates,
+    validate_propositions,
+    writing_packet,
+)
 from src.application.development_plan import (
     DevelopmentBatchReview,
     PlanAssessment,
     PlanProposal,
     assess_plan,
+    clause_map,
     fence_repeated_anchors,
     layers,
     plan_from_proposal,
     review_developments,
 )
+from src.application.research_contracts import Task
 
 
 def material():
@@ -65,6 +78,126 @@ def material():
         }
     )
     return proposal, facts, evidence, arc, section, continuity
+
+
+def test_prose_packet_is_source_isolated_and_only_binds_licensed_notes():
+    proposal, facts, evidence, *scope = material()
+    for item in proposal.developments:
+        item.title = item.key
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    attempt = next(key for key, (_, claim) in clause_map(plan).items() if claim.fact_id == "f0")
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": attempt,
+                    "actor": "Mira",
+                    "action": "open",
+                    "target": "gate",
+                    "modality": "attempted",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                }
+            ],
+        }
+    )
+    validate_propositions(plan, notes)
+    assert evidence[0].text not in json.dumps(writing_packet(plan, notes))
+    draft = ProseDraft.model_validate(
+        {
+            "paragraphs": [
+                {"claims": [{"text": "Mira attempted to get the gate open.", "clauses": [attempt]}]}
+            ],
+        }
+    )
+    assert bind_draft(draft, plan, {attempt}, "Gate").paragraphs[0].fact_ids == ["f0"]
+    with pytest.raises(ValueError, match="outside the licensed"):
+        bind_draft(draft, plan, set(), "Gate")
+    notes.notes[0].id = "90.1"
+    with pytest.raises(ValueError, match="unknown scoped clause"):
+        validate_propositions(plan, notes)
+
+
+@pytest.mark.asyncio
+async def test_planned_prose_review_binds_original_wording_and_rejects_incomplete_verdicts():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    attempt = next(key for key, (_, claim) in clause_map(plan).items() if claim.fact_id == "f0")
+    raw = ProseDraft.model_validate(
+        {
+            "paragraphs": [
+                {
+                    "claims": [
+                        {
+                            "text": "Mira opened the gate to prove her courage.",
+                            "clauses": [attempt],
+                        },
+                    ]
+                }
+            ],
+        }
+    )
+    draft = bind_draft(raw, plan, {attempt}, "Gate")
+    rejected = [
+        {
+            "index": 0,
+            "kind": "unsupported",
+            "reason": "The evidence supports an attempt and establishes no motive.",
+        }
+    ]
+    supported: list[int] = []
+
+    async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        assert task == "presentation_verification"
+        packet = json.loads(prompt.split("\n", 1)[1])
+        assert packet["evidence"] == {attempt: evidence[0].text}
+        return schema.model_validate(
+            {
+                "rejected": rejected,
+                "supported": supported,
+                "originality_issues": [],
+                "editorial_issues": [],
+            }
+        )
+
+    assessment = await assess_written_section(draft, plan, reviewer)
+    assert assessment.claims[0].verdict == "unsupported"
+    supported.append(0)
+    with pytest.raises(ValueError, match="contradictory"):
+        await assess_written_section(draft, plan, reviewer)
+
+
+def test_near_verbatim_prose_is_flagged_for_review():
+    proposal, facts, evidence, *scope = material()
+    original = "Behind the rusted gate Mira waited for Ron to return with the old iron key."
+    evidence[0].text = original
+    evidence[0].end = evidence[0].start + len(original)
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref = next(iter(clause_map(plan)))
+    draft = bind_draft(
+        ProseDraft.model_validate(
+            {
+                "paragraphs": [
+                    {
+                        "claims": [
+                            {
+                                "text": (
+                                    "Behind the rusted gate Mira waited for Ron "
+                                    "to come back with the iron key."
+                                ),
+                                "clauses": [ref],
+                            }
+                        ]
+                    }
+                ]
+            }
+        ),
+        plan,
+        {ref},
+        "Gate",
+    )
+    assert originality_candidates(draft, plan) == [{"paragraph": 1, "unit": "1"}]
+    assert copied_paragraphs(draft, plan) == []
 
 
 def test_source_order_is_independent_of_model_array_order_and_not_world_time():

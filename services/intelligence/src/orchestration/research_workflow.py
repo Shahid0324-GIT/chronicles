@@ -413,6 +413,8 @@ class ResearchWorkflow:
         schema: type[BaseModel],
         task: Task,
         public: bool = False,
+        *,
+        reserve_review_calls: int = 0,
     ) -> BaseModel:
         request = await self.check(state)
         system = (
@@ -506,6 +508,14 @@ class ResearchWorkflow:
                         )
                         if charged + reservation_tokens > self.policy(state).max_tokens:
                             raise InferenceFailure("job_token_budget_exhausted")
+                        if reserve_review_calls and (
+                            sum(e["stage"] == "inference.started" for e in reservations)
+                            + reserve_review_calls
+                            >= self.policy(state).max_model_calls
+                            or charged + reservation_tokens + 4000 * reserve_review_calls
+                            > self.policy(state).max_tokens
+                        ):
+                            raise InferenceFailure("publication_review_budget_reserved")
                         if request.relationship_subjects:
                             ledger = budget_ledger(
                                 reservations, (current or {}).get("provider_usage", [])
@@ -540,6 +550,11 @@ class ResearchWorkflow:
                 schema,
                 task,
                 public_source_content=public,
+                **(
+                    {"reserve_calls": reserve_review_calls}
+                    if isinstance(self.inference, InferenceRouter) and reserve_review_calls
+                    else {}
+                ),
             )
             return result.value
         except InferenceFailure as failure:
@@ -3004,11 +3019,38 @@ class ResearchWorkflow:
         self, state: ResearchState, request: ResearchRequest, *, compose: bool
     ) -> ResearchState:
         from src.application.arc_intelligence import ArcIntelligence
+        from src.application.arc_prose import Propositions, ProseDraft
 
         if not self.atlas or not request.arc_id:
             return state
         arc_id = request.arc_id
-        service = ArcIntelligence(self.atlas, self.atlas.presentations, self.retrieval)
+
+        async def can_review(writing: int, checking: int) -> bool:
+            async with self.transactions() as archive:
+                job_id = UUID(state["job_id"])
+                current = await archive.get_job(job_id)
+                events = await archive.events(job_id)
+            ledger = budget_ledger(events, (current or {}).get("provider_usage", []))
+            policy = self.policy(state)
+            limit = min(
+                policy.max_model_calls, getattr(self.inference, "max_calls", policy.max_model_calls)
+            )
+            if sum(r["calls"] for r in ledger.values()) + writing + checking > limit:
+                return False
+            limits = getattr(self.inference, "stage_limits", {})
+            for task, required in (
+                ("presentation", writing),
+                ("presentation_verification", checking),
+            ):
+                if ledger.get(task, {}).get("calls", 0) + required > limits.get(task, limit):
+                    return False
+            # The router also checks the full prompt and schema estimates on each call.
+            return (
+                sum(r["tokens"] for r in ledger.values()) + 4000 * (writing + checking)
+                <= policy.max_tokens
+            )
+
+        service = ArcIntelligence(self.atlas, self.atlas.presentations, self.retrieval, can_review)
 
         async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
             # The whole current dossier participates in organization. Permission
@@ -3037,7 +3079,14 @@ class ResearchWorkflow:
                 public = False
             state["arc_inference_source_ids"] = [str(i) for i in sources]
             try:
-                return await self.infer(state, prompt, schema, task, public)
+                return await self.infer(
+                    state,
+                    prompt,
+                    schema,
+                    task,
+                    public,
+                    reserve_review_calls=2 if schema in (Propositions, ProseDraft) else 0,
+                )
             finally:
                 state.pop("arc_inference_source_ids", None)
 

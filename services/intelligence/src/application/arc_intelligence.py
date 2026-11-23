@@ -5,7 +5,7 @@ assertions. Prose has an independent artifact and grounding gate.
 """
 
 import json
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from typing import Any
 from uuid import UUID, uuid5
 
@@ -33,6 +33,14 @@ from src.application.arc_grounding import (
     supported_projection,
     validate_claims,
 )
+from src.application.arc_prose import (
+    Propositions,
+    assess_written_section,
+    originality_candidates,
+    prepare_propositions,
+    validate_propositions,
+    write_section,
+)
 from src.application.development_plan import (
     fence_repeated_anchors,
     plan_from_proposal,
@@ -53,7 +61,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v16"
+POLICY = "arc-intelligence-v17"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -176,8 +184,10 @@ class ArcIntelligence:
         atlas: KnowledgeAtlas,
         presentations: PresentationTransaction,
         evidence: DevelopmentEvidenceProvider | None = None,
+        can_review: Callable[[int, int], Awaitable[bool]] | None = None,
     ) -> None:
         self.atlas, self.presentations, self.evidence = atlas, presentations, evidence
+        self.can_review = can_review
 
     @staticmethod
     def artifact_policy(kind: str) -> str:
@@ -853,16 +863,47 @@ class ArcIntelligence:
             stop_after_section = False
             review_attempts: list[dict[str, Any]] = []
             draft: ArcSectionDraft | None = None
+            notes: Propositions | None = None
+            plan = section.development_plan
             resumed = False
-            if section.development_plan is not None:
+            if plan is not None:
                 async with self.presentations() as repo:
                     pending = await repo.get(
                         self.identifier(section_id, "arc_pending_review", boundary_key)
                     )
+                    stored_notes = await repo.get(
+                        self.identifier(section_id, "arc_writing_notes", boundary_key)
+                    )
                 if pending and pending["knowledge_revision"] == section.revision:
                     draft = ArcSectionDraft.model_validate(pending["payload"]["draft"])
                     resumed = True
+                if stored_notes and stored_notes["knowledge_revision"] == section.revision:
+                    notes = Propositions.model_validate(stored_notes["payload"])
             try:
+                if plan is not None:
+                    writing_calls = 0 if draft else (1 if notes else 2)
+                    review_calls = 1 if qualification and qualification.get("passed") else 2
+                    if self.can_review and not await self.can_review(writing_calls, review_calls):
+                        raise InferenceFailure("publication_review_budget_reserved")
+                    if notes is None and draft is None:
+                        notes = await prepare_propositions(plan, infer)
+                        await self.save(
+                            dossier.universe_id,
+                            dossier.continuity_id,
+                            section_id,
+                            "arc_writing_notes",
+                            boundary_key,
+                            section.revision,
+                            notes.model_dump(mode="json"),
+                            "withheld",
+                            providers()[offset:],
+                        )
+                    if notes is not None:
+                        validate_propositions(plan, notes)
+                        if draft is None:
+                            if self.can_review and not await self.can_review(1, review_calls):
+                                raise InferenceFailure("publication_review_budget_reserved")
+                            draft = await write_section(plan, notes, section.plan.title, infer)
                 draft = draft or ArcSectionDraft.model_validate(
                     await infer(
                         "Write original, connected encyclopedia prose for this arc section "
@@ -970,20 +1011,24 @@ class ArcIntelligence:
                                 providers()[offset:],
                             )
                         repeated_source = copied_paragraphs(draft, section.development_plan)
-                        if repeated_source:
+                        if repeated_source and notes is None:
                             raise ValueError(
                                 f"Editorial originality check found verbatim source wording in "
                                 f"paragraphs {repeated_source}"
                             )
                     if qualification is None:
+                        if plan and self.can_review and not await self.can_review(0, 2):
+                            raise InferenceFailure("publication_review_budget_reserved")
                         qualified, qualification = await qualify_reviewer(infer)
                         qualified_model = reviewer_model()
                     else:
                         qualified = qualification.get("passed", False)
                     qualification["passed"] = qualified
                     if qualified:
-                        assessment = await review_section(
-                            draft, facts, infer, section.development_plan
+                        assessment = (
+                            await assess_written_section(draft, plan, infer)
+                            if plan
+                            else await review_section(draft, facts, infer)
                         )
                         assessed_model = reviewer_model()
                         if assessed_model != qualified_model:
@@ -1004,7 +1049,70 @@ class ArcIntelligence:
                     review_attempts.append(dict(assessment_payload))
                     if status == "validated" or not qualified:
                         break
-                if status == "withheld" and qualified and assessment is not None:
+                if status == "withheld" and qualified and assessment is not None and plan and notes:
+                    indices = set(copied_paragraphs(draft, plan))
+                    if assessment.originality_issues:
+                        indices.update(
+                            int(str(match["paragraph"]))
+                            for match in originality_candidates(draft, plan)
+                        )
+                    index = 0
+                    rejected = {
+                        c.index: c.reason for c in assessment.claims if c.verdict != "supported"
+                    }
+                    for paragraph_index, paragraph in enumerate(draft.paragraphs, 1):
+                        if any(i in rejected for i in range(index, index + len(paragraph.claims))):
+                            indices.add(paragraph_index)
+                        index += len(paragraph.claims)
+                    # A general editorial concern without an identified failing paragraph
+                    # does not authorize regeneration of the entire section.
+                    if indices and (not self.can_review or await self.can_review(1, 1)):
+                        replacements = await write_section(
+                            plan,
+                            notes,
+                            draft.heading,
+                            infer,
+                            repair={
+                                "paragraph_indices": sorted(indices),
+                                "current_paragraphs": [p.text for p in draft.paragraphs],
+                                "factual_issues_by_claim": rejected,
+                                "editorial_issues": assessment.coherence_issues,
+                                "originality_issues": assessment.originality_issues,
+                            },
+                        )
+                        if len(replacements.paragraphs) != len(indices):
+                            raise ValueError(
+                                "Paragraph repair returned an incorrect paragraph count"
+                            )
+                        for i, paragraph in zip(
+                            sorted(indices), replacements.paragraphs, strict=True
+                        ):
+                            draft.paragraphs[i - 1] = paragraph
+                        validate_claims(draft, facts, dossier.accepted_facts)
+                        validate_draft_structure(draft, plan)
+                        await self.save(
+                            dossier.universe_id,
+                            dossier.continuity_id,
+                            section_id,
+                            "arc_pending_review",
+                            boundary_key,
+                            section.revision,
+                            {"draft": draft.model_dump(mode="json")},
+                            "withheld",
+                            providers()[offset:],
+                        )
+                        assessment = await assess_written_section(draft, plan, infer)
+                        qualified = reviewer_model() == qualified_model
+                        status = (
+                            "validated"
+                            if qualified
+                            and review_ok(assessment, sum(len(p.claims) for p in draft.paragraphs))
+                            else "withheld"
+                        )
+                        assessment_payload = assessment.model_dump(mode="json")
+                        assessment_payload["repaired_paragraphs"] = sorted(indices)
+                        review_attempts.append(dict(assessment_payload))
+                if status == "withheld" and qualified and assessment is not None and plan is None:
                     partial = supported_projection(draft, assessment)
                     if partial is not None:
                         removed = [
@@ -1052,13 +1160,26 @@ class ArcIntelligence:
 
                     validate_draft_structure(draft, section.development_plan)
                     payload["validation_stages"] = {
-                        "factual": {"status": "passed" if status == "validated" else "blocked"},
+                        "factual": {
+                            "status": "passed"
+                            if qualified
+                            and assessment
+                            and all(claim.verdict == "supported" for claim in assessment.claims)
+                            else "blocked"
+                        },
                         "structural": section.development_plan.structural.model_dump(mode="json"),
                         "editorial": {
                             "status": "passed"
-                            if assessment_payload.get("coherent")
+                            if qualified
+                            and assessment_payload.get("coherent")
                             and not assessment_payload.get("coherence_issues")
                             else "blocked"
+                        },
+                        "originality": {
+                            "status": "passed"
+                            if qualified and assessment and not assessment.originality_issues
+                            else "blocked",
+                            "issues": assessment.originality_issues if assessment else [],
                         },
                     }
             except InferenceFailure as error:

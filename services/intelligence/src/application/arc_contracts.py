@@ -304,6 +304,7 @@ class ArcSemanticReview(StructuredModel):
     coherent: bool
     coherence_issues: list[str] = Field(default_factory=list, max_length=12)
     unsupported_connections: list[str] = Field(default_factory=list)
+    originality_issues: list[str] = Field(default_factory=list)
 
 
 class ArcSectionDraft(StructuredModel):

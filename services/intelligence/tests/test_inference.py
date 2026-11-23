@@ -110,6 +110,26 @@ async def test_timeout_and_invalid_output_have_bounded_local_fallback():
     assert [item.status for item in router.usage] == ["invalid_output", "timeout", "ok"]
 
 
+async def test_presentation_fallback_preserves_final_review_budget_after_resume():
+    local = Provider()
+    cloud = Provider("groq", [InferenceFailure("invalid_output")])
+    router = InferenceRouter(local, [cloud], cloud_content_allowed=True, max_calls=4)
+    router.restore_budget([{"task": "presentation", "status": "ok", "model_call": True}])
+    with pytest.raises(InferenceFailure, match="publication_review_budget_reserved"):
+        await router.generate(
+            "Owned",
+            "Owned",
+            ResearchPlan,
+            "presentation",
+            public_source_content=True,
+            reserve_calls=2,
+        )
+    assert cloud.calls == 1 and local.calls == 0
+    for _ in range(2):
+        await router.generate("Owned", "Owned", ResearchPlan, "presentation_verification")
+    assert router.total_used == 4 and local.calls == 2
+
+
 async def test_router_serializes_local_inference():
     active, peak = 0, 0
 
