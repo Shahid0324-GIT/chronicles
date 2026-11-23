@@ -63,7 +63,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v20"
+POLICY = "arc-intelligence-v21"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -1142,6 +1142,16 @@ class ArcIntelligence:
                                     {
                                         "paragraph": i,
                                         "note_ids": sorted(targets[i], key=int),
+                                        "previous": (
+                                            draft.paragraphs[i - 2].text
+                                            if i > 1 and i - 1 not in indices
+                                            else None
+                                        ),
+                                        "next": (
+                                            draft.paragraphs[i].text
+                                            if i < len(draft.paragraphs) and i + 1 not in indices
+                                            else None
+                                        ),
                                     }
                                     for i in sorted(indices)
                                 ],
@@ -1155,6 +1165,17 @@ class ArcIntelligence:
                             raise ValueError(
                                 "Paragraph repair returned an incorrect paragraph count"
                             )
+                        essential = {
+                            str(i) for i, note in enumerate(notes.notes, 1) if note.essential
+                        }
+                        protected = {
+                            note
+                            for p in draft.paragraphs
+                            for claim in p.claims
+                            for note in claim.writing_note_ids
+                            if note in essential
+                        }
+                        updated = list(draft.paragraphs)
                         for i, paragraph in zip(
                             sorted(indices), replacements.paragraphs, strict=True
                         ):
@@ -1165,7 +1186,12 @@ class ArcIntelligence:
                                 <= targets[i]
                             ):
                                 raise ValueError("Paragraph repair used notes outside its scope")
-                            draft.paragraphs[i - 1] = paragraph
+                            updated[i - 1] = paragraph
+                        if not protected <= {
+                            note for p in updated for c in p.claims for note in c.writing_note_ids
+                        }:
+                            raise ValueError("Paragraph repair dropped previously cited essentials")
+                        draft = draft.model_copy(update={"paragraphs": updated})
                         validate_claims(draft, facts, dossier.accepted_facts)
                         validate_draft_structure(draft, plan)
                         await self.save(
@@ -1225,6 +1251,20 @@ class ArcIntelligence:
                         review_attempts.append(dict(assessment_payload))
                 assessment_payload["reviewer_qualification"] = qualification
                 assessment_payload["review_attempts"] = review_attempts
+                if plan and status == "validated" and assessment:
+                    for claim, review in zip(
+                        (c for p in draft.paragraphs for c in p.claims),
+                        assessment.claims,
+                        strict=True,
+                    ):
+                        claim.context_evidence_ids = list(
+                            dict.fromkeys(
+                                [
+                                    *claim.context_evidence_ids,
+                                    *review.additional_evidence_ids,
+                                ]
+                            )
+                        )
                 payload = {
                     "id": str(section.id),
                     "heading": draft.heading,

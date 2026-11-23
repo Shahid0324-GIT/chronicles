@@ -21,7 +21,7 @@ from src.application.arc_contracts import (
     DevelopmentEvidence,
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
-from src.application.arc_prose import Propositions, ProseDraft, ProseRevision, validate_propositions
+from src.application.arc_prose import Propositions, ProseRevision, SceneDraft, validate_propositions
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.event_extraction import evidence_units
 from src.application.research_contracts import Task
@@ -116,6 +116,8 @@ async def main() -> None:
     parser.add_argument("--follow-up", action="store_true")
     parser.add_argument("--autonomous", action="store_true")
     parser.add_argument("--deep", action="store_true")
+    parser.add_argument("--scene", action="store_true")
+    parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
     parser.add_argument("--refresh-notes", action="store_true")
     parser.add_argument("--resume-automatic-notes", action="store_true")
@@ -139,6 +141,10 @@ async def main() -> None:
         if not args.autonomous:
             parser.error("Deep runs require --autonomous")
         folder = Path("../../.tmp/benchmark623-deep")
+    if args.scene:
+        if not args.autonomous:
+            parser.error("Scene runs require --autonomous")
+        folder = Path("../../.tmp/benchmark624")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -151,7 +157,9 @@ async def main() -> None:
             ),
             "groq_structured_output_strict": False,
             "ai_max_attempts": 2 if args.autonomous else 1,
-            "agent_max_model_calls": 32
+            "agent_max_model_calls": 30
+            if args.scene
+            else 32
             if args.deep
             else 12
             if args.follow_up or args.autonomous
@@ -284,7 +292,9 @@ async def main() -> None:
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
         saved_path = (
-            Path("../../.tmp/benchmark622") / section_key / "result.json"
+            Path("../../.tmp/benchmark623-deep") / section_key / "result.json"
+            if args.scene and args.original
+            else Path("../../.tmp/benchmark622") / section_key / "result.json"
             if args.original
             else baseline / "result.json"
             if args.stabilize
@@ -304,12 +314,14 @@ async def main() -> None:
         if not (args.stabilize or args.original):
             prior = saved["provider_usage"]
         reuse_draft = not (args.original or args.refresh_notes or args.reviewed_notes)
-        pending = saved.get("pending_review") if reuse_draft else None
+        pending = saved.get("pending_review") if reuse_draft and not args.recompose else None
         if pending:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_pending_review", evidence.revision)
             ] = pending
-        writing_notes = saved.get("writing_notes") if reuse_draft else None
+        writing_notes = (
+            saved.get("writing_notes") if reuse_draft or (args.scene and args.original) else None
+        )
         if writing_notes:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
@@ -371,11 +383,15 @@ async def main() -> None:
             public_source_content=True,
             reserve_calls=2
             if schema is Propositions
-            else (1 if schema in (ProseDraft, ProseRevision) else 0),
+            else (1 if schema in (SceneDraft, ProseRevision) else 0),
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
         if schema.__name__ in {"ProseDraft", "ProseRevision", "ArcSectionDraft"}:
             (folder / "generated-draft.json").write_text(
+                result.value.model_dump_json(indent=2), encoding="utf8"
+            )
+        if schema is SceneDraft:
+            (folder / "generated-scenes.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
         if schema is Propositions:

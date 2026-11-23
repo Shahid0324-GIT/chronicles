@@ -298,6 +298,7 @@ class ClaimReview(StructuredModel):
     observed_modality: ActionModality | None = None
     observed_negated: bool | None = None
     issues: list[str] = Field(default_factory=list)
+    additional_evidence_ids: list[str] = Field(default_factory=list)
 
 
 class ArcSemanticReview(StructuredModel):

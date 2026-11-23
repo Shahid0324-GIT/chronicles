@@ -12,11 +12,13 @@ from src.application.arc_prose import (
     ROLE_CALIBRATION,
     Propositions,
     ProseDraft,
+    SceneDraft,
     assess_in_batches,
     assess_written_section,
     bind_draft,
     bind_writing_notes,
     clarify_note_roles,
+    flatten_scenes,
     originality_candidates,
     revision_note_targets,
     validate_propositions,
@@ -389,6 +391,133 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
     assert result.qualification_passed
     assert calls == ["The gate stayed closed.", "Mira tried to open it.", "Mira tried to open it."]
     assert checkpoints == [1, 2, 3]
+
+
+async def test_scene_review_preserves_context_and_rejects_unknown_archive_anchor():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref, (_, clause) = next(iter(clause_map(plan).items()))
+    direct = next(u for u in plan.evidence if u.id in clause.evidence_ids)
+    direct.text = "Ada held a lantern at the bridge."
+    clause.clause = direct.text
+    plan.evidence.append(
+        direct.model_copy(
+            update={
+                "id": "corroboration",
+                "text": "At the bridge Ada raised the lantern.",
+            }
+        )
+    )
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": ref,
+                    "actor": "Ada",
+                    "action": "held",
+                    "target": "lantern",
+                    "modality": "completed",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                }
+            ]
+        }
+    )
+    draft = bind_writing_notes(
+        ProseDraft.model_validate(
+            {
+                "paragraphs": [
+                    {
+                        "claims": [
+                            {"text": "Ada was at the bridge.", "clauses": ["1"]},
+                            {"text": "She held the lantern at the bridge.", "clauses": ["1"]},
+                        ]
+                    }
+                ]
+            }
+        ),
+        plan,
+        notes,
+        "Bridge",
+    )
+
+    async def checkpoint() -> None:
+        pytest.fail("An invalid archive anchor must not be saved")
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.split("\n", 1)[1])
+        assert packet["s2"]["nearby_prose"] == ["Ada was at the bridge."]
+        assert packet["s2"]["archive_alternatives"] == {
+            "a1": "At the bridge Ada raised the lantern."
+        }
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "id": key,
+                        "verdict": "supported",
+                        "reason": "Accepted",
+                        "anchors": ["made-up-id"] if key == "s2" else [],
+                    }
+                    for key in packet
+                ]
+            }
+        )
+
+    with pytest.raises(ValueError, match="unavailable archive anchor"):
+        await assess_in_batches(draft, plan, notes, infer, {}, checkpoint)
+
+
+def test_scene_prose_keeps_reader_paragraphs_and_rejects_foreign_citations():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    refs = list(clause_map(plan))
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": ref,
+                    "actor": "Mira",
+                    "action": "try",
+                    "target": "gate",
+                    "modality": "attempted",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                }
+                for ref in refs
+            ]
+        }
+    )
+    scenes = SceneDraft.model_validate(
+        {
+            "scenes": [
+                {
+                    "id": f"scene-{i}",
+                    "paragraphs": [
+                        {
+                            "claims": [
+                                {
+                                    "text": "Mira tried the gate. Her attempt failed.",
+                                    "clauses": [str(i)],
+                                }
+                            ]
+                        }
+                    ],
+                }
+                for i in (1, 2)
+            ]
+        }
+    )
+    # Preserve the actual sentence grouping. Grounding decides whether both sentences follow.
+    draft = flatten_scenes(scenes, plan, notes)
+    assert len(draft.paragraphs) == 2
+    assert draft.paragraphs[0].claims[0].text == "Mira tried the gate. Her attempt failed."
+    scenes.scenes[0].paragraphs[0].claims[0].clauses = ["2"]
+    with pytest.raises(ValueError, match="outside its development"):
+        flatten_scenes(scenes, plan, notes)
+    scenes.scenes.pop()
+    with pytest.raises(ValueError, match="each planned scene once"):
+        flatten_scenes(scenes, plan, notes)
 
 
 async def test_role_correction_uses_the_explicit_cited_actor():
