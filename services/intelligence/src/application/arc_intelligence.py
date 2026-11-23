@@ -39,6 +39,7 @@ from src.application.arc_prose import (
     assess_in_batches,
     clarify_note_roles,
     originality_candidates,
+    pending_scene_calls,
     prepare_propositions,
     revision_note_targets,
     validate_propositions,
@@ -776,7 +777,7 @@ class ArcIntelligence:
                     )
                 else:
                     plan = await reconstruct_relationships(
-                        plan, infer, chronology_only=plan.relationship_review.status != "pending"
+                        plan, infer, focus_encounter=plan.relationship_review.status != "pending"
                     )
                 await self.save(
                     dossier.universe_id,
@@ -958,7 +959,15 @@ class ArcIntelligence:
                     notes = Propositions.model_validate(stored_notes["payload"])
             try:
                 if plan is not None:
-                    writing_calls = 0 if draft else (1 if notes else len(plan.developments) + 1)
+                    writing_calls = (
+                        0
+                        if draft
+                        else (
+                            pending_scene_calls(plan, notes, cached_batches)
+                            if notes
+                            else len(plan.developments) * 2
+                        )
+                    )
                     review_calls = 1 if draft else len(plan.developments) + 1
                     if self.can_review and not await self.can_review(writing_calls, review_calls):
                         raise InferenceFailure("publication_review_budget_reserved")
@@ -980,7 +989,9 @@ class ArcIntelligence:
                     if notes is not None:
                         validate_propositions(plan, notes)
                         if draft is None:
-                            if self.can_review and not await self.can_review(1, review_calls):
+                            if self.can_review and not await self.can_review(
+                                pending_scene_calls(plan, notes, cached_batches), review_calls
+                            ):
                                 raise InferenceFailure("publication_review_budget_reserved")
                             role_key = fingerprint(
                                 ["arc-role-notes-v1", notes.model_dump(mode="json")]
@@ -1006,7 +1017,14 @@ class ArcIntelligence:
                                     "withheld",
                                     providers()[offset:],
                                 )
-                            draft = await write_section(plan, notes, section.plan.title, infer)
+                            draft = await write_section(
+                                plan,
+                                notes,
+                                section.plan.title,
+                                infer,
+                                cached=cached_batches,
+                                checkpoint=save_batches,
+                            )
                 draft = draft or ArcSectionDraft.model_validate(
                     await infer(
                         "Write original, connected encyclopedia prose for this arc section "

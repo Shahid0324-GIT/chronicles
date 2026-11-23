@@ -22,7 +22,7 @@ from src.application.arc_contracts import (
     NarrativeDevelopmentPlan,
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
-from src.application.arc_prose import Propositions, ProseRevision, SceneDraft, validate_propositions
+from src.application.arc_prose import Propositions, ProseRevision, SceneProse, validate_propositions
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.development_plan import clause_map
 from src.application.event_extraction import evidence_units
@@ -120,6 +120,7 @@ async def main() -> None:
     parser.add_argument("--deep", action="store_true")
     parser.add_argument("--scene", action="store_true")
     parser.add_argument("--relationships", action="store_true")
+    parser.add_argument("--recovery", action="store_true")
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
@@ -153,6 +154,10 @@ async def main() -> None:
         if not args.scene:
             parser.error("Relationship benchmarks require --scene")
         folder = Path("../../.tmp/benchmark624-relationships")
+    if args.recovery:
+        if not args.relationships:
+            parser.error("Recovery runs require --relationships")
+        folder = Path("../../.tmp/benchmark624-recovery")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -168,12 +173,14 @@ async def main() -> None:
             "ai_max_attempts": 2 if args.autonomous else 1,
             "agent_stage_model_calls": {
                 **settings.agent_stage_model_calls,
-                "presentation": 20,
+                "presentation": 29 if args.recovery else 20,
                 "presentation_verification": 26,
             }
             if args.relationships
             else settings.agent_stage_model_calls,
             "agent_max_model_calls": 44
+            if args.recovery
+            else 44
             if args.relationships
             else 30
             if args.scene
@@ -311,7 +318,9 @@ async def main() -> None:
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
         saved_path = (
-            Path("../../.tmp/benchmark624") / section_key / "result.json"
+            Path("../../.tmp/benchmark624-relationships") / section_key / "result.json"
+            if args.recovery and args.original
+            else Path("../../.tmp/benchmark624") / section_key / "result.json"
             if args.relationships and args.original
             else Path("../../.tmp/benchmark623-deep") / section_key / "result.json"
             if args.scene and args.original
@@ -404,17 +413,16 @@ async def main() -> None:
             public_source_content=True,
             reserve_calls=2
             if schema is Propositions
-            else (1 if schema in (SceneDraft, ProseRevision) else 0),
+            else (1 if schema in (SceneProse, ProseRevision) else 0),
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
         if schema.__name__ in {"ProseDraft", "ProseRevision", "ArcSectionDraft"}:
             (folder / "generated-draft.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
-        if schema is SceneDraft:
-            (folder / "generated-scenes.json").write_text(
-                result.value.model_dump_json(indent=2), encoding="utf8"
-            )
+        if schema is SceneProse:
+            with (folder / "generated-scene-passages.jsonl").open("a", encoding="utf8") as log:
+                log.write(result.value.model_dump_json() + "\n")
         if schema is Propositions:
             name = "generated-notes" if prompt.startswith("Make compact") else "note-revisions"
             (folder / f"{name}.json").write_text(
@@ -423,7 +431,11 @@ async def main() -> None:
         if schema.__name__ == "PlannedProseReview":
             with (folder / "reviews.jsonl").open("a", encoding="utf8") as reviews:
                 reviews.write(result.value.model_dump_json() + "\n")
-        if schema.__name__ in {"RelationshipCandidates", "RelationshipVerdicts"}:
+        if schema.__name__ in {
+            "RelationshipCandidates",
+            "RelationshipVerdicts",
+            "FocusDecisions",
+        }:
             with (folder / "relationship-review.jsonl").open("a", encoding="utf8") as log:
                 log.write(result.value.model_dump_json() + "\n")
         return result.value
@@ -436,7 +448,7 @@ async def main() -> None:
             providers,
             [section_key],
             retry_withheld=args.resume_review or args.stabilize or args.retry_relationships,
-            refresh_relationships=args.retry_relationships,
+            refresh_relationships=args.retry_relationships or (args.recovery and args.original),
         )
         plan = dossier.sections[0].development_plan
         if args.relationships and plan and writing_notes:

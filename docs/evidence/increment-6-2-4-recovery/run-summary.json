@@ -1,0 +1,139 @@
+{
+  "evidence_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "human_reviewed_notes": false,
+  "status": "withheld",
+  "link_assessment": {
+    "status": "passed",
+    "issues": [
+      "4.8 to 4.9: The second excerpt implies the Sea King moved to eat Luffy, but the first excerpt states it came to eat Higuma, creating an ambiguous referent for 'it'."
+    ]
+  },
+  "verified_links": {
+    "link-11": {
+      "before": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "after": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "kind": "chronology",
+      "source_id": null,
+      "fact_ids": [
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba"
+      ],
+      "evidence_ids": [
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba"
+      ],
+      "before_clause": "4.8",
+      "after_clause": "4.9",
+      "before_excerpt": "Higuma took Luffy out to sea and kicked him off the boat to drown him, and as Luffy struggled to stay afloat, a Sea King known as Lord of the Coast came to eat Higuma.",
+      "after_excerpt": "It then moved to eat Luffy, but Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+      "statement": "The Sea King moved to eat Luffy, but Shanks arrived in time to scare the beast away."
+    },
+    "link-12": {
+      "before": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "after": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "kind": "narrative_presentation",
+      "source_id": null,
+      "fact_ids": [
+        "e5eb8d7a8704ed03be71d5692fc206f338ad5015fe99bccf4098a1d2a9664185",
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9"
+      ],
+      "evidence_ids": [
+        "02347181e60028015278b170a943882653dd851f42d0e77aadac8585041912af",
+        "290a175880297cfd24e8d50f3eb495f77c7bd9ff1a523ffe6e3937a58f063bb7",
+        "1a9c3c0a9b88a8b199e226b97dc0c99305976ee16783aa88f211105faf476f5f",
+        "ac984ec68efcc81681fb2b2418f37141a386f46e480eb4341a97a2e0d6fe23eb",
+        "e5eb8d7a8704ed03be71d5692fc206f338ad5015fe99bccf4098a1d2a9664185",
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9"
+      ],
+      "before_clause": "4.7",
+      "after_clause": "4.8",
+      "before_excerpt": "His first mate, Benn Beckman then overpowered the bandits singlehandedly, though Higuma managed to escape with Luffy in tow by throwing a smoke bomb.",
+      "after_excerpt": "Higuma took Luffy out to sea and kicked him off the boat to drown him, and as Luffy struggled to stay afloat, a Sea King known as Lord of the Coast came to eat Higuma.",
+      "statement": "The account continues from the first action to the second."
+    },
+    "link-13": {
+      "before": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "after": "de3be27e-ff06-5123-8b37-eb730516c093",
+      "kind": "chronology",
+      "source_id": null,
+      "fact_ids": [
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba",
+        "8d336e60459f6a3d45017eb993268822ded5a523182fa6353bfcaba058cc90f5"
+      ],
+      "evidence_ids": [
+        "d0439192ee5da700752cb2e2f212a1b4683c5f9e2ef96cabba306178f7c4637c",
+        "8115e1de5fabeb47958b22212807e3182791665bac272f9a6a1d69d7d62de484",
+        "f15a85d1573b29b52185e8494088c9279b5682de9d2ef55203621f792e42336d",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba",
+        "8d336e60459f6a3d45017eb993268822ded5a523182fa6353bfcaba058cc90f5"
+      ],
+      "before_clause": "4.9",
+      "after_clause": "4.10",
+      "before_excerpt": "It then moved to eat Luffy, but Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+      "after_excerpt": "Shanks was glad Luffy was okay, but Luffy was saddened that he had lost his arm in the process of saving him.",
+      "statement": "The source explicitly connects these actions in time."
+    }
+  },
+  "cited_link_ids": [
+    "link-11"
+  ],
+  "words": 345,
+  "paragraphs": 5,
+  "reused_scene_artifacts": 3,
+  "validations": {
+    "factual": {
+      "status": "blocked"
+    },
+    "structural": {
+      "status": "passed",
+      "issues": []
+    },
+    "editorial": {
+      "status": "blocked"
+    },
+    "originality": {
+      "status": "blocked",
+      "issues": [
+        "Paragraph 5: The phrase 'choosing instead to declare his intent' (note 39) is compressed and slightly awkward; a clearer expression would be 'choosing instead to declare his intention'.",
+        "Paragraph 5: The phrasing 'a goal that drove him to reject Shanks' offer' (note 41) is redundant; 'driving him to reject' or simply 'leading him to reject' would suffice.",
+        "Paragraph 5: The phrase 'token of their parting' (note 42) is a common idiom, but the context implies a specific agreement rather than just a farewell gift, which could be clarified.",
+        "Completeness_issues\": ["
+      ]
+    },
+    "coverage": {
+      "status": "blocked",
+      "issues": [
+        "Unrepresented required note 23: Lucky Roux | shot | bandit pointing gun at Shanks |  | ",
+        "Unrepresented required note 24: Shanks | stated acceptance of insult | himself |  | ",
+        "Unrepresented required note 25: Benn Beckman | overpowered | bandits |  | ",
+        "Unrepresented required note 26: Higuma | escaped with | Luffy |  | ",
+        "Paragraph 3: Note 16 states Shanks revealed his rubber body to Luffy, but note 17 repeats this information without adding new detail about the mechanics of the Devil Fruit's effect beyond 'inability to swim'.",
+        "Paragraph 4: Note 20 mentions Makino alerted the mayor, but the text does not specify if she did so verbally or through a signal, nor does it confirm the mayor's immediate reaction.",
+        "Paragraph 4: Note 27 states Higuma kicked Luffy off to attempt drowning, but note 32 says Shanks saved Luffy. The text does not explain how Shanks intervened between the kick and the Sea King's arrival.",
+        "Paragraph 5: Note 45 states Shanks decided to leave Foosha Village, but note 37 states the Red Hair Pirates were preparing to leave. The text does not clarify if Shanks was part of the group leaving or if he left separately.",
+        "Paragraph 5: Note 43 mentions Beckman anticipating Luffy would do big things, but note 45 focuses on Shanks' departure. The text does not explain how Beckman's anticipation relates to Shanks' decision to leave.",
+        "Paragraph 5: Note 40 states Luffy aimed to become the Pirate King, but note 39 states he chose to form his own group. The text does not explicitly connect these two ambitions as a single coherent goal.",
+        "Paragraph 5: Note 42 mentions Shanks intended for the hat to be returned after Luffy surpasses him, but note 41 states Luffy rejected Shanks' offer. The text does not clarify if Luffy's rejection was of the crew or just the offer to join.",
+        "Paragraph 5: Note 43 and 45 both mention the Red Hair Pirates leaving Foosha Village, but note 42 mentions Shanks giving the hat. The text does not explain if Shanks left with the pirates or alone.",
+        "Paragraph 5: Note 40 states Luffy aimed to become the Pirate King, but note 39 states he chose to form his own group. The text does not explicitly connect these two ambitions as a single coherent goal.",
+        "Paragraph 5: Note 42 mentions Shanks intended for the hat to be returned after Luffy surpasses him, but note 41 states Luffy rejected Shanks' offer. The text does not clarify if Luffy's rejection was of the crew or just the offer to join.",
+        "Paragraph 5: Note 43 and 45 both mention the Red Hair Pirates leaving Foosha Village, but note 42 mentions Shanks giving the hat. The text does not explain if Shanks left with the pirates or alone."
+      ]
+    }
+  },
+  "scope_review_qualified": false,
+  "verbatim_paragraphs": [],
+  "near_overlap_paragraphs": [
+    5
+  ],
+  "api": {
+    "http_status": 200,
+    "status": "pending",
+    "article_present": false
+  },
+  "provider_requests": {
+    "groq ok": 1,
+    "groq rate_limited": 7,
+    "ollama ok": 33
+  }
+}

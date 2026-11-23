@@ -28,6 +28,8 @@ from src.application.development_plan import (
     DevelopmentBatchReview,
     PlanAssessment,
     PlanProposal,
+    RelationshipCandidate,
+    anchored_relationship,
     assess_plan,
     clause_map,
     explicit_chronology,
@@ -201,6 +203,38 @@ def test_chronology_cannot_borrow_a_later_cue_across_intervening_evidence():
     assert not explicit_chronology(
         "Mira tried", "Ron opened", evidence, [before, intervening, after]
     )
+
+
+def test_parallel_endpoint_binds_exact_words_to_a_licensed_action():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    first, second = list(clause_map(plan))
+    first_clause = clause_map(plan)[first][1]
+    alternate = evidence[0].model_copy(
+        update={
+            "id": "parallel",
+            "source_id": uuid4(),
+            "text": "Mira attempted to raise the gate.",
+        }
+    )
+    plan.evidence.append(alternate)
+    other = clause_map(plan)[second][1]
+    candidate = RelationshipCandidate(
+        before=first,
+        after=second,
+        before_excerpt=alternate.text,
+        after_excerpt=other.clause,
+        kind="resolution",
+        evidence=["e3"],
+        statement="Ron opened the gate after Mira attempted it.",
+    )
+    link = anchored_relationship(candidate, plan, plan.evidence)
+    assert alternate.id in link.evidence_ids
+    assert first_clause.fact_id in link.fact_ids
+    candidate.evidence = []
+    if alternate.text != first_clause.clause:
+        with pytest.raises(ValueError, match="not bound"):
+            anchored_relationship(candidate, plan, plan.evidence)
 
 
 def test_prose_packet_is_source_isolated_and_only_binds_licensed_notes():
