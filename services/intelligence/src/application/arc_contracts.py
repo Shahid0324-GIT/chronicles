@@ -244,6 +244,8 @@ class ArcClaim(StructuredModel):
     text: str = Field(min_length=8, max_length=1000)
     fact_ids: list[str] = Field(min_length=1, max_length=12)
     source_clause_ids: list[str] = Field(default_factory=list, max_length=12)
+    context_evidence_ids: list[str] = Field(default_factory=list)
+    writing_note_ids: list[str] = Field(default_factory=list, max_length=12)
 
 
 class ArcParagraph(StructuredModel):
@@ -305,6 +307,8 @@ class ArcSemanticReview(StructuredModel):
     coherence_issues: list[str] = Field(default_factory=list, max_length=12)
     unsupported_connections: list[str] = Field(default_factory=list)
     originality_issues: list[str] = Field(default_factory=list)
+    revision_paragraphs: list[int] = Field(default_factory=list)
+    coverage_issues: list[str] = Field(default_factory=list)
 
 
 class ArcSectionDraft(StructuredModel):

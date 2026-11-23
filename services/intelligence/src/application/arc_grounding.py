@@ -75,16 +75,15 @@ def validate_claims(
                 raise ValueError("Unlicensed claim citations")
 
 
+def word_spans(text: str, window: int) -> set[tuple[str, ...]]:
+    words = re.findall(r"\w+", text.casefold())
+    return {tuple(words[i : i + window]) for i in range(len(words) - window + 1)}
+
+
 def copied_paragraphs(draft: ArcSectionDraft, plan: NarrativeDevelopmentPlan) -> list[int]:
     """Detect long verbatim runs from the fixed source text before article review."""
-    window = 18
-
-    def spans(text: str) -> set[tuple[str, ...]]:
-        words = re.findall(r"\w+", text.casefold())
-        return {tuple(words[i : i + window]) for i in range(len(words) - window + 1)}
-
-    source_spans = set().union(*(spans(u.text) for u in plan.evidence))
-    return [i for i, p in enumerate(draft.paragraphs, 1) if spans(p.text) & source_spans]
+    source_spans = set().union(*(word_spans(u.text, 18) for u in plan.evidence))
+    return [i for i, p in enumerate(draft.paragraphs, 1) if word_spans(p.text, 18) & source_spans]
 
 
 def review_ok(review: ArcSemanticReview, count: int) -> bool:
@@ -97,6 +96,7 @@ def review_ok(review: ArcSemanticReview, count: int) -> bool:
         and not review.coherence_issues
         and not review.unsupported_connections
         and not review.originality_issues
+        and not review.coverage_issues
     )
 
 

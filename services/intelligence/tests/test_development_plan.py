@@ -13,6 +13,7 @@ from src.application.arc_prose import (
     ProseDraft,
     assess_written_section,
     bind_draft,
+    bind_writing_notes,
     originality_candidates,
     validate_propositions,
     writing_packet,
@@ -198,6 +199,96 @@ def test_near_verbatim_prose_is_flagged_for_review():
     )
     assert originality_candidates(draft, plan) == [{"paragraph": 1, "unit": "1"}]
     assert copied_paragraphs(draft, plan) == []
+
+
+async def test_archive_context_is_cited_without_exposing_it_to_the_writer():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    first, second = list(clause_map(plan))
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": first,
+                    "actor": "Mira",
+                    "action": "try",
+                    "target": "gate",
+                    "modality": "attempted",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                    "context": ["e2"],
+                    "essential": True,
+                },
+                {
+                    "id": second,
+                    "actor": "Ron",
+                    "action": "open",
+                    "target": "gate",
+                    "modality": "completed",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                    "essential": True,
+                },
+            ],
+        }
+    )
+    validate_propositions(plan, notes)
+    packet = json.dumps(writing_packet(plan, notes))
+    assert all(unit.text not in packet for unit in evidence)
+    draft = bind_writing_notes(
+        ProseDraft.model_validate(
+            {
+                "paragraphs": [
+                    {"claims": [{"text": "Mira attempted to open the gate.", "clauses": ["1"]}]},
+                ]
+            }
+        ),
+        plan,
+        notes,
+        "Gate",
+    )
+    assert draft.paragraphs[0].claims[0].context_evidence_ids == [evidence[1].id]
+
+    async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        payload = json.loads(prompt.split("\n", 1)[1])
+        assert payload["context"] == {"1": evidence[1].text}
+        return schema.model_validate(
+            {
+                "supported": [0],
+                "rejected": [],
+                "editorial_issues": [],
+                "originality_issues": ["Close rephrasing"],
+                "revise_paragraphs": [1],
+            }
+        )
+
+    result = await assess_written_section(draft, plan, reviewer, notes)
+    assert "Missing essential writing notes: 2" in result.coverage_issues
+    assert result.revision_paragraphs == [1]
+
+
+def test_source_phrasing_is_rejected_before_writing():
+    proposal, facts, evidence, *scope = material()
+    evidence[0].text = "Behind the rusted gate Mira waited for Ron to return with the iron key."
+    evidence[0].end = evidence[0].start + len(evidence[0].text)
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    notes = Propositions.model_validate(
+        {
+            "notes": [
+                {
+                    "id": next(iter(clause_map(plan))),
+                    "actor": "Mira",
+                    "action": evidence[0].text,
+                    "target": "",
+                    "modality": "completed",
+                    "negated": False,
+                    "purpose_or_limit": "",
+                }
+            ],
+        }
+    )
+    with pytest.raises(ValueError, match="repeat archived source wording"):
+        validate_propositions(plan, notes)
 
 
 def test_source_order_is_independent_of_model_array_order_and_not_world_time():

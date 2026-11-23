@@ -61,7 +61,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v17"
+POLICY = "arc-intelligence-v18"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -1026,12 +1026,18 @@ class ArcIntelligence:
                     qualification["passed"] = qualified
                     if qualified:
                         assessment = (
-                            await assess_written_section(draft, plan, infer)
+                            await assess_written_section(draft, plan, infer, notes)
                             if plan
                             else await review_section(draft, facts, infer)
                         )
                         assessed_model = reviewer_model()
                         if assessed_model != qualified_model:
+                            review_attempts.append(
+                                {
+                                    **assessment.model_dump(mode="json"),
+                                    "qualification_status": "provider_changed",
+                                }
+                            )
                             qualified, qualification = await qualify_reviewer(infer)
                             qualified_model = reviewer_model()
                             qualification["passed"] = qualified
@@ -1050,7 +1056,7 @@ class ArcIntelligence:
                     if status == "validated" or not qualified:
                         break
                 if status == "withheld" and qualified and assessment is not None and plan and notes:
-                    indices = set(copied_paragraphs(draft, plan))
+                    indices = set(assessment.revision_paragraphs)
                     if assessment.originality_issues:
                         indices.update(
                             int(str(match["paragraph"]))
@@ -1073,11 +1079,23 @@ class ArcIntelligence:
                             draft.heading,
                             infer,
                             repair={
-                                "paragraph_indices": sorted(indices),
-                                "current_paragraphs": [p.text for p in draft.paragraphs],
+                                "targets": [
+                                    {
+                                        "paragraph": i,
+                                        "note_ids": sorted(
+                                            {
+                                                note
+                                                for claim in draft.paragraphs[i - 1].claims
+                                                for note in claim.writing_note_ids
+                                            }
+                                        ),
+                                    }
+                                    for i in sorted(indices)
+                                ],
                                 "factual_issues_by_claim": rejected,
                                 "editorial_issues": assessment.coherence_issues,
                                 "originality_issues": assessment.originality_issues,
+                                "coverage_issues": assessment.coverage_issues,
                             },
                         )
                         if len(replacements.paragraphs) != len(indices):
@@ -1101,7 +1119,7 @@ class ArcIntelligence:
                             "withheld",
                             providers()[offset:],
                         )
-                        assessment = await assess_written_section(draft, plan, infer)
+                        assessment = await assess_written_section(draft, plan, infer, notes)
                         qualified = reviewer_model() == qualified_model
                         status = (
                             "validated"
@@ -1180,6 +1198,12 @@ class ArcIntelligence:
                             if qualified and assessment and not assessment.originality_issues
                             else "blocked",
                             "issues": assessment.originality_issues if assessment else [],
+                        },
+                        "coverage": {
+                            "status": "passed"
+                            if qualified and assessment and not assessment.coverage_issues
+                            else "blocked",
+                            "issues": assessment.coverage_issues if assessment else [],
                         },
                     }
             except InferenceFailure as error:
@@ -1294,9 +1318,16 @@ def article_markdown(result: dict[str, Any]) -> str:
                         for s in facts[i]["sources"]
                     }
                 )
+                context = [
+                    f"Archived passage `{u['passage_id']}`, offsets {u['start']}–{u['end']}"
+                    for s in dossier["sections"]
+                    for u in (s.get("development_plan") or {}).get("evidence", [])
+                    if u["id"] in claim.get("context_evidence_ids", [])
+                ]
                 cited.append(f"{claim['text']}[^{number}]")
                 notes.append(
-                    f"[^{number}]: " + "; ".join(f"[{title}]({url})" for url, title in refs)
+                    f"[^{number}]: "
+                    + ", ".join([*(f"[{title}]({url})" for url, title in refs), *context])
                 )
             lines += [" ".join(cited), ""]
     if notes:

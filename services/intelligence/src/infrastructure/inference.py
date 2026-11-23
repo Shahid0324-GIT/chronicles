@@ -116,6 +116,9 @@ class LangChainProvider:
                 raise InferenceFailure(
                     "provider_invalid_request", issues=("strict_requires_json_schema",)
                 )
+            if self.method == "json_mode":
+                system += "\nReturn one JSON object conforming to this schema:\n"
+                system += json.dumps(schema.model_json_schema(), separators=(",", ":"))
             runnable = client.with_structured_output(
                 schema,
                 method=self.method,
@@ -256,6 +259,12 @@ def create_inference(
                             temperature=0,
                             max_retries=0,
                             max_tokens=4000,
+                            reasoning_effort=(
+                                "low"
+                                if settings.groq_structured_output_method == "json_mode"
+                                and "gpt-oss" in settings.groq_model
+                                else None
+                            ),
                             timeout=settings.ai_timeout_seconds,
                         ),
                         "groq",

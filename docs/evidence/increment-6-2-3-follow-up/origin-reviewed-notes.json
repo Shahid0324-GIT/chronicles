@@ -1,0 +1,412 @@
+{
+  "evidence_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "plan_revision": "b888bf33b2a0748b38815a38f037bf16c0d819c18d35e106d80f59b14785750e",
+  "propositions": {
+    "notes": [
+      {
+        "id": "1.1",
+        "actor": "Gold Roger",
+        "action": "held title",
+        "target": "Pirate King",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "1.2",
+        "actor": "Gold Roger",
+        "action": "revealed existence of hidden treasure",
+        "target": "public audience",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "before execution",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "1.2",
+        "actor": "Roger's announcement",
+        "action": "ushered in",
+        "target": "Great Pirate Era",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "2.1",
+        "actor": "Red Hair Pirates",
+        "action": "arrived",
+        "target": "Foosha Village",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "2.2",
+        "actor": "Luffy",
+        "action": "cut his face beneath left eye",
+        "target": "himself",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "hoped injury would demonstrate fitness for crew",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "2.4",
+        "actor": "Luffy",
+        "action": "asked to join",
+        "target": "Shanks' crew",
+        "modality": "attempted",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "2.4",
+        "actor": "Shanks",
+        "action": "refused request",
+        "target": "Luffy",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "too young and unable to swim",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.1",
+        "actor": "Higuma and mountain bandits",
+        "action": "demanded drinks",
+        "target": "at Makino's bar",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.2",
+        "actor": "Shanks",
+        "action": "offered remaining bottle",
+        "target": "Higuma",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.2",
+        "actor": "Higuma",
+        "action": "smashed bottle",
+        "target": "on Shanks' head",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.3",
+        "actor": "Shanks",
+        "action": "apologized and tidied up",
+        "target": "bar",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.4",
+        "actor": "Luffy",
+        "action": "resented lack of retaliation",
+        "target": "Shanks' response",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.5",
+        "actor": "Luffy",
+        "action": "walked out",
+        "target": "bar",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.5",
+        "actor": "Shanks",
+        "action": "tried to stop",
+        "target": "Luffy by the arm",
+        "modality": "attempted",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.5",
+        "actor": "Luffy's arm",
+        "action": "stretched",
+        "target": "as Luffy kept walking",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.6",
+        "actor": "Red Hair Pirates",
+        "action": "found their fruit missing",
+        "target": "Gomu Gomu no Mi",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.6",
+        "actor": "Luffy",
+        "action": "ate",
+        "target": "Gomu Gomu no Mi for dessert",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "3.7",
+        "actor": "Shanks",
+        "action": "explained physical effects",
+        "target": "rubber body and permanent inability to swim",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.1",
+        "actor": "Red Hair Pirates",
+        "action": "left on a voyage",
+        "target": "Foosha Village",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.2",
+        "actor": "Higuma's gang",
+        "action": "returned",
+        "target": "Makino's bar",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.3",
+        "actor": "Makino",
+        "action": "informed mayor",
+        "target": "bandits took Luffy after a quarrel",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.5",
+        "actor": "Lucky Roux",
+        "action": "shot",
+        "target": "bandit aiming at Shanks",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.6",
+        "actor": "Shanks",
+        "action": "said insults aimed at him were tolerable",
+        "target": "harm to friends was intolerable",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.7",
+        "actor": "Benn Beckman",
+        "action": "overpowered",
+        "target": "bandits",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.7",
+        "actor": "Higuma",
+        "action": "escaped with captive",
+        "target": "Luffy",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "used smoke bomb",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.8",
+        "actor": "Higuma",
+        "action": "took Luffy offshore and threw him overboard",
+        "target": "Luffy",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "aimed to drown Luffy",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.8",
+        "actor": "Lord of the Coast, a Sea King",
+        "action": "ate",
+        "target": "Higuma",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [
+          "e47"
+        ],
+        "essential": true
+      },
+      {
+        "id": "4.9",
+        "actor": "Lord of the Coast",
+        "action": "threatened",
+        "target": "Luffy",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [
+          "e48"
+        ],
+        "essential": true
+      },
+      {
+        "id": "4.9",
+        "actor": "Shanks",
+        "action": "rescued Luffy and drove away creature",
+        "target": "Lord of the Coast",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "4.10",
+        "actor": "Shanks",
+        "action": "lost an arm during rescue",
+        "target": "arm bitten off",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [
+          "e51"
+        ],
+        "essential": true
+      },
+      {
+        "id": "4.10",
+        "actor": "Luffy",
+        "action": "grieved over injury",
+        "target": "Shanks' lost arm",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [
+          "e51"
+        ],
+        "essential": true
+      },
+      {
+        "id": "5.1",
+        "actor": "Red Hair Pirates",
+        "action": "prepared to leave permanently",
+        "target": "Foosha Village",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "5.2",
+        "actor": "Luffy",
+        "action": "gave up joining Shanks",
+        "target": "Red Hair Pirates",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "5.2",
+        "actor": "Luffy",
+        "action": "declared new ambitions",
+        "target": "own crew, surpass Shanks' crew, find treasure, become Pirate King",
+        "modality": "intended",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "5.3",
+        "actor": "Shanks",
+        "action": "entrusted straw hat",
+        "target": "Luffy",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "return once Luffy surpasses him",
+        "context": [],
+        "essential": true
+      },
+      {
+        "id": "5.4",
+        "actor": "Red Hair Pirates",
+        "action": "sailed away",
+        "target": "Foosha Village",
+        "modality": "completed",
+        "negated": false,
+        "purpose_or_limit": "",
+        "context": [],
+        "essential": true
+      }
+    ]
+  }
+}

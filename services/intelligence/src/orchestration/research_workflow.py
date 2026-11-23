@@ -3019,7 +3019,7 @@ class ResearchWorkflow:
         self, state: ResearchState, request: ResearchRequest, *, compose: bool
     ) -> ResearchState:
         from src.application.arc_intelligence import ArcIntelligence
-        from src.application.arc_prose import Propositions, ProseDraft
+        from src.application.arc_prose import Propositions, ProseDraft, ProseRevision
 
         if not self.atlas or not request.arc_id:
             return state
@@ -3085,7 +3085,11 @@ class ResearchWorkflow:
                     schema,
                     task,
                     public,
-                    reserve_review_calls=2 if schema in (Propositions, ProseDraft) else 0,
+                    reserve_review_calls=1
+                    if schema is ProseRevision
+                    else 2
+                    if schema in (Propositions, ProseDraft)
+                    else 0,
                 )
             finally:
                 state.pop("arc_inference_source_ids", None)

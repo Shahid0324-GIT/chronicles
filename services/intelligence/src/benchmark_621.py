@@ -21,7 +21,7 @@ from src.application.arc_contracts import (
     DevelopmentEvidence,
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
-from src.application.arc_prose import Propositions, ProseDraft
+from src.application.arc_prose import Propositions, ProseDraft, ProseRevision, validate_propositions
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.event_extraction import evidence_units
 from src.application.research_contracts import Task
@@ -113,21 +113,25 @@ async def main() -> None:
     phase.add_argument("--compose", action="store_true")
     phase.add_argument("--stabilize", action="store_true")
     phase.add_argument("--original", action="store_true")
+    parser.add_argument("--follow-up", action="store_true")
+    parser.add_argument("--refresh-notes", action="store_true")
+    parser.add_argument("--reviewed-notes", type=Path)
     args = parser.parse_args()
     section_key = args.section
     title, ranges = SCOPES[section_key]
     baseline = Path("../../.tmp/benchmark621") / section_key
-    folder = Path("../../.tmp/benchmark623") / section_key
+    folder = Path("../../.tmp") / ("benchmark623-follow-up" if args.follow_up else "benchmark623")
+    folder /= section_key
     if args.freeze:
         folder = baseline
     folder.mkdir(parents=True, exist_ok=True)
     settings = Settings().model_copy(
         update={
             "ai_provider_mode": "cloud",
-            "groq_structured_output_method": "json_schema",
+            "groq_structured_output_method": "json_mode" if args.follow_up else "json_schema",
             "groq_structured_output_strict": False,
             "ai_max_attempts": 1,
-            "agent_max_model_calls": 6,
+            "agent_max_model_calls": 12 if args.follow_up else 6,
             "ai_cloud_rate_limit_wait_seconds": 0,
         }
     )
@@ -273,12 +277,13 @@ async def main() -> None:
         ] = row
         if not (args.stabilize or args.original):
             prior = saved["provider_usage"]
-        pending = saved.get("pending_review") if not args.original else None
+        reuse_draft = not (args.original or args.refresh_notes or args.reviewed_notes)
+        pending = saved.get("pending_review") if reuse_draft else None
         if pending:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_pending_review", evidence.revision)
             ] = pending
-        writing_notes = saved.get("writing_notes") if not args.original else None
+        writing_notes = saved.get("writing_notes") if reuse_draft else None
         if writing_notes:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
@@ -309,11 +314,19 @@ async def main() -> None:
             schema,
             task,
             public_source_content=True,
-            reserve_calls=2 if schema in (Propositions, ProseDraft) else 0,
+            reserve_calls=1
+            if schema is ProseRevision
+            else 2
+            if schema in (Propositions, ProseDraft)
+            else 0,
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
-        if schema.__name__ in {"ProseDraft", "ArcSectionDraft"}:
+        if schema.__name__ in {"ProseDraft", "ProseRevision", "ArcSectionDraft"}:
             (folder / "generated-draft.json").write_text(
+                result.value.model_dump_json(indent=2), encoding="utf8"
+            )
+        if schema is Propositions:
+            (folder / "generated-notes.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
         return result.value
@@ -334,6 +347,27 @@ async def main() -> None:
             dossier.sections[0].coverage.gaps,
             flush=True,
         )
+        if args.reviewed_notes:
+            if not plan:
+                raise ValueError("Reviewed benchmark notes require a scoped development plan")
+            packet = json.loads(args.reviewed_notes.read_text(encoding="utf8"))
+            if packet["evidence_revision"] != evidence.revision or (
+                packet["plan_revision"] != plan.revision
+            ):
+                raise ValueError("Reviewed benchmark notes do not match the frozen plan")
+            reviewed = Propositions.model_validate(packet["propositions"])
+            validate_propositions(plan, reviewed)
+            await service.save(
+                U,
+                C,
+                section.id,
+                "arc_writing_notes",
+                evidence.revision,
+                section.revision,
+                reviewed.model_dump(mode="json"),
+                "withheld",
+                [],
+            )
         if (
             (args.compose or args.original)
             and plan
@@ -355,6 +389,7 @@ async def main() -> None:
             "stored_plan": stored,
             "provider_usage": prior + providers(),
             "input_revision": evidence.revision,
+            "reviewed_notes_input": bool(args.reviewed_notes),
             "pending_review": memory.rows.get(
                 service.identifier(section.id, "arc_pending_review", evidence.revision)
             ),
