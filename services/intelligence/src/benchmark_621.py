@@ -110,10 +110,14 @@ async def main() -> None:
     phase.add_argument("--freeze", action="store_true")
     phase.add_argument("--resume-review", action="store_true")
     phase.add_argument("--compose", action="store_true")
+    phase.add_argument("--stabilize", action="store_true")
     args = parser.parse_args()
     section_key = args.section
     title, ranges = SCOPES[section_key]
-    folder = Path("../../.tmp/benchmark621") / section_key
+    baseline = Path("../../.tmp/benchmark621") / section_key
+    folder = Path("../../.tmp/benchmark622") / section_key
+    if args.freeze:
+        folder = baseline
     folder.mkdir(parents=True, exist_ok=True)
     settings = Settings().model_copy(
         update={
@@ -248,8 +252,9 @@ async def main() -> None:
     result_path = folder / "result.json"
     if result_path.exists() and not (args.resume_review or args.compose):
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
-    if args.resume_review or args.compose:
-        saved = json.loads(result_path.read_text(encoding="utf8"))
+    if args.resume_review or args.compose or args.stabilize:
+        saved_path = baseline / "result.json" if args.stabilize else result_path
+        saved = json.loads(saved_path.read_text(encoding="utf8"))
         if saved["input_revision"] != evidence.revision:
             raise ValueError("Fixed dossier fingerprint changed")
         row = saved["stored_plan"]
@@ -258,7 +263,13 @@ async def main() -> None:
         memory.rows[
             ArcIntelligence.identifier(section.id, "arc_development_plan", evidence.revision)
         ] = row
-        prior = saved["provider_usage"]
+        if not args.stabilize:
+            prior = saved["provider_usage"]
+        pending = saved.get("pending_review")
+        if pending:
+            memory.rows[
+                ArcIntelligence.identifier(section.id, "arc_pending_review", evidence.revision)
+            ] = pending
     router = create_inference(settings)
     router.max_calls = max(0, router.max_calls - len(prior))
     service = BenchmarkArc(build_atlas(factory), transaction, evidence)
@@ -277,6 +288,10 @@ async def main() -> None:
             public_source_content=True,
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
+        if task == "presentation":
+            (folder / "generated-draft.json").write_text(
+                result.value.model_dump_json(indent=2), encoding="utf8"
+            )
         return result.value
 
     try:
@@ -286,7 +301,7 @@ async def main() -> None:
             infer,
             providers,
             [section_key],
-            retry_withheld=args.resume_review,
+            retry_withheld=args.resume_review or args.stabilize,
         )
         plan = dossier.sections[0].development_plan
         print(
@@ -312,6 +327,9 @@ async def main() -> None:
             "stored_plan": stored,
             "provider_usage": prior + providers(),
             "input_revision": evidence.revision,
+            "pending_review": memory.rows.get(
+                service.identifier(section.id, "arc_pending_review", evidence.revision)
+            ),
         }
         result_path.write_text(json.dumps(result, indent=2, ensure_ascii=True), encoding="utf8")
         markdown = (

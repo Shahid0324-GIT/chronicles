@@ -1,6 +1,7 @@
 """Claim-level checks for the existing arc composer, including reviewer qualification."""
 
 import json
+import re
 from typing import Any
 
 from src.application.arc_contracts import (
@@ -72,6 +73,18 @@ def validate_claims(
         for claim in paragraph.claims:
             if not set(claim.fact_ids) <= by_id.keys():
                 raise ValueError("Unlicensed claim citations")
+
+
+def copied_paragraphs(draft: ArcSectionDraft, plan: NarrativeDevelopmentPlan) -> list[int]:
+    """Detect long verbatim runs from the fixed source text before article review."""
+    window = 18
+
+    def spans(text: str) -> set[tuple[str, ...]]:
+        words = re.findall(r"\w+", text.casefold())
+        return {tuple(words[i : i + window]) for i in range(len(words) - window + 1)}
+
+    source_spans = set().union(*(spans(u.text) for u in plan.evidence))
+    return [i for i, p in enumerate(draft.paragraphs, 1) if spans(p.text) & source_spans]
 
 
 def review_ok(review: ArcSemanticReview, count: int) -> bool:

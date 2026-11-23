@@ -4,13 +4,17 @@ from uuid import uuid4
 
 import pytest
 
-from src.application.arc_contracts import DevelopmentEvidence
+from src.application.arc_contracts import ArcSectionDraft, DevelopmentEvidence
+from src.application.arc_grounding import copied_paragraphs
 from src.application.development_plan import (
+    DevelopmentBatchReview,
     PlanAssessment,
     PlanProposal,
     assess_plan,
+    fence_repeated_anchors,
     layers,
     plan_from_proposal,
+    review_developments,
 )
 
 
@@ -131,6 +135,90 @@ def test_structured_review_cannot_override_modality_negation_or_caption_failure(
     assert invalid.factual.status == invalid.structural.status == "blocked"
     assert "Inconsistent reviewer" in " ".join(invalid.factual.issues)
     assert plan.structural.status == "pending"  # Original artifact was not mutated.
+
+
+@pytest.mark.asyncio
+async def test_review_replaces_caption_anchor_and_withholds_conflicting_development():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    first, second = plan.developments
+    first.clauses += second.clauses
+    original_anchor = first.anchor_ids[:]
+
+    async def infer(prompt, schema, task):
+        assert schema is DevelopmentBatchReview
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "development": 1,
+                        "supported": [2],
+                        "rejected": [1],
+                        "anchor": 2,
+                        "issues": ["First reference is a caption"],
+                    },
+                    {
+                        "development": 2,
+                        "supported": [1],
+                        "rejected": [1],
+                        "anchor": 1,
+                        "issues": ["Contradictory review"],
+                    },
+                ]
+            }
+        )
+
+    result = await review_developments(plan, infer, facts)
+    assert result.structural.status == result.factual.status == "passed"
+    assert len(result.developments) == 1
+    assert result.developments[0].anchor_ids == second.anchor_ids
+    assert first.anchor_ids == original_anchor
+    assert any("contradictory" in gap for gap in result.gaps)
+    assert len(result.evidence) == len(plan.evidence)
+
+
+def test_repeated_source_label_cannot_anchor_a_reviewed_development():
+    proposal, facts, evidence, *scope = material()
+    repeated = evidence[0].model_copy(update={"id": "repeat"})
+    repeated.start = evidence[0].end + 1
+    repeated.end = repeated.start + len(repeated.text)
+    plan = plan_from_proposal(proposal, facts, [*evidence, repeated], *scope)
+    anchored = next(d for d in plan.developments if d.anchor_ids == [evidence[0].id])
+    fallback = next(d for d in plan.developments if d.id != anchored.id)
+    anchored.clauses.extend(fallback.clauses)
+    plan.developments = [anchored]
+    repaired = fence_repeated_anchors(plan)
+    assert repaired.developments[0].anchor_ids == fallback.anchor_ids
+    assert repaired.developments[0].id == anchored.id
+    assert anchored.anchor_ids == [evidence[0].id]
+    assert repaired.evidence == plan.evidence
+
+
+def test_originality_check_flags_only_long_verbatim_paragraphs():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    source = (
+        "After the afternoon storm passed over the harbor the crew returned to the dock to "
+        "inspect the damaged ropes before the next departure."
+    )
+    plan.evidence[0].text = source
+    draft = ArcSectionDraft.model_validate(
+        {
+            "heading": "Owned fixture",
+            "paragraphs": [
+                {"claims": [{"text": source, "fact_ids": ["a"]}]},
+                {
+                    "claims": [
+                        {
+                            "text": "The crew checked the ropes when the storm had passed.",
+                            "fact_ids": ["a"],
+                        }
+                    ]
+                },
+            ],
+        }
+    )
+    assert copied_paragraphs(draft, plan) == [1]
 
 
 @pytest.mark.asyncio

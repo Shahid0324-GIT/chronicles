@@ -25,6 +25,7 @@ from src.application.arc_contracts import (
 from src.application.arc_grounding import (
     assertion,
     assertion_context,
+    copied_paragraphs,
     ground_understanding,
     qualify_reviewer,
     review_ok,
@@ -33,11 +34,11 @@ from src.application.arc_grounding import (
     validate_claims,
 )
 from src.application.development_plan import (
-    assess_plan,
+    fence_repeated_anchors,
     plan_from_proposal,
     propose_fixed_plan,
     propose_plan,
-    review_plan,
+    review_developments,
 )
 from src.application.knowledge_presentation import Infer, KnowledgeAtlas, fingerprint
 from src.application.ports.presentation import PresentationTransaction
@@ -79,6 +80,8 @@ def composition_context(section: ArcSectionDossier, facts: list[dict[str, Any]])
     plan = section.development_plan
     if plan is not None:
         unit_refs = {u.id: str(i + 1) for i, u in enumerate(plan.evidence)}
+        context_ids = {i for d in plan.developments for c in d.clauses for i in c.evidence_ids}
+        by_text = {c.clause for d in plan.developments for c in d.clauses}
         source = max(
             plan.source_lanes,
             key=lambda s: sum(len(layer) for layer in plan.source_lanes[s]),
@@ -125,6 +128,7 @@ def composition_context(section: ArcSectionDossier, facts: list[dict[str, Any]])
                     "source": str(u.source_id),
                 }
                 for u in plan.evidence
+                if u.id in context_ids and u.text not in by_text
             ],
             "unresolved": plan.gaps,
         }
@@ -180,7 +184,7 @@ class ArcIntelligence:
         if kind == "arc_plan":
             return "arc-intelligence-v2"
         if kind == "arc_development_plan":
-            return "development-plan-v2"
+            return "development-plan-v3"
         return ORGANIZATION_POLICY if kind == "arc_dossier" else POLICY
 
     @staticmethod
@@ -672,6 +676,8 @@ class ArcIntelligence:
             plan: NarrativeDevelopmentPlan | None = None
             if cached and cached["payload"].get("plan"):
                 plan = NarrativeDevelopmentPlan.model_validate(cached["payload"]["plan"])
+                if plan.structural.status == "passed":
+                    plan = fence_repeated_anchors(plan)
             diagnostics = (cached or {}).get("payload", {}).get("diagnostics", [])
             if cached and not (retry_withheld and plan and plan.structural.status == "unavailable"):
                 pass
@@ -680,8 +686,12 @@ class ArcIntelligence:
                 try:
                     if issues:
                         raise ValueError("; ".join(issues))
-                    if plan is None:
-                        if dossier.claims_origin == "controlled_reference_dossier":
+                    if plan is None or not plan.developments:
+                        if proposal:
+                            from src.application.development_plan import PlanProposal
+
+                            proposed = PlanProposal.model_validate(proposal)
+                        elif dossier.claims_origin == "controlled_reference_dossier":
                             proposed = await propose_fixed_plan(
                                 units, section.plan.objective, infer
                             )
@@ -698,8 +708,7 @@ class ArcIntelligence:
                             section.id,
                             dossier.continuity_id,
                         )
-                    review = await review_plan(plan, infer, dossier.accepted_facts)
-                    plan = assess_plan(plan, review)
+                    plan = await review_developments(plan, infer, dossier.accepted_facts)
                     diagnostics = [*plan.factual.issues, *plan.structural.issues]
                 except InferenceFailure as error:
                     diagnostics = [error.code]
@@ -890,7 +899,9 @@ class ArcIntelligence:
                         + json.dumps(
                             {
                                 "section": composition_context(section, facts),
-                                "facts": assertion_context(facts),
+                                "facts": []
+                                if section.development_plan
+                                else assertion_context(facts),
                             },
                             ensure_ascii=False,
                         ),
@@ -957,6 +968,12 @@ class ArcIntelligence:
                                 {"draft": draft.model_dump(mode="json")},
                                 "withheld",
                                 providers()[offset:],
+                            )
+                        repeated_source = copied_paragraphs(draft, section.development_plan)
+                        if repeated_source:
+                            raise ValueError(
+                                f"Editorial originality check found verbatim source wording in "
+                                f"paragraphs {repeated_source}"
                             )
                     if qualification is None:
                         qualified, qualification = await qualify_reviewer(infer)
