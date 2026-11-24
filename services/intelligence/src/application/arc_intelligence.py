@@ -35,10 +35,10 @@ from src.application.arc_grounding import (
     validate_claims,
 )
 from src.application.arc_prose import (
-    Propositions,
+    FrameCitations,
     assess_in_batches,
     compose_reconstruction,
-    frame_notes,
+    frame_citations,
     originality_candidates,
     revision_note_targets,
     story_links,
@@ -67,7 +67,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v24"
+POLICY = "arc-intelligence-v25"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -916,7 +916,7 @@ class ArcIntelligence:
             stop_after_section = False
             review_attempts: list[dict[str, Any]] = []
             draft: ArcSectionDraft | None = None
-            notes: Propositions | None = None
+            notes: FrameCitations | None = None
             state: Reconstruction | None = None
             reconstruction_revision: str | None = None
             plan = section.development_plan
@@ -946,9 +946,6 @@ class ArcIntelligence:
                     pending = await repo.get(
                         self.identifier(section_id, "arc_pending_review", boundary_key)
                     )
-                    stored_notes = await repo.get(
-                        self.identifier(section_id, "arc_writing_notes", boundary_key)
-                    )
                     stored_batches = await repo.get(
                         self.identifier(section_id, "arc_prose_batches", boundary_key)
                     )
@@ -957,8 +954,6 @@ class ArcIntelligence:
                 if pending and pending["knowledge_revision"] == section.revision:
                     draft = ArcSectionDraft.model_validate(pending["payload"]["draft"])
                     resumed = True
-                if stored_notes and stored_notes["knowledge_revision"] == section.revision:
-                    notes = Propositions.model_validate(stored_notes["payload"])
             try:
                 if plan is not None:
                     async with self.presentations() as repo:
@@ -995,7 +990,7 @@ class ArcIntelligence:
                     ):
                         draft = None
                         resumed = False
-                    notes = frame_notes(state, plan)
+                    notes = frame_citations(state, plan)
                     if draft is None:
                         writes = len(state.beats)
                         reviews = (

@@ -23,7 +23,7 @@ from src.application.arc_prose import (
     clarify_note_roles,
     compose_reconstruction,
     flatten_scenes,
-    frame_notes,
+    frame_citations,
     originality_candidates,
     revision_note_targets,
     scene_inputs,
@@ -34,11 +34,14 @@ from src.application.arc_prose import (
 )
 from src.application.arc_reconstruction import (
     FrameCandidates,
+    FrameDecision,
     FrameDecisions,
     Reconstruction,
     SceneState,
+    apply_frame_decision,
     bind_frames,
     reconstruct_arc,
+    valid_decision,
 )
 from src.application.development_plan import (
     DevelopmentBatchReview,
@@ -122,6 +125,8 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
         packet = json.loads(prompt.split("\n", 1)[1])
         if schema is FrameCandidates:
             ref = next(iter(packet))
+            assert packet[ref]["direct"]
+            assert packet[ref]["context"]
             return (
                 schema.model_validate(
                     {
@@ -165,41 +170,28 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
                 assert packet["previous_prose_for_style_only"] == "Luffy had changed."
             return PlainScene(paragraphs=["Luffy had changed." if is_first else "Ron opened it."])
         if schema is SceneAlignment:
-            [paragraph] = packet["paragraphs"]
-            return schema.model_validate(
-                {
-                    "spans": [
-                        {
-                            "paragraph": 1,
-                            "start": 0,
-                            "end": len(paragraph),
-                            "frames": list(packet["frames"]),
-                        }
-                    ]
-                }
-            )
+            assert list(packet["spans"]) == ["1"]
+            return schema.model_validate({"spans": [{"span": 1, "frames": list(packet["frames"])}]})
         assert schema is FrameDecisions
-        proposed = [v["frame"] for i, v in packet.items() if int(i) >= 3]
+        proposed = [v["frame"] for v in packet.values()]
         assert all(not {"actor", "speaker", "experiencer"} & frame.keys() for frame in proposed)
         review_batches.append(proposed)
+        first = next(iter(packet.values()))
+        roster = {name: key for key, name in first["participant_roster"].items()}
         return schema.model_validate(
             {
                 "decisions": {
-                    id: {
-                        "supported": id != "1",
-                        "reason": "Exact ownership checked",
-                        "observed_modality": "completed" if id != "1" else None,
+                    "1": {
+                        "supported": True,
+                        "observed_modality": "completed",
                         "observed_negated": False,
-                        "observed_roles": (
-                            {"speaker": "Nora", "experiencer": "Kai", "actor": "Kai"}
-                            if id == "2"
-                            else {"actor": "Ron"}
-                            if proposed[0]["action"] == "opened the gate"
-                            else {"speaker": "Shanks", "experiencer": "Luffy"}
-                        ),
+                        "observed_roles": {"actor": roster["Ron"]}
+                        if "Ron" in roster
+                        else {
+                            "speaker": roster["Shanks"],
+                            "experiencer": roster["Luffy"],
+                        },
                     }
-                    for id in packet
-                    if id != "4"
                 }
             }
         )
@@ -218,10 +210,113 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     # Recheck its proposed roles against that observation without another model call.
     assert [len(batch) for batch in review_batches] == [2, 1]
     draft = await compose_reconstruction(
-        reconstruction, plan, frame_notes(reconstruction, plan), "Change", infer, {}, checkpoint
+        reconstruction, plan, frame_citations(reconstruction, plan), "Change", infer, {}, checkpoint
     )
     assert [p.text for p in draft.paragraphs] == ["Luffy had changed.", "Ron opened it."]
     assert [p.claims[0].writing_note_ids for p in draft.paragraphs] == [["1"], ["2"]]
+
+
+async def test_empty_reconstruction_recovers_essential_actions_from_archive():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    recovered = []
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.rsplit("\n", 1)[1])
+        if schema is FrameCandidates:
+            if "prioritize the indispensable action" not in prompt:
+                return FrameCandidates(frames=[])
+            ref, evidence_scope = next(iter(packet.items()))
+            direct = next(iter(evidence_scope["direct"].values()))
+            recovered.append((ref, direct["start"], direct["text"]))
+            return schema.model_validate(
+                {
+                    "frames": [
+                        {
+                            "clause": ref,
+                            "action": "open the gate",
+                            "actor": direct["text"].split()[0],
+                            "modality": evidence_scope["modality"],
+                            "negated": False,
+                            "function": "action",
+                        }
+                    ]
+                }
+            )
+        [item] = packet.values()
+        return schema.model_validate(
+            {
+                "decisions": {
+                    "1": {
+                        "supported": True,
+                        "observed_negated": False,
+                        "observed_modality": "attempted"
+                        if "tried" in item["evidence"][0]
+                        else "completed",
+                        "observed_roles": {"actor": next(iter(item["participant_roster"]))},
+                    }
+                }
+            }
+        )
+
+    async def checkpoint() -> None:
+        pass
+
+    state = await reconstruct_arc(plan, facts, infer, {}, checkpoint)
+    assert state.ready
+    assert len(recovered) == 2
+    assert all(scene.frames[0].roles["actor"].identity_id for scene in state.scenes)
+
+
+def test_completed_report_cannot_certify_reported_action_as_actual():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref, (development, clause) = next(iter(clause_map(plan).items()))
+    clause.modality = "completed"
+    candidate = FrameCandidates.model_validate(
+        {
+            "frames": [
+                {
+                    "clause": ref,
+                    "action": "unlocked the gate",
+                    "actor": "Ron",
+                    "modality": "completed",
+                    "negated": False,
+                    "function": "turning_point",
+                }
+            ]
+        }
+    )
+    [frame] = bind_frames(candidate, plan, development.id, {ref: []}, facts)
+    decision = FrameDecision(
+        supported=True,
+        observed_modality="reported",
+        observed_negated=False,
+        observed_roles={"actor": str(frame.roles["actor"].identity_id)},
+    )
+    scene = SceneState(id=development.id, title=development.title)
+    apply_frame_decision(frame, decision, scene)
+    assert not scene.frames
+    assert "did not confirm roles/modality" in scene.gaps[0]
+
+
+def test_malformed_review_row_preserves_siblings_and_numeric_roster_ids():
+    batch = FrameDecisions.model_validate(
+        {
+            "decisions": {
+                "1": {"supported": True, "observed_modality": "told"},
+                "2": {
+                    "supported": True,
+                    "observed_modality": "reported",
+                    "observed_negated": False,
+                    "observed_roles": {"speaker": 3},
+                },
+            }
+        }
+    )
+    assert valid_decision(batch.decisions["1"]) is None
+    witness = valid_decision(batch.decisions["2"])
+    assert witness is not None and witness.observed_roles == {"speaker": "3"}
 
 
 def test_aligned_prose_cannot_reverse_a_verified_sequence_within_a_scene():
@@ -314,19 +409,19 @@ def test_attempt_cannot_be_completed_without_an_independent_exact_action():
 
 
 def test_alignment_cannot_omit_a_factual_sentence_or_rewrite_the_displayed_text():
-    authored = PlainScene(paragraphs=["Mira reached the gate. Ron was inside."])
+    authored = PlainScene(paragraphs=["Mira reached the gate. Ron D. Vale was inside."])
     alignment = SceneAlignment.model_validate(
         {
             "spans": [
-                {"paragraph": 1, "start": 0, "end": 22, "frames": ["1"]},
-                {"paragraph": 1, "start": 23, "end": 38, "frames": ["2"]},
+                {"span": 1, "frames": ["1"]},
+                {"span": 2, "frames": ["2"]},
             ]
         }
     )
     paragraphs = aligned_scene(authored, alignment, {"1", "2"})
     assert " ".join(c.text for c in paragraphs[0].claims) == authored.paragraphs[0]
     alignment.spans.pop()
-    with pytest.raises(ValueError, match="left prose unaccounted"):
+    with pytest.raises(ValueError, match="account for every authored span"):
         aligned_scene(authored, alignment, {"1", "2"})
 
 

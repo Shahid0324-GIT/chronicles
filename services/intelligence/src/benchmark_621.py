@@ -25,7 +25,6 @@ from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.arc_prose import (
     PlainScene,
     Propositions,
-    ProseRevision,
     SceneProse,
     validate_propositions,
 )
@@ -173,7 +172,7 @@ async def main() -> None:
     if args.verified_frames:
         if not args.handoff:
             parser.error("Verified frame runs require --handoff")
-        folder = Path("../../.tmp/benchmark625-stabilized")
+        folder = Path("../../.tmp/benchmark625-rework")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -441,10 +440,10 @@ async def main() -> None:
             if args.verified_frames and schema.__name__ in {"FrameCandidates", "FrameDecisions"}
             else 2
             if schema in (Propositions, PlainScene)
-            else (1 if schema in (SceneProse, ProseRevision) else 0),
+            else 0,
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
-        if schema.__name__ in {"ProseDraft", "ProseRevision", "ArcSectionDraft"}:
+        if schema.__name__ in {"ArcSectionDraft"}:
             (folder / "generated-draft.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
