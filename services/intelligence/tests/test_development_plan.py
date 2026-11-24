@@ -40,6 +40,7 @@ from src.application.arc_reconstruction import (
     SceneState,
     apply_frame_decision,
     bind_frames,
+    qualify_frames,
     reconstruct_arc,
     valid_decision,
 )
@@ -173,25 +174,20 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
             assert list(packet["spans"]) == ["1"]
             return schema.model_validate({"spans": [{"span": 1, "frames": list(packet["frames"])}]})
         assert schema is FrameDecisions
-        proposed = [v["frame"] for v in packet.values()]
-        assert all(not {"actor", "speaker", "experiencer"} & frame.keys() for frame in proposed)
+        proposed = [v["proposition"] for v in packet.values()]
         review_batches.append(proposed)
-        first = next(iter(packet.values()))
-        roster = {name: key for key, name in first["participant_roster"].items()}
         return schema.model_validate(
             {
                 "decisions": {
-                    "1": {
+                    key: {"supported": False, "reason": "The change belongs to Luffy."}
+                    if v["proposition"]["participants"].get("experiencer") == "Shanks"
+                    else {
                         "supported": True,
+                        "witness": v["evidence"][0],
+                        "reason": "The subject and action match the archive.",
                         "observed_modality": "completed",
-                        "observed_negated": False,
-                        "observed_roles": {"actor": roster["Ron"]}
-                        if "Ron" in roster
-                        else {
-                            "speaker": roster["Shanks"],
-                            "experiencer": roster["Luffy"],
-                        },
                     }
+                    for key, v in packet.items()
                 }
             }
         )
@@ -205,9 +201,7 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert verified[0].roles["speaker"].name == "Shanks"
     assert verified[0].roles["experiencer"].name == "Luffy"
     assert reconstruction.ready
-    assert any("did not confirm roles/modality" in gap for gap in reconstruction.scenes[0].gaps)
-    # The missing row has the same independently observed action as the first row.
-    # Recheck its proposed roles against that observation without another model call.
+    assert any("belongs to Luffy" in gap for gap in reconstruction.scenes[0].gaps)
     assert [len(batch) for batch in review_batches] == [2, 1]
     draft = await compose_reconstruction(
         reconstruction, plan, frame_citations(reconstruction, plan), "Change", infer, {}, checkpoint
@@ -228,17 +222,19 @@ async def test_empty_reconstruction_recovers_essential_actions_from_archive():
                 return FrameCandidates(frames=[])
             ref, evidence_scope = next(iter(packet.items()))
             direct = next(iter(evidence_scope["direct"].values()))
+            context = next(iter(evidence_scope["context"]))
             recovered.append((ref, direct["start"], direct["text"]))
             return schema.model_validate(
                 {
                     "frames": [
                         {
-                            "clause": ref,
+                            "clause": next(iter(evidence_scope["direct"])).upper(),
                             "action": "open the gate",
                             "actor": direct["text"].split()[0],
                             "modality": evidence_scope["modality"],
                             "negated": False,
                             "function": "action",
+                            "context": [context.upper(), "unknown-id"],
                         }
                     ]
                 }
@@ -253,7 +249,8 @@ async def test_empty_reconstruction_recovers_essential_actions_from_archive():
                         "observed_modality": "attempted"
                         if "tried" in item["evidence"][0]
                         else "completed",
-                        "observed_roles": {"actor": next(iter(item["participant_roster"]))},
+                        "witness": item["evidence"][0],
+                        "reason": "The evidence supports the bound action and role.",
                     }
                 }
             }
@@ -266,6 +263,88 @@ async def test_empty_reconstruction_recovers_essential_actions_from_archive():
     assert state.ready
     assert len(recovered) == 2
     assert all(scene.frames[0].roles["actor"].identity_id for scene in state.scenes)
+    assert all(len(scene.frames[0].context) == 1 for scene in state.scenes)
+    assert all(scene.frames[0].verified_witness for scene in state.scenes)
+
+
+def test_state_can_qualify_without_forcing_an_actor_role():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref, (development, clause) = next(iter(clause_map(plan).items()))
+    clause.modality = "completed"
+    candidate = FrameCandidates.model_validate(
+        {
+            "frames": [
+                {
+                    "clause": ref,
+                    "kind": "state",
+                    "action": "The gate was open",
+                    "modality": "completed",
+                    "negated": False,
+                    "function": "aftermath",
+                }
+            ]
+        }
+    )
+    [frame] = bind_frames(candidate, plan, development.id, {ref: []}, facts)
+    scene = SceneState(id=development.id, title=development.title)
+    apply_frame_decision(
+        frame, FrameDecision(supported=True, witness="Ron opened the gate."), scene
+    )
+    assert scene.frames[0].kind == "state" and not scene.frames[0].roles
+
+
+async def test_saved_witness_only_approval_cannot_qualify_a_proposition():
+    # This approval was returned by the first live semantic review of Origin.
+    witness = (
+        "After a year of them being there, a young boy named Monkey D. Luffy came to their ship "
+        "to prove he was tough enough to join them by stabbing his face under his left eye."
+    )
+    saved_response = {
+        "decisions": {
+            "1": {
+                "supported": True,
+                "reason": "",
+                "observed_modality": None,
+                "observed_negated": None,
+                "observed_roles": {},
+                "witness": witness,
+            }
+        }
+    }
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    ref, (development, clause) = next(iter(clause_map(plan).items()))
+    clause.modality = "completed"
+    unit = next(unit for unit in plan.evidence if unit.id in clause.evidence_ids)
+    unit.text = witness
+    candidate = FrameCandidates.model_validate(
+        {
+            "frames": [
+                {
+                    "clause": ref,
+                    "action": "Luffy stabbed his left eye",
+                    "actor": "Luffy",
+                    "modality": "completed",
+                    "negated": False,
+                    "function": "action",
+                }
+            ]
+        }
+    )
+    [frame] = bind_frames(candidate, plan, development.id, {ref: []}, facts)
+    scene = SceneState(id=development.id, title=development.title)
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        return schema.model_validate(saved_response)
+
+    async def checkpoint() -> None:
+        pytest.fail("An incomplete approval must not enter the verified cache")
+
+    assert await qualify_frames(
+        [frame], {unit.id: unit}, {unit.id: []}, infer, {}, checkpoint, scene
+    ) == [frame]
+    assert not scene.frames and not scene.gaps
 
 
 def test_completed_report_cannot_certify_reported_action_as_actual():

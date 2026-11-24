@@ -128,6 +128,7 @@ async def main() -> None:
     parser.add_argument("--recovery", action="store_true")
     parser.add_argument("--handoff", action="store_true")
     parser.add_argument("--verified-frames", action="store_true")
+    parser.add_argument("--reconstruction-only", action="store_true")
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
@@ -135,6 +136,8 @@ async def main() -> None:
     parser.add_argument("--resume-automatic-notes", action="store_true")
     parser.add_argument("--reviewed-notes", type=Path)
     args = parser.parse_args()
+    if args.reconstruction_only and not args.verified_frames:
+        parser.error("Reconstruction-only runs require --verified-frames")
     if args.autonomous and args.reviewed_notes:
         parser.error("Autonomous runs cannot load reviewed notes")
     if args.resume_automatic_notes and not (args.autonomous and args.compose):
@@ -172,7 +175,7 @@ async def main() -> None:
     if args.verified_frames:
         if not args.handoff:
             parser.error("Verified frame runs require --handoff")
-        folder = Path("../../.tmp/benchmark625-rework")
+        folder = Path("../../.tmp/benchmark625-semantic")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -541,6 +544,7 @@ async def main() -> None:
                 providers,
                 section_keys=[section_key],
                 retry_withheld=args.resume_review,
+                reconstruction_only=args.reconstruction_only,
             )
     finally:
         article = memory.rows.get(service.identifier(A, "arc_article", evidence.revision), {}).get(

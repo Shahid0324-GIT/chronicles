@@ -47,7 +47,6 @@ from src.application.arc_prose import (
 from src.application.arc_reconstruction import Reconstruction, reconstruct_arc
 from src.application.development_plan import (
     fence_repeated_anchors,
-    link_focus,
     plan_from_proposal,
     propose_fixed_plan,
     propose_plan,
@@ -67,7 +66,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v25"
+POLICY = "arc-intelligence-v26"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -761,13 +760,7 @@ class ArcIntelligence:
                     refresh_relationships
                     or plan.relationship_review.status == "pending"
                     or retry_withheld
-                    and (
-                        plan.relationship_review.status in {"blocked", "unavailable"}
-                        or not any(
-                            o.kind == "chronology" and o.before == o.after == link_focus(plan).id
-                            for o in plan.ordering
-                        )
-                    )
+                    and plan.relationship_review.status in {"blocked", "unavailable"}
                 )
             ):
                 if self.can_review and not await self.can_review(1, 1):
@@ -849,6 +842,7 @@ class ArcIntelligence:
         retry_withheld: bool = False,
         section_keys: list[str] | None = None,
         allowed_sources: list[UUID] | None = None,
+        reconstruction_only: bool = False,
     ) -> None:
         sections: list[dict[str, Any]] = []
         qualification = None
@@ -981,6 +975,8 @@ class ArcIntelligence:
                             "validated" if state.ready else "withheld",
                             providers()[offset:],
                         )
+                    if reconstruction_only:
+                        return
                     if not state.ready:
                         raise ValueError("Verified frame and scene reconstruction gate failed")
                     reconstruction_revision = fingerprint([state.model_dump(mode="json")])

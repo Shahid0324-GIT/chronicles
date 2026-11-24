@@ -1,0 +1,994 @@
+{
+  "benchmark": "Controlled fixed archive. Existing plan retained. Initial frame candidates automatically generated on this run. Scope and previously reviewed development links preserved.",
+  "input_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "evidence_unit_count": 54,
+  "sources": {
+    "70ac2c1f-0e61-5643-9b4c-15d635878728": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+    "bcdc9aed-cff3-53d7-9895-b329a0109068": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625"
+  },
+  "benchmark_model_call_ceiling": 60,
+  "composition_and_review_reserve": 18,
+  "frame_qualification_scope": "Automated frame decisions are intermediate assessments. Inspect candidate handling and contextual gaps before treating any prose as publishable.",
+  "reconstruction": {
+    "scenes": [
+      {
+        "id": "39775a48-7b21-5f17-8203-18d39a606de9",
+        "title": "Gold Roger's Execution and the Great Pirate Era",
+        "frames": [
+          {
+            "clause": "1.1",
+            "excerpt": "Gold Roger, the Pirate King, had attained enormous wealth, fame, and power.",
+            "kind": "state",
+            "action": "Gold Roger attained enormous wealth, fame, and power",
+            "actor": "Gold Roger",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "action",
+            "id": "81ef6e2d-3b2d-59b6-860d-652ab43b0e07",
+            "development_id": "39775a48-7b21-5f17-8203-18d39a606de9",
+            "fact_id": "dfe1dc7a9a1630154cd720c64c22382e556c8ae8c3706ab75c3de93c28f1769d",
+            "evidence_ids": [
+              "dfe1dc7a9a1630154cd720c64c22382e556c8ae8c3706ab75c3de93c28f1769d"
+            ],
+            "roles": {
+              "actor": {
+                "name": "Gold Roger",
+                "identity_id": "418a4fda-78c1-5d20-961f-3cd1dc44749c",
+                "identity": "source_named"
+              }
+            }
+          },
+          {
+            "clause": "1.2",
+            "excerpt": "causing the world to enter the Great Pirate Era",
+            "kind": "event",
+            "action": "The world entered the Great Pirate Era",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "turning_point",
+            "id": "fe5d1c22-3d46-58b4-a35d-4d53e0092acf",
+            "development_id": "39775a48-7b21-5f17-8203-18d39a606de9",
+            "fact_id": "b9a1d277a2d3b993d95edf36af85809ad5a41aa6f18beca5c5082020d1ce3fd8",
+            "evidence_ids": [
+              "b9a1d277a2d3b993d95edf36af85809ad5a41aa6f18beca5c5082020d1ce3fd8"
+            ],
+            "roles": {}
+          }
+        ],
+        "gaps": [
+          "Repeated source label replaced as anchor ([42] → [100])",
+          "1.2: Frame excerpt is outside the exact accepted evidence"
+        ],
+        "review_unavailable": [],
+        "presentation_layers": [
+          [
+            "81ef6e2d-3b2d-59b6-860d-652ab43b0e07"
+          ],
+          [
+            "fe5d1c22-3d46-58b4-a35d-4d53e0092acf"
+          ]
+        ],
+        "unordered_frame_ids": [],
+        "relationship_ids": [],
+        "qualification": "sufficient_partial",
+        "missing_essential": [],
+        "essential_clauses": [
+          "1.1"
+        ]
+      },
+      {
+        "id": "3a481464-86e3-5622-9e86-9f567e812d68",
+        "title": "Red Hair Pirates Arrive and Luffy's Aspiration",
+        "frames": [
+          {
+            "clause": "2.1",
+            "excerpt": "[1] Eleven years later, the Red Hair Pirates came to a small port village named Foosha Village.",
+            "kind": "event",
+            "action": "Red Hair Pirates arrived at Foosha Village",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "setup",
+            "id": "41f5a646-fb4d-5323-a5da-a701720cd03b",
+            "development_id": "3a481464-86e3-5622-9e86-9f567e812d68",
+            "fact_id": "d7ce9a4d4de313eeb33ce001519afd71e68566d99ba0d8f6149e5b1d679fbabb",
+            "evidence_ids": [
+              "d7ce9a4d4de313eeb33ce001519afd71e68566d99ba0d8f6149e5b1d679fbabb"
+            ],
+            "roles": {}
+          },
+          {
+            "clause": "2.3",
+            "excerpt": "The pirates and Luffy then went to the bar, where the pirates toasted to Luffy's craziness as they ate and drank.",
+            "kind": "event",
+            "action": "The pirates and Luffy went to a bar and toasted to Luffy's craziness while eating and drinking",
+            "actor": "pirates, Monkey D. Luffy",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "aftermath",
+            "id": "af9364cc-d17d-5760-bf6d-c04691090e3d",
+            "development_id": "3a481464-86e3-5622-9e86-9f567e812d68",
+            "fact_id": "c705346185f9c9124fbcc545005c9cabff90423b015a4e1323bb0c09cfc9bdce",
+            "evidence_ids": [
+              "c705346185f9c9124fbcc545005c9cabff90423b015a4e1323bb0c09cfc9bdce"
+            ],
+            "roles": {
+              "actor": {
+                "name": "pirates, Monkey D. Luffy",
+                "identity_id": "fdf05496-2a8b-5146-80d3-caf71099034f",
+                "identity": "source_named"
+              }
+            }
+          },
+          {
+            "clause": "2.4",
+            "excerpt": "Luffy tried to convince the captain, \"Red-Haired\" Shanks, to let him join the crew, but Shanks gently refused due to Luffy being too young and unable to swim.",
+            "kind": "decision",
+            "action": "Luffy attempted to persuade Captain Red-Haired Shanks to let him join the crew",
+            "actor": "Monkey D. Luffy",
+            "patient": "Captain Red-Haired Shanks",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "attempted",
+            "negated": false,
+            "context": [],
+            "function": "conflict",
+            "id": "44dfc87f-55d4-5a00-81dd-7181a0369159",
+            "development_id": "3a481464-86e3-5622-9e86-9f567e812d68",
+            "fact_id": "77cdf11d09e8a6d57ba8e0e463fd08416a1d67ad3223603a14ca568134f12332",
+            "evidence_ids": [
+              "77cdf11d09e8a6d57ba8e0e463fd08416a1d67ad3223603a14ca568134f12332"
+            ],
+            "roles": {
+              "actor": {
+                "name": "Monkey D. Luffy",
+                "identity_id": "27f3d376-b8b3-5903-8da7-869f76fe1aa5",
+                "identity": "source_named"
+              },
+              "patient": {
+                "name": "Captain Red-Haired Shanks",
+                "identity_id": "669b45c0-9170-53c1-a07d-e20cbdd90b2b",
+                "identity": "source_named"
+              }
+            }
+          }
+        ],
+        "gaps": [
+          "Clause 5 is a caption/definition, not a narrative clause.",
+          "2.2: Evidence mentions stabbing his face under his left eye, not stabbing his left eye.",
+          "Unverified accepted clauses: 2.2"
+        ],
+        "review_unavailable": [],
+        "presentation_layers": [
+          [
+            "41f5a646-fb4d-5323-a5da-a701720cd03b"
+          ],
+          [
+            "af9364cc-d17d-5760-bf6d-c04691090e3d"
+          ],
+          [
+            "44dfc87f-55d4-5a00-81dd-7181a0369159"
+          ]
+        ],
+        "unordered_frame_ids": [],
+        "relationship_ids": [],
+        "qualification": "sufficient_partial",
+        "missing_essential": [],
+        "essential_clauses": [
+          "2.4"
+        ]
+      },
+      {
+        "id": "bae577bd-7db1-542d-a5f3-d301a1060c7a",
+        "title": "Bar Conflict with Higuma and Rubber Revelation",
+        "frames": [],
+        "gaps": [
+          "3.1: no qualified decision for bandits led by Higuma entered the bar and demanded alcohol",
+          "3.2: no qualified decision for Higuma broke the bottle over Shanks' head after Shanks offered it",
+          "3.3: no qualified decision for Shanks apologized and cleaned up the mess",
+          "3.4: no qualified decision for Luffy felt anger toward Shanks",
+          "3.5: no qualified decision for Shanks attempted to grab Luffy's arm",
+          "3.6: no qualified decision for Red Hair Pirates realized the Gomu Gomu no Mi was missing",
+          "3.7: no qualified decision for Shanks revealed that Luffy's body is rubber and cannot swim",
+          "Unverified accepted clauses: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7"
+        ],
+        "review_unavailable": [
+          "3.1",
+          "3.2",
+          "3.3",
+          "3.4",
+          "3.5",
+          "3.6",
+          "3.7"
+        ],
+        "presentation_layers": [],
+        "unordered_frame_ids": [],
+        "relationship_ids": [],
+        "qualification": "blocked",
+        "missing_essential": [
+          "3.1",
+          "3.2",
+          "3.4",
+          "3.7"
+        ],
+        "essential_clauses": [
+          "3.1",
+          "3.2",
+          "3.4",
+          "3.7"
+        ]
+      },
+      {
+        "id": "de3be27e-ff06-5123-8b37-eb730516c093",
+        "title": "Shanks Rescues Luffy from Bandits and Sea King",
+        "frames": [
+          {
+            "clause": "4.1",
+            "excerpt": "Sometime later, the Red Hair Pirates had gone off on another voyage, and Luffy was starting to have fun with his new rubber body.",
+            "kind": "event",
+            "action": "Red Hair Pirates went on another voyage and Luffy began enjoying his rubber body",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "action",
+            "id": "cd61c632-0ea7-507e-b087-1dacb173728d",
+            "development_id": "de3be27e-ff06-5123-8b37-eb730516c093",
+            "fact_id": "609a632a23a950ca44a5632727587f1db5913bd23d31aa5f0e2bea3d45e7846d",
+            "evidence_ids": [
+              "609a632a23a950ca44a5632727587f1db5913bd23d31aa5f0e2bea3d45e7846d"
+            ],
+            "roles": {}
+          },
+          {
+            "clause": "4.2",
+            "excerpt": "One day, however, he was sitting in Makino's bar when Higuma's gang returned and demanded alcohol.",
+            "kind": "event",
+            "action": "Luffy was sitting in Makino's bar when Higuma's gang returned and demanded alcohol",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "action",
+            "id": "6721b0ba-df5f-5488-8c7a-a220f96392c2",
+            "development_id": "de3be27e-ff06-5123-8b37-eb730516c093",
+            "fact_id": "fd10764b3c73888f0b1e9885210077249fe474bc07e00db81f186fe6da8439b0",
+            "evidence_ids": [
+              "fd10764b3c73888f0b1e9885210077249fe474bc07e00db81f186fe6da8439b0"
+            ],
+            "roles": {}
+          },
+          {
+            "clause": "4.3",
+            "excerpt": "Soon afterwards, Makino alerted the mayor, Woop Slap, that Luffy had been kidnapped by the bandits after picking a fight with them.",
+            "kind": "speech",
+            "action": "Makino alerted Mayor Woop Slap that Luffy had been kidnapped by the bandits after picking a fight with them",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "action",
+            "id": "9e368e0c-0788-5055-bd7b-cd71e83e1389",
+            "development_id": "de3be27e-ff06-5123-8b37-eb730516c093",
+            "fact_id": "40fe7312957c5c02459c18cc9c056cdfd33e8c09148868e329910b450ef04da7",
+            "evidence_ids": [
+              "40fe7312957c5c02459c18cc9c056cdfd33e8c09148868e329910b450ef04da7"
+            ],
+            "roles": {}
+          },
+          {
+            "clause": "4.5",
+            "excerpt": "However, Shanks and the Red Hair Pirates then returned, and when one of the bandits pointed his gun at Shanks, the pirate Lucky Roux shot him.",
+            "kind": "event",
+            "action": "Shanks and the Red Hair Pirates returned; a bandit pointed a gun at Shanks and pirate Lucky Roux shot the bandit",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "action",
+            "id": "1fe20763-3436-50e3-8037-2955bcfa632d",
+            "development_id": "de3be27e-ff06-5123-8b37-eb730516c093",
+            "fact_id": "e64303fb828996c422b6dc5c60f6c4a5d22fdd76aa410bb75bb2beb454928f55",
+            "evidence_ids": [
+              "e64303fb828996c422b6dc5c60f6c4a5d22fdd76aa410bb75bb2beb454928f55"
+            ],
+            "roles": {}
+          },
+          {
+            "clause": "4.6",
+            "excerpt": "Shanks stated that he could accept an insult toward him, but would not forgive anyone who harms his friends.",
+            "kind": "speech",
+            "action": "Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends",
+            "actor": "",
+            "patient": "",
+            "experiencer": "",
+            "speaker": "",
+            "subject": "",
+            "location": "",
+            "purpose": "",
+            "outcome": "",
+            "modality": "completed",
+            "negated": false,
+            "context": [],
+            "function": "setup",
+            "id": "282a11a3-5de1-50fe-a05c-5769c0060f0b",
+            "development_id": "de3be27e-ff06-5123-8b37-eb730516c093",
+            "fact_id": "d694e8ff921969e4cdb92b02f39be83f1773f74f5ea71336a1476e05a34ad928",
+            "evidence_ids": [
+              "d694e8ff921969e4cdb92b02f39be83f1773f74f5ea71336a1476e05a34ad928"
+            ],
+            "roles": {}
+          }
+        ],
+        "gaps": [
+          "Repeated source label replaced as anchor ([2144] → [2202])",
+          "4.4: The holder of this proposition is unresolved",
+          "4.7: The proposition claims Benn Beckman overpowered bandits singlehandedly, but the evidence states he overpowered them 'then' after Higuma threw a smoke bomb. The proposition also cla",
+          "4.8: The evidence states the Sea King came to eat Higuma, but it does not confirm the specific purpose of drowning Luffy or that the Sea King successfully drowned him; the proposition a",
+          "4.9: no qualified decision for The Sea King moved to eat Luffy; Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+          "4.10: no qualified decision for Shanks was glad Luffy was okay; Luffy was saddened that he had lost his arm in the process of saving him.",
+          "e42: Frame references a clause outside the current request",
+          "e44: Frame references a clause outside the current request",
+          "e47: Frame references a clause outside the current request",
+          "e48: Frame references a clause outside the current request",
+          "4.7: The proposition claims Benn Beckman overpowered the bandits, but the evidence states Higuma threw a smoke bomb to escape with Luffy while Benn overpowered the bandits; however, the",
+          "4.8: The proposition claims Higuma kicked Luffy off the boat to drown him and a Sea King came to eat Higuma. The evidence states Higuma escaped with Luffy by throwing a smoke bomb, impl",
+          "Unverified accepted clauses: 4.10, 4.4, 4.7, 4.8, 4.9"
+        ],
+        "review_unavailable": [
+          "4.9",
+          "4.10"
+        ],
+        "presentation_layers": [
+          [
+            "cd61c632-0ea7-507e-b087-1dacb173728d"
+          ],
+          [
+            "6721b0ba-df5f-5488-8c7a-a220f96392c2"
+          ],
+          [
+            "9e368e0c-0788-5055-bd7b-cd71e83e1389"
+          ],
+          [
+            "1fe20763-3436-50e3-8037-2955bcfa632d"
+          ],
+          [
+            "282a11a3-5de1-50fe-a05c-5769c0060f0b"
+          ]
+        ],
+        "unordered_frame_ids": [],
+        "relationship_ids": [
+          "link-11",
+          "link-12",
+          "link-13",
+          "link-14"
+        ],
+        "qualification": "blocked",
+        "missing_essential": [
+          "4.10",
+          "4.7",
+          "4.8",
+          "4.9"
+        ],
+        "essential_clauses": [
+          "4.2",
+          "4.3",
+          "4.7",
+          "4.8",
+          "4.9",
+          "4.10"
+        ]
+      },
+      {
+        "id": "79ccad99-4923-5b01-b66c-e97d27a53892",
+        "title": "Luffy's Promise, Hat Gift, and Departure",
+        "frames": [],
+        "gaps": [
+          "5.1: Evidence states preparation, not completion of departure; proposition claims completed action.",
+          "5.5: Evidence is a direct quote of a decision to leave due to time spent; proposition adds unsupported cause ('spent too much time here') not found in evidence text.",
+          "5.2: no qualified decision for Luffy decided that he would not try to join them and declared that he would form his own crew that would be stronger than Shanks', find the greatest treasure, and become the Pirate",
+          "5.3: no qualified decision for Shanks gave Luffy his straw hat and told him to return it once he had surpassed him.",
+          "5.4: no qualified decision for Shanks and Beckman anticipated Luffy doing big things in the future.",
+          "Unverified accepted clauses: 5.1, 5.2, 5.3, 5.4, 5.5"
+        ],
+        "review_unavailable": [
+          "5.2",
+          "5.3",
+          "5.4"
+        ],
+        "presentation_layers": [],
+        "unordered_frame_ids": [],
+        "relationship_ids": [],
+        "qualification": "blocked",
+        "missing_essential": [
+          "5.4"
+        ],
+        "essential_clauses": [
+          "5.4"
+        ]
+      }
+    ],
+    "beats": [
+      {
+        "scene_id": "39775a48-7b21-5f17-8203-18d39a606de9",
+        "frame_ids": [
+          "81ef6e2d-3b2d-59b6-860d-652ab43b0e07",
+          "fe5d1c22-3d46-58b4-a35d-4d53e0092acf"
+        ],
+        "introductions": [
+          "Gold Roger"
+        ],
+        "known_participants": [],
+        "prior_outcomes": [],
+        "connections": [],
+        "open_questions": [
+          "Repeated source label replaced as anchor ([42] → [100])",
+          "1.2: Frame excerpt is outside the exact accepted evidence"
+        ]
+      },
+      {
+        "scene_id": "3a481464-86e3-5622-9e86-9f567e812d68",
+        "frame_ids": [
+          "41f5a646-fb4d-5323-a5da-a701720cd03b",
+          "af9364cc-d17d-5760-bf6d-c04691090e3d",
+          "44dfc87f-55d4-5a00-81dd-7181a0369159"
+        ],
+        "introductions": [
+          "Captain Red-Haired Shanks",
+          "Monkey D. Luffy",
+          "pirates, Monkey D. Luffy"
+        ],
+        "known_participants": [],
+        "prior_outcomes": [],
+        "connections": [],
+        "open_questions": [
+          "Clause 5 is a caption/definition, not a narrative clause.",
+          "2.2: Evidence mentions stabbing his face under his left eye, not stabbing his left eye.",
+          "Unverified accepted clauses: 2.2"
+        ]
+      },
+      {
+        "scene_id": "bae577bd-7db1-542d-a5f3-d301a1060c7a",
+        "frame_ids": [],
+        "introductions": [],
+        "known_participants": [],
+        "prior_outcomes": [],
+        "connections": [],
+        "open_questions": [
+          "3.1: no qualified decision for bandits led by Higuma entered the bar and demanded alcohol",
+          "3.2: no qualified decision for Higuma broke the bottle over Shanks' head after Shanks offered it",
+          "3.3: no qualified decision for Shanks apologized and cleaned up the mess",
+          "3.4: no qualified decision for Luffy felt anger toward Shanks",
+          "3.5: no qualified decision for Shanks attempted to grab Luffy's arm",
+          "3.6: no qualified decision for Red Hair Pirates realized the Gomu Gomu no Mi was missing",
+          "3.7: no qualified decision for Shanks revealed that Luffy's body is rubber and cannot swim",
+          "Unverified accepted clauses: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7"
+        ]
+      },
+      {
+        "scene_id": "de3be27e-ff06-5123-8b37-eb730516c093",
+        "frame_ids": [
+          "cd61c632-0ea7-507e-b087-1dacb173728d",
+          "6721b0ba-df5f-5488-8c7a-a220f96392c2",
+          "9e368e0c-0788-5055-bd7b-cd71e83e1389",
+          "1fe20763-3436-50e3-8037-2955bcfa632d",
+          "282a11a3-5de1-50fe-a05c-5769c0060f0b"
+        ],
+        "introductions": [],
+        "known_participants": [],
+        "prior_outcomes": [],
+        "connections": [],
+        "open_questions": [
+          "Repeated source label replaced as anchor ([2144] → [2202])",
+          "4.4: The holder of this proposition is unresolved",
+          "4.7: The proposition claims Benn Beckman overpowered bandits singlehandedly, but the evidence states he overpowered them 'then' after Higuma threw a smoke bomb. The proposition also cla",
+          "4.8: The evidence states the Sea King came to eat Higuma, but it does not confirm the specific purpose of drowning Luffy or that the Sea King successfully drowned him; the proposition a",
+          "4.9: no qualified decision for The Sea King moved to eat Luffy; Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+          "4.10: no qualified decision for Shanks was glad Luffy was okay; Luffy was saddened that he had lost his arm in the process of saving him.",
+          "e42: Frame references a clause outside the current request",
+          "e44: Frame references a clause outside the current request",
+          "e47: Frame references a clause outside the current request",
+          "e48: Frame references a clause outside the current request",
+          "4.7: The proposition claims Benn Beckman overpowered the bandits, but the evidence states Higuma threw a smoke bomb to escape with Luffy while Benn overpowered the bandits; however, the",
+          "4.8: The proposition claims Higuma kicked Luffy off the boat to drown him and a Sea King came to eat Higuma. The evidence states Higuma escaped with Luffy by throwing a smoke bomb, impl",
+          "Unverified accepted clauses: 4.10, 4.4, 4.7, 4.8, 4.9"
+        ]
+      },
+      {
+        "scene_id": "79ccad99-4923-5b01-b66c-e97d27a53892",
+        "frame_ids": [],
+        "introductions": [],
+        "known_participants": [],
+        "prior_outcomes": [],
+        "connections": [],
+        "open_questions": [
+          "5.1: Evidence states preparation, not completion of departure; proposition claims completed action.",
+          "5.5: Evidence is a direct quote of a decision to leave due to time spent; proposition adds unsupported cause ('spent too much time here') not found in evidence text.",
+          "5.2: no qualified decision for Luffy decided that he would not try to join them and declared that he would form his own crew that would be stronger than Shanks', find the greatest treasure, and become the Pirate",
+          "5.3: no qualified decision for Shanks gave Luffy his straw hat and told him to return it once he had surpassed him.",
+          "5.4: no qualified decision for Shanks and Beckman anticipated Luffy doing big things in the future.",
+          "Unverified accepted clauses: 5.1, 5.2, 5.3, 5.4, 5.5"
+        ]
+      }
+    ],
+    "frame_issues": [
+      "Bar Conflict with Higuma and Rubber Revelation: missing essential clauses 3.1, 3.2, 3.4, 3.7",
+      "Shanks Rescues Luffy from Bandits and Sea King: missing essential clauses 4.10, 4.7, 4.8, 4.9",
+      "Luffy's Promise, Hat Gift, and Departure: missing essential clauses 5.4"
+    ],
+    "scene_issues": [
+      "Bar Conflict with Higuma and Rubber Revelation: no qualified event frames",
+      "Luffy's Promise, Hat Gift, and Departure: no qualified event frames"
+    ]
+  },
+  "links_retained_from_prior_plan": [
+    {
+      "id": "link-11",
+      "kind": "chronology",
+      "before_clause": "4.8",
+      "after_clause": "4.9",
+      "evidence_ids": [
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba"
+      ],
+      "statement": "The Sea King moved to eat Luffy, but Shanks arrived in time to scare the beast away."
+    },
+    {
+      "id": "link-12",
+      "kind": "narrative_presentation",
+      "before_clause": "4.7",
+      "after_clause": "4.8",
+      "evidence_ids": [
+        "02347181e60028015278b170a943882653dd851f42d0e77aadac8585041912af",
+        "290a175880297cfd24e8d50f3eb495f77c7bd9ff1a523ffe6e3937a58f063bb7",
+        "1a9c3c0a9b88a8b199e226b97dc0c99305976ee16783aa88f211105faf476f5f",
+        "ac984ec68efcc81681fb2b2418f37141a386f46e480eb4341a97a2e0d6fe23eb",
+        "e5eb8d7a8704ed03be71d5692fc206f338ad5015fe99bccf4098a1d2a9664185",
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9"
+      ],
+      "statement": "The account continues from the first action to the second."
+    },
+    {
+      "id": "link-13",
+      "kind": "chronology",
+      "before_clause": "4.9",
+      "after_clause": "4.10",
+      "evidence_ids": [
+        "d0439192ee5da700752cb2e2f212a1b4683c5f9e2ef96cabba306178f7c4637c",
+        "8115e1de5fabeb47958b22212807e3182791665bac272f9a6a1d69d7d62de484",
+        "f15a85d1573b29b52185e8494088c9279b5682de9d2ef55203621f792e42336d",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba",
+        "8d336e60459f6a3d45017eb993268822ded5a523182fa6353bfcaba058cc90f5"
+      ],
+      "statement": "The source explicitly connects these actions in time."
+    },
+    {
+      "id": "link-14",
+      "kind": "chronology",
+      "before_clause": "4.8",
+      "after_clause": "4.9",
+      "evidence_ids": [
+        "1a9c3c0a9b88a8b199e226b97dc0c99305976ee16783aa88f211105faf476f5f",
+        "ac984ec68efcc81681fb2b2418f37141a386f46e480eb4341a97a2e0d6fe23eb",
+        "d0439192ee5da700752cb2e2f212a1b4683c5f9e2ef96cabba306178f7c4637c",
+        "8115e1de5fabeb47958b22212807e3182791665bac272f9a6a1d69d7d62de484",
+        "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+        "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba"
+      ],
+      "statement": "The source explicitly connects these actions in time."
+    }
+  ],
+  "frame_and_link_evidence": {
+    "dfe1dc7a9a1630154cd720c64c22382e556c8ae8c3706ab75c3de93c28f1769d": {
+      "id": "dfe1dc7a9a1630154cd720c64c22382e556c8ae8c3706ab75c3de93c28f1769d",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+      "passage_hash": "20cbdc2992562b3ecc8484627f101fbcb14311e80726ddf93c9ec7a685e651a0",
+      "passage_start": 0,
+      "start": 100,
+      "end": 175,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "b9a1d277a2d3b993d95edf36af85809ad5a41aa6f18beca5c5082020d1ce3fd8": {
+      "id": "b9a1d277a2d3b993d95edf36af85809ad5a41aa6f18beca5c5082020d1ce3fd8",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+      "passage_hash": "20cbdc2992562b3ecc8484627f101fbcb14311e80726ddf93c9ec7a685e651a0",
+      "passage_start": 0,
+      "start": 176,
+      "end": 388,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "d7ce9a4d4de313eeb33ce001519afd71e68566d99ba0d8f6149e5b1d679fbabb": {
+      "id": "d7ce9a4d4de313eeb33ce001519afd71e68566d99ba0d8f6149e5b1d679fbabb",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+      "passage_hash": "20cbdc2992562b3ecc8484627f101fbcb14311e80726ddf93c9ec7a685e651a0",
+      "passage_start": 0,
+      "start": 388,
+      "end": 483,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "c705346185f9c9124fbcc545005c9cabff90423b015a4e1323bb0c09cfc9bdce": {
+      "id": "c705346185f9c9124fbcc545005c9cabff90423b015a4e1323bb0c09cfc9bdce",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+      "passage_hash": "20cbdc2992562b3ecc8484627f101fbcb14311e80726ddf93c9ec7a685e651a0",
+      "passage_start": 0,
+      "start": 654,
+      "end": 767,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "77cdf11d09e8a6d57ba8e0e463fd08416a1d67ad3223603a14ca568134f12332": {
+      "id": "77cdf11d09e8a6d57ba8e0e463fd08416a1d67ad3223603a14ca568134f12332",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+      "passage_hash": "20cbdc2992562b3ecc8484627f101fbcb14311e80726ddf93c9ec7a685e651a0",
+      "passage_start": 0,
+      "start": 768,
+      "end": 926,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "609a632a23a950ca44a5632727587f1db5913bd23d31aa5f0e2bea3d45e7846d": {
+      "id": "609a632a23a950ca44a5632727587f1db5913bd23d31aa5f0e2bea3d45e7846d",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+      "passage_hash": "7936c5f8d5d7ee2118ccf141c96eb6113043dfa0ef6519ee2ce7181148844578",
+      "passage_start": 1202,
+      "start": 2202,
+      "end": 2331,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "fd10764b3c73888f0b1e9885210077249fe474bc07e00db81f186fe6da8439b0": {
+      "id": "fd10764b3c73888f0b1e9885210077249fe474bc07e00db81f186fe6da8439b0",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+      "passage_hash": "7936c5f8d5d7ee2118ccf141c96eb6113043dfa0ef6519ee2ce7181148844578",
+      "passage_start": 1202,
+      "start": 2332,
+      "end": 2430,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "40fe7312957c5c02459c18cc9c056cdfd33e8c09148868e329910b450ef04da7": {
+      "id": "40fe7312957c5c02459c18cc9c056cdfd33e8c09148868e329910b450ef04da7",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+      "passage_hash": "7936c5f8d5d7ee2118ccf141c96eb6113043dfa0ef6519ee2ce7181148844578",
+      "passage_start": 1202,
+      "start": 2431,
+      "end": 2562,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "e64303fb828996c422b6dc5c60f6c4a5d22fdd76aa410bb75bb2beb454928f55": {
+      "id": "e64303fb828996c422b6dc5c60f6c4a5d22fdd76aa410bb75bb2beb454928f55",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+      "passage_hash": "60fa6e5c82c7976916f4dd135c97602264c4f6d28ccc716730e802fe29c18125",
+      "passage_start": 2563,
+      "start": 2686,
+      "end": 2828,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "d694e8ff921969e4cdb92b02f39be83f1773f74f5ea71336a1476e05a34ad928": {
+      "id": "d694e8ff921969e4cdb92b02f39be83f1773f74f5ea71336a1476e05a34ad928",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+      "passage_hash": "60fa6e5c82c7976916f4dd135c97602264c4f6d28ccc716730e802fe29c18125",
+      "passage_start": 2563,
+      "start": 2829,
+      "end": 2937,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9": {
+      "id": "13fcccdbff06dc905fc7c0a795c73f32e256f158e5c4d68242811a7487a17ca9",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+      "passage_hash": "60fa6e5c82c7976916f4dd135c97602264c4f6d28ccc716730e802fe29c18125",
+      "passage_start": 2563,
+      "start": 3088,
+      "end": 3255,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba": {
+      "id": "1d6e38278dacb2c0bc07571f32d9beb10e2290f0e64c137e85d322859ce03bba",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+      "passage_hash": "60fa6e5c82c7976916f4dd135c97602264c4f6d28ccc716730e802fe29c18125",
+      "passage_start": 2563,
+      "start": 3256,
+      "end": 3362,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "02347181e60028015278b170a943882653dd851f42d0e77aadac8585041912af": {
+      "id": "02347181e60028015278b170a943882653dd851f42d0e77aadac8585041912af",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+      "passage_hash": "074914bfa9ae359af40c620068513525d90e7420c9a8d21fabfea67d15b2975c",
+      "passage_start": 4101,
+      "start": 4206,
+      "end": 4237,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "290a175880297cfd24e8d50f3eb495f77c7bd9ff1a523ffe6e3937a58f063bb7": {
+      "id": "290a175880297cfd24e8d50f3eb495f77c7bd9ff1a523ffe6e3937a58f063bb7",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cd4321e2-fcb0-57b5-a916-35fc95679797",
+      "passage_hash": "6b9d9609d3bdd44c3f0bb2f78b2c1a296b5da6bf009eb9c808e8f905456d04dc",
+      "passage_start": 2720,
+      "start": 3767,
+      "end": 3833,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "1a9c3c0a9b88a8b199e226b97dc0c99305976ee16783aa88f211105faf476f5f": {
+      "id": "1a9c3c0a9b88a8b199e226b97dc0c99305976ee16783aa88f211105faf476f5f",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+      "passage_hash": "074914bfa9ae359af40c620068513525d90e7420c9a8d21fabfea67d15b2975c",
+      "passage_start": 4101,
+      "start": 4487,
+      "end": 4581,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "ac984ec68efcc81681fb2b2418f37141a386f46e480eb4341a97a2e0d6fe23eb": {
+      "id": "ac984ec68efcc81681fb2b2418f37141a386f46e480eb4341a97a2e0d6fe23eb",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+      "passage_hash": "074914bfa9ae359af40c620068513525d90e7420c9a8d21fabfea67d15b2975c",
+      "passage_start": 4101,
+      "start": 4257,
+      "end": 4316,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "e5eb8d7a8704ed03be71d5692fc206f338ad5015fe99bccf4098a1d2a9664185": {
+      "id": "e5eb8d7a8704ed03be71d5692fc206f338ad5015fe99bccf4098a1d2a9664185",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+      "passage_hash": "60fa6e5c82c7976916f4dd135c97602264c4f6d28ccc716730e802fe29c18125",
+      "passage_start": 2563,
+      "start": 2938,
+      "end": 3087,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    },
+    "d0439192ee5da700752cb2e2f212a1b4683c5f9e2ef96cabba306178f7c4637c": {
+      "id": "d0439192ee5da700752cb2e2f212a1b4683c5f9e2ef96cabba306178f7c4637c",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cd4321e2-fcb0-57b5-a916-35fc95679797",
+      "passage_hash": "6b9d9609d3bdd44c3f0bb2f78b2c1a296b5da6bf009eb9c808e8f905456d04dc",
+      "passage_start": 2720,
+      "start": 3690,
+      "end": 3766,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "8115e1de5fabeb47958b22212807e3182791665bac272f9a6a1d69d7d62de484": {
+      "id": "8115e1de5fabeb47958b22212807e3182791665bac272f9a6a1d69d7d62de484",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+      "passage_hash": "074914bfa9ae359af40c620068513525d90e7420c9a8d21fabfea67d15b2975c",
+      "passage_start": 4101,
+      "start": 4656,
+      "end": 4716,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "f15a85d1573b29b52185e8494088c9279b5682de9d2ef55203621f792e42336d": {
+      "id": "f15a85d1573b29b52185e8494088c9279b5682de9d2ef55203621f792e42336d",
+      "source_id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+      "source_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+      "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+      "passage_hash": "074914bfa9ae359af40c620068513525d90e7420c9a8d21fabfea67d15b2975c",
+      "passage_start": 4101,
+      "start": 4749,
+      "end": 4920,
+      "eligibility_boundary": 1,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "healthydoseofanime.blogspot.com"
+    },
+    "8d336e60459f6a3d45017eb993268822ded5a523182fa6353bfcaba058cc90f5": {
+      "id": "8d336e60459f6a3d45017eb993268822ded5a523182fa6353bfcaba058cc90f5",
+      "source_id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+      "source_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+      "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+      "passage_hash": "60fa6e5c82c7976916f4dd135c97602264c4f6d28ccc716730e802fe29c18125",
+      "passage_start": 2563,
+      "start": 3363,
+      "end": 3472,
+      "eligibility_boundary": 7,
+      "position_basis": "manga-chapter",
+      "authority": "secondary",
+      "source_group": "onepiece.fandom.com"
+    }
+  },
+  "article_status": "withheld before composition",
+  "composition_started": false,
+  "section_reviews": [],
+  "live_api_postgresql": {
+    "http_status": 200,
+    "status": "pending",
+    "article": null
+  },
+  "confirmed_model_requests": 35,
+  "published_paragraphs": 0,
+  "supported_frames": 10,
+  "provider_calls": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "invalid_output",
+      "count": 5
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "count": 10
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "rate_limited",
+      "count": 5
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "status": "ok",
+      "count": 14
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "status": "timeout",
+      "count": 1
+    }
+  ],
+  "tokens_reported": {
+    "input_tokens": 37648,
+    "output_tokens": 9405
+  },
+  "returned_schemas": {
+    "FrameDecisions": 11,
+    "FrameCandidates": 1
+  },
+  "diagnostic_requests_included_in_total": 22
+}

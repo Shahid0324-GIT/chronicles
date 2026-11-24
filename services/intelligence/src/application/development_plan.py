@@ -680,10 +680,6 @@ def anchored_relationship(
     )
 
 
-def link_focus(plan: NarrativeDevelopmentPlan) -> PlannedDevelopment:
-    return max(plan.developments, key=lambda d: len(d.clauses))
-
-
 def focused_proposals(
     actions: dict[str, dict[str, Any]],
     archive: list[DevelopmentEvidence],
@@ -715,7 +711,17 @@ def focused_proposals(
     if not pairs:
         return RelationshipCandidates(links=[], gaps=[])
     links = []
-    for before, after, a, b, kind in pairs.values():
+    # Prioritize real changes and cross-scene continuity across the whole plan.
+    important = {"conflict", "consequence", "decision", "development"}
+    ranked = sorted(
+        pairs.values(),
+        key=lambda pair: (
+            actions[pair[0]]["development"] == actions[pair[1]]["development"],
+            not any(actions[ref]["facet"] in important for ref in pair[:2]),
+            pair[4] != "chronology",
+        ),
+    )
+    for before, after, a, b, kind in ranked[:7]:
         links.append(
             RelationshipCandidate(
                 before=before,
@@ -752,10 +758,6 @@ async def reconstruct_relationships(
     refs = clause_map(plan)
     units = plan.evidence
     action_ids = {f"c{i}": ref for i, ref in enumerate(refs, 1)}
-    if focus_encounter:
-        focus = link_focus(plan)
-        action_ids = {key: ref for key, ref in action_ids.items() if refs[ref][0].id == focus.id}
-        action_ids = dict(list(action_ids.items())[-4:])
     archive_ids = {u.id: f"e{i}" for i, u in enumerate(units, 1)}
     archive_units = {u.id: u for u in units}
     terms = {u.id: word_spans(u.text, 1) for u in units}
@@ -776,6 +778,7 @@ async def reconstruct_relationships(
             "development": refs[ref][0].key,
             "text": refs[ref][1].clause,
             "modality": refs[ref][1].modality,
+            "facet": refs[ref][1].facet,
             "evidence": [archive_ids[u] for u in refs[ref][1].evidence_ids],
             "alternate_archive": {e: units[int(e[1:]) - 1].text for e in alternate_ids[alias]},
         }

@@ -57,7 +57,11 @@ def frame_citations(state: Reconstruction, plan: NarrativeDevelopmentPlan) -> Fr
     aliases = {u.id: f"e{i}" for i, u in enumerate(plan.evidence, 1)}
     return FrameCitations(
         notes=[
-            FrameCitation(id=f.clause, context=[aliases[u] for u in f.context], essential=True)
+            FrameCitation(
+                id=f.clause,
+                context=[aliases[u] for u in f.context],
+                essential=f.clause in scene.essential_clauses,
+            )
             for scene in state.scenes
             for f in scene.frames
         ]
@@ -119,7 +123,8 @@ def aligned_scene(
 def numbered_frames(state: Reconstruction) -> dict[str, dict[str, Any]]:
     return {
         str(i): f.model_dump(
-            mode="json", exclude={"evidence_ids", "context", "fact_id", "id", "excerpt"}
+            mode="json",
+            exclude={"evidence_ids", "context", "fact_id", "id", "excerpt", "verified_witness"},
         )
         for i, f in enumerate((f for scene in state.scenes for f in scene.frames), 1)
     }
@@ -164,7 +169,9 @@ async def write_and_align(
             "Write this part of an original encyclopedia narrative. Return only paragraphs "
             "as strings, without citations or commentary. Use only the verified frames and "
             "relationships for facts. Follow discourse order and prior context for continuity. "
-            "Preserve distinct roles, intent, outcome, and explicit chronology. Explain what "
+            "Preserve beliefs, promises, emotions, reports, roles, intent, and chronology. "
+            "Combine related propositions naturally. Transitions may organize the account "
+            "without asserting new events or factual connections. Explain what "
             "changes without invented causes or transitions. For repair, replace only the "
             "target paragraphs in order, one paragraph for each target.\n"
             + json.dumps(packet, ensure_ascii=False),
@@ -268,6 +275,9 @@ async def compose_reconstruction(
                     "reference_presentation_layers": [
                         [frame_ids[i] for i in layer]
                         for layer in scenes[beat.scene_id].presentation_layers
+                    ],
+                    "unordered_context_frames": [
+                        frame_ids[i] for i in scenes[beat.scene_id].unordered_frame_ids
                     ],
                     "has_unresolved_details": bool(beat.open_questions),
                     "relationships": links,
