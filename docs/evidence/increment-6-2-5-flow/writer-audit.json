@@ -1,0 +1,40 @@
+{
+  "publication": "diagnostic_only",
+  "excluded_clauses": [
+    "4.10",
+    "5.2"
+  ],
+  "scene_gaps": {
+    "Shanks Rescues Luffy from Bandits and Sea King": [
+      "4.10"
+    ],
+    "Luffy's Promise, Hat Gift, and Departure": [
+      "5.1",
+      "5.2"
+    ]
+  },
+  "assessment": {
+    "halted": "Alignment must account for every authored span exactly once"
+  },
+  "provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "rate_limited",
+      "count": 1
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "status": "ok",
+      "count": 4
+    }
+  ],
+  "reextracted_evidence": false,
+  "factual_grounding_executed": false,
+  "live_api": {
+    "http_status": 200,
+    "status": "pending",
+    "article": null
+  }
+}

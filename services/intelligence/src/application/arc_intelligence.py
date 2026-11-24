@@ -66,7 +66,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v27"
+POLICY = "arc-intelligence-v28"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -989,7 +989,7 @@ class ArcIntelligence:
                     notes = frame_citations(state, plan)
                     if draft is None:
                         writes, reviews = composition_requirements(
-                            state, plan, notes, cached_batches
+                            state, plan, notes, cached_batches, section.plan.title
                         )
                         if self.can_review and not await self.can_review(writes, reviews):
                             raise InferenceFailure("publication_review_budget_reserved")
@@ -1221,6 +1221,7 @@ class ArcIntelligence:
                                     }
                                     for i in sorted(indices)
                                 ],
+                                "section_draft": [p.text for p in draft.paragraphs],
                                 "factual_issues_by_claim": rejected,
                                 "editorial_issues": assessment.coherence_issues,
                                 "originality_issues": assessment.originality_issues,

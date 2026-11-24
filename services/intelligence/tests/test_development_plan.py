@@ -164,17 +164,25 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
                 )
             )
         if schema is PlainScene:
-            is_first = not packet["previous_prose_for_style_only"]
-            if is_first:
-                frame = next(iter(packet["frames"].values()))
-                assert frame["roles"]["speaker"]["name"] == "Shanks"
-                assert frame["roles"]["experiencer"]["name"] == "Luffy"
-            else:
-                assert packet["previous_prose_for_style_only"] == "Luffy had changed."
-            return PlainScene(paragraphs=["Luffy had changed." if is_first else "Ron opened it."])
+            assert len(packet["scenes"]) == 2
+            assert [scene["frames"] for scene in packet["scenes"]] == [["1"], ["2"]]
+            frame = packet["frames"]["1"]
+            assert frame["roles"]["speaker"]["name"] == "Shanks"
+            assert frame["roles"]["experiencer"]["name"] == "Luffy"
+            if "draft" in packet:
+                assert packet["draft"] == ["Luffy had changed.", "Ron opened it."]
+                return PlainScene(paragraphs=["Luffy had changed. Ron opened it."])
+            return PlainScene(paragraphs=["Luffy had changed.", "Ron opened it."])
         if schema is SceneAlignment:
-            assert list(packet["spans"]) == ["1"]
-            return schema.model_validate({"spans": [{"span": 1, "frames": list(packet["frames"])}]})
+            assert list(packet["spans"]) == ["1", "2"]
+            return schema.model_validate(
+                {
+                    "spans": [
+                        {"span": 1, "frames": ["1"]},
+                        {"span": 2, "frames": ["2"]},
+                    ]
+                }
+            )
         assert schema is FrameDecisions
         proposed = [v["proposition"] for v in packet.values()]
         review_batches.append(proposed)
@@ -207,13 +215,13 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert [len(batch) for batch in review_batches] == [2, 1]
     notes = frame_citations(reconstruction, plan)
     cache = {}
-    assert composition_requirements(reconstruction, plan, notes, cache) == (2, 5)
+    assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (2, 5)
     draft = await compose_reconstruction(
         reconstruction, plan, notes, "Change", infer, cache, checkpoint
     )
-    assert composition_requirements(reconstruction, plan, notes, cache) == (0, 3)
-    assert [p.text for p in draft.paragraphs] == ["Luffy had changed.", "Ron opened it."]
-    assert [p.claims[0].writing_note_ids for p in draft.paragraphs] == [["1"], ["2"]]
+    assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (0, 2)
+    assert [p.text for p in draft.paragraphs] == ["Luffy had changed. Ron opened it."]
+    assert [claim.writing_note_ids for claim in draft.paragraphs[0].claims] == [["1"], ["2"]]
 
 
 async def test_empty_reconstruction_recovers_essential_actions_from_archive():

@@ -23,15 +23,24 @@ from src.application.arc_contracts import (
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.arc_prose import (
+    SECTION_REVISION,
     PlainScene,
     Propositions,
+    ProseDraft,
     SceneProse,
+    assess_in_batches,
+    bind_writing_notes,
+    frame_citations,
+    section_writing_packet,
     validate_propositions,
+    validate_scene_alignment_order,
+    write_and_align,
 )
+from src.application.arc_reconstruction import Reconstruction, build_discourse
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.development_plan import clause_map
 from src.application.event_extraction import evidence_units
-from src.application.research_contracts import Task
+from src.application.research_contracts import InferenceFailure, Task
 from src.domain.research import SourcePassage, digest
 from src.infrastructure.config.settings import Settings
 from src.infrastructure.inference import create_inference
@@ -130,6 +139,8 @@ async def main() -> None:
     parser.add_argument("--verified-frames", action="store_true")
     parser.add_argument("--reconstruction-only", action="store_true")
     parser.add_argument("--reuse-checkpoint", type=Path)
+    parser.add_argument("--writer-only", action="store_true")
+    parser.add_argument("--unresolved-clause", action="append", default=[])
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
@@ -141,6 +152,10 @@ async def main() -> None:
         parser.error("Reconstruction-only runs require --verified-frames")
     if args.reuse_checkpoint and not (args.verified_frames and args.original and args.autonomous):
         parser.error("Checkpoint reuse requires a new autonomous verified-frame benchmark")
+    if args.writer_only and not args.reuse_checkpoint:
+        parser.error("A writer-only run requires a saved reconstruction checkpoint")
+    if args.unresolved_clause and not args.writer_only:
+        parser.error("Only the diagnostic writer can omit unresolved clauses")
     if args.autonomous and args.reviewed_notes:
         parser.error("Autonomous runs cannot load reviewed notes")
     if args.resume_automatic_notes and not (args.autonomous and args.compose):
@@ -178,7 +193,9 @@ async def main() -> None:
     if args.verified_frames:
         if not args.handoff:
             parser.error("Verified frame runs require --handoff")
-        folder = Path("../../.tmp/benchmark625-recovery-check")
+        folder = Path("../../.tmp") / (
+            "benchmark625-flow" if args.writer_only else "benchmark625-recovery-check"
+        )
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -451,6 +468,12 @@ async def main() -> None:
             else 0,
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
+        if args.writer_only and schema is PlainScene:
+            stage = "revised" if prompt.startswith(SECTION_REVISION) else "first-draft"
+            (folder / f"{stage}.md").write_text(
+                "\n\n".join(PlainScene.model_validate(result.value).paragraphs) + "\n",
+                encoding="utf8",
+            )
         if schema.__name__ in {"ArcSectionDraft"}:
             (folder / "generated-draft.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
@@ -483,6 +506,70 @@ async def main() -> None:
             with (folder / "relationship-review.jsonl").open("a", encoding="utf8") as log:
                 log.write(result.value.model_dump_json() + "\n")
         return result.value
+
+    if args.writer_only:
+        writer_plan = NarrativeDevelopmentPlan.model_validate(
+            saved["stored_plan"]["payload"]["plan"]
+        )
+        state = Reconstruction.model_validate(saved["reconstruction"]["payload"])
+        unresolved = set(args.unresolved_clause)
+        refs = clause_map(writer_plan)
+        if unresolved - refs.keys():
+            raise ValueError("Unknown unresolved clause in the saved reconstruction")
+        for scene in state.scenes:
+            scene.frames = [frame for frame in scene.frames if frame.clause not in unresolved]
+            scene.missing_essential = list(
+                dict.fromkeys(
+                    [
+                        *scene.missing_essential,
+                        *(ref for ref in unresolved if refs[ref][0].id == scene.id),
+                    ]
+                )
+            )
+            scene.gaps.extend(f"Unresolved clause {ref}" for ref in scene.missing_essential)
+        state.beats.clear()
+        build_discourse(state, writer_plan)
+        notes = frame_citations(state, writer_plan)
+        cache: dict[str, dict[str, object]] = {}
+
+        async def checkpoint() -> None:
+            (folder / "writer-checkpoint.json").write_text(json.dumps(cache), encoding="utf8")
+
+        assessment: dict[str, Any] = {}
+        try:
+            paragraphs, _ = await write_and_align(
+                section_writing_packet(state, writer_plan, notes, title), infer, cache, checkpoint
+            )
+            draft = bind_writing_notes(ProseDraft(paragraphs=paragraphs), writer_plan, notes, title)
+            (folder / "aligned-draft.json").write_text(
+                draft.model_dump_json(indent=2), encoding="utf8"
+            )
+            validate_scene_alignment_order(draft, state, writer_plan)
+            review = await assess_in_batches(
+                draft, writer_plan, notes, infer, cache, checkpoint, reconstruction=state
+            )
+            assessment = review.model_dump(mode="json")
+        except (InferenceFailure, ValueError) as error:
+            assessment = {"halted": getattr(error, "code", str(error))}
+        finally:
+            (folder / "writer-audit.json").write_text(
+                json.dumps(
+                    {
+                        "publication": "diagnostic_only",
+                        "excluded_clauses": sorted(unresolved),
+                        "scene_gaps": {
+                            scene.title: scene.missing_essential
+                            for scene in state.scenes
+                            if scene.missing_essential
+                        },
+                        "assessment": assessment,
+                        "provider_usage": providers(),
+                    },
+                    indent=2,
+                ),
+                encoding="utf8",
+            )
+        return
 
     try:
         await service.prepare_developments(
