@@ -10,7 +10,7 @@ from difflib import SequenceMatcher
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
-from pydantic import Field
+from pydantic import Field, ValidationError
 
 from src.application.arc_contracts import (
     ActionModality,
@@ -79,7 +79,7 @@ class AlignedSpan(StructuredModel):
 
 
 class SceneAlignment(StructuredModel):
-    spans: list[AlignedSpan] = Field(min_length=1)
+    spans: list[AlignedSpan | dict[str, Any]] = Field(min_length=1)
 
 
 def prose_spans(prose: PlainScene) -> list[tuple[int, str]]:
@@ -104,7 +104,8 @@ def aligned_scene(
     allowed_relationships: set[str] | None = None,
 ) -> list[ProseParagraph]:
     spans = prose_spans(prose)
-    by_number = {item.span: item for item in alignment.spans}
+    rows = [AlignedSpan.model_validate(item) for item in alignment.spans]
+    by_number = {span.span: span for span in rows}
     if len(by_number) != len(alignment.spans) or by_number.keys() != set(range(1, len(spans) + 1)):
         raise ValueError("Alignment must account for every authored span exactly once")
     paragraphs: list[list[ProseClaim]] = [[] for _ in prose.paragraphs]
@@ -176,8 +177,11 @@ SECTION_REVISION = (
     "Read the entire draft as one account for a reader new to the story. Improve abrupt "
     "transitions, missing setup available in frames, repeated introductions, unclear referents, "
     "and over-compressed turning points. Revise once across scene boundaries; paragraph "
-    "boundaries may change. Keep related actions and reactions together. Splitting a paragraph "
-    "alone does not improve its flow. Compare each paragraph's concrete claims with the frames "
+    "boundaries may change. Keep related actions and reactions together. Give each turning "
+    "point space for its setup, response and result when supported. Use separate sentences "
+    "when the focus shifts between characters or actions. Keep supported interactions and "
+    "consequences even when shortening the opening. Compare each paragraph's concrete claims "
+    "with the frames "
     "before preserving it. The draft itself is not evidence. Remove any additions "
     "about what someone meant, why they acted, or what event caused the next unless the "
     "supplied frames or links establish them. Preserve who acted, supported chronology, and "
@@ -189,11 +193,94 @@ def prose_key(stage: str, packet: dict[str, Any]) -> str:
     return fingerprint([stage, packet])
 
 
+class EssentialPresence(StructuredModel):
+    frame: str
+    initial: bool
+    revised: bool
+
+
+class RevisionReview(StructuredModel):
+    essential: list[EssentialPresence]
+    unsupported: list[str]
+
+
+def revision_review_packet(
+    packet: dict[str, Any], initial: PlainScene, revised: PlainScene
+) -> dict[str, Any]:
+    return {
+        "initial": initial.paragraphs,
+        "revised": revised.paragraphs,
+        "frames": {
+            ref: {
+                key: frame[key]
+                for key in (
+                    "action",
+                    "modality",
+                    "negated",
+                    "actor",
+                    "patient",
+                    "speaker",
+                    "experiencer",
+                    "subject",
+                    "location",
+                    "purpose",
+                    "outcome",
+                )
+                if key in frame and frame[key] not in (None, "")
+            }
+            for ref, frame in packet["frames"].items()
+        },
+        "essential": packet["essential_frames"],
+        "relationships": packet["relationships"],
+    }
+
+
+async def review_revision(
+    packet: dict[str, Any],
+    infer: Infer,
+    cached: dict[str, dict[str, object]],
+    checkpoint: Callable[[], Awaitable[None]],
+    *,
+    diagnostics: dict[str, Any] | None = None,
+) -> RevisionReview:
+    key = prose_key("arc-revision-meaning-v1", packet)
+    review = RevisionReview.model_validate(
+        cached[key]
+        if key in cached
+        else await infer(
+            "Compare these two complete drafts. For each frame ID in essential, report whether "
+            "the initial and revised prose convey that same development with its original "
+            "participants, intent and outcome. Paraphrases count; an omission or changed meaning "
+            "does not. In unsupported list every unsupported factual statement in the revised "
+            "draft, including altered identities, invented motivations and implied causes. The "
+            "frames and verified links are the only evidence. The initial draft is not evidence. "
+            "Give each essential frame ID once. Return an empty unsupported list only if every "
+            "revised claim is supported.\n" + json.dumps(packet, ensure_ascii=False),
+            RevisionReview,
+            "presentation_verification",
+        )
+    )
+    if diagnostics is not None:
+        diagnostics["revision_review"] = review.model_dump(mode="json")
+    required = set(packet["essential"])
+    if (
+        len(review.essential) != len(required)
+        or {item.frame for item in review.essential} != required
+    ):
+        raise ValueError("Revision review omitted or duplicated a required development")
+    if key not in cached:
+        cached[key] = review.model_dump(mode="json")
+        await checkpoint()
+    return review
+
+
 async def write_and_align(
     packet: dict[str, Any],
     infer: Infer,
     cached: dict[str, dict[str, object]],
     checkpoint: Callable[[], Awaitable[None]],
+    *,
+    diagnostics: dict[str, Any] | None = None,
 ) -> tuple[list[ProseParagraph], str]:
     repair = "repair" in packet
     key = prose_key("arc-targeted-repair-v2" if repair else "arc-section-writing-v2", packet)
@@ -216,9 +303,11 @@ async def write_and_align(
     if key not in cached:
         cached[key] = prose.model_dump(mode="json")
         await checkpoint()
+    if diagnostics is not None:
+        diagnostics["initial"] = prose.paragraphs
     if not repair:
         editorial_input = {**packet, "draft": prose.paragraphs}
-        key = prose_key("arc-section-revision-v2", editorial_input)
+        key = prose_key("arc-section-revision-v4", editorial_input)
         try:
             revision = PlainScene.model_validate(
                 cached[key]
@@ -229,46 +318,89 @@ async def write_and_align(
                     "presentation",
                 )
             )
-        except InferenceFailure:
-            # The unchanged draft still has to pass the normal editorial and factual review.
-            pass
-        else:
             if key not in cached:
                 cached[key] = revision.model_dump(mode="json")
                 await checkpoint()
-            prose = revision
+            if diagnostics is not None:
+                diagnostics["revision"] = revision.paragraphs
+            review = await review_revision(
+                revision_review_packet(packet, prose, revision),
+                infer,
+                cached,
+                checkpoint,
+                diagnostics=diagnostics,
+            )
+            lost = [item.frame for item in review.essential if item.initial and not item.revised]
+            if diagnostics is not None:
+                diagnostics["lost_essential"] = lost
+            if not lost and not review.unsupported:
+                prose = revision
+            elif diagnostics is not None:
+                diagnostics["revision_withheld"] = True
+        except (InferenceFailure, ValueError) as error:
+            if diagnostics is not None:
+                diagnostics["revision_review_error"] = getattr(error, "code", str(error))
+                diagnostics["revision_withheld"] = True
+    if diagnostics is not None:
+        diagnostics["selected"] = prose.paragraphs
     frames = packet["frames"]
     spans: list[AlignedSpan] = []
-    for alignment_input in scene_alignment_packets(packet, prose):
-        key = prose_key("arc-prose-alignment-v3", alignment_input)
-        alignment = SceneAlignment.model_validate(
-            cached[key]
-            if key in cached
-            else await infer(
-                "Map every supplied span ID to the frame IDs supporting its meaning, including "
-                "all factual assertions and any stated relationships. Span and frame numbers "
-                "are independent. Use every supplied span ID exactly once. Do not rewrite prose "
-                "or guess support. Copy IDs exactly.\n"
-                + json.dumps(alignment_input, ensure_ascii=False),
-                SceneAlignment,
-                "presentation_verification",
-            )
-        )
-        ids = [str(item.span) for item in alignment.spans]
-        if len(ids) != len(set(ids)) or set(ids) != alignment_input["spans"].keys():
-            raise ValueError("Alignment must account for every authored span exactly once")
-        if any(
-            not {ref.strip().removeprefix("/") for ref in item.frames} <= frames.keys()
-            or not set(item.relations) <= packet["relationships"].keys()
-            for item in alignment.spans
-        ):
-            raise ValueError("Alignment cited a foreign frame or relationship")
-        if key not in cached:
-            cached[key] = alignment.model_dump(mode="json")
-            await checkpoint()
-        spans.extend(alignment.spans)
+    pending_ids: list[int] = []
+    for batch in scene_alignment_packets(packet, prose):
+        key = prose_key("arc-prose-alignment-v4", batch)
+        remaining = dict(batch["spans"])
+        accepted: dict[int, AlignedSpan] = {}
+        if key in cached:
+            for raw in SceneAlignment.model_validate(cached[key]).spans:
+                span = AlignedSpan.model_validate(raw)
+                accepted[span.span] = span
+                remaining.pop(str(span.span))
+        for _ in range(2):
+            if not remaining:
+                break
+            try:
+                alignment = SceneAlignment.model_validate(
+                    await infer(
+                        'Return JSON of this exact shape: {"spans": [{"span": 7, '
+                        '"frames": ["3", "4"], "relations": []}]}. Numbers here are an example. '
+                        "For each supplied prose span, use its numeric key as span and put all "
+                        "the evidence frame keys needed by its claims in the frames array. "
+                        "Put applicable relationship IDs in the relations array, or use []. "
+                        "Leave unsupported spans unmapped. Keep the prose intact.\n"
+                        + json.dumps({**batch, "spans": remaining}, ensure_ascii=False),
+                        SceneAlignment,
+                        "presentation_verification",
+                    )
+                )
+            except InferenceFailure:
+                continue
+            rows: dict[int, list[AlignedSpan]] = {}
+            for raw in alignment.spans:
+                try:
+                    span = AlignedSpan.model_validate(raw)
+                except ValidationError:
+                    continue
+                rows.setdefault(span.span, []).append(span)
+            for i, group in rows.items():
+                if len(group) != 1 or str(i) not in remaining:
+                    continue
+                [span] = group
+                if {ref.strip().removeprefix("/") for ref in span.frames} <= frames.keys() and set(
+                    span.relations
+                ) <= packet["relationships"].keys():
+                    accepted[i] = span
+                    remaining.pop(str(i))
+            if accepted:
+                cached[key] = SceneAlignment(spans=list(accepted.values())).model_dump(mode="json")
+                await checkpoint()
+        spans.extend(accepted.values())
+        pending_ids.extend(int(i) for i in remaining)
+    if diagnostics is not None:
+        diagnostics["alignment"] = {"mapped": len(spans), "unmapped_span_ids": pending_ids}
+    if pending_ids:
+        raise ValueError("Alignment incomplete for spans " + ", ".join(map(str, pending_ids)))
     paragraphs = aligned_scene(
-        prose, SceneAlignment(spans=spans), set(frames), set(packet["relationships"])
+        prose, SceneAlignment(spans=[*spans]), set(frames), set(packet["relationships"])
     )
     return paragraphs, prose.paragraphs[-1]
 
@@ -367,24 +499,42 @@ def composition_requirements(
     writing, alignment = 2, max(1, (len(state.beats) * 3 + 4) // 5)
     review_batches = len(state.beats)
     saved = cached.get(prose_key("arc-section-writing-v2", packet))
+    revised = review = None
     if saved is not None:
         writing -= 1
         prose = PlainScene.model_validate(saved)
         revised = cached.get(
-            prose_key("arc-section-revision-v2", {**packet, "draft": prose.paragraphs})
+            prose_key("arc-section-revision-v4", {**packet, "draft": prose.paragraphs})
         )
         if revised is not None:
             writing -= 1
-            prose = PlainScene.model_validate(revised)
-            alignment = sum(
-                prose_key("arc-prose-alignment-v3", batch) not in cached
-                for batch in scene_alignment_packets(packet, prose)
+            revision = PlainScene.model_validate(revised)
+            review = cached.get(
+                prose_key(
+                    "arc-revision-meaning-v1", revision_review_packet(packet, prose, revision)
+                )
             )
+            if review is not None:
+                checked = RevisionReview.model_validate(review)
+                if not checked.unsupported and not any(
+                    r.initial and not r.revised for r in checked.essential
+                ):
+                    prose = revision
+            alignment = 0
+            for batch in scene_alignment_packets(packet, prose):
+                stored = cached.get(prose_key("arc-prose-alignment-v4", batch))
+                if stored is None or len(SceneAlignment.model_validate(stored).spans) != len(
+                    batch["spans"]
+                ):
+                    alignment += 1
             review_batches = sum(
                 (len(prose_spans(PlainScene(paragraphs=[p]))) + 6) // 7 for p in prose.paragraphs
             )
     relationship_reviews = len({story_links(plan)[key].after for key in packet["relationships"]})
-    return writing, alignment + review_batches + 1 + relationship_reviews
+    revision_review = 0
+    if saved is None or revised is None or review is None:
+        revision_review = 1
+    return writing, alignment + review_batches + 1 + relationship_reviews + revision_review
 
 
 async def compose_reconstruction(

@@ -24,6 +24,7 @@ from src.application.arc_contracts import (
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.arc_prose import (
     SECTION_REVISION,
+    GroundingBatch,
     PlainScene,
     Propositions,
     ProseDraft,
@@ -31,6 +32,7 @@ from src.application.arc_prose import (
     assess_in_batches,
     bind_writing_notes,
     frame_citations,
+    prose_spans,
     section_writing_packet,
     validate_propositions,
     validate_scene_alignment_order,
@@ -530,15 +532,20 @@ async def main() -> None:
         state.beats.clear()
         build_discourse(state, writer_plan)
         notes = frame_citations(state, writer_plan)
-        cache: dict[str, dict[str, object]] = {}
+        cache_path = folder / "writer-checkpoint.json"
+        cache: dict[str, dict[str, object]] = (
+            json.loads(cache_path.read_text(encoding="utf8")) if cache_path.exists() else {}
+        )
+        diagnostics: dict[str, Any] = {}
+        packet = section_writing_packet(state, writer_plan, notes, title)
 
         async def checkpoint() -> None:
-            (folder / "writer-checkpoint.json").write_text(json.dumps(cache), encoding="utf8")
+            cache_path.write_text(json.dumps(cache), encoding="utf8")
 
         assessment: dict[str, Any] = {}
         try:
             paragraphs, _ = await write_and_align(
-                section_writing_packet(state, writer_plan, notes, title), infer, cache, checkpoint
+                packet, infer, cache, checkpoint, diagnostics=diagnostics
             )
             draft = bind_writing_notes(ProseDraft(paragraphs=paragraphs), writer_plan, notes, title)
             (folder / "aligned-draft.json").write_text(
@@ -551,6 +558,55 @@ async def main() -> None:
             assessment = review.model_dump(mode="json")
         except (InferenceFailure, ValueError) as error:
             assessment = {"halted": getattr(error, "code", str(error))}
+            if prose := diagnostics.get("revision") or diagnostics.get("selected"):
+                spans = prose_spans(PlainScene(paragraphs=prose))
+                diagnostic_checks: list[dict[str, Any]] = []
+                for start in range(0, len(spans), 5):
+                    claims = {
+                        str(i): text
+                        for i, (_, text) in enumerate(spans[start : start + 5], start + 1)
+                    }
+                    try:
+                        checked = GroundingBatch.model_validate(
+                            await infer(
+                                "For every numbered sentence return the ID, verdict and reason. "
+                                "Check whether all its factual claims, including inferred cause, "
+                                "location, timing and participant identity, follow from the "
+                                "available frames or explicit links. Flag unsupported or uncertain "
+                                "sentences and identify the exact added detail. This is a "
+                                "diagnostic check without citations. Use an empty anchors array.\n"
+                                + json.dumps(
+                                    {
+                                        "claims": claims,
+                                        "frames": {
+                                            i: {
+                                                k: f[k]
+                                                for k in ("action", "roles", "modality", "negated")
+                                                if k in f
+                                            }
+                                            for i, f in packet["frames"].items()
+                                        },
+                                        "relationships": packet["relationships"],
+                                    },
+                                    ensure_ascii=False,
+                                ),
+                                GroundingBatch,
+                                "presentation_verification",
+                            )
+                        )
+                    except (InferenceFailure, ValueError) as diagnostic_error:
+                        diagnostic_checks.append({"unavailable": str(diagnostic_error)})
+                        continue
+                    decision_ids = [decision.id for decision in checked.decisions]
+                    diagnostic_checks.append(
+                        {
+                            "claims": claims,
+                            "incomplete": len(decision_ids) != len(claims)
+                            or set(decision_ids) != claims.keys(),
+                            **checked.model_dump(mode="json"),
+                        }
+                    )
+                assessment["unaligned_diagnostic_review"] = diagnostic_checks
         finally:
             (folder / "writer-audit.json").write_text(
                 json.dumps(
@@ -563,6 +619,7 @@ async def main() -> None:
                             if scene.missing_essential
                         },
                         "assessment": assessment,
+                        "composition": diagnostics,
                         "provider_usage": providers(),
                     },
                     indent=2,

@@ -1,0 +1,539 @@
+{
+  "publication": "diagnostic_only",
+  "excluded_clauses": [
+    "4.10",
+    "5.2"
+  ],
+  "scene_gaps": {
+    "Shanks Rescues Luffy from Bandits and Sea King": [
+      "4.10"
+    ],
+    "Luffy's Promise, Hat Gift, and Departure": [
+      "5.1",
+      "5.2"
+    ]
+  },
+  "assessment": {
+    "halted": "Grounding batch has incomplete or duplicate sentence IDs",
+    "unaligned_diagnostic_review": [
+      {
+        "claims": {
+          "1": "Gold Roger attained enormous wealth, fame, and power.",
+          "2": "This achievement catalyzed a shift in the world's trajectory, leading to the entry of the Great Pirate Era.",
+          "3": "The Red Hair Pirates arrived at Foosha Village with Monkey D. Luffy aboard.",
+          "4": "While the pirates and Luffy went to a bar to toast his craziness over food and drink, bandits led by Higuma entered and demanded alcohol.",
+          "5": "Higuma broke a bottle over Shanks' head after he offered it."
+        },
+        "incomplete": true,
+        "decisions": [
+          {
+            "id": "<invalid response ID>",
+            "verdict": "unsupported",
+            "reason": "Sentence 2 infers a causal link ('catalyzed') and specific timing/location ('entry of the Great Pirate Era') not present in frames or relationships; Sentence 3 adds 'with Monkey D. Luffy aboard' which is not supported by frame 3; Sentence 4 adds 'over food and drink' and implies 'toasted his craziness' without explicit support in frame 4; Sentence 5 infers the cause ('after he offered it') and action ('broke a bottle over Shanks' head') which are not explicitly detailed in frame 7 (which only states Higuma broke the bottle over Shanks' head after Shanks offered it, but does not specify the bottle breaking mechanism or offer context beyond the relationship).",
+            "anchors": []
+          },
+          {
+            "id": "2",
+            "verdict": "unsupported",
+            "reason": "Sentence 2 infers a causal link ('catalyzed') and specific timing/location ('entry of the Great Pirate Era') not present in frames or relationships; Sentence 3 adds 'with Monkey D. Luffy aboard' which is not supported by frame 3; Sentence 4 adds 'over food and drink' and implies 'toasted his craziness' without explicit support in frame 4; Sentence 5 infers the cause ('after he offered it') and action ('broke a bottle over Shanks' head') which are not explicitly detailed in frame 7 (which only states Higuma broke the bottle over Shanks' head after Shanks offered it, but does not specify the bottle breaking mechanism or offer context beyond the relationship).",
+            "anchors": []
+          },
+          {
+            "id": "3",
+            "verdict": "unsupported",
+            "reason": "Sentence 3 adds 'with Monkey D. Luffy aboard' which is not supported by frame 3; Sentence 4 adds 'over food and drink' and implies 'toasted his craziness' without explicit support in frame 4; Sentence 5 infers the cause ('after he offered it') and action ('broke a bottle over Shanks'",
+            "anchors": []
+          }
+        ]
+      },
+      {
+        "claims": {
+          "6": "Shanks apologized and cleaned up the mess, but Luffy felt anger toward him.",
+          "7": "Instead of retreating, Shanks attempted to grab Luffy's arm.",
+          "8": "The Red Hair Pirates realized the Gomu Gomu no Mi was missing.",
+          "9": "Shanks revealed that Luffy's body is rubber and cannot swim.",
+          "10": "Red Hair Pirates went on another voyage, and Luffy began enjoying his rubber body."
+        },
+        "incomplete": false,
+        "decisions": [
+          {
+            "id": "6",
+            "verdict": "unsupported",
+            "reason": "The frames confirm Shanks apologized and cleaned up (frame 8) and Luffy felt anger toward Shanks (frame 9), but no frame or relationship explicitly states that Luffy felt anger 'toward him' as a direct reaction to the apology/cleanup, nor does it link the two actions causally. The claim adds an inferred emotional direction not present in the explicit data.",
+            "anchors": []
+          },
+          {
+            "id": "7",
+            "verdict": "unsupported",
+            "reason": "Frame 10 states Shanks attempted to grab Luffy's arm, but it does not specify the intent or context as 'instead of retreating'. The frames do not contain information about Shanks retreating prior to this action, making the contrastive clause unsupported.",
+            "anchors": []
+          },
+          {
+            "id": "8",
+            "verdict": "unsupported",
+            "reason": "Frame 11 states the Red Hair Pirates realized the Gomu Gomu no Mi was missing. However, the frames do not specify that this realization occurred 'instead of retreating' or link it to Shanks' attempt to grab Luffy's arm (frame 7/10). The claim adds a temporal contrast ('Instead of') and implies a sequence not explicitly supported by the provided narrative links.",
+            "anchors": []
+          },
+          {
+            "id": "9",
+            "verdict": "unsupported",
+            "reason": "Frame 12 states Shanks revealed that Luffy's body is rubber and cannot swim. The claim adds the specific detail 'Shanks revealed' as a single event, whereas the frames present this as a revelation of facts (frames 9 and 12 combined in narrative). More critically, the claim implies a direct causal link between the realization of the missing fruit and the revelation, which is not explicitly stated in the frames or relationships.",
+            "anchors": []
+          },
+          {
+            "id": "10",
+            "verdict": "unsupported",
+            "reason": "Frame 13 states 'Red Hair Pirates went on another voyage, and Luffy began enjoying his rubber body.' The claim adds the specific detail 'Luffy began enjoying his rubber body' as a direct consequence of the voyage, but the frames do not explicitly state that Luffy was 'enjoying' it at that moment; they only state he began enjoying it. The claim infers a positive emotional state ('enjoying') which is an interpretation rather than a stated fact in the frame.",
+            "anchors": []
+          }
+        ]
+      },
+      {
+        "claims": {
+          "11": "Later, while sitting in Makino's bar, Higuma's gang returned to demand alcohol.",
+          "12": "Makino alerted Mayor Woop Slap that Luffy had been kidnapped after picking a fight with them.",
+          "13": "Shanks and the Red Hair Pirates returned; a bandit pointed a gun at Shanks, but pirate Lucky Roux shot him down.",
+          "14": "Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends.",
+          "15": "Benn Beckman overpowered the bandits singlehandedly, while Higuma escaped with Luffy in tow by throwing a smoke bomb."
+        },
+        "incomplete": false,
+        "decisions": [
+          {
+            "id": "11",
+            "verdict": "unsupported",
+            "reason": "Claims 'Later, while sitting in Makino's bar' and 'Higuma's gang returned to demand alcohol' are not supported by the frames. Frame 14 confirms Luffy was sitting in Makino's bar when Higuma's gang demanded alcohol, but it does not mention Shanks or the Red Hair Pirates being present at that moment. The claim implies their presence without evidence.",
+            "anchors": []
+          },
+          {
+            "id": "12",
+            "verdict": "unsupported",
+            "reason": "Claims 'Makino alerted Mayor Woop Slap' and 'Luffy had been kidnapped after picking a fight with them' are not supported by the frames. Frame 15 explicitly states Makino alerted the mayor that Luffy was kidnapped, but it does not mention a 'fight' occurring prior to this event.",
+            "anchors": []
+          },
+          {
+            "id": "13",
+            "verdict": "unsupported",
+            "reason": "Claims 'Shanks and the Red Hair Pirates returned' and 'a bandit pointed a gun at Shanks, but pirate Lucky Roux shot him down' are not supported by the frames. Frame 16 confirms Shanks and the pirates returned and that a bandit was shot by Lucky Roux, but it does not mention a gun being pointed at Shanks.",
+            "anchors": []
+          },
+          {
+            "id": "14",
+            "verdict": "unsupported",
+            "reason": "Claims 'Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends' are not supported by the frames. Frame 17 confirms Shanks made this statement, but it does not specify that the insult was directed at him personally.",
+            "anchors": []
+          },
+          {
+            "id": "15",
+            "verdict": "unsupported",
+            "reason": "Claims 'Benn Beckman overpowered the bandits singlehandedly' and 'Higuma escaped with Luffy in tow by throwing a smoke bomb' are not supported by the frames. Frame 18 confirms Benn Beckman overpowered the bandits and Higuma escaped with Luffy using a smoke bomb, but it does not specify that Beckman acted 'singlehandedly'.",
+            "anchors": []
+          }
+        ]
+      },
+      {
+        "claims": {
+          "16": "Higuma took Luffy out to sea and kicked him off the boat to drown him.",
+          "17": "A Sea King known as Lord of the Coast came to eat Higuma, then moved to eat Luffy.",
+          "18": "Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+          "19": "Shanks gave Luffy his straw hat and told him to return it once he had surpassed him.",
+          "20": "Shanks and Beckman anticipated Luffy doing big things in the future."
+        },
+        "incomplete": true,
+        "decisions": [
+          {
+            "id": "<invalid response ID>",
+            "verdict": "unsupported",
+            "reason": "The provided frames (1-22) describe events at Foosha Village involving a bar, bandits, and Shanks. Frame 19 explicitly states Higuma took Luffy out to sea, but the reason for this action is not stated in the available evidence. The claim that he kicked him off the boat specifically to drown him is an inference not supported by the explicit links or frames.",
+            "anchors": []
+          },
+          {
+            "id": "<invalid response ID>",
+            "verdict": "unsupported",
+            "reason": "Frame 19 states a Sea King came to eat Higuma. However, the frames do not explicitly state that the Sea King *then* moved to eat Luffy before Shanks arrived. While Frame 20 mentions the Sea King moving to eat Luffy, the sequence 'came to eat Higuma, then moved' implies a direct transition without interruption, whereas the narrative links suggest Shanks intervened between these events.",
+            "anchors": []
+          },
+          {
+            "id": "<invalid response ID>",
+            "verdict": "supported",
+            "reason": "Frame 20 explicitly states 'Shanks arrived in the nick of time to save Luffy and scare the beast away.' This matches the claim exactly.",
+            "anchors": []
+          },
+          {
+            "id": "<invalid response ID>",
+            "verdict": "supported",
+            "reason": "Frame 21 explicitly states 'Shanks gave Luffy his straw hat and told him to return it once he had surpassed him.' This matches the claim exactly.",
+            "anchors": []
+          },
+          {
+            "id": "<invalid response ID>",
+            "verdict": "supported",
+            "reason": "Frame 22 explicitly states 'Shanks and Beckman anticipated Luffy doing big things in the future.' This matches the claim exactly.",
+            "anchors": []
+          }
+        ]
+      }
+    ]
+  },
+  "composition": {
+    "initial": [
+      "Gold Roger attained enormous wealth, fame, and power, an achievement that catalyzed a shift in the world's trajectory. The Great Pirate Era entered, marking a definitive turning point where the seas became a domain for those seeking glory and fortune.",
+      "The Red Hair Pirates arrived at Foosha Village, bringing with them Monkey D. Luffy, who attempted to persuade Captain Red-Haired Shanks to let him join the crew. While the pirates and Luffy went to a bar and toasted to Luffy's craziness while eating and drinking, bandits led by Higuma entered the bar and demanded alcohol.",
+      "Higuma broke the bottle over Shanks' head after Shanks offered it, yet Shanks apologized and cleaned up the mess. Luffy felt anger toward Shanks, but Shanks attempted to grab Luffy's arm instead of retreating. The Red Hair Pirates realized the Gomu Gomu no Mi was missing, a revelation that Shanks delivered by stating that Luffy's body is rubber and cannot swim.",
+      "Red Hair Pirates went on another voyage and Luffy began enjoying his rubber body, though he was later sitting in Makino's bar when Higuma's gang returned and demanded alcohol. Makino alerted Mayor Woop Slap that Luffy had been kidnapped by the bandits after picking a fight with them, while Shanks and the Red Hair Pirates returned; a bandit pointed a gun at Shanks and pirate Lucky Roux shot the bandit.",
+      "Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends. Benn Beckman overpowered the bandits singlehandedly; Higuma escaped with Luffy in tow by throwing a smoke bomb. Higuma took Luffy out to sea and kicked him off the boat to drown him, while a Sea King known as Lord of the Coast came to eat Higuma.",
+      "The Sea King moved to eat Luffy, but Shanks arrived in the nick of time to save Luffy and scare the beast away. Shanks gave Luffy his straw hat and told him to return it once he had surpassed him, with Shanks and Beckman anticipating Luffy doing big things in the future."
+    ],
+    "revision": [
+      "Gold Roger attained enormous wealth, fame, and power. This achievement catalyzed a shift in the world's trajectory, leading to the entry of the Great Pirate Era.",
+      "The Red Hair Pirates arrived at Foosha Village with Monkey D. Luffy aboard. While the pirates and Luffy went to a bar to toast his craziness over food and drink, bandits led by Higuma entered and demanded alcohol.",
+      "Higuma broke a bottle over Shanks' head after he offered it. Shanks apologized and cleaned up the mess, but Luffy felt anger toward him. Instead of retreating, Shanks attempted to grab Luffy's arm.",
+      "The Red Hair Pirates realized the Gomu Gomu no Mi was missing. Shanks revealed that Luffy's body is rubber and cannot swim.",
+      "Red Hair Pirates went on another voyage, and Luffy began enjoying his rubber body. Later, while sitting in Makino's bar, Higuma's gang returned to demand alcohol. Makino alerted Mayor Woop Slap that Luffy had been kidnapped after picking a fight with them.",
+      "Shanks and the Red Hair Pirates returned; a bandit pointed a gun at Shanks, but pirate Lucky Roux shot him down. Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends. Benn Beckman overpowered the bandits singlehandedly, while Higuma escaped with Luffy in tow by throwing a smoke bomb.",
+      "Higuma took Luffy out to sea and kicked him off the boat to drown him. A Sea King known as Lord of the Coast came to eat Higuma, then moved to eat Luffy. Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+      "Shanks gave Luffy his straw hat and told him to return it once he had surpassed him. Shanks and Beckman anticipated Luffy doing big things in the future."
+    ],
+    "revision_review": {
+      "essential": [
+        {
+          "frame": "{\"action\": \"Gold Roger attained enormous wealth, fame, and power\", \"modality\": \"completed\", \"negated\": false, \"actor\": \"Gold Roger\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"The world entered the Great Pirate Era\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Luffy attempted to persuade Captain Red-Haired Shanks to let him join the crew\", \"modality\": \"attempted\", \"negated\": false, \"actor\": \"Monkey D. Luffy\", \"patient\": \"Captain Red-Haired Shanks\"}",
+          "initial": true,
+          "revised": false
+        },
+        {
+          "frame": "{\"action\": \"bandits led by Higuma entered the bar and demanded alcohol\", \"modality\": \"completed\", \"negated\": false, \"actor\": \"Higuma\", \"patient\": \"bar\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Higuma broke the bottle over Shanks' head after Shanks offered it\", \"modality\": \"completed\", \"negated\": false, \"actor\": \"Higuma\", \"patient\": \"Shanks\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Shanks apologized and cleaned up the mess\", \"modality\": \"completed\", \"negated\": false, \"actor\": \"Shanks\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Luffy felt anger toward Shanks\", \"modality\": \"completed\", \"negated\": false, \"experiencer\": \"Luffy\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Red Hair Pirates realized the Gomu Gomu no Mi was missing\", \"modality\": \"completed\", \"negated\": false, \"actor\": \"Red Hair Pirates\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Shanks revealed that Luffy's body is rubber and cannot swim\", \"modality\": \"completed\", \"negated\": false, \"speaker\": \"Shanks\"}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Luffy was sitting in Makino's bar when Higuma's gang returned and demanded alcohol\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Makino alerted Mayor Woop Slap that Luffy had been kidnapped by the bandits after picking a fight with them\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Benn Beckman overpowered the bandits singlehandedly; Higuma escaped with Luffy in tow by throwing a smoke bomb.\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Higuma took Luffy out to sea and kicked him off the boat to drown him; a Sea King known as Lord of the Coast came to eat Higuma.\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"The Sea King moved to eat Luffy; Shanks arrived in the nick of time to save Luffy and scare the beast away.\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Shanks gave Luffy his straw hat and told him to return it once he had surpassed him.\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        },
+        {
+          "frame": "{\"action\": \"Shanks and Beckman anticipated Luffy doing big things in the future.\", \"modality\": \"completed\", \"negated\": false}",
+          "initial": true,
+          "revised": true
+        }
+      ],
+      "unsupported": []
+    },
+    "revision_review_error": "Revision review omitted or duplicated a required development",
+    "revision_withheld": true,
+    "selected": [
+      "Gold Roger attained enormous wealth, fame, and power, an achievement that catalyzed a shift in the world's trajectory. The Great Pirate Era entered, marking a definitive turning point where the seas became a domain for those seeking glory and fortune.",
+      "The Red Hair Pirates arrived at Foosha Village, bringing with them Monkey D. Luffy, who attempted to persuade Captain Red-Haired Shanks to let him join the crew. While the pirates and Luffy went to a bar and toasted to Luffy's craziness while eating and drinking, bandits led by Higuma entered the bar and demanded alcohol.",
+      "Higuma broke the bottle over Shanks' head after Shanks offered it, yet Shanks apologized and cleaned up the mess. Luffy felt anger toward Shanks, but Shanks attempted to grab Luffy's arm instead of retreating. The Red Hair Pirates realized the Gomu Gomu no Mi was missing, a revelation that Shanks delivered by stating that Luffy's body is rubber and cannot swim.",
+      "Red Hair Pirates went on another voyage and Luffy began enjoying his rubber body, though he was later sitting in Makino's bar when Higuma's gang returned and demanded alcohol. Makino alerted Mayor Woop Slap that Luffy had been kidnapped by the bandits after picking a fight with them, while Shanks and the Red Hair Pirates returned; a bandit pointed a gun at Shanks and pirate Lucky Roux shot the bandit.",
+      "Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends. Benn Beckman overpowered the bandits singlehandedly; Higuma escaped with Luffy in tow by throwing a smoke bomb. Higuma took Luffy out to sea and kicked him off the boat to drown him, while a Sea King known as Lord of the Coast came to eat Higuma.",
+      "The Sea King moved to eat Luffy, but Shanks arrived in the nick of time to save Luffy and scare the beast away. Shanks gave Luffy his straw hat and told him to return it once he had surpassed him, with Shanks and Beckman anticipating Luffy doing big things in the future."
+    ],
+    "alignment": {
+      "mapped": 14,
+      "unmapped_span_ids": []
+    }
+  },
+  "provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "rate_limited",
+      "elapsed_ms": 809,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation",
+      "status": "ok",
+      "elapsed_ms": 14629,
+      "input_tokens": 5621,
+      "output_tokens": 425,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 21639,
+      "input_tokens": 2163,
+      "output_tokens": 905,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 7372,
+      "input_tokens": 943,
+      "output_tokens": 60,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 6753,
+      "input_tokens": 831,
+      "output_tokens": 40,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 7734,
+      "input_tokens": 963,
+      "output_tokens": 111,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 7407,
+      "input_tokens": 921,
+      "output_tokens": 91,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 9597,
+      "input_tokens": 962,
+      "output_tokens": 208,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 10239,
+      "input_tokens": 1244,
+      "output_tokens": 253,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 13337,
+      "input_tokens": 2098,
+      "output_tokens": 428,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 15740,
+      "input_tokens": 1489,
+      "output_tokens": 569,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 8106,
+      "input_tokens": 1224,
+      "output_tokens": 106,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 46233,
+      "input_tokens": 2094,
+      "output_tokens": 2500,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "invalid_output",
+      "elapsed_ms": 46724,
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "retry": 0,
+      "validation_errors": [
+        "decisions.1.verdict:missing",
+        "decisions.1.reason:missing"
+      ],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": null
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 15468,
+      "input_tokens": 2137,
+      "output_tokens": 564,
+      "retry": 1,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 13813,
+      "input_tokens": 2118,
+      "output_tokens": 457,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "elapsed_ms": 15721,
+      "input_tokens": 2094,
+      "output_tokens": 523,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    }
+  ]
+}

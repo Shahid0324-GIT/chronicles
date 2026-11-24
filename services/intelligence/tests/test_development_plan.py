@@ -13,6 +13,7 @@ from src.application.arc_prose import (
     PlainScene,
     Propositions,
     ProseDraft,
+    RevisionReview,
     SceneAlignment,
     SceneDraft,
     aligned_scene,
@@ -31,6 +32,7 @@ from src.application.arc_prose import (
     validate_propositions,
     validate_scene_alignment_order,
     verify_link_use,
+    write_and_align,
     writing_packet,
 )
 from src.application.arc_reconstruction import (
@@ -173,6 +175,16 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
                 assert packet["draft"] == ["Luffy had changed.", "Ron opened it."]
                 return PlainScene(paragraphs=["Luffy had changed. Ron opened it."])
             return PlainScene(paragraphs=["Luffy had changed.", "Ron opened it."])
+        if schema is RevisionReview:
+            return schema.model_validate(
+                {
+                    "essential": [
+                        {"frame": key, "initial": True, "revised": True}
+                        for key in packet["essential"]
+                    ],
+                    "unsupported": [],
+                }
+            )
         if schema is SceneAlignment:
             assert list(packet["spans"]) == ["1", "2"]
             return schema.model_validate(
@@ -215,13 +227,72 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert [len(batch) for batch in review_batches] == [2, 1]
     notes = frame_citations(reconstruction, plan)
     cache = {}
-    assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (2, 5)
+    assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (2, 6)
     draft = await compose_reconstruction(
         reconstruction, plan, notes, "Change", infer, cache, checkpoint
     )
     assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (0, 2)
     assert [p.text for p in draft.paragraphs] == ["Luffy had changed. Ron opened it."]
     assert [claim.writing_note_ids for claim in draft.paragraphs[0].claims] == [["1"], ["2"]]
+
+
+async def test_revision_preserves_essential_beats_and_alignment_retries_only_invalid_rows():
+    original = "Mira asked to join the group. Ron led the group to town."
+    edited = "Mira rode into town alongside Ron."
+    context = {
+        "frames": {
+            "1": {"action": "Mira asked to join the group."},
+            "2": {"action": "Ron led the group to town."},
+        },
+        "essential_frames": ["1"],
+        "relationships": {},
+    }
+    alignment_calls: list[list[str]] = []
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        payload = json.loads(prompt.rsplit("\n", 1)[1])
+        if schema is PlainScene:
+            return PlainScene(paragraphs=[edited if "draft" in payload else original])
+        if schema is RevisionReview:
+            return RevisionReview.model_validate(
+                {
+                    "essential": [{"frame": "1", "initial": True, "revised": False}],
+                    "unsupported": ["Mira rode alongside Ron."],
+                }
+            )
+        assert schema is SceneAlignment
+        alignment_calls.append(list(payload["spans"]))
+        if len(alignment_calls) == 1:
+            return schema.model_validate(
+                {
+                    "spans": [
+                        {"span": 1, "frames": ["1"]},
+                        {"span": 2, "frames": "foreign"},
+                    ]
+                }
+            )
+        if len(alignment_calls) == 2:
+            return schema.model_validate({"spans": [{"span": 2, "frames": ["99"]}]})
+        return schema.model_validate({"spans": [{"span": 2, "frames": ["2"]}]})
+
+    async def checkpoint() -> None:
+        pass
+
+    diagnostics = {}
+    cache = {}
+    with pytest.raises(ValueError, match="Alignment incomplete for spans 2"):
+        await write_and_align(context, infer, cache, checkpoint, diagnostics=diagnostics)
+    assert diagnostics["alignment"] == {"mapped": 1, "unmapped_span_ids": [2]}
+
+    paragraphs, _ = await write_and_align(
+        context, infer, cache, checkpoint, diagnostics=diagnostics
+    )
+    assert diagnostics["revision_withheld"] is True
+    assert diagnostics["lost_essential"] == ["1"]
+    assert " ".join(c.text for c in paragraphs[0].claims) == original
+    assert alignment_calls == [["1", "2"], ["2"], ["2"]]
+    await write_and_align(context, infer, cache, checkpoint)
+    assert len(alignment_calls) == 3
 
 
 async def test_empty_reconstruction_recovers_essential_actions_from_archive():
