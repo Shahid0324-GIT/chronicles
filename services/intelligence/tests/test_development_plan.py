@@ -22,6 +22,7 @@ from src.application.arc_prose import (
     bind_writing_notes,
     clarify_note_roles,
     compose_reconstruction,
+    composition_requirements,
     flatten_scenes,
     frame_citations,
     originality_candidates,
@@ -40,6 +41,7 @@ from src.application.arc_reconstruction import (
     SceneState,
     apply_frame_decision,
     bind_frames,
+    incomplete_review,
     qualify_frames,
     reconstruct_arc,
     valid_decision,
@@ -59,7 +61,7 @@ from src.application.development_plan import (
     reconstruct_relationships,
     review_developments,
 )
-from src.application.research_contracts import Task
+from src.application.research_contracts import InferenceFailure, Task
 
 
 def material():
@@ -183,7 +185,7 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
                     if v["proposition"]["participants"].get("experiencer") == "Shanks"
                     else {
                         "supported": True,
-                        "witness": v["evidence"][0],
+                        "witness": v["evidence_id"]["e1"],
                         "reason": "The subject and action match the archive.",
                         "observed_modality": "completed",
                     }
@@ -203,9 +205,13 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert reconstruction.ready
     assert any("belongs to Luffy" in gap for gap in reconstruction.scenes[0].gaps)
     assert [len(batch) for batch in review_batches] == [2, 1]
+    notes = frame_citations(reconstruction, plan)
+    cache = {}
+    assert composition_requirements(reconstruction, plan, notes, cache) == (2, 5)
     draft = await compose_reconstruction(
-        reconstruction, plan, frame_citations(reconstruction, plan), "Change", infer, {}, checkpoint
+        reconstruction, plan, notes, "Change", infer, cache, checkpoint
     )
+    assert composition_requirements(reconstruction, plan, notes, cache) == (0, 3)
     assert [p.text for p in draft.paragraphs] == ["Luffy had changed.", "Ron opened it."]
     assert [p.claims[0].writing_note_ids for p in draft.paragraphs] == [["1"], ["2"]]
 
@@ -218,7 +224,7 @@ async def test_empty_reconstruction_recovers_essential_actions_from_archive():
     async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
         packet = json.loads(prompt.rsplit("\n", 1)[1])
         if schema is FrameCandidates:
-            if "prioritize the indispensable action" not in prompt:
+            if "Recover the indispensable meaning" not in prompt:
                 return FrameCandidates(frames=[])
             ref, evidence_scope = next(iter(packet.items()))
             direct = next(iter(evidence_scope["direct"].values()))
@@ -231,7 +237,7 @@ async def test_empty_reconstruction_recovers_essential_actions_from_archive():
                             "clause": next(iter(evidence_scope["direct"])).upper(),
                             "action": "open the gate",
                             "actor": direct["text"].split()[0],
-                            "modality": evidence_scope["modality"],
+                            "modality": "attempted" if "tried" in direct["text"] else "completed",
                             "negated": False,
                             "function": "action",
                             "context": [context.upper(), "unknown-id"],
@@ -247,9 +253,9 @@ async def test_empty_reconstruction_recovers_essential_actions_from_archive():
                         "supported": True,
                         "observed_negated": False,
                         "observed_modality": "attempted"
-                        if "tried" in item["evidence"][0]
+                        if "tried" in item["evidence_id"]["e1"]
                         else "completed",
-                        "witness": item["evidence"][0],
+                        "witness": item["evidence_id"]["e1"],
                         "reason": "The evidence supports the bound action and role.",
                     }
                 }
@@ -292,6 +298,107 @@ def test_state_can_qualify_without_forcing_an_actor_role():
         frame, FrameDecision(supported=True, witness="Ron opened the gate."), scene
     )
     assert scene.frames[0].kind == "state" and not scene.frames[0].roles
+
+
+async def test_pending_review_resumes_without_reextracting_or_rechecking_qualified_siblings():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    calls: list[str] = []
+    cache = {}
+    unavailable = True
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        request = json.loads(prompt.rsplit("\n", 1)[1])
+        if schema is FrameCandidates:
+            calls.append("extract")
+            ref, item = next(iter(request.items()))
+            return schema.model_validate(
+                {
+                    "frames": [
+                        {
+                            "clause": ref,
+                            "action": item["statement"],
+                            "modality": item["modality"],
+                            "negated": False,
+                            "function": "action",
+                        }
+                    ]
+                }
+            )
+        [item] = request.values()
+        action = item["proposition"]["meaning"]
+        calls.append(action)
+        if unavailable and "tried" in action:
+            raise InferenceFailure("provider_unavailable")
+        return schema.model_validate(
+            {
+                "decisions": {
+                    "1": {
+                        "supported": True,
+                        "evidence_id": "e1",
+                        "modality_confirmed": True,
+                    }
+                }
+            }
+        )
+
+    async def checkpoint() -> None:
+        pass
+
+    first = await reconstruct_arc(plan, facts, infer, cache, checkpoint)
+    blocked = next(s for s in first.scenes if not s.frames)
+    assert blocked.pending_essential and not blocked.missing_essential
+    assert next(iter(blocked.review_outcomes.values())).status == "provider_unavailable"
+    unavailable = False
+    calls.clear()
+    second = await reconstruct_arc(plan, facts, infer, cache, checkpoint)
+    assert second.ready and len(calls) == 1 and "tried" in calls[0]
+
+
+async def test_recovery_can_correct_stale_negation_without_rewriting_the_plan():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    scene, clause = next(iter(clause_map(plan).values()))
+    clause.negated = True
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.rsplit("\n", 1)[1])
+        if schema is FrameCandidates:
+            item = next(iter(packet.values()))
+            text = next(iter(item["direct"].values()))["text"]
+            return schema.model_validate(
+                {
+                    "frames": [
+                        {
+                            "clause": text,
+                            "action": "open",
+                            "excerpt": text,
+                            "modality": "attempted" if "tried" in text else "completed",
+                            "negated": False,
+                            "function": "action",
+                        }
+                    ]
+                }
+            )
+        return schema.model_validate(
+            {
+                "decisions": {
+                    "1": {
+                        "supported": True,
+                        "evidence_id": "e1",
+                        "modality_confirmed": True,
+                    }
+                }
+            }
+        )
+
+    async def checkpoint() -> None:
+        pass
+
+    state = await reconstruct_arc(plan, facts, infer, {}, checkpoint)
+    [corrected] = next(s for s in state.scenes if s.id == scene.id).frames
+    assert corrected.revises_clause and not corrected.negated and clause.negated
+    assert corrected.action == corrected.excerpt
 
 
 async def test_saved_witness_only_approval_cannot_qualify_a_proposition():
@@ -345,6 +452,18 @@ async def test_saved_witness_only_approval_cannot_qualify_a_proposition():
         [frame], {unit.id: unit}, {unit.id: []}, infer, {}, checkpoint, scene
     ) == [frame]
     assert not scene.frames and not scene.gaps
+    assert scene.review_outcomes[frame.id].status == "missing_modality"
+    assert incomplete_review(frame, None, {unit.id: unit}) == "incomplete_response"
+    assert (
+        incomplete_review(
+            frame, FrameDecision(supported=True, modality_confirmed=True), {unit.id: unit}
+        )
+        == "missing_witness"
+    )
+    assert (
+        incomplete_review(frame, FrameDecision(supported=True, evidence_id="e99"), {unit.id: unit})
+        == "invalid_witness"
+    )
 
 
 def test_completed_report_cannot_certify_reported_action_as_actual():
@@ -493,12 +612,15 @@ def test_alignment_cannot_omit_a_factual_sentence_or_rewrite_the_displayed_text(
         {
             "spans": [
                 {"span": 1, "frames": ["1"]},
-                {"span": 2, "frames": ["2"]},
+                {"span": 2, "frames": ["/2"]},
             ]
         }
     )
     paragraphs = aligned_scene(authored, alignment, {"1", "2"})
     assert " ".join(c.text for c in paragraphs[0].claims) == authored.paragraphs[0]
+    assert paragraphs[0].claims[1].clauses == ["2"]
+    with pytest.raises(ValueError, match="foreign frame"):
+        aligned_scene(authored, alignment, {"1", "3"})
     alignment.spans.pop()
     with pytest.raises(ValueError, match="account for every authored span"):
         aligned_scene(authored, alignment, {"1", "2"})

@@ -129,6 +129,7 @@ async def main() -> None:
     parser.add_argument("--handoff", action="store_true")
     parser.add_argument("--verified-frames", action="store_true")
     parser.add_argument("--reconstruction-only", action="store_true")
+    parser.add_argument("--reuse-checkpoint", type=Path)
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
@@ -138,6 +139,8 @@ async def main() -> None:
     args = parser.parse_args()
     if args.reconstruction_only and not args.verified_frames:
         parser.error("Reconstruction-only runs require --verified-frames")
+    if args.reuse_checkpoint and not (args.verified_frames and args.original and args.autonomous):
+        parser.error("Checkpoint reuse requires a new autonomous verified-frame benchmark")
     if args.autonomous and args.reviewed_notes:
         parser.error("Autonomous runs cannot load reviewed notes")
     if args.resume_automatic_notes and not (args.autonomous and args.compose):
@@ -175,7 +178,7 @@ async def main() -> None:
     if args.verified_frames:
         if not args.handoff:
             parser.error("Verified frame runs require --handoff")
-        folder = Path("../../.tmp/benchmark625-semantic")
+        folder = Path("../../.tmp/benchmark625-recovery-check")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -339,7 +342,7 @@ async def main() -> None:
     if result_path.exists() and not (args.resume_review or args.compose):
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
-        saved_path = (
+        saved_path = args.reuse_checkpoint or (
             Path("../../.tmp/benchmark624-handoff") / section_key / "result.json"
             if args.verified_frames and args.original
             else Path("../../.tmp/benchmark624-recovery") / section_key / "result.json"
@@ -384,7 +387,9 @@ async def main() -> None:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
             ] = writing_notes
-        if saved.get("review_batches") and not (args.verified_frames and args.original):
+        if saved.get("review_batches") and (
+            args.reuse_checkpoint or not (args.verified_frames and args.original)
+        ):
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_prose_batches", evidence.revision)
             ] = saved["review_batches"]

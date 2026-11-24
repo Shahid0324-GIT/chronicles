@@ -38,10 +38,10 @@ from src.application.arc_prose import (
     FrameCitations,
     assess_in_batches,
     compose_reconstruction,
+    composition_requirements,
     frame_citations,
     originality_candidates,
     revision_note_targets,
-    story_links,
     validate_scene_alignment_order,
 )
 from src.application.arc_reconstruction import Reconstruction, reconstruct_arc
@@ -66,7 +66,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v26"
+POLICY = "arc-intelligence-v27"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -988,9 +988,8 @@ class ArcIntelligence:
                         resumed = False
                     notes = frame_citations(state, plan)
                     if draft is None:
-                        writes = len(state.beats)
-                        reviews = (
-                            writes * 2 + 1 + len({o.after for o in story_links(plan).values()})
+                        writes, reviews = composition_requirements(
+                            state, plan, notes, cached_batches
                         )
                         if self.can_review and not await self.can_review(writes, reviews):
                             raise InferenceFailure("publication_review_budget_reserved")

@@ -110,12 +110,13 @@ def aligned_scene(
     paragraphs: list[list[ProseClaim]] = [[] for _ in prose.paragraphs]
     for i, (paragraph, text) in enumerate(spans, 1):
         item = by_number[i]
-        if not set(item.frames) <= allowed or (
+        bound_frames = [ref.strip().removeprefix("/") for ref in item.frames]
+        if not set(bound_frames) <= allowed or (
             allowed_relationships is not None and not set(item.relations) <= allowed_relationships
         ):
             raise ValueError("Alignment cited a foreign frame or relationship")
         paragraphs[paragraph - 1].append(
-            ProseClaim(text=text, clauses=item.frames, relations=item.relations)
+            ProseClaim(text=text, clauses=bound_frames, relations=item.relations)
         )
     return [ProseParagraph(claims=claims) for claims in paragraphs]
 
@@ -183,11 +184,7 @@ async def write_and_align(
         cached[key] = prose.model_dump(mode="json")
         await checkpoint()
     frames = packet["frames"]
-    alignment_input = {
-        "spans": {str(i): text for i, (_, text) in enumerate(prose_spans(prose), 1)},
-        "frames": frames,
-        "relationships": packet["relationships"],
-    }
+    alignment_input = scene_alignment_packet(packet, prose)
     key = fingerprint(["arc-prose-alignment-v2", alignment_input])
     alignment = SceneAlignment.model_validate(
         cached[key]
@@ -207,6 +204,76 @@ async def write_and_align(
     return paragraphs, prose.paragraphs[-1]
 
 
+def scene_alignment_packet(packet: dict[str, Any], prose: PlainScene) -> dict[str, Any]:
+    return {
+        "spans": {str(i): text for i, (_, text) in enumerate(prose_spans(prose), 1)},
+        "frames": packet["frames"],
+        "relationships": packet["relationships"],
+    }
+
+
+def scene_writing_packets(
+    state: Reconstruction, relationships: dict[str, DevelopmentOrdering]
+) -> list[dict[str, Any]]:
+    all_frames = numbered_frames(state)
+    frame_ids = {
+        f.id: str(i) for i, f in enumerate((f for scene in state.scenes for f in scene.frames), 1)
+    }
+    scenes = {scene.id: scene for scene in state.scenes}
+    return [
+        {
+            "frames": {frame_ids[i]: all_frames[frame_ids[i]] for i in beat.frame_ids},
+            "discourse": beat.model_dump(mode="json", exclude={"open_questions", "frame_ids"}),
+            "reference_presentation_layers": [
+                [frame_ids[i] for i in layer] for layer in scenes[beat.scene_id].presentation_layers
+            ],
+            "unordered_context_frames": [
+                frame_ids[i] for i in scenes[beat.scene_id].unordered_frame_ids
+            ],
+            "has_unresolved_details": bool(beat.open_questions),
+            "relationships": {
+                key: {
+                    "kind": link.kind,
+                    "statement": link.statement,
+                    "before_clause": link.before_clause,
+                    "after_clause": link.after_clause,
+                }
+                for key, link in relationships.items()
+                if beat.scene_id in {link.before, link.after}
+            },
+        }
+        for beat in state.beats
+    ]
+
+
+def composition_requirements(
+    state: Reconstruction,
+    plan: NarrativeDevelopmentPlan,
+    notes: FrameCitations,
+    cached: dict[str, dict[str, object]],
+) -> tuple[int, int]:
+    covered = {note.id for note in notes.notes}
+    relationships = {
+        key: link
+        for key, link in story_links(plan).items()
+        if {link.before_clause, link.after_clause} <= covered
+    }
+    packets = scene_writing_packets(state, relationships)
+    writes = alignments = len(packets)
+    previous = ""
+    for packet in packets:
+        packet["previous_prose_for_style_only"] = previous
+        saved = cached.get(fingerprint(["sequential-arc-prose-v1", packet]))
+        if saved is None:
+            break
+        prose = PlainScene.model_validate(saved)
+        writes -= 1
+        if fingerprint(["arc-prose-alignment-v2", scene_alignment_packet(packet, prose)]) in cached:
+            alignments -= 1
+        previous = prose.paragraphs[-1]
+    return writes, alignments + len(packets) + 1 + len({o.after for o in relationships.values()})
+
+
 async def compose_reconstruction(
     state: Reconstruction,
     plan: NarrativeDevelopmentPlan,
@@ -220,10 +287,6 @@ async def compose_reconstruction(
 ) -> ArcSectionDraft:
     if not state.ready:
         raise ValueError("A qualified reconstruction is required before writing")
-    all_frames = numbered_frames(state)
-    frame_ids = {
-        f.id: str(i) for i, f in enumerate((f for scene in state.scenes for f in scene.frames), 1)
-    }
     covered = {note.id for note in notes.notes}
     relationships = {
         key: link
@@ -232,6 +295,7 @@ async def compose_reconstruction(
     }
     paragraphs: list[ProseParagraph] = []
     if repair:
+        all_frames = numbered_frames(state)
         targets = {n for t in repair["targets"] for n in t["note_ids"]}
         clauses = {notes.notes[int(i) - 1].id for i in targets}
         paragraphs, _ = await write_and_align(
@@ -253,40 +317,9 @@ async def compose_reconstruction(
         )
     else:
         previous = ""
-        scenes = {scene.id: scene for scene in state.scenes}
-        for beat in state.beats:
-            frames = {frame_ids[i]: all_frames[frame_ids[i]] for i in beat.frame_ids}
-            links = {
-                key: {
-                    "kind": link.kind,
-                    "statement": link.statement,
-                    "before_clause": link.before_clause,
-                    "after_clause": link.after_clause,
-                }
-                for key, link in relationships.items()
-                if beat.scene_id in {link.before, link.after}
-            }
-            written, previous = await write_and_align(
-                {
-                    "frames": frames,
-                    "discourse": beat.model_dump(
-                        mode="json", exclude={"open_questions", "frame_ids"}
-                    ),
-                    "reference_presentation_layers": [
-                        [frame_ids[i] for i in layer]
-                        for layer in scenes[beat.scene_id].presentation_layers
-                    ],
-                    "unordered_context_frames": [
-                        frame_ids[i] for i in scenes[beat.scene_id].unordered_frame_ids
-                    ],
-                    "has_unresolved_details": bool(beat.open_questions),
-                    "relationships": links,
-                    "previous_prose_for_style_only": previous,
-                },
-                infer,
-                cached,
-                checkpoint,
-            )
+        for packet in scene_writing_packets(state, relationships):
+            packet["previous_prose_for_style_only"] = previous
+            written, previous = await write_and_align(packet, infer, cached, checkpoint)
             paragraphs.extend(written)
     return bind_writing_notes(ProseDraft(paragraphs=paragraphs), plan, notes, heading)
 
@@ -928,7 +961,15 @@ async def assess_in_batches(
                     ],
                     "evidence": [
                         *(evidence[r] for r in claim.context_evidence_ids),
-                        *(refs[r][1].clause for r in claim.source_clause_ids),
+                        *(
+                            [
+                                evidence[u]
+                                for r in claim.source_clause_ids
+                                for u in refs[r][1].evidence_ids
+                            ]
+                            if reconstruction is not None
+                            else [refs[r][1].clause for r in claim.source_clause_ids]
+                        ),
                     ],
                     "archive_alternatives": {
                         alias: evidence[u] for alias, u in alternatives[f"s{i}"].items()

@@ -52,9 +52,12 @@ class FrameDecision(StructuredModel):
     supported: bool
     reason: str = Field(default="", max_length=180)
     observed_modality: ActionModality | None = None
+    modality_confirmed: bool | None = None
+    evidence_id: str = ""
+    contradiction: bool = False
     observed_negated: bool | None = None
     observed_roles: dict[str, str] = Field(default_factory=dict)
-    witness: str = Field(default="", max_length=500)
+    witness: str = Field(default="", max_length=3000)
 
 
 class FrameDecisions(StructuredModel):
@@ -75,6 +78,23 @@ class EventFrame(FrameCandidate):
     evidence_ids: list[str]
     roles: dict[str, Participant]
     verified_witness: str = ""
+    revises_clause: bool = False
+
+
+class ReviewOutcome(StructuredModel):
+    clause: str
+    status: Literal[
+        "qualified",
+        "provider_unavailable",
+        "incomplete_response",
+        "missing_witness",
+        "invalid_witness",
+        "missing_modality",
+        "unsupported",
+        "contradiction",
+        "unresolved_identity",
+    ]
+    detail: str = ""
 
 
 class SceneState(StructuredModel):
@@ -83,6 +103,8 @@ class SceneState(StructuredModel):
     frames: list[EventFrame] = Field(default_factory=list)
     gaps: list[str] = Field(default_factory=list)
     review_unavailable: list[str] = Field(default_factory=list)
+    review_outcomes: dict[UUID, ReviewOutcome] = Field(default_factory=dict)
+    pending_essential: list[str] = Field(default_factory=list)
     presentation_layers: list[list[UUID]] = Field(default_factory=list)
     unordered_frame_ids: list[UUID] = Field(default_factory=list)
     relationship_ids: list[str] = Field(default_factory=list)
@@ -176,6 +198,8 @@ def bind_frames(
     scene: UUID,
     allowed_context: dict[str, list[str]],
     facts: list[dict[str, Any]],
+    *,
+    allow_correction: bool = False,
 ) -> list[EventFrame]:
     refs = clause_map(plan)
     frames = {}
@@ -185,32 +209,29 @@ def bind_frames(
         clause = refs[f.clause][1]
         if not set(f.context) <= set(allowed_context[f.clause]):
             raise ValueError("Frame references unavailable context")
-        if clause.negated and not f.negated:
-            raise ValueError("Frame removed accepted negation")
         if f.excerpt and not any(
             f.excerpt in u.text for u in plan.evidence if u.id in clause.evidence_ids
         ):
             raise ValueError("Frame excerpt is outside the exact accepted evidence")
-        if (
-            clause.modality not in {"completed", "unknown"}
-            and f.modality == "completed"
-            and (
-                not f.excerpt
-                or any(f.excerpt == u.text for u in plan.evidence if u.id in clause.evidence_ids)
-            )
-        ):
-            raise ValueError("Frame converted a non-completed action to a completed event")
+        revises_clause = (clause.negated and not f.negated) or (
+            clause.modality not in {"completed", "unknown"} and f.modality == "completed"
+        )
+        if revises_clause and (not allow_correction or not f.excerpt):
+            if clause.negated and not f.negated:
+                raise ValueError("Frame removed accepted negation without an archive correction")
+            # A separate completed action inside a compound source clause remains eligible.
+            if not f.excerpt or any(
+                f.excerpt == u.text for u in plan.evidence if u.id in clause.evidence_ids
+            ):
+                raise ValueError("Frame converted a non-completed action to a completed event")
         fields = f.model_dump(mode="json")
-        if f.kind in {"belief", "emotion", "promise", "decision"} and not any(
-            fields[k].strip() for k in ("actor", "speaker", "experiencer", "subject")
-        ):
-            raise ValueError("The holder of this proposition is unresolved")
         identifier = uuid5(scene, fingerprint([clause.fact_id, fields]))
         frames[identifier] = EventFrame(
             **fields,
             id=identifier,
             development_id=scene,
             fact_id=clause.fact_id,
+            revises_clause=revises_clause,
             evidence_ids=list(dict.fromkeys([*clause.evidence_ids, *f.context])),
             roles={
                 role: participant(name, facts, plan.section_id)
@@ -246,8 +267,15 @@ async def qualify_frames(
     scene: SceneState,
 ) -> list[EventFrame]:
     packet: dict[str, Any] = {}
-    remaining: list[tuple[EventFrame, str]] = []
+    remaining: list[tuple[EventFrame, str, list[str]]] = []
     for frame in frames:
+        exact_correction = bool(frame.excerpt and frame.excerpt == frame.action)
+        units = (
+            [u for u in frame.evidence_ids if frame.excerpt in by_id[u].text]
+            if exact_correction
+            else frame.evidence_ids
+        )
+        evidence_ids = {f"e{i}": by_id[u].text for i, u in enumerate(units, 1)}
         item = {
             "proposition": {
                 "kind": frame.kind,
@@ -260,8 +288,10 @@ async def qualify_frames(
                 "outcome": frame.outcome,
                 "anchor": frame.excerpt,
             },
-            "evidence": [by_id[u].text for u in frame.evidence_ids],
-            "nearby_context": [
+            "evidence_id": evidence_ids,
+            "nearby_context": []
+            if exact_correction
+            else [
                 by_id[v].text
                 for v in dict.fromkeys(
                     v
@@ -271,53 +301,57 @@ async def qualify_frames(
                 )
             ],
         }
-        key = fingerprint(["semantic-proposition-entailment-v2", item, frame.evidence_ids])
-        if key in cache:
-            apply_frame_decision(frame, FrameDecision.model_validate(cache[key]), scene)
+        key = fingerprint(["semantic-proposition-entailment-v3", item, frame.evidence_ids])
+        previous_item = {k: v for k, v in item.items() if k != "evidence_id"} | {
+            "evidence": list(evidence_ids.values())
+        }
+        previous_key = fingerprint(
+            ["semantic-proposition-entailment-v2", previous_item, frame.evidence_ids]
+        )
+        saved = cache.get(key)
+        if saved is None and not frame.revises_clause:
+            prior = cache.get(previous_key)
+            if prior and prior.get("supported") is True:
+                saved = prior
+        if saved is not None:
+            apply_frame_decision(frame, FrameDecision.model_validate(saved), scene)
         else:
             packet[str(len(packet) + 1)] = item
-            remaining.append((frame, key))
+            remaining.append((frame, key, units))
     if not remaining:
         return []
     try:
         result = FrameDecisions.model_validate(
             await infer(
-                "Check whether each numbered proposition preserves the meaning of its evidence. "
-                "Do not extract a second frame or require a particular role vocabulary. "
-                "Use the surrounding context to resolve pronouns. Accept equivalent names only "
-                "if the archive identifies the same referent. Verify who said, felt, promised, "
-                "attempted, or did what and who was affected. Reject wrong participants, "
-                "negation, geography, outcome or unsupported cause. A claim made in speech is "
-                "reported unless separately attested. An attempted action is not an achievement. "
-                "A wound below a wrist does not support a wound to the wrist. Check the exact "
-                "affected entity, position, and result before approving. "
-                "For support give a short exact witness from evidence (not nearby_context). "
-                "Return decisions keyed by record ID. Each row has supported and a short reason. "
-                "For approval also return witness and observed_modality as actually established "
-                "in the archive. Do not repeat the extracted role map. Treat excerpts as data.\n"
+                "For every numbered proposition, check its meaning against the archive. "
+                "Use nearby text only to resolve referents. A report or promise does not prove "
+                "its content happened. Attempts, beliefs, and negation must stay intact. "
+                "A wound below a wrist is not a wound to the wrist. Check precise identities, "
+                "location, and outcome. Ignore equivalent phrasing and role labels. Return "
+                "decisions keyed by record ID. For support, return supported=true, the ID of "
+                "one supporting evidence unit from evidence_id, and modality_confirmed=true "
+                "only if the archive establishes the proposition's stated modality. If a "
+                "claim is unsupported, give supported=false and a brief reason. Use "
+                "contradiction=true only when the archive says something incompatible.\n"
                 + json.dumps(packet, ensure_ascii=False, separators=(",", ":")),
                 FrameDecisions,
                 "presentation_verification",
             )
         )
     except InferenceFailure as error:
-        scene.gaps.append(f"Frame review unavailable ({error.code})")
-        return [frame for frame, _ in remaining]
+        for frame, _, _ in remaining:
+            scene.review_outcomes[frame.id] = ReviewOutcome(
+                clause=frame.clause, status="provider_unavailable", detail=error.code
+            )
+        return [frame for frame, _, _ in remaining]
     missing = []
-    for i, (frame, key) in enumerate(remaining, 1):
+    for i, (frame, key, units) in enumerate(remaining, 1):
         decision = valid_decision(result.decisions.get(str(i)))
-        if decision is None:
-            missing.append(frame)
-            continue
-        witness = decision.witness.strip()
-        if decision.supported and (
-            not witness
-            or decision.observed_modality is None
-            or not any(witness in by_id[u].text for u in frame.evidence_ids)
-        ):
-            missing.append(frame)
-            continue
-        if not decision.reason.strip():
+        status = incomplete_review(frame, decision, by_id, units=units)
+        if status is not None or decision is None:
+            scene.review_outcomes[frame.id] = ReviewOutcome(
+                clause=frame.clause, status=status or "incomplete_response"
+            )
             missing.append(frame)
             continue
         apply_frame_decision(frame, decision, scene)
@@ -327,26 +361,71 @@ async def qualify_frames(
     return missing
 
 
+def incomplete_review(
+    frame: EventFrame,
+    decision: FrameDecision | None,
+    by_id: dict[str, DevelopmentEvidence],
+    *,
+    units: list[str] | None = None,
+) -> (
+    Literal["incomplete_response", "missing_witness", "invalid_witness", "missing_modality"] | None
+):
+    if decision is None or (not decision.supported and not decision.reason.strip()):
+        return "incomplete_response"
+    if not decision.supported or decision.contradiction:
+        return None
+    offered = frame.evidence_ids if units is None else units
+    if decision.evidence_id:
+        permitted = {f"e{i}": u for i, u in enumerate(offered, 1)}
+        unit = permitted.get(decision.evidence_id.strip().lower())
+        if unit is None:
+            return "invalid_witness"
+        decision.witness = by_id[unit].text
+    witness = decision.witness.strip()
+    if not witness:
+        return "missing_witness"
+    if not any(witness in by_id[u].text for u in offered):
+        return "invalid_witness"
+    if decision.observed_modality is None and decision.modality_confirmed is None:
+        return "missing_modality"
+    return None
+
+
 def apply_frame_decision(frame: EventFrame, decision: FrameDecision, scene: SceneState) -> None:
     roles = {key: str(role.identity_id) for key, role in frame.roles.items()}
     observed = {key: value for key, value in decision.observed_roles.items() if key in roles}
-    if not decision.supported:
-        scene.gaps.append(f"{frame.clause}: {decision.reason}")
-    elif (
-        decision.observed_modality not in (None, frame.modality)
-        or decision.observed_negated not in (None, frame.negated)
-        or any(
-            roles[key] != value and frame.roles[key].name.casefold() != value.strip().casefold()
-            for key, value in observed.items()
+    detail = decision.reason
+    status: Literal["qualified", "unsupported", "contradiction", "unresolved_identity"]
+    if decision.contradiction or (
+        decision.supported
+        and (
+            decision.modality_confirmed is False
+            or decision.observed_modality not in (None, frame.modality)
+            or decision.observed_negated not in (None, frame.negated)
+            or any(
+                roles[key] != value and frame.roles[key].name.casefold() != value.strip().casefold()
+                for key, value in observed.items()
+            )
         )
     ):
-        scene.gaps.append(
-            f"{frame.clause}: reviewer did not confirm roles/modality for {frame.action}"
-        )
+        status = "contradiction"
+        detail = f"reviewer did not confirm roles/modality for {frame.action}"
+    elif not decision.supported:
+        status = "unsupported"
     elif any(role.identity == "unresolved" for role in frame.roles.values()):
-        scene.gaps.append(f"{frame.clause}: unresolved participant identity for {frame.action}")
+        status = "unresolved_identity"
+        detail = f"unresolved participant identity for {frame.action}"
     else:
-        scene.frames.append(frame.model_copy(update={"verified_witness": decision.witness.strip()}))
+        status = "qualified"
+        if all(existing.id != frame.id for existing in scene.frames):
+            scene.frames.append(
+                frame.model_copy(update={"verified_witness": decision.witness.strip()})
+            )
+    scene.review_outcomes[frame.id] = ReviewOutcome(
+        clause=frame.clause, status=status, detail=detail
+    )
+    if status != "qualified":
+        scene.gaps.append(f"{frame.clause}: {detail}")
 
 
 FRAME_EXTRACTION = (
@@ -364,9 +443,13 @@ FRAME_EXTRACTION = (
 )
 
 FRAME_RECOVERY = (
-    "For each clause prioritize the indispensable action or state and its modality. "
-    "Include the exact local excerpt. Neighboring text can resolve a referent, not license a "
-    "different event.\n"
+    "Recover the indispensable meaning directly from each record's direct archive. The old "
+    "review findings are advisory. Put the record ID in clause, never its quoted sentence. "
+    "Use a complete paraphrase in action, with its explicit subject and what happened or was "
+    "planned. Treat being in preparation as an established state, with leaving still planned. "
+    "Give one proposition per distinct state, action, or outcome and copy the exact excerpt "
+    "that establishes it. Do not convert a planned action into an accomplishment. "
+    "Neighboring text can resolve a referent, not license a different event.\n"
 )
 
 
@@ -382,6 +465,7 @@ async def reconstruct_arc(
     by_id = {u.id: u for u in plan.evidence}
     eligible = archive_context(plan)
     neighboring = neighboring_archive(plan)
+    primary = max(plan.source_lanes, key=lambda k: sum(map(len, plan.source_lanes[k])), default="")
     structural = {"circumstances", "conflict", "consequence", "decision"}
     linked = {
         ref
@@ -409,7 +493,6 @@ async def reconstruct_arc(
         essential = {k for k, c in scoped.items() if c.facet in structural or k in linked}
         if not essential and scoped:
             essential = {next(iter(scoped))}
-        scene.essential_clauses = [ref for ref in scoped if ref in essential]
         packet = {
             k: {
                 "statement": c.clause,
@@ -420,10 +503,58 @@ async def reconstruct_arc(
             }
             for k, c in scoped.items()
         }
-        for recovery in (False, True):
-            remaining_clauses = (
-                essential - {f.clause for f in scene.frames} - set(scene.review_unavailable)
+        index_key = fingerprint(["scene-propositions-v1", plan.revision, str(d.id), packet])
+        retained = {
+            frame.id: frame
+            for frame in (
+                EventFrame.model_validate(raw) for raw in cache.get(index_key, {}).values()
             )
+        }
+        attempted: set[UUID] = set()
+
+        async def review_window(
+            frames: list[EventFrame],
+            scene: SceneState = scene,
+            attempted: set[UUID] = attempted,
+            essential: set[str] = essential,
+        ) -> None:
+            unseen = [frame for frame in frames if frame.id not in attempted]
+            attempted.update(frame.id for frame in unseen)
+            essential.update(
+                frame.clause
+                for frame in unseen
+                if (
+                    frame.function in {"turning_point", "resolution"}
+                    or frame.kind in {"promise", "revelation"}
+                )
+                and (
+                    not primary
+                    or any(
+                        str(by_id[u].source_id) == primary
+                        for u in refs[frame.clause][1].evidence_ids
+                    )
+                )
+            )
+            for start in range(0, len(unseen), 8):
+                missing = await qualify_frames(
+                    unseen[start : start + 8], by_id, neighboring, infer, cache, checkpoint, scene
+                )
+                for frame in missing:
+                    if frame.clause not in scene.review_unavailable:
+                        scene.review_unavailable.append(frame.clause)
+                    status = scene.review_outcomes[frame.id].status
+                    scene.gaps.append(f"{frame.clause}: {status} for {frame.action}")
+
+        await review_window(list(retained.values()))
+        for recovery in (False, True):
+            pending_clauses = set(scene.review_unavailable)
+            rejected_clauses = {
+                outcome.clause
+                for outcome in scene.review_outcomes.values()
+                if outcome.status in {"unsupported", "contradiction", "unresolved_identity"}
+            }
+            remaining_clauses = essential - {f.clause for f in scene.frames}
+            remaining_clauses -= pending_clauses - rejected_clauses
             if recovery and not remaining_clauses:
                 break
             requested = [k for k in packet if not recovery or k in remaining_clauses]
@@ -432,9 +563,24 @@ async def reconstruct_arc(
             for start_of_window in range(0, len(requested), window_size):
                 window = requested[start_of_window : start_of_window + window_size]
                 request = {k: packet[k] for k in window}
+                if recovery:
+                    request = {
+                        k: {
+                            "direct": row["direct"],
+                            "context": row["context"],
+                            "revision_findings": [
+                                outcome.detail
+                                for outcome in scene.review_outcomes.values()
+                                if outcome.clause == k
+                                and outcome.status
+                                in {"unsupported", "contradiction", "unresolved_identity"}
+                            ],
+                        }
+                        for k, row in request.items()
+                    }
                 key = fingerprint(
                     [
-                        "semantic-proposition-recovery-v1"
+                        "semantic-proposition-recovery-v3"
                         if recovery
                         else "semantic-proposition-extraction-v1",
                         request,
@@ -456,14 +602,33 @@ async def reconstruct_arc(
                     for candidate in extracted.frames:
                         try:
                             if candidate.clause not in request:
-                                # Some providers return a direct anchor label in the clause slot.
+                                # Recover a direct label or quote in the clause slot.
                                 anchor = candidate.clause.strip().lower()
                                 unit_id = labels.get(anchor, anchor)
                                 owners = [
-                                    ref for ref in request if unit_id in scoped[ref].evidence_ids
+                                    ref
+                                    for ref in request
+                                    if unit_id in scoped[ref].evidence_ids
+                                    or any(
+                                        candidate.clause.strip() == by_id[u].text.strip()
+                                        for u in scoped[ref].evidence_ids
+                                    )
                                 ]
                                 if len(owners) == 1:
-                                    candidate = candidate.model_copy(update={"clause": owners[0]})
+                                    updates = {"clause": owners[0]}
+                                    # Require an exact direct unit for quote reuse.
+                                    if (
+                                        recovery
+                                        and candidate.clause == candidate.excerpt
+                                        and len(candidate.action.split()) == 1
+                                        and len(candidate.excerpt) <= 180
+                                        and any(
+                                            candidate.excerpt == by_id[u].text
+                                            for u in scoped[owners[0]].evidence_ids
+                                        )
+                                    ):
+                                        updates["action"] = candidate.excerpt
+                                    candidate = candidate.model_copy(update=updates)
                             if candidate.clause not in request:
                                 raise ValueError(
                                     "Frame references a clause outside the current request"
@@ -481,53 +646,45 @@ async def reconstruct_arc(
                             candidate = candidate.model_copy(update={"context": licensed})
                             proposed.extend(
                                 bind_frames(
-                                    FrameCandidates(frames=[candidate]), plan, d.id, eligible, facts
+                                    FrameCandidates(frames=[candidate]),
+                                    plan,
+                                    d.id,
+                                    eligible,
+                                    facts,
+                                    allow_correction=recovery,
                                 )
                             )
                         except ValueError as error:
                             scene.gaps.append(f"{candidate.clause}: {error}")
                     proposed = list({f.id: f for f in proposed}.values())
-                    if key not in cache:
+                    new_frames = [f for f in proposed if f.id not in retained]
+                    if key not in cache or new_frames:
                         cache[key] = extracted.model_dump(mode="json")
+                        retained.update((f.id, f) for f in new_frames)
+                        cache[index_key] = {
+                            str(f.id): f.model_dump(mode="json") for f in retained.values()
+                        }
                         await checkpoint()
-                    for start in range(0, len(proposed), 10):
-                        batch = proposed[start : start + 10]
-                        pending = batch
-                        for attempt in range(2):
-                            missing = await qualify_frames(
-                                pending,
-                                by_id,
-                                neighboring,
-                                infer,
-                                cache,
-                                checkpoint,
-                                scene,
-                            )
-                            if not missing or attempt:
-                                scene.review_unavailable.extend(
-                                    f.clause
-                                    for f in missing
-                                    if f.clause not in scene.review_unavailable
-                                )
-                                scene.gaps.extend(
-                                    f"{f.clause}: no qualified decision for {f.action}"
-                                    for f in missing
-                                )
-                                break
-                            pending = missing
+                    await review_window(proposed)
                 except (InferenceFailure, ValueError) as error:
                     code = error.code if isinstance(error, InferenceFailure) else str(error)[:160]
                     scene.gaps.append(f"Frame validation unavailable ({code})")
+        scene.essential_clauses = [ref for ref in scoped if ref in essential]
         covered = {f.clause for f in scene.frames}
-        missing_clauses = scoped.keys() - covered
+        missing_clauses = scoped.keys() - covered - set(scene.review_unavailable)
         if missing_clauses:
             scene.gaps.append("Unverified accepted clauses: " + ", ".join(sorted(missing_clauses)))
-        scene.missing_essential = sorted(essential - covered)
+        scene.pending_essential = sorted((essential - covered) & set(scene.review_unavailable))
+        scene.missing_essential = sorted(essential - covered - set(scene.pending_essential))
+        if scene.pending_essential:
+            result.frame_issues.append(
+                f"{d.title}: essential review pending " + ", ".join(scene.pending_essential)
+            )
         if scene.missing_essential:
             result.frame_issues.append(
                 f"{d.title}: missing essential clauses " + ", ".join(scene.missing_essential)
             )
-        elif scene.frames:
+        elif scene.frames and not scene.pending_essential:
             scene.qualification = "sufficient_partial" if scene.gaps else "sufficient"
     build_discourse(result, plan)
     return result
