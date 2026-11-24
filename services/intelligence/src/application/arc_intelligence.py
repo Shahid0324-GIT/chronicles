@@ -37,15 +37,14 @@ from src.application.arc_grounding import (
 from src.application.arc_prose import (
     Propositions,
     assess_in_batches,
-    clarify_note_roles,
+    compose_reconstruction,
+    frame_notes,
     originality_candidates,
-    pending_scene_calls,
-    prepare_propositions,
     revision_note_targets,
     story_links,
-    validate_propositions,
-    write_section,
+    validate_scene_alignment_order,
 )
+from src.application.arc_reconstruction import Reconstruction, reconstruct_arc
 from src.application.development_plan import (
     fence_repeated_anchors,
     link_focus,
@@ -68,7 +67,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v22"
+POLICY = "arc-intelligence-v23"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -918,6 +917,8 @@ class ArcIntelligence:
             review_attempts: list[dict[str, Any]] = []
             draft: ArcSectionDraft | None = None
             notes: Propositions | None = None
+            state: Reconstruction | None = None
+            reconstruction_revision: str | None = None
             plan = section.development_plan
             resumed = False
             cached_batches: dict[str, dict[str, object]] = {}
@@ -960,86 +961,57 @@ class ArcIntelligence:
                     notes = Propositions.model_validate(stored_notes["payload"])
             try:
                 if plan is not None:
-                    writing_calls = (
-                        0
-                        if draft
-                        else (
-                            pending_scene_calls(plan, notes, cached_batches)
-                            if notes
-                            else len(plan.developments) * 2
+                    async with self.presentations() as repo:
+                        saved_reconstruction = await repo.get(
+                            self.identifier(section_id, "arc_reconstruction", boundary_key)
                         )
-                    )
-                    review_calls = (
-                        1
-                        if draft
-                        else (
-                            len(plan.developments)
-                            + 1
-                            + len({o.after for o in story_links(plan).values()})
-                        )
-                    )
-                    if self.can_review and not await self.can_review(writing_calls, review_calls):
-                        raise InferenceFailure("publication_review_budget_reserved")
-                    if notes is None and draft is None:
-                        notes = await prepare_propositions(
-                            plan, infer, cached_batches, save_batches
+                    if (
+                        saved_reconstruction
+                        and saved_reconstruction["knowledge_revision"] == section.revision
+                        and not retry_withheld
+                    ):
+                        state = Reconstruction.model_validate(saved_reconstruction["payload"])
+                    else:
+                        state = await reconstruct_arc(
+                            plan, dossier.accepted_facts, infer, cached_batches, save_batches
                         )
                         await self.save(
                             dossier.universe_id,
                             dossier.continuity_id,
                             section_id,
-                            "arc_writing_notes",
+                            "arc_reconstruction",
                             boundary_key,
                             section.revision,
-                            notes.model_dump(mode="json"),
-                            "withheld",
+                            state.model_dump(mode="json"),
+                            "validated" if state.ready else "withheld",
                             providers()[offset:],
                         )
-                    if notes is not None:
-                        validate_propositions(plan, notes)
-                        if draft is None:
-                            if self.can_review and not await self.can_review(
-                                pending_scene_calls(plan, notes, cached_batches), review_calls
-                            ):
-                                raise InferenceFailure("publication_review_budget_reserved")
-                            role_key = fingerprint(
-                                ["arc-role-notes-v3", notes.model_dump(mode="json")]
-                            )
-                            if role_key in cached_batches:
-                                notes = Propositions.model_validate(cached_batches[role_key])
-                            else:
-                                notes = await clarify_note_roles(
-                                    plan,
-                                    notes,
-                                    infer,
-                                    cached=cached_batches,
-                                    checkpoint=save_batches,
-                                )
-                                cached_batches[role_key] = notes.model_dump(mode="json")
-                                corrected_key = fingerprint(
-                                    ["arc-role-notes-v3", notes.model_dump(mode="json")]
-                                )
-                                cached_batches[corrected_key] = cached_batches[role_key]
-                                await save_batches()
-                                await self.save(
-                                    dossier.universe_id,
-                                    dossier.continuity_id,
-                                    section_id,
-                                    "arc_writing_notes",
-                                    boundary_key,
-                                    section.revision,
-                                    notes.model_dump(mode="json"),
-                                    "withheld",
-                                    providers()[offset:],
-                                )
-                            draft = await write_section(
-                                plan,
-                                notes,
-                                section.plan.title,
-                                infer,
-                                cached=cached_batches,
-                                checkpoint=save_batches,
-                            )
+                    if not state.ready:
+                        raise ValueError("Verified frame and scene reconstruction gate failed")
+                    reconstruction_revision = fingerprint([state.model_dump(mode="json")])
+                    if (
+                        pending
+                        and pending["payload"].get("reconstruction") != reconstruction_revision
+                    ):
+                        draft = None
+                        resumed = False
+                    notes = frame_notes(state, plan)
+                    if draft is None:
+                        writes = len(state.beats)
+                        reviews = (
+                            writes * 2 + 1 + len({o.after for o in story_links(plan).values()})
+                        )
+                        if self.can_review and not await self.can_review(writes, reviews):
+                            raise InferenceFailure("publication_review_budget_reserved")
+                        draft = await compose_reconstruction(
+                            state,
+                            plan,
+                            notes,
+                            section.plan.title,
+                            infer,
+                            cached_batches,
+                            save_batches,
+                        )
                 draft = draft or ArcSectionDraft.model_validate(
                     await infer(
                         "Write original, connected encyclopedia prose for this arc section "
@@ -1134,6 +1106,8 @@ class ArcIntelligence:
                         from src.application.development_plan import validate_draft_structure
 
                         validate_draft_structure(draft, section.development_plan)
+                        if state is not None:
+                            validate_scene_alignment_order(draft, state, section.development_plan)
                         if not resumed:
                             await self.save(
                                 dossier.universe_id,
@@ -1142,7 +1116,10 @@ class ArcIntelligence:
                                 "arc_pending_review",
                                 boundary_key,
                                 section.revision,
-                                {"draft": draft.model_dump(mode="json")},
+                                {
+                                    "draft": draft.model_dump(mode="json"),
+                                    "reconstruction": reconstruction_revision,
+                                },
                                 "withheld",
                                 providers()[offset:],
                             )
@@ -1158,7 +1135,13 @@ class ArcIntelligence:
                         if notes is None:
                             raise ValueError("Planned prose is missing its writing notes")
                         assessment = await assess_in_batches(
-                            draft, plan, notes, infer, cached_batches, save_batches
+                            draft,
+                            plan,
+                            notes,
+                            infer,
+                            cached_batches,
+                            save_batches,
+                            reconstruction=state,
                         )
                         qualified = assessment.qualification_passed is True
                         qualification = {"passed": qualified, "model": reviewer_model()}
@@ -1196,7 +1179,14 @@ class ArcIntelligence:
                     review_attempts.append(dict(assessment_payload))
                     if status == "validated" or not qualified:
                         break
-                if status == "withheld" and qualified and assessment is not None and plan and notes:
+                if (
+                    status == "withheld"
+                    and qualified
+                    and assessment is not None
+                    and plan
+                    and notes
+                    and state
+                ):
                     indices = set(assessment.revision_paragraphs)
                     if assessment.originality_issues:
                         indices.update(
@@ -1213,13 +1203,16 @@ class ArcIntelligence:
                         index += len(paragraph.claims)
                     # A general editorial concern without an identified failing paragraph
                     # does not authorize regeneration of the entire section.
-                    if indices and (not self.can_review or await self.can_review(1, 1)):
+                    if indices and (not self.can_review or await self.can_review(1, 2)):
                         targets = revision_note_targets(draft, plan, notes)
-                        replacements = await write_section(
+                        replacements = await compose_reconstruction(
+                            state,
                             plan,
                             notes,
                             draft.heading,
                             infer,
+                            cached_batches,
+                            save_batches,
                             repair={
                                 "targets": [
                                     {
@@ -1278,6 +1271,7 @@ class ArcIntelligence:
                         draft = draft.model_copy(update={"paragraphs": updated})
                         validate_claims(draft, facts, dossier.accepted_facts)
                         validate_draft_structure(draft, plan)
+                        validate_scene_alignment_order(draft, state, plan)
                         await self.save(
                             dossier.universe_id,
                             dossier.continuity_id,
@@ -1285,12 +1279,21 @@ class ArcIntelligence:
                             "arc_pending_review",
                             boundary_key,
                             section.revision,
-                            {"draft": draft.model_dump(mode="json")},
+                            {
+                                "draft": draft.model_dump(mode="json"),
+                                "reconstruction": reconstruction_revision,
+                            },
                             "withheld",
                             providers()[offset:],
                         )
                         assessment = await assess_in_batches(
-                            draft, plan, notes, infer, cached_batches, save_batches
+                            draft,
+                            plan,
+                            notes,
+                            infer,
+                            cached_batches,
+                            save_batches,
+                            reconstruction=state,
                         )
                         qualified = assessment.qualification_passed is True
                         qualification = {"passed": qualified, "model": reviewer_model()}

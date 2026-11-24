@@ -22,7 +22,13 @@ from src.application.arc_contracts import (
     NarrativeDevelopmentPlan,
 )
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
-from src.application.arc_prose import Propositions, ProseRevision, SceneProse, validate_propositions
+from src.application.arc_prose import (
+    PlainScene,
+    Propositions,
+    ProseRevision,
+    SceneProse,
+    validate_propositions,
+)
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.development_plan import clause_map
 from src.application.event_extraction import evidence_units
@@ -122,6 +128,7 @@ async def main() -> None:
     parser.add_argument("--relationships", action="store_true")
     parser.add_argument("--recovery", action="store_true")
     parser.add_argument("--handoff", action="store_true")
+    parser.add_argument("--verified-frames", action="store_true")
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
     parser.add_argument("--finish-review", action="store_true")
@@ -163,6 +170,10 @@ async def main() -> None:
         if not args.recovery:
             parser.error("Handoff runs require --recovery")
         folder = Path("../../.tmp/benchmark624-handoff")
+    if args.verified_frames:
+        if not args.handoff:
+            parser.error("Verified frame runs require --handoff")
+        folder = Path("../../.tmp/benchmark625")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -325,7 +336,9 @@ async def main() -> None:
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
         saved_path = (
-            Path("../../.tmp/benchmark624-recovery") / section_key / "result.json"
+            Path("../../.tmp/benchmark624-handoff") / section_key / "result.json"
+            if args.verified_frames and args.original
+            else Path("../../.tmp/benchmark624-recovery") / section_key / "result.json"
             if args.handoff and args.original
             else Path("../../.tmp/benchmark624-relationships") / section_key / "result.json"
             if args.recovery and args.original
@@ -421,7 +434,7 @@ async def main() -> None:
             task,
             public_source_content=True,
             reserve_calls=2
-            if schema is Propositions
+            if schema in (Propositions, PlainScene)
             else (1 if schema in (SceneProse, ProseRevision) else 0),
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
@@ -432,6 +445,14 @@ async def main() -> None:
         if schema is SceneProse:
             with (folder / "generated-scene-passages.jsonl").open("a", encoding="utf8") as log:
                 log.write(result.value.model_dump_json() + "\n")
+        if schema.__name__ in {"FrameCandidates", "FrameDecisions", "PlainScene", "SceneAlignment"}:
+            with (folder / "verified-frames.jsonl").open("a", encoding="utf8") as log:
+                log.write(
+                    json.dumps(
+                        {"schema": schema.__name__, "output": result.value.model_dump(mode="json")}
+                    )
+                    + "\n"
+                )
         if schema is Propositions:
             name = "generated-notes" if prompt.startswith("Make compact") else "note-revisions"
             (folder / f"{name}.json").write_text(
@@ -503,13 +524,18 @@ async def main() -> None:
                 [],
             )
         if (
-            (args.compose or args.original)
+            (args.compose or args.original or (args.verified_frames and args.resume_review))
             and plan
             and plan.factual.status == plan.structural.status == "passed"
             and (not args.relationships or plan.relationship_review.status == "passed")
         ):
             await service.compose(
-                dossier, evidence.revision, infer, providers, section_keys=[section_key]
+                dossier,
+                evidence.revision,
+                infer,
+                providers,
+                section_keys=[section_key],
+                retry_withheld=args.resume_review,
             )
     finally:
         article = memory.rows.get(service.identifier(A, "arc_article", evidence.revision), {}).get(
@@ -525,6 +551,9 @@ async def main() -> None:
             "provider_usage": prior + providers(),
             "input_revision": evidence.revision,
             "reviewed_notes_input": bool(args.reviewed_notes),
+            "reconstruction": memory.rows.get(
+                service.identifier(section.id, "arc_reconstruction", evidence.revision)
+            ),
             "review_continuation": review_continuation,
             "review_batches": memory.rows.get(
                 service.identifier(section.id, "arc_prose_batches", evidence.revision)

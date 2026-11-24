@@ -1,5 +1,7 @@
 """A source-isolated writing packet for the existing arc composer."""
 
+from __future__ import annotations
+
 import json
 import re
 from collections import Counter
@@ -21,6 +23,7 @@ from src.application.arc_contracts import (
     NarrativeDevelopmentPlan,
 )
 from src.application.arc_grounding import CALIBRATION, copied_paragraphs, word_spans
+from src.application.arc_reconstruction import Reconstruction
 from src.application.development_plan import clause_map
 from src.application.knowledge_presentation import Infer, fingerprint
 from src.application.research_contracts import InferenceFailure, StructuredModel
@@ -41,6 +44,234 @@ class Proposition(StructuredModel):
 
 class Propositions(StructuredModel):
     notes: list[Proposition] = Field(min_length=1, max_length=96)
+
+
+def frame_notes(state: Reconstruction, plan: NarrativeDevelopmentPlan) -> Propositions:
+    aliases = {u.id: f"e{i}" for i, u in enumerate(plan.evidence, 1)}
+    return Propositions(
+        notes=[
+            Proposition(
+                id=f.clause,
+                actor=f.actor or f.speaker or f.experiencer or f.subject,
+                action=f.action,
+                target=f.patient or f.experiencer or f.subject,
+                modality=f.modality,
+                negated=f.negated,
+                purpose_or_limit=f.purpose,
+                outcome=f.outcome,
+                essential=True,
+                context=[aliases[u] for u in f.context],
+            )
+            for scene in state.scenes
+            for f in scene.frames
+        ]
+    )
+
+
+class PlainScene(StructuredModel):
+    paragraphs: list[str] = Field(min_length=1)
+
+
+class AlignedSpan(StructuredModel):
+    paragraph: int = Field(ge=1)
+    start: int = Field(ge=0)
+    end: int = Field(gt=0)
+    frames: list[str] = Field(min_length=1, max_length=12)
+    relations: list[str] = Field(default_factory=list, max_length=6)
+
+
+class SceneAlignment(StructuredModel):
+    spans: list[AlignedSpan] = Field(min_length=1)
+
+
+def aligned_scene(
+    prose: PlainScene,
+    alignment: SceneAlignment,
+    allowed: set[str],
+) -> list[ProseParagraph]:
+    paragraphs = []
+    if {s.paragraph for s in alignment.spans} != set(range(1, len(prose.paragraphs) + 1)):
+        raise ValueError("Alignment must account for every paragraph")
+    for i, text in enumerate(prose.paragraphs, 1):
+        cursor = 0
+        claims = []
+        for span in (s for s in alignment.spans if s.paragraph == i):
+            if (
+                span.start < cursor
+                or span.start >= span.end
+                or span.end > len(text)
+                or text[cursor : span.start].strip()
+                or not set(span.frames) <= allowed
+            ):
+                raise ValueError("Alignment overlapped, skipped prose, or cited a foreign frame")
+            claims.append(
+                ProseClaim(
+                    text=text[span.start : span.end].strip(),
+                    clauses=span.frames,
+                    relations=span.relations,
+                )
+            )
+            cursor = span.end
+        if text[cursor:].strip():
+            raise ValueError("Alignment left prose unaccounted for")
+        if " ".join(c.text for c in claims) != text.strip():
+            raise ValueError("Alignment changed the displayed text")
+        paragraphs.append(ProseParagraph(claims=claims))
+    return paragraphs
+
+
+def numbered_frames(state: Reconstruction) -> dict[str, dict[str, Any]]:
+    return {
+        str(i): f.model_dump(
+            mode="json", exclude={"evidence_ids", "context", "fact_id", "id", "excerpt"}
+        )
+        for i, f in enumerate((f for scene in state.scenes for f in scene.frames), 1)
+    }
+
+
+def validate_scene_alignment_order(
+    draft: ArcSectionDraft, state: Reconstruction, plan: NarrativeDevelopmentPlan
+) -> None:
+    frames = list(f for scene in state.scenes for f in scene.frames)
+    positions: dict[int, int] = {}
+    for rank, claim in enumerate(c for p in draft.paragraphs for c in p.claims):
+        for ref in claim.writing_note_ids:
+            positions.setdefault(int(ref) - 1, rank)
+
+    def endpoint(clause: str | None, excerpt: str | None) -> int | None:
+        candidates = [(i, f) for i, f in enumerate(frames) if f.clause == clause]
+        if len(candidates) == 1:
+            return positions.get(candidates[0][0])
+        exact = [i for i, f in candidates if excerpt and f.excerpt == excerpt]
+        return positions.get(exact[0]) if len(exact) == 1 else None
+
+    for link in story_links(plan).values():
+        if link.before != link.after or link.kind not in {"narrative_presentation", "chronology"}:
+            continue
+        before = endpoint(link.before_clause, link.before_excerpt)
+        after = endpoint(link.after_clause, link.after_excerpt)
+        if before is not None and after is not None and after < before:
+            raise ValueError("Prose reverses an evidenced action sequence within a scene")
+
+
+async def write_and_align(
+    packet: dict[str, Any],
+    infer: Infer,
+    cached: dict[str, dict[str, object]],
+    checkpoint: Callable[[], Awaitable[None]],
+) -> tuple[list[ProseParagraph], str]:
+    key = fingerprint(["sequential-arc-prose-v1", packet])
+    prose = PlainScene.model_validate(
+        cached[key]
+        if key in cached
+        else await infer(
+            "Write this part of an original encyclopedia narrative. Return only paragraphs "
+            "as strings, without citations or commentary. Use only the verified frames and "
+            "relationships for facts. Follow discourse order and prior context for continuity. "
+            "Preserve distinct roles, intent, outcome, and explicit chronology. Explain what "
+            "changes without invented causes or transitions. For repair, replace only the "
+            "target paragraphs in order, one paragraph for each target.\n"
+            + json.dumps(packet, ensure_ascii=False),
+            PlainScene,
+            "presentation",
+        )
+    )
+    if key not in cached:
+        cached[key] = prose.model_dump(mode="json")
+        await checkpoint()
+    frames = packet["frames"]
+    alignment_input = {
+        "paragraphs": prose.paragraphs,
+        "frames": frames,
+        "relationships": packet["relationships"],
+    }
+    key = fingerprint(["arc-prose-alignment-v1", alignment_input])
+    alignment = SceneAlignment.model_validate(
+        cached[key]
+        if key in cached
+        else await infer(
+            "Align the existing paragraphs; never rewrite them. Return spans covering every "
+            "character except whitespace between spans. Use one-based paragraph numbers "
+            "and zero-based half-open character offsets. Map each passage to its supporting "
+            "frame IDs and, if cited, exact relationship IDs. Do not guess missing support.\n"
+            + json.dumps(alignment_input, ensure_ascii=False),
+            SceneAlignment,
+            "presentation_verification",
+        )
+    )
+    paragraphs = aligned_scene(prose, alignment, set(frames))
+    if key not in cached:
+        cached[key] = alignment.model_dump(mode="json")
+        await checkpoint()
+    return paragraphs, prose.paragraphs[-1]
+
+
+async def compose_reconstruction(
+    state: Reconstruction,
+    plan: NarrativeDevelopmentPlan,
+    notes: Propositions,
+    heading: str,
+    infer: Infer,
+    cached: dict[str, dict[str, object]],
+    checkpoint: Callable[[], Awaitable[None]],
+    *,
+    repair: dict[str, Any] | None = None,
+) -> ArcSectionDraft:
+    if not state.ready:
+        raise ValueError("A qualified reconstruction is required before writing")
+    all_frames = numbered_frames(state)
+    frame_ids = {
+        f.id: str(i) for i, f in enumerate((f for scene in state.scenes for f in scene.frames), 1)
+    }
+    relationships = story_links(plan)
+    paragraphs: list[ProseParagraph] = []
+    if repair:
+        targets = {n for t in repair["targets"] for n in t["note_ids"]}
+        clauses = {notes.notes[int(i) - 1].id for i in targets}
+        paragraphs, _ = await write_and_align(
+            {
+                "frames": {i: all_frames[i] for i in sorted(targets, key=int)},
+                "relationships": {
+                    k: link.model_dump(
+                        mode="json",
+                        exclude={"before_excerpt", "after_excerpt", "evidence_ids", "fact_ids"},
+                    )
+                    for k, link in relationships.items()
+                    if {link.before_clause, link.after_clause} & clauses
+                },
+                "repair": repair,
+            },
+            infer,
+            cached,
+            checkpoint,
+        )
+    else:
+        previous = ""
+        for beat in state.beats:
+            frames = {frame_ids[i]: all_frames[frame_ids[i]] for i in beat.frame_ids}
+            links = {
+                key: {
+                    "kind": link.kind,
+                    "statement": link.statement,
+                    "before_clause": link.before_clause,
+                    "after_clause": link.after_clause,
+                }
+                for key, link in relationships.items()
+                if beat.scene_id in {link.before, link.after}
+            }
+            written, previous = await write_and_align(
+                {
+                    "frames": frames,
+                    "discourse": beat.model_dump(mode="json"),
+                    "relationships": links,
+                    "previous_prose_for_style_only": previous,
+                },
+                infer,
+                cached,
+                checkpoint,
+            )
+            paragraphs.extend(written)
+    return bind_writing_notes(ProseDraft(paragraphs=paragraphs), plan, notes, heading)
 
 
 class ProseClaim(StructuredModel):
@@ -743,7 +974,7 @@ class GroundingBatch(StructuredModel):
 
 class EditorialBatch(StructuredModel):
     editorial_issues: list[str]
-    originality_issues: list["OriginalityFinding"]
+    originality_issues: list[OriginalityFinding]
     coverage_issues: list[str]
     revise_paragraphs: list[int]
 
@@ -901,12 +1132,15 @@ async def assess_in_batches(
     infer: Infer,
     cached: dict[str, dict[str, object]],
     checkpoint: Callable[[], Awaitable[None]],
+    *,
+    reconstruction: Reconstruction | None = None,
 ) -> ArcSemanticReview:
     refs = clause_map(plan)
     evidence = {unit.id: unit.text for unit in plan.evidence}
     terms = {unit_id: word_spans(value, 1) for unit_id, value in evidence.items()}
     frequencies = Counter(word for values in terms.values() for word in values)
     decisions: list[ClaimReview] = []
+    verified_frames = numbered_frames(reconstruction) if reconstruction else {}
     targeted: set[int] = set()
     calibration = dict(
         zip(("check-a", "check-b", "check-c", "check-d"), ROLE_CALIBRATION, strict=True)
@@ -950,6 +1184,11 @@ async def assess_in_batches(
                     for key, case in calibration.items()
                 }
             )
+            if verified_frames:
+                for i, claim in enumerate(claims, 1):
+                    packet[f"s{i}"]["verified_frames"] = [
+                        verified_frames[r] for r in claim.writing_note_ids
+                    ]
             neighbor_passages = {
                 "before": draft.paragraphs[p_index - 2].text if p_index > 1 else None,
                 "after": draft.paragraphs[p_index].text
@@ -965,6 +1204,9 @@ async def assess_in_batches(
                     "individual factual propositions, including any connective phrase that "
                     "asserts chronology, cause, intention, or outcome. Verify actual actor, "
                     "action, grammatical object and modality for each proposition. "
+                    "When verified frames are supplied, preserve their separate speaker, "
+                    "experiencer, patient and referenced subject roles. Similarity of wording "
+                    "to a frame alone does not establish that the passage is true. "
                     "Nearby prose can resolve an unambiguous pronoun, but it is not evidence "
                     "for any fact. If multiple antecedents are plausible, flag the passage. "
                     "If a cited archival passage explicitly names a participant while another "

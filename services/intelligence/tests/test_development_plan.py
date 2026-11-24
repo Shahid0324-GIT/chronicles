@@ -6,13 +6,16 @@ from uuid import uuid4
 import pytest
 from pydantic import BaseModel
 
-from src.application.arc_contracts import ArcSectionDraft, DevelopmentEvidence
+from src.application.arc_contracts import ArcSectionDraft, DevelopmentEvidence, DevelopmentOrdering
 from src.application.arc_grounding import CALIBRATION, copied_paragraphs, review_ok
 from src.application.arc_prose import (
     ROLE_CALIBRATION,
+    PlainScene,
     Propositions,
     ProseDraft,
+    SceneAlignment,
     SceneDraft,
+    aligned_scene,
     assess_in_batches,
     assess_written_section,
     bind_draft,
@@ -23,8 +26,17 @@ from src.application.arc_prose import (
     revision_note_targets,
     scene_inputs,
     validate_propositions,
+    validate_scene_alignment_order,
     verify_link_use,
     writing_packet,
+)
+from src.application.arc_reconstruction import (
+    FrameCandidates,
+    FrameDecisions,
+    Reconstruction,
+    SceneState,
+    bind_frames,
+    reconstruct_arc,
 )
 from src.application.development_plan import (
     DevelopmentBatchReview,
@@ -91,6 +103,176 @@ def material():
         }
     )
     return proposal, facts, evidence, arc, section, continuity
+
+
+async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    scene, clause = next(iter(clause_map(plan).values()))
+    clause.clause = "Shanks revealed that Luffy's body was now made of rubber."
+    clause.modality = "completed"
+    unit = next(u for u in plan.evidence if u.id == clause.evidence_ids[0])
+    unit.text = clause.clause
+
+    async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        packet = json.loads(prompt.split("\n", 1)[1])
+        if schema is FrameCandidates:
+            ref = next(iter(packet))
+            return (
+                schema.model_validate(
+                    {
+                        "frames": [
+                            {
+                                "clause": ref,
+                                "action": "developed rubber properties",
+                                "speaker": "Shanks",
+                                "experiencer": name,
+                                "modality": "completed",
+                                "negated": False,
+                                "function": "turning_point",
+                            }
+                            for name in ("Luffy", "Shanks")
+                        ]
+                    }
+                )
+                if ref == "1.1"
+                else schema.model_validate({"frames": []})
+            )
+        assert schema is FrameDecisions
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "id": id,
+                        "supported": id in {"1", "2", "4"},
+                        "reason": "Exact ownership checked",
+                        "observed_modality": "completed" if id in {"1", "2"} else None,
+                        "observed_roles": (
+                            {"speaker": "Shanks", "experiencer": "Luffy"}
+                            if id in {"1", "2"}
+                            else {}
+                        ),
+                    }
+                    for id in packet
+                ]
+            }
+        )
+
+    async def checkpoint() -> None:
+        pass
+
+    reconstruction = await reconstruct_arc(plan, facts, infer, {}, checkpoint)
+    verified = next(s for s in reconstruction.scenes if s.id == scene.id).frames
+    assert len(verified) == 1
+    assert verified[0].roles["speaker"].name == "Shanks"
+    assert verified[0].roles["experiencer"].name == "Luffy"
+    assert not reconstruction.ready
+
+
+def test_aligned_prose_cannot_reverse_a_verified_sequence_within_a_scene():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    scene, other = plan.developments
+    scene.clauses.extend(other.clauses)
+    plan.developments = [scene]
+    refs = clause_map(plan)
+    before, after = refs
+    frames = bind_frames(
+        FrameCandidates.model_validate(
+            {
+                "frames": [
+                    {
+                        "clause": ref,
+                        "actor": clause.clause.split()[0],
+                        "action": "open the gate",
+                        "modality": clause.modality,
+                        "negated": False,
+                        "function": "action",
+                    }
+                    for ref, (_, clause) in refs.items()
+                ]
+            }
+        ),
+        plan,
+        scene.id,
+        {ref: [] for ref in refs},
+        facts,
+    )
+    state = Reconstruction(scenes=[SceneState(id=scene.id, title=scene.title, frames=frames)])
+    plan.relationship_review.status = "passed"
+    plan.ordering.append(
+        DevelopmentOrdering(
+            before=scene.id,
+            after=scene.id,
+            before_clause=before,
+            after_clause=after,
+            kind="narrative_presentation",
+            statement="The source gives an explicit transition.",
+            evidence_ids=[e.id for e in evidence],
+        )
+    )
+    draft = ArcSectionDraft.model_validate(
+        {
+            "heading": "Gate",
+            "paragraphs": [
+                {
+                    "claims": [
+                        {
+                            "text": clause.clause,
+                            "fact_ids": [clause.fact_id],
+                            "writing_note_ids": [str(i)],
+                        }
+                        for i, (_, clause) in enumerate(refs.values(), 1)
+                    ]
+                }
+            ],
+        }
+    )
+    validate_scene_alignment_order(draft, state, plan)
+    draft.paragraphs[0].claims.reverse()
+    with pytest.raises(ValueError, match="reverses an evidenced action sequence"):
+        validate_scene_alignment_order(draft, state, plan)
+
+
+def test_attempt_cannot_be_completed_without_an_independent_exact_action():
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    key, (scene, _) = next(
+        (k, value) for k, value in clause_map(plan).items() if value[1].modality == "attempted"
+    )
+    frames = FrameCandidates.model_validate(
+        {
+            "frames": [
+                {
+                    "clause": key,
+                    "actor": "Mira",
+                    "action": "opened the gate",
+                    "function": "resolution",
+                    "modality": "completed",
+                    "negated": False,
+                }
+            ]
+        }
+    )
+    with pytest.raises(ValueError, match="non-completed"):
+        bind_frames(frames, plan, scene.id, {key: []}, facts)
+
+
+def test_alignment_cannot_omit_a_factual_sentence_or_rewrite_the_displayed_text():
+    authored = PlainScene(paragraphs=["Mira reached the gate. Ron was inside."])
+    alignment = SceneAlignment.model_validate(
+        {
+            "spans": [
+                {"paragraph": 1, "start": 0, "end": 22, "frames": ["1"]},
+                {"paragraph": 1, "start": 23, "end": 38, "frames": ["2"]},
+            ]
+        }
+    )
+    paragraphs = aligned_scene(authored, alignment, {"1", "2"})
+    assert " ".join(c.text for c in paragraphs[0].claims) == authored.paragraphs[0]
+    alignment.spans.pop()
+    with pytest.raises(ValueError, match="left prose unaccounted"):
+        aligned_scene(authored, alignment, {"1", "2"})
 
 
 async def test_reconstruction_checks_links_within_compound_clauses_before_writing():
