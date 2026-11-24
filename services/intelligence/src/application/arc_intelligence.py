@@ -67,7 +67,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v23"
+POLICY = "arc-intelligence-v24"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 

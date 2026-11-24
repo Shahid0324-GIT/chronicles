@@ -88,6 +88,7 @@ def aligned_scene(
     prose: PlainScene,
     alignment: SceneAlignment,
     allowed: set[str],
+    allowed_relationships: set[str] | None = None,
 ) -> list[ProseParagraph]:
     paragraphs = []
     if {s.paragraph for s in alignment.spans} != set(range(1, len(prose.paragraphs) + 1)):
@@ -102,6 +103,10 @@ def aligned_scene(
                 or span.end > len(text)
                 or text[cursor : span.start].strip()
                 or not set(span.frames) <= allowed
+                or (
+                    allowed_relationships is not None
+                    and not set(span.relations) <= allowed_relationships
+                )
             ):
                 raise ValueError("Alignment overlapped, skipped prose, or cited a foreign frame")
             claims.append(
@@ -199,7 +204,7 @@ async def write_and_align(
             "presentation_verification",
         )
     )
-    paragraphs = aligned_scene(prose, alignment, set(frames))
+    paragraphs = aligned_scene(prose, alignment, set(frames), set(packet["relationships"]))
     if key not in cached:
         cached[key] = alignment.model_dump(mode="json")
         await checkpoint()
@@ -223,7 +228,12 @@ async def compose_reconstruction(
     frame_ids = {
         f.id: str(i) for i, f in enumerate((f for scene in state.scenes for f in scene.frames), 1)
     }
-    relationships = story_links(plan)
+    covered = {note.id for note in notes.notes}
+    relationships = {
+        key: link
+        for key, link in story_links(plan).items()
+        if {link.before_clause, link.after_clause} <= covered
+    }
     paragraphs: list[ProseParagraph] = []
     if repair:
         targets = {n for t in repair["targets"] for n in t["note_ids"]}
@@ -262,7 +272,8 @@ async def compose_reconstruction(
             written, previous = await write_and_align(
                 {
                     "frames": frames,
-                    "discourse": beat.model_dump(mode="json"),
+                    "discourse": beat.model_dump(mode="json", exclude={"open_questions"}),
+                    "has_unresolved_details": bool(beat.open_questions),
                     "relationships": links,
                     "previous_prose_for_style_only": previous,
                 },

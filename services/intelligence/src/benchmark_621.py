@@ -173,7 +173,7 @@ async def main() -> None:
     if args.verified_frames:
         if not args.handoff:
             parser.error("Verified frame runs require --handoff")
-        folder = Path("../../.tmp/benchmark625")
+        folder = Path("../../.tmp/benchmark625-stabilized")
     folder /= section_key
     if args.freeze:
         folder = baseline
@@ -190,11 +190,13 @@ async def main() -> None:
             "agent_stage_model_calls": {
                 **settings.agent_stage_model_calls,
                 "presentation": 29 if args.recovery else 20,
-                "presentation_verification": 26,
+                "presentation_verification": 46 if args.verified_frames else 26,
             }
             if args.relationships
             else settings.agent_stage_model_calls,
-            "agent_max_model_calls": 30
+            "agent_max_model_calls": 60
+            if args.verified_frames
+            else 30
             if args.handoff
             else 44
             if args.recovery
@@ -372,13 +374,15 @@ async def main() -> None:
                 ArcIntelligence.identifier(section.id, "arc_pending_review", evidence.revision)
             ] = pending
         writing_notes = (
-            saved.get("writing_notes") if reuse_draft or (args.scene and args.original) else None
+            saved.get("writing_notes")
+            if reuse_draft or (args.scene and args.original and not args.verified_frames)
+            else None
         )
         if writing_notes:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_writing_notes", evidence.revision)
             ] = writing_notes
-        if saved.get("review_batches"):
+        if saved.get("review_batches") and not (args.verified_frames and args.original):
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_prose_batches", evidence.revision)
             ] = saved["review_batches"]
@@ -433,7 +437,9 @@ async def main() -> None:
             schema,
             task,
             public_source_content=True,
-            reserve_calls=2
+            reserve_calls=18
+            if args.verified_frames and schema.__name__ in {"FrameCandidates", "FrameDecisions"}
+            else 2
             if schema in (Propositions, PlainScene)
             else (1 if schema in (SceneProse, ProseRevision) else 0),
         )

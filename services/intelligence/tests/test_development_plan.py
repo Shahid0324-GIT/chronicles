@@ -21,7 +21,9 @@ from src.application.arc_prose import (
     bind_draft,
     bind_writing_notes,
     clarify_note_roles,
+    compose_reconstruction,
     flatten_scenes,
+    frame_notes,
     originality_candidates,
     revision_note_targets,
     scene_inputs,
@@ -108,11 +110,13 @@ def material():
 async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role():
     proposal, facts, evidence, *scope = material()
     plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    plan.developments.reverse()  # The fixture supplies developments in reverse source order.
     scene, clause = next(iter(clause_map(plan).values()))
     clause.clause = "Shanks revealed that Luffy's body was now made of rubber."
     clause.modality = "completed"
     unit = next(u for u in plan.evidence if u.id == clause.evidence_ids[0])
     unit.text = clause.clause
+    review_batches = []
 
     async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
         packet = json.loads(prompt.split("\n", 1)[1])
@@ -136,25 +140,67 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
                     }
                 )
                 if ref == "1.1"
-                else schema.model_validate({"frames": []})
+                else schema.model_validate(
+                    {
+                        "frames": [
+                            {
+                                "clause": ref,
+                                "action": "opened the gate",
+                                "actor": "Ron",
+                                "modality": "completed",
+                                "negated": False,
+                                "function": "action",
+                            }
+                        ]
+                    }
+                )
+            )
+        if schema is PlainScene:
+            is_first = not packet["previous_prose_for_style_only"]
+            if is_first:
+                frame = next(iter(packet["frames"].values()))
+                assert frame["roles"]["speaker"]["name"] == "Shanks"
+                assert frame["roles"]["experiencer"]["name"] == "Luffy"
+            else:
+                assert packet["previous_prose_for_style_only"] == "Luffy had changed."
+            return PlainScene(paragraphs=["Luffy had changed." if is_first else "Ron opened it."])
+        if schema is SceneAlignment:
+            [paragraph] = packet["paragraphs"]
+            return schema.model_validate(
+                {
+                    "spans": [
+                        {
+                            "paragraph": 1,
+                            "start": 0,
+                            "end": len(paragraph),
+                            "frames": list(packet["frames"]),
+                        }
+                    ]
+                }
             )
         assert schema is FrameDecisions
+        proposed = [v["frame"] for i, v in packet.items() if int(i) >= 3]
+        assert all(not {"actor", "speaker", "experiencer"} & frame.keys() for frame in proposed)
+        review_batches.append(proposed)
         return schema.model_validate(
             {
-                "decisions": [
-                    {
-                        "id": id,
-                        "supported": id in {"1", "2", "4"},
+                "decisions": {
+                    id: {
+                        "supported": id != "1",
                         "reason": "Exact ownership checked",
-                        "observed_modality": "completed" if id in {"1", "2"} else None,
+                        "observed_modality": "completed" if id != "1" else None,
+                        "observed_negated": False,
                         "observed_roles": (
-                            {"speaker": "Shanks", "experiencer": "Luffy"}
-                            if id in {"1", "2"}
-                            else {}
+                            {"speaker": "Nora", "experiencer": "Kai", "actor": "Kai"}
+                            if id == "2"
+                            else {"actor": "Ron"}
+                            if proposed[0]["action"] == "opened the gate"
+                            else {"speaker": "Shanks", "experiencer": "Luffy"}
                         ),
                     }
                     for id in packet
-                ]
+                    if id != "4"
+                }
             }
         )
 
@@ -166,7 +212,16 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert len(verified) == 1
     assert verified[0].roles["speaker"].name == "Shanks"
     assert verified[0].roles["experiencer"].name == "Luffy"
-    assert not reconstruction.ready
+    assert reconstruction.ready
+    assert any("did not confirm roles/modality" in gap for gap in reconstruction.scenes[0].gaps)
+    # The missing row has the same independently observed action as the first row.
+    # Recheck its proposed roles against that observation without another model call.
+    assert [len(batch) for batch in review_batches] == [2, 1]
+    draft = await compose_reconstruction(
+        reconstruction, plan, frame_notes(reconstruction, plan), "Change", infer, {}, checkpoint
+    )
+    assert [p.text for p in draft.paragraphs] == ["Luffy had changed.", "Ron opened it."]
+    assert [p.claims[0].writing_note_ids for p in draft.paragraphs] == [["1"], ["2"]]
 
 
 def test_aligned_prose_cannot_reverse_a_verified_sequence_within_a_scene():
