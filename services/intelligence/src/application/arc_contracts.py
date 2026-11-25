@@ -351,6 +351,23 @@ class ArcAccountCoverage(StructuredModel):
     gaps: list[ArcEvidenceQuestion] = Field(default_factory=list, max_length=24)
 
 
+RejectionCategory = Literal[
+    "unknown_citation",
+    "contradicted",
+    "not_established",
+    "reviewer_unavailable",
+]
+
+
+class ParagraphRejection(StructuredModel):
+    """Why a drafted paragraph was withheld, without the paragraph's unsupported text."""
+
+    paragraph: int = Field(ge=1, description="1-based position in the reviewed draft")
+    category: RejectionCategory
+    claims: list[int] = Field(default_factory=list)
+    reasons: list[str] = Field(default_factory=list, max_length=8)
+
+
 class ArcUnderstandingDocument(StructuredModel):
     title: str
     status: Literal["partial", "qualified", "review_unavailable"]
@@ -358,6 +375,7 @@ class ArcUnderstandingDocument(StructuredModel):
     gaps: list[ArcEvidenceQuestion]
     coverage: ArcAccountCoverage
     withheld_paragraphs: int = 0
+    rejections: list[ParagraphRejection] = Field(default_factory=list)
 
 
 class ArcOutlinePart(StructuredModel):

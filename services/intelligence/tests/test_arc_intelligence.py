@@ -17,6 +17,7 @@ from src.application.arc_contracts import (
     ArcParagraph,
     ArcSectionDraft,
     DevelopmentEvidence,
+    ParagraphRejection,
 )
 from src.application.arc_grounding import CALIBRATION
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
@@ -448,3 +449,46 @@ async def test_import_sharing_requires_explicit_current_grant_and_revocation_tak
             scope.universe_id, scope.id, [ids[0]]
         )
         assert not metadata[ids[0]]["import_cloud_allowed"]
+
+
+async def test_review_records_why_paragraphs_were_withheld():
+    paragraph = ArcParagraph.model_validate(
+        {
+            "claims": [
+                {"text": "Mira entered the observatory.", "fact_ids": ["a"]},
+                {"text": "Mira was welcomed warmly.", "fact_ids": ["b"]},
+            ]
+        }
+    )
+    unknown = ArcParagraph.model_validate(
+        {"claims": [{"text": "Someone left.", "fact_ids": ["missing"]}]}
+    )
+
+    async def infer(prompt, schema, _task):
+        rows = json.loads(prompt.split("\n", 1)[1])["claims"]
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "index": r["index"],
+                        "finding": "entailed" if r["index"] == 0 else "not_established",
+                        "reason": "No warmth is recorded",
+                    }
+                    for r in rows
+                ]
+            }
+        )
+
+    rejections: list[ParagraphRejection] = []
+    kept, withheld, _ = await review_passages(
+        [paragraph, unknown],
+        {"a": {"assertion": "Mira entered."}, "b": {"assertion": "Mira arrived."}},
+        infer,
+        rejections=rejections,
+    )
+    assert kept == [] and withheld == 2
+    assert [(r.paragraph, r.category) for r in rejections] == [
+        (1, "not_established"),
+        (2, "unknown_citation"),
+    ]
+    assert rejections[0].claims == [1] and rejections[0].reasons == ["No warmth is recorded"]

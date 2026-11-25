@@ -13,6 +13,7 @@ from src.application.arc_contracts import (
     ArcClaim,
     ArcContinuousDraft,
     ArcDossier,
+    ArcEntailment,
     ArcEntailmentBatch,
     ArcOutline,
     ArcParagraph,
@@ -22,6 +23,8 @@ from src.application.arc_contracts import (
     ArcSectionPlan,
     ArcUnderstandingDocument,
     DevelopmentEvidence,
+    ParagraphRejection,
+    RejectionCategory,
 )
 from src.application.arc_grounding import CALIBRATION, assertion, word_spans
 from src.application.knowledge_presentation import Infer, fingerprint
@@ -76,10 +79,16 @@ async def review_passages(
     paragraphs: list[ArcParagraph],
     support: dict[str, dict[str, Any]],
     infer: Infer,
+    *,
+    rejections: list[ParagraphRejection] | None = None,
 ) -> tuple[list[ArcParagraph], int, bool]:
-    """Keep good passages and continue after malformed or unsupported siblings."""
+    """Keep good passages and continue after malformed or unsupported siblings.
 
-    async def assess(rows: list[dict[str, Any]], context: str) -> dict[int, bool]:
+    When ``rejections`` is supplied, one entry per withheld paragraph records the
+    reviewer's category and reasons so flow and grounding losses can be told apart.
+    """
+
+    async def assess(rows: list[dict[str, Any]], context: str) -> dict[int, ArcEntailment]:
         expected = {row["index"] for row in rows}
         try:
             result = ArcEntailmentBatch.model_validate(
@@ -111,19 +120,18 @@ async def review_passages(
                 raise
             return {}
         counts = Counter(c.index for c in result.decisions)
-        decisions = {
-            c.index: c.finding == "entailed"
-            for c in result.decisions
-            if counts[c.index] == 1 and c.index in expected
+        return {
+            c.index: c for c in result.decisions if counts[c.index] == 1 and c.index in expected
         }
-        return decisions
 
     qualified = []
     unavailable = False
-    for paragraph in paragraphs:
+    for number, paragraph in enumerate(paragraphs, 1):
         if any(i not in support for claim in paragraph.claims for i in claim.fact_ids):
+            if rejections is not None:
+                rejections.append(ParagraphRejection(paragraph=number, category="unknown_citation"))
             continue
-        reviews: list[bool] = []
+        reviews: dict[int, ArcEntailment | None] = {}
         for offset in range(0, len(paragraph.claims), 4):
             batch = paragraph.claims[offset : offset + 4]
             rows = [
@@ -136,9 +144,26 @@ async def review_passages(
                     await assess([r for r in rows if r["index"] not in decisions], paragraph.text)
                 )
             unavailable = unavailable or len(decisions) != len(rows)
-            reviews.extend(decisions.get(i, False) for i in range(len(rows)))
-        if reviews and all(reviews):
+            for i in range(len(rows)):
+                reviews[offset + i] = decisions.get(i)
+        if reviews and all(r is not None and r.finding == "entailed" for r in reviews.values()):
             qualified.append(paragraph)
+        elif rejections is not None:
+            failed = {i: r for i, r in reviews.items() if r is None or r.finding != "entailed"}
+            if any(r is not None and r.finding == "contradicted" for r in failed.values()):
+                category: RejectionCategory = "contradicted"
+            elif any(r is not None for r in failed.values()):
+                category = "not_established"
+            else:
+                category = "reviewer_unavailable"
+            rejections.append(
+                ParagraphRejection(
+                    paragraph=number,
+                    category=category,
+                    claims=sorted(failed),
+                    reasons=[r.reason for _, r in sorted(failed.items()) if r is not None][:8],
+                )
+            )
     return qualified, len(paragraphs) - len(qualified), unavailable
 
 
@@ -200,7 +225,10 @@ async def build_arc_understanding(
         )
     ).model_copy(deep=True)
     resolve_assertion_ids(draft, refs)
-    paragraphs, withheld, unavailable = await review_passages(draft.paragraphs, unique, infer)
+    rejections: list[ParagraphRejection] = []
+    paragraphs, withheld, unavailable = await review_passages(
+        draft.paragraphs, unique, infer, rejections=rejections
+    )
     if paragraphs and withheld and not unavailable:
         targets = [p for p in draft.paragraphs if p not in paragraphs]
         local_refs = {
@@ -242,6 +270,9 @@ async def build_arc_understanding(
                         if p in paragraphs or id(p) in approved
                     ]
                     withheld = len(draft.paragraphs) - len(paragraphs)
+                    rejections = [
+                        r for r in rejections if draft.paragraphs[r.paragraph - 1] not in paragraphs
+                    ]
                     draft.gaps.extend(repaired.gaps)
             except InferenceFailure as error:
                 if error.code != "structured_output_exhausted":
@@ -343,6 +374,7 @@ async def build_arc_understanding(
         status="qualified" if complete else "review_unavailable" if unavailable else "partial",
         coverage=coverage,
         withheld_paragraphs=withheld,
+        rejections=rejections,
     )
 
 
