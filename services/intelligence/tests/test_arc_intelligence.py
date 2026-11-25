@@ -21,7 +21,7 @@ from src.application.arc_contracts import (
 )
 from src.application.arc_grounding import CALIBRATION
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
-from src.application.arc_understanding import review_passages
+from src.application.arc_understanding import reference_order, review_passages
 from src.application.story_scope import ArcResearchScope
 from src.domain.entities import GraphNode, GraphRelationship
 from src.domain.event_support import event_support_issue
@@ -492,3 +492,24 @@ async def test_review_records_why_paragraphs_were_withheld():
         (2, "unknown_citation"),
     ]
     assert rejections[0].claims == [1] and rejections[0].reasons == ["No warmth is recorded"]
+
+
+def test_reference_order_uses_source_position_then_stable_id():
+    def fact(identifier, position):
+        sources = (
+            [
+                {
+                    "provenance": {
+                        "position_basis": "broadcast-presentation",
+                        "presentation_position": position,
+                    }
+                }
+            ]
+            if position
+            else []
+        )
+        return {"id": identifier, "sources": sources}
+
+    shuffled = [fact("c", None), fact("b", 3), fact("z", 1), fact("a", 3)]
+    ordered = [f["id"] for f in sorted(shuffled, key=reference_order)]
+    assert ordered == ["z", "a", "b", "c"]

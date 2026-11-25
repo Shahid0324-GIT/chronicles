@@ -29,6 +29,7 @@ from src.application.arc_contracts import (
 from src.application.arc_grounding import CALIBRATION, assertion, word_spans
 from src.application.knowledge_presentation import Infer, fingerprint
 from src.application.research_contracts import InferenceFailure
+from src.application.story_position import source_position
 
 
 def accepted_witnesses(
@@ -167,12 +168,25 @@ async def review_passages(
     return qualified, len(paragraphs) - len(qualified), unavailable
 
 
+def reference_order(fact: dict[str, Any]) -> tuple[int, str]:
+    """Earliest sourced presentation position; unplaced facts follow, ties by stable ID.
+
+    This orders the writer's input for readability only. It is a source presentation
+    coordinate, never evidence of in-world chronology or causality.
+    """
+
+    positions = [
+        p for source in fact.get("sources", []) if (p := source_position(source)) is not None
+    ]
+    return (min(positions) if positions else 100001, fact["id"])
+
+
 async def build_arc_understanding(
     dossier: ArcDossier, units: list[DevelopmentEvidence], infer: Infer
 ) -> ArcUnderstandingDocument:
     witnesses = accepted_witnesses(dossier.accepted_facts, units)
     unique: dict[str, dict[str, Any]] = {}
-    for fact in dossier.accepted_facts:
+    for fact in sorted(dossier.accepted_facts, key=reference_order):
         if fact["id"] in witnesses and assertion(fact).strip():
             unique[fact["id"]] = {
                 "assertion": assertion(fact),
@@ -200,6 +214,9 @@ async def build_arc_understanding(
             "the resolution and the characters' decisions wherever the evidence does. Use readable "
             "connected paragraphs with several developments when related. No section headings, "
             "event buckets, chronology from archive order, or information from memory. "
+            "The numbered assertions follow reference presentation order (source broadcast or "
+            "chapter position, with unplaced facts last). That order helps reading but is not "
+            "in-world chronology or causation. "
             "Start a new paragraph when the situation changes. Give each encounter room to "
             "develop. Cite every claim with supporting assertion IDs as strings in fact_ids. "
             "Use the fewest IDs that establish its meaning. A recurring location, creature or "
