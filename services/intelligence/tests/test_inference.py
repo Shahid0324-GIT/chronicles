@@ -196,3 +196,25 @@ def test_groq_response_format_is_configurable_without_changing_permissions():
     assert not router.cloud_content_allowed
     with pytest.raises(ValueError):
         Settings(_env_file=None, groq_structured_output_method="invented-format")
+
+
+async def test_key_failover_is_opt_in_and_uses_the_second_account_before_local():
+    for failover, expect_secondary in ((False, 0), (True, 1)):
+        local = Provider()
+        primary = Provider("groq", [InferenceFailure("rate_limited", 90)])
+        secondary = Provider("secondary")
+        router = InferenceRouter(
+            local, [primary, secondary], cloud_content_allowed=True, key_failover=failover
+        )
+        result = await router.generate(
+            "Owned", "Owned", ResearchPlan, "verification", public_source_content=True
+        )
+        assert secondary.calls == expect_secondary
+        assert (result.usage.provider == "secondary") is bool(expect_secondary)
+        assert local.calls == (0 if failover else 1)
+        # The limited key stays cooling; the next call goes straight to the live key.
+        again = await router.generate(
+            "Owned", "Owned", ResearchPlan, "verification", public_source_content=True
+        )
+        assert primary.calls == 1
+        assert (again.usage.provider == "secondary") is failover

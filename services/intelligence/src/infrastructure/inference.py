@@ -288,4 +288,5 @@ def create_inference(
         max_calls=settings.agent_max_model_calls,
         stage_limits=settings.agent_stage_model_calls,
         cloud_rate_limit_wait_seconds=settings.ai_cloud_rate_limit_wait_seconds,
+        key_failover=settings.ai_cloud_key_failover,
     )

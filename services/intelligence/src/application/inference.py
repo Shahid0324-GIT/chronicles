@@ -37,8 +37,13 @@ class InferenceRouter:
         max_calls: int = 1000,
         stage_limits: dict[str, int] | None = None,
         cloud_rate_limit_wait_seconds: float = 0,
+        key_failover: bool = False,
     ) -> None:
         self.local, self.cloud = local, cloud
+        # Off by default: credentials normally share one account budget, so trying the
+        # next key would only bypass a limit. Enable only for keys from separate accounts.
+        self.key_failover = key_failover
+        self.cooldowns: dict[str, float] = {}
         self.mode, self.cloud_content_allowed = mode, cloud_content_allowed
         self.attempts, self.timeout, self.clock = attempts, timeout, clock
         self.gate = asyncio.Semaphore(concurrency)
@@ -90,7 +95,16 @@ class InferenceRouter:
             )
             candidates = [self.local]
             last_code = "provider_unavailable"
-            if prefer_cloud and self.clock() >= self.cloud_until:
+            if prefer_cloud and self.key_failover:
+                # Opt-in: each credential has its own account budget and cooldown.
+                live = [
+                    p
+                    for p in self.cloud
+                    if p.credential not in self.disabled
+                    and self.clock() >= self.cooldowns.get(p.credential, 0.0)
+                ]
+                candidates = [*live, self.local]
+            elif prefer_cloud and self.clock() >= self.cloud_until:
                 candidate = next((p for p in self.cloud if p.credential not in self.disabled), None)
                 if candidate:
                     candidates.insert(0, candidate)
@@ -207,7 +221,20 @@ class InferenceRouter:
                         if provider is not self.local and code == "rate_limited":
                             delay = error.retry_after if isinstance(error, InferenceFailure) else 60
                             delay = max(60, delay or 60)
-                            self.cloud_until = self.clock() + delay
+                            if self.key_failover:
+                                self.cooldowns[provider.credential] = self.clock() + delay
+                                cooling = [
+                                    self.cooldowns.get(p.credential, 0.0)
+                                    for p in self.cloud
+                                    if p.credential not in self.disabled
+                                ]
+                                if cooling and min(cooling) > self.clock():
+                                    self.cloud_until = min(cooling)
+                                later = candidates[candidates.index(provider) + 1 :]
+                                if any(p is not self.local for p in later):
+                                    break  # a key from a separately budgeted account is next
+                            else:
+                                self.cloud_until = self.clock() + delay
                             if (
                                 delay <= self.cloud_rate_limit_wait_seconds
                                 and attempt + 1 < self.attempts
