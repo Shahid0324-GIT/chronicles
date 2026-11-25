@@ -573,3 +573,42 @@ async def test_unlicensed_connector_is_withheld_before_model_review():
     )
     assert kept == [] and withheld == 1
     assert rejections[0].category == "unlicensed_connector" and rejections[0].claims == [0]
+
+
+async def test_salvage_keeps_entailed_claims_and_rereviews_the_projection():
+    paragraph = ArcParagraph.model_validate(
+        {
+            "claims": [
+                {"text": "Mira entered the observatory.", "fact_ids": ["a"]},
+                {"text": "Mira was welcomed warmly.", "fact_ids": ["b"]},
+            ]
+        }
+    )
+    seen = []
+
+    async def infer(prompt, schema, _task):
+        rows = json.loads(prompt.split("\n", 1)[1])["claims"]
+        seen.append([r["text"] for r in rows])
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "index": r["index"],
+                        "finding": "not_established" if "warmly" in r["text"] else "entailed",
+                        "reason": "Checked against the cited assertion",
+                    }
+                    for r in rows
+                ]
+            }
+        )
+
+    support = {"a": {"assertion": "Mira entered."}, "b": {"assertion": "Mira arrived."}}
+    rejections: list[ParagraphRejection] = []
+    kept, withheld, _ = await review_passages(
+        [paragraph], support, infer, rejections=rejections, salvage=True
+    )
+    assert [p.text for p in kept] == ["Mira entered the observatory."] and withheld == 0
+    assert len(seen) == 2 and seen[1] == ["Mira entered the observatory."]
+    assert rejections[0].salvaged and rejections[0].claims == [1]
+    plain, plain_withheld, _ = await review_passages([paragraph], support, infer)
+    assert plain == [] and plain_withheld == 1

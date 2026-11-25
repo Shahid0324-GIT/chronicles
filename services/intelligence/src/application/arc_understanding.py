@@ -78,7 +78,7 @@ def resolve_assertion_ids(draft: ArcAccountDraft, references: dict[str, str]) ->
         ]
 
 
-async def review_passages(
+async def review_each(
     paragraphs: list[ArcParagraph],
     support: dict[str, dict[str, Any]],
     infer: Infer,
@@ -86,11 +86,14 @@ async def review_passages(
     rejections: list[ParagraphRejection] | None = None,
     vocabulary: set[str] | None = None,
     licence: Callable[[ArcClaim], list[str]] | None = None,
-) -> tuple[list[ArcParagraph], int, bool]:
-    """Keep good passages and continue after malformed or unsupported siblings.
+    salvage: bool = False,
+) -> tuple[list[ArcParagraph | None], bool]:
+    """Review every paragraph; the result is aligned with the input, ``None`` if withheld.
 
-    When ``rejections`` is supplied, one entry per withheld paragraph records the
-    reviewer's category and reasons so flow and grounding losses can be told apart.
+    With ``salvage`` a paragraph that fails only some claims keeps the claims that
+    passed. The projection is reviewed again before it counts, because removing
+    claims changes the context the remaining claims rely on. Rejection entries
+    record category and reasons (claim indices refer to the drafted paragraph).
     """
 
     async def assess(rows: list[dict[str, Any]], context: str) -> dict[int, ArcEntailment]:
@@ -129,80 +132,142 @@ async def review_passages(
             c.index: c for c in result.decisions if counts[c.index] == 1 and c.index in expected
         }
 
-    qualified = []
     unavailable = False
-    for number, paragraph in enumerate(paragraphs, 1):
-        if any(i not in support for claim in paragraph.claims for i in claim.fact_ids):
-            if rejections is not None:
-                rejections.append(ParagraphRejection(paragraph=number, category="unknown_citation"))
-            continue
-        foreign = unlicensed_names(paragraph.text, vocabulary) if vocabulary is not None else []
-        if foreign:
-            if rejections is not None:
-                rejections.append(
-                    ParagraphRejection(
-                        paragraph=number,
-                        category="unlicensed_name",
-                        reasons=[
-                            f"Name absent from the story bible and cited sources: {n}"
-                            for n in foreign
-                        ][:8],
-                    )
-                )
-            continue
-        unlicensed = (
-            {i: words for i, c in enumerate(paragraph.claims) if (words := licence(c))}
-            if licence is not None
-            else {}
-        )
-        if unlicensed:
-            if rejections is not None:
-                rejections.append(
-                    ParagraphRejection(
-                        paragraph=number,
-                        category="unlicensed_connector",
-                        claims=sorted(unlicensed),
-                        reasons=[
-                            f"Connector not supported by cited sources or an explicit link: "
-                            f"{', '.join(words)}"
-                            for _, words in sorted(unlicensed.items())
-                        ][:8],
-                    )
-                )
-            continue
+
+    async def review_claims(work: ArcParagraph) -> dict[int, ArcEntailment | None]:
+        nonlocal unavailable
         reviews: dict[int, ArcEntailment | None] = {}
-        for offset in range(0, len(paragraph.claims), 4):
-            batch = paragraph.claims[offset : offset + 4]
+        for offset in range(0, len(work.claims), 4):
+            batch = work.claims[offset : offset + 4]
             rows = [
                 {"index": i, "text": c.text, "support": [support[k] for k in c.fact_ids]}
                 for i, c in enumerate(batch)
             ]
-            decisions = await assess(rows, paragraph.text)
+            decisions = await assess(rows, work.text)
             if 0 < len(decisions) < len(rows):
                 decisions.update(
-                    await assess([r for r in rows if r["index"] not in decisions], paragraph.text)
+                    await assess([r for r in rows if r["index"] not in decisions], work.text)
                 )
             unavailable = unavailable or len(decisions) != len(rows)
             for i in range(len(rows)):
                 reviews[offset + i] = decisions.get(i)
-        if reviews and all(r is not None and r.finding == "entailed" for r in reviews.values()):
-            qualified.append(paragraph)
-        elif rejections is not None:
-            failed = {i: r for i, r in reviews.items() if r is None or r.finding != "entailed"}
-            if any(r is not None and r.finding == "contradicted" for r in failed.values()):
-                category: RejectionCategory = "contradicted"
-            elif any(r is not None for r in failed.values()):
-                category = "not_established"
-            else:
-                category = "reviewer_unavailable"
-            rejections.append(
+        return reviews
+
+    def project(paragraph: ArcParagraph, keep: list[int]) -> ArcParagraph:
+        return ArcParagraph.model_validate(
+            {"claims": [paragraph.claims[i].model_dump() for i in keep]}
+        )
+
+    def passed(reviews: dict[int, ArcEntailment | None]) -> bool:
+        return bool(reviews) and all(
+            r is not None and r.finding == "entailed" for r in reviews.values()
+        )
+
+    results: list[ArcParagraph | None] = []
+    for number, paragraph in enumerate(paragraphs, 1):
+        notes: list[ParagraphRejection] = []
+        result: ArcParagraph | None = None
+        foreign = unlicensed_names(paragraph.text, vocabulary) if vocabulary else []
+        if any(i not in support for claim in paragraph.claims for i in claim.fact_ids):
+            notes.append(ParagraphRejection(paragraph=number, category="unknown_citation"))
+        elif foreign:
+            notes.append(
                 ParagraphRejection(
                     paragraph=number,
-                    category=category,
-                    claims=sorted(failed),
-                    reasons=[r.reason for _, r in sorted(failed.items()) if r is not None][:8],
+                    category="unlicensed_name",
+                    reasons=[
+                        f"Name absent from the story bible and cited sources: {n}" for n in foreign
+                    ][:8],
                 )
             )
+        else:
+            origin = list(range(len(paragraph.claims)))
+            work = paragraph
+            bad = (
+                {i: words for i, c in enumerate(paragraph.claims) if (words := licence(c))}
+                if licence is not None
+                else {}
+            )
+            if bad:
+                notes.append(
+                    ParagraphRejection(
+                        paragraph=number,
+                        category="unlicensed_connector",
+                        claims=sorted(bad),
+                        reasons=[
+                            "Connector not supported by cited sources or an explicit link: "
+                            f"{', '.join(words)}"
+                            for _, words in sorted(bad.items())
+                        ][:8],
+                    )
+                )
+                origin = [i for i in origin if i not in bad]
+                if salvage and origin:
+                    work = project(paragraph, origin)
+            if not bad or (salvage and origin):
+                reviews = await review_claims(work)
+                if passed(reviews):
+                    result = work
+                else:
+                    failed = {
+                        origin[i]: r
+                        for i, r in reviews.items()
+                        if r is None or r.finding != "entailed"
+                    }
+                    verdicts = [r for r in failed.values() if r is not None]
+                    category: RejectionCategory = (
+                        "contradicted"
+                        if any(r.finding == "contradicted" for r in verdicts)
+                        else "not_established"
+                        if verdicts
+                        else "reviewer_unavailable"
+                    )
+                    notes.append(
+                        ParagraphRejection(
+                            paragraph=number,
+                            category=category,
+                            claims=sorted(failed),
+                            reasons=[r.reason for _, r in sorted(failed.items()) if r is not None][
+                                :8
+                            ],
+                        )
+                    )
+                    kept = [
+                        i for i, r in reviews.items() if r is not None and r.finding == "entailed"
+                    ]
+                    if salvage and kept and len(verdicts) == len(failed):
+                        projected = project(work, kept)
+                        if passed(await review_claims(projected)):
+                            result = projected
+        for note in notes:
+            note.salvaged = result is not None
+        if rejections is not None:
+            rejections.extend(notes)
+        results.append(result)
+    return results, unavailable
+
+
+async def review_passages(
+    paragraphs: list[ArcParagraph],
+    support: dict[str, dict[str, Any]],
+    infer: Infer,
+    *,
+    rejections: list[ParagraphRejection] | None = None,
+    vocabulary: set[str] | None = None,
+    licence: Callable[[ArcClaim], list[str]] | None = None,
+    salvage: bool = False,
+) -> tuple[list[ArcParagraph], int, bool]:
+    """Keep good passages and continue after malformed or unsupported siblings."""
+    results, unavailable = await review_each(
+        paragraphs,
+        support,
+        infer,
+        rejections=rejections,
+        vocabulary=vocabulary,
+        licence=licence,
+        salvage=salvage,
+    )
+    qualified = [p for p in results if p is not None]
     return qualified, len(paragraphs) - len(qualified), unavailable
 
 
@@ -304,16 +369,20 @@ async def build_arc_understanding(
     ).model_copy(deep=True)
     resolve_assertion_ids(draft, refs)
     rejections: list[ParagraphRejection] = []
-    paragraphs, withheld, unavailable = await review_passages(
+    reviewed, unavailable = await review_each(
         draft.paragraphs,
         unique,
         infer,
         rejections=rejections,
         vocabulary=vocabulary,
         licence=account_licence,
+        salvage=True,
     )
-    if paragraphs and withheld and not unavailable:
-        targets = [p for p in draft.paragraphs if p not in paragraphs]
+    paragraphs = [p for p in reviewed if p is not None]
+    withheld = len(draft.paragraphs) - len(paragraphs)
+    if withheld and not unavailable:
+        slots = [i for i, p in enumerate(reviewed) if p is None]
+        targets = [draft.paragraphs[i] for i in slots]
         local_refs = {
             ref: key for ref, key in refs.items() if any(key in p.fact_ids for p in targets)
         }
@@ -341,24 +410,20 @@ async def build_arc_understanding(
                 ).model_copy(deep=True)
                 if len(repaired.paragraphs) == len(targets):
                     resolve_assertion_ids(repaired, local_refs)
-                    repaired_ok, _, unavailable = await review_passages(
+                    again, unavailable = await review_each(
                         repaired.paragraphs,
                         {i: unique[i] for i in local_refs.values()},
                         infer,
                         vocabulary=vocabulary,
                         licence=account_licence,
+                        salvage=True,
                     )
-                    replacements = zip(targets, repaired.paragraphs, strict=True)
-                    approved = {id(old): new for old, new in replacements if new in repaired_ok}
-                    paragraphs = [
-                        p if p in paragraphs else approved[id(p)]
-                        for p in draft.paragraphs
-                        if p in paragraphs or id(p) in approved
-                    ]
+                    replaced = {slot for slot, new in zip(slots, again, strict=True) if new}
+                    for slot, new in zip(slots, again, strict=True):
+                        reviewed[slot] = new
+                    paragraphs = [p for p in reviewed if p is not None]
                     withheld = len(draft.paragraphs) - len(paragraphs)
-                    rejections = [
-                        r for r in rejections if draft.paragraphs[r.paragraph - 1] not in paragraphs
-                    ]
+                    rejections = [r for r in rejections if r.paragraph - 1 not in replaced]
                     draft.gaps.extend(repaired.gaps)
             except InferenceFailure as error:
                 if error.code != "structured_output_exhausted":

@@ -384,6 +384,7 @@ class ParagraphRejection(StructuredModel):
     category: RejectionCategory
     claims: list[int] = Field(default_factory=list)
     reasons: list[str] = Field(default_factory=list, max_length=8)
+    salvaged: bool = False
 
 
 class ArcUnderstandingDocument(StructuredModel):
