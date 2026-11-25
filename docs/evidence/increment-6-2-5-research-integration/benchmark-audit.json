@@ -1,0 +1,406 @@
+{
+  "frozen": {
+    "publication": "withheld",
+    "initial_alignment": {
+      "mapped": 15,
+      "unmapped_span_ids": [
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    "resumed_alignment": {
+      "mapped": 21,
+      "unmapped_span_ids": []
+    },
+    "factual_review": {
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "supported",
+          "reason": "The evidence directly states that Gold Roger attained enormous wealth, fame, and power, matching the claim.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": [],
+          "review_provenance": {
+            "reviewer": [
+              "groq",
+              "openai/gpt-oss-120b",
+              null
+            ],
+            "policy": "arc-grounding-v4",
+            "evidence_dependency": "bd503b05b6121e153e8ab039b9e503c2556a84368feabeea24557db7bcb75a32",
+            "response_id": "64709d7b275f9f089ee2e68312d555587f4de91e61ebd67f49a9ee20283dd207"
+          }
+        },
+        {
+          "index": 1,
+          "verdict": "supported",
+          "reason": "The evidence links Gold Roger's announcement to the world entering the Great Pirate Era, supporting the claim that the world entered the era following his rise.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": [],
+          "review_provenance": {
+            "reviewer": [
+              "groq",
+              "openai/gpt-oss-120b",
+              null
+            ],
+            "policy": "arc-grounding-v4",
+            "evidence_dependency": "325e6d98a29bb047dcce574cbd107649334e835d64d73127b1ea5a4d5cae8ea5",
+            "response_id": "64709d7b275f9f089ee2e68312d555587f4de91e61ebd67f49a9ee20283dd207"
+          }
+        },
+        {
+          "index": 2,
+          "verdict": "supported",
+          "reason": "Both the arrival of the Red Hair Pirates at Foosha Village and Luffy's visit to their ship where he stabbed his left eye to prove toughness are directly stated in the evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": [],
+          "review_provenance": {
+            "reviewer": [
+              "groq",
+              "openai/gpt-oss-120b",
+              null
+            ],
+            "policy": "arc-grounding-v4",
+            "evidence_dependency": "45f166743f8de7a07de0dbe4869c06bea4bea3fffc88e685d7cf7b7dc4eb1fed",
+            "response_id": "2eda8c75f4c3121369c5f002b1b990708804e6f1db79cb32b944db342b81eb8d"
+          }
+        },
+        {
+          "index": 3,
+          "verdict": "supported",
+          "reason": "The joint trip of the pirates and Luffy to a bar and their toasting to Luffy's craziness while eating and drinking are explicitly described in the evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": [],
+          "review_provenance": {
+            "reviewer": [
+              "groq",
+              "openai/gpt-oss-120b",
+              null
+            ],
+            "policy": "arc-grounding-v4",
+            "evidence_dependency": "a92a48d28b2c23b6eba55478965c5f7bf10740aa4baf9e392ff1a477fce67c2d",
+            "response_id": "2eda8c75f4c3121369c5f002b1b990708804e6f1db79cb32b944db342b81eb8d"
+          }
+        },
+        {
+          "index": 4,
+          "verdict": "supported",
+          "reason": "The evidence states that Luffy tried to convince Captain Red-Haired Shanks to let him join the crew, matching the claim that Luffy attempted to persuade Shanks to let him join the crew.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": [],
+          "review_provenance": {
+            "reviewer": [
+              "groq",
+              "openai/gpt-oss-120b",
+              null
+            ],
+            "policy": "arc-grounding-v4",
+            "evidence_dependency": "1a1385f6b96cff1429d46b9a900f178e2a88085f9d56f51fa5a4241c29059e3f",
+            "response_id": "89d84ed01fabffa73aa9a34a8b32c70b82fd743da8670b459aa8e38b07826a40"
+          }
+        }
+      ],
+      "paragraphs_faithful": true,
+      "coherent": false,
+      "coherence_issues": [],
+      "unsupported_connections": [],
+      "originality_issues": [],
+      "revision_paragraphs": [],
+      "qualification_passed": false,
+      "coverage_issues": [
+        "Unrepresented required note 9: {'clause': '3.3', 'kind': 'event', 'action': 'Shanks apologized and cleaned up the mess', 'actor': 'Shanks', 'patient': '', 'experiencer': '', 'speaker': '', 'subject': '', 'location': '', 'purpose': '', 'outcome': '', 'modality': 'completed', 'negated': False, 'function': 'resolution', 'development_id': 'bae577bd-7db1-542d-a5f3-d301a1060c7a', 'roles': {'actor': {'name': 'Shanks', 'identity_id': '3cc542da-5d80-5391-a169-543d6ecc4edf', 'identity': 'source_named'}}, 'revises_clause': False}"
+      ],
+      "relationship_issues": [],
+      "editorial_review_available": false,
+      "grounding_unavailable": [
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ]
+    },
+    "repair_blocker": "Repair did not return one paragraph per target",
+    "saved_editorial_diagnostic": {
+      "saved_issue_count": 13,
+      "diagnostic_issue_count": 12,
+      "coherent": false,
+      "publication": "withheld",
+      "inference_calls": 0,
+      "issues": [
+        "Paragraph 1: The transition from paragraph 2 is abrupt. Paragraph 2 begins with 'The world entered the Great Pirate Era following this rise,' but lacks a clear antecedent for 'this rise' within the provided text, as the previous sentence only states Roger's achievement without explicitly linking it to the start of the era in a way that makes the connection immediate.",
+        "Paragraph 3: The predicate 'Luffy attempted to persuade Captain Red-Haired Shanks to let him join the crew' is incomplete regarding the outcome. The text does not state whether Luffy succeeded or failed, leaving the narrative tension unresolved until much later in the sequence.",
+        "Paragraph 4: The transition from paragraph 3 to paragraph 4 contains an unexplained shift. Paragraph 3 ends with Luffy attempting to persuade Shanks, but paragraph 4 immediately introduces bandits entering the bar without explaining how or why this occurred after the failed persuasion attempt.",
+        "Paragraph 5: The predicate 'Shanks attempted to grab Luffy's arm' lacks a clear motivation or context within the provided text. It is unclear what action preceded this attempt, creating an unexplained transition from the previous scene where Shanks was apologizing.",
+        "Paragraph 6: The passage contains a compressed major event that skips over significant narrative steps. It jumps directly from Luffy enjoying his rubber body to being kidnapped by Higuma's gang without describing the intervening events or the specific circumstances of the kidnapping.",
+        "Paragraph 7: The predicate 'Shanks stated he could accept an insult toward him but would not forgive anyone who harms his friends' is a bare mention of a speech act without context. It does not explain what insult was accepted or why Shanks felt the need to state this principle at this moment.",
+        "Paragraph 8: The transition from paragraph 7 to paragraph 8 is incomplete. Paragraph 7 ends with Higuma escaping with Luffy, but paragraph 8 begins with 'Higuma took Luffy out to sea' without explaining how or why he did so after the escape.",
+        "Paragraph 9: The predicate 'Shanks was glad Luffy was okay, though Luffy was saddened that he had lost his arm in the process of saving him' contains an unexplained consequence. The text does not explain how Shanks saved Luffy or what led to Luffy losing his arm, making the emotional reaction seem disconnected from the preceding events.",
+        "Paragraph 10: The transition from paragraph 9 to paragraph 10 is abrupt. Paragraph 9 ends with Luffy's sadness over losing his arm, but paragraph 10 begins with 'The Red Hair Pirates were preparing to leave Foosha Village for good' without explaining the connection between Luffy's emotional state and the pirates' departure.",
+        "Paragraph 10: The predicate 'Luffy decided that he would not try to join them and declared that he would form his own crew...' is a compressed major event. It skips over the negotiation process, Shanks' reaction to Luffy's decision, and the emotional weight of the moment, presenting only the final resolution.",
+        "Paragraph 10: The predicate 'Shanks gave Luffy his straw hat and told him to return it once he had surpassed him' lacks context. It does not explain why this specific action was taken or what it signifies in relation to their previous interactions.",
+        "Paragraph 10: The transition from paragraph 9 to paragraph 10 is incomplete. Paragraph 9 ends with Luffy's sadness over losing his arm, but paragraph 10 begins with 'The Red Hair Pirates were preparing to leave Foosha Village for good' without explaining the connection between Luffy's emotional state and the pirates' departure."
+      ]
+    },
+    "provider_usage": [
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "status": "rate_limited",
+        "count": 2
+      },
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "count": 25
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "status": "ok",
+        "count": 5
+      }
+    ]
+  },
+  "online": {
+    "id": "efd9d030-58e1-49bb-b98e-13e8fbfdfd6c",
+    "stage": "verifier",
+    "status": "partial",
+    "error": "job_duration_exceeded",
+    "events": {
+      "research.queued": 1,
+      "stage.started": 7,
+      "inference.started": 35,
+      "research.planner": 1,
+      "stage.completed": 6,
+      "discovery.query": 6,
+      "discovery.results": 6,
+      "research.source_archived": 2,
+      "research.source_rejected": 2,
+      "research.researcher": 1,
+      "research.research_context": 1,
+      "research.extractor": 1,
+      "research.identity_resolver": 1,
+      "inference.blocked": 1,
+      "research.relationship_analyst": 1,
+      "research.partial": 1
+    },
+    "search_results_total": 5,
+    "sources": [
+      {
+        "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#selection-1c0a3d44be813e3a",
+        "passages": 4,
+        "source_id": "0e98fa81-1180-575f-9245-01554186bb2a",
+        "truncated": false,
+        "characters": 5432
+      },
+      {
+        "url": "https://uchihaluffy.com/chapter-1/#selection-6ca4aafca867950c",
+        "code": "robots_unavailable"
+      },
+      {
+        "url": "https://www.binderpirates.com/story/volumes/1#selection-547ce6183fe881af",
+        "passages": 3,
+        "source_id": "764ba4cc-8deb-5719-9493-9894d50f3177",
+        "truncated": false,
+        "characters": 180
+      },
+      {
+        "url": "https://uchihaluffy.com/one-piece-chapter-3/#selection-a6f3c1ed6c7b3ef0",
+        "code": "robots_unavailable"
+      }
+    ],
+    "api": {
+      "http": 200,
+      "dossier_status": "partial",
+      "article_status": "withheld",
+      "validated_sections": 0
+    },
+    "coverage": {
+      "reason": "job_duration_exceeded",
+      "outcome": "BUDGET_EXHAUSTED"
+    },
+    "provider_usage": [
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "status": "rate_limited",
+        "count": 2
+      },
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "status": "invalid_output",
+        "count": 2
+      },
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "count": 30
+      }
+    ]
+  },
+  "archive_follow_up": {
+    "id": "229614a7-a35a-4d9f-806a-cc87157b8b8f",
+    "stage": "narrative_builder",
+    "status": "partial",
+    "error": null,
+    "events": {
+      "research.queued": 1,
+      "stage.started": 9,
+      "inference.started": 10,
+      "research.planner": 1,
+      "stage.completed": 9,
+      "research.source_archived": 1,
+      "research.researcher": 1,
+      "research.research_context": 1,
+      "research.extractor": 1,
+      "research.identity_resolver": 1,
+      "research.relationship_analyst": 1,
+      "inference.blocked": 8,
+      "research.verifier": 1,
+      "research.promotion": 1,
+      "research.story_reconstruction": 2,
+      "research.promotion_policy": 1,
+      "research.narrative_builder": 1,
+      "research.partial": 1
+    },
+    "search_results_total": 0,
+    "sources": [
+      {
+        "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#selection-1c0a3d44be813e3a",
+        "passages": 4,
+        "source_id": "0e98fa81-1180-575f-9245-01554186bb2a",
+        "truncated": false,
+        "characters": 5432
+      }
+    ],
+    "api": {
+      "http": 200,
+      "dossier_status": "partial",
+      "article_status": "withheld",
+      "validated_sections": 0
+    },
+    "coverage": {
+      "facets": [
+        "events",
+        "identity"
+      ],
+      "reason": "Source-backed answers and facets; execution completion is not coverage",
+      "outcome": "BUDGET_EXHAUSTED",
+      "pending_leads": 21,
+      "source_groups": 1,
+      "contradictions": 0,
+      "missing_facets": [
+        "connections"
+      ],
+      "reconstruction": {
+        "verifiedSegments": 6,
+        "explicitCausalLinks": 0,
+        "candidateTransitions": 5,
+        "segmentsWithLocations": 0,
+        "unexplainedTransitions": 5,
+        "explicitPrecedenceLinks": 0,
+        "segmentsWithParticipants": 4,
+        "causallyExplainedTransitions": 0
+      },
+      "relevant_facts": 4,
+      "unresolved_findings": 8
+    },
+    "provider_usage": [
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "status": "ok",
+        "count": 8
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "status": "ok",
+        "count": 1
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "status": "rate_limited",
+        "count": 1
+      }
+    ],
+    "promotions": [],
+    "unresolved": 8,
+    "supported_candidate_decisions": [
+      {
+        "policy": {
+          "reason": "Missing supported exact evidence.",
+          "outcome": "KEEP_UNRESOLVED",
+          "version": "3.0",
+          "independent_sources": 1,
+          "direct_primary_claim": false
+        },
+        "assessment": {
+          "reason": "Excerpt 1 explicitly states Luffy starts drowning and Shanks saves him, matching the event description.",
+          "claim_id": "24b75cb3-df92-5255-b0e6-28c4cc42f0a7",
+          "decision": "supported",
+          "in_universe": true,
+          "entity_type_valid": true,
+          "material_conflict": false,
+          "continuity_matches": true,
+          "contradiction_evidence": []
+        },
+        "resolution": {
+          "proof": "unresolved",
+          "reason": "Invalid identity evidence or target index.",
+          "accepted": false,
+          "decision": "AMBIGUOUS",
+          "canonical_id": null,
+          "model_response": {
+            "reason": "Both records describe the same occurrence of Shanks saving Luffy from the Sea King.",
+            "decision": "SAME_ENTITY",
+            "target_index": null,
+            "hidden_identity": false,
+            "same_occurrence": true,
+            "evidence_indices": [
+              0
+            ],
+            "same_granularity": true,
+            "entity_type_valid": true,
+            "repeated_occurrence_excluded": true
+          }
+        }
+      }
+    ]
+  }
+}

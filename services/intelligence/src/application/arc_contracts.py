@@ -222,6 +222,7 @@ class NarrativeDevelopmentPlan(StructuredModel):
     evidence: list[DevelopmentEvidence]
     omissions: list[DevelopmentOmission]
     gaps: list[str]
+    evidence_questions: list[str] = Field(default_factory=list)
     factual: ValidationStage
     structural: ValidationStage
     editorial: ValidationStage

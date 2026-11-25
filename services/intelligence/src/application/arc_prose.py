@@ -175,6 +175,10 @@ SECTION_WRITING = (
     "Tell each encounter in fresh sentences. Avoid strings of semicolon-separated actions "
     "and avoid repeating frame wording. Build a paragraph around a shift in the situation. "
     "Give a later decision or farewell its own paragraph when it follows a distinct situation. "
+    "For a rescue or injury, name who acts, who is rescued, and who is hurt when each role is "
+    "established. If a role is unresolved, do not resolve it by choosing a pronoun. "
+    "Carry the reader's understanding through changes in the situation, using the established "
+    "circumstances, attempts, responses and outcomes that the scene supplies. "
     "Keep an unresolved transition open. Describe the next supported scene on its own terms. "
     "Do not repeat earlier events. Return only original prose paragraphs.\n"
 )
@@ -226,7 +230,7 @@ async def write_and_align(
         )
         writing_input = packet
     else:
-        key = prose_key("arc-section-writing-v4", packet)
+        key = prose_key("arc-section-writing-v5", packet)
         prompt = SECTION_WRITING
         writing_input = packet
     prose = PlainScene.model_validate(
@@ -270,6 +274,9 @@ async def write_and_align(
     for batch in scene_alignment_packets(packet, prose):
         key = prose_key("arc-prose-alignment-v4", batch)
         remaining = dict(batch["spans"])
+        # The model addresses only this batch. Persist the original sentence
+        # coordinates so section-wide ordering and checkpoint reuse remain stable.
+        wire_ids = {i: ref for i, ref in enumerate(batch["spans"], 1)}
         accepted: dict[int, AlignedSpan] = {}
         if key in cached:
             for raw in SceneAlignment.model_validate(cached[key]).spans:
@@ -285,17 +292,18 @@ async def write_and_align(
         for _ in range(2):
             if not remaining:
                 break
+            wire_spans = {str(i): remaining[ref] for i, ref in wire_ids.items() if ref in remaining}
             try:
                 alignment = SceneAlignment.model_validate(
                     await infer(
-                        'Return JSON of this exact shape: {"spans": [{"span": 7, '
-                        '"frames": ["3", "4"], "relations": []}]}. Numbers here are an example. '
-                        "For each supplied prose span, use its numeric key as span and put all "
+                        "Return spans as an array of objects with span, frames and relations. "
+                        f"The only allowed span IDs in this request are {', '.join(wire_spans)}. "
+                        "Use each supplied sentence's own numeric key as span and put all "
                         "the evidence frame keys needed by its claims in the frames array. "
                         "Put applicable relationship IDs in the relations array, or use []. "
                         "Map relevant candidate frames even when the wording might overstate "
                         "them. Leave spans with no relevant frame unmapped. Keep prose intact.\n"
-                        + json.dumps({**batch, "spans": remaining}, ensure_ascii=False),
+                        + json.dumps({**batch, "spans": wire_spans}, ensure_ascii=False),
                         SceneAlignment,
                         "presentation_verification",
                     )
@@ -308,7 +316,10 @@ async def write_and_align(
                     span = AlignedSpan.model_validate(raw)
                 except ValidationError:
                     continue
-                rows.setdefault(span.span, []).append(span)
+                original = wire_ids.get(span.span)
+                if original is not None and original in remaining:
+                    i = int(original)
+                    rows.setdefault(i, []).append(span.model_copy(update={"span": i}))
             for i, group in rows.items():
                 if len(group) != 1 or str(i) not in remaining:
                     continue
@@ -379,6 +390,20 @@ def scene_writing_packets(
             "unordered_context_frames": [
                 frame_ids[i] for i in scenes[beat.scene_id].unordered_frame_ids
             ],
+            "scene_progression": {
+                function: [
+                    frame_ids[f.id] for f in scenes[beat.scene_id].frames if f.function == function
+                ]
+                for function in (
+                    "setup",
+                    "conflict",
+                    "action",
+                    "turning_point",
+                    "resolution",
+                    "aftermath",
+                )
+                if any(f.function == function for f in scenes[beat.scene_id].frames)
+            },
             "has_unresolved_details": bool(beat.open_questions),
             "unresolved_essential_clauses": scenes[beat.scene_id].missing_essential,
             "relationships": {
@@ -438,7 +463,7 @@ def composition_requirements(
     writing = 1
     alignment = max(1, (len(state.beats) * 3 + 4) // 5)
     grounding = len(state.beats)
-    saved = cached.get(prose_key("arc-section-writing-v4", packet))
+    saved = cached.get(prose_key("arc-section-writing-v5", packet))
     if saved is not None:
         writing = 0
         prose = PlainScene.model_validate(saved)
@@ -1051,11 +1076,18 @@ async def grounding_rows(
     checkpoint: Callable[[], Awaitable[None]],
     reviewer_model: Callable[[], tuple[Any, ...]],
     *,
-    dependency: str = "",
+    dependency: str | dict[str, str] = "",
     provenance: dict[str, dict[str, object]] | None = None,
 ) -> dict[str, SentenceDecision]:
     keys = {
-        ref: fingerprint([GROUNDING_POLICY, "claim", dependency, item])
+        ref: fingerprint(
+            [
+                GROUNDING_POLICY,
+                "claim",
+                dependency.get(ref, "") if isinstance(dependency, dict) else dependency,
+                item,
+            ]
+        )
         for ref, item in packet.items()
     }
     accepted: dict[str, SentenceDecision] = {}
@@ -1215,9 +1247,22 @@ async def assess_in_batches(
     frequencies = Counter(word for values in terms.values() for word in values)
     decisions = list(prior_grounding.claims) if prior_grounding else []
     verified_frames = numbered_frames(reconstruction) if reconstruction else {}
-    dependency = fingerprint(
-        [plan.revision, [(u.id, u.source_hash, u.passage_hash) for u in plan.evidence]]
-    )
+    evidence_scope = (str(plan.continuity_id), str(plan.arc_id), str(plan.section_id))
+    evidence_identity = {
+        u.id: (
+            str(u.source_id),
+            u.source_hash,
+            str(u.passage_id),
+            u.passage_hash,
+            u.start,
+            u.end,
+            u.eligibility_boundary,
+            u.position_basis,
+            u.authority,
+            u.source_group,
+        )
+        for u in plan.evidence
+    }
     links = story_links(plan)
     targeted = set(prior_grounding.revision_paragraphs) if prior_grounding else set()
     unavailable = list(prior_grounding.grounding_unavailable) if prior_grounding else []
@@ -1274,13 +1319,35 @@ async def assess_in_batches(
                         if r in links
                     ]
             provenance: dict[str, dict[str, object]] = {}
+            dependencies = {
+                f"s{i}": fingerprint(
+                    [
+                        evidence_scope,
+                        [
+                            (unit, evidence_identity[unit])
+                            for unit in sorted(
+                                {
+                                    *claim.context_evidence_ids,
+                                    *(
+                                        u
+                                        for ref in claim.source_clause_ids
+                                        for u in refs[ref][1].evidence_ids
+                                    ),
+                                    *alternatives[f"s{i}"].values(),
+                                }
+                            )
+                        ],
+                    ]
+                )
+                for i, claim in enumerate(claims, 1)
+            }
             rows = await grounding_rows(
                 packet,
                 infer,
                 cached,
                 checkpoint,
                 reviewer_model,
-                dependency=dependency,
+                dependency=dependencies,
                 provenance=provenance,
             )
             for i in range(1, len(claims) + 1):
@@ -1379,7 +1446,8 @@ async def assess_in_batches(
                 "problems out of originality_issues. List an originality issue only with the "
                 "candidate unit ID and two exact excerpts showing distinctive overlap. "
                 "Common names, terms, and awkward prose are not evidence of copying. "
-                "Report concrete defects only. Use exactly the numbered paragraph keys supplied "
+                "Report at most twelve concrete editorial issues and group repeated defects. "
+                "Use exactly the numbered paragraph keys supplied "
                 "in paragraphs when specifying a revision. Do not number the separate passages "
                 "within a paragraph.\n" + json.dumps(editor_input, ensure_ascii=False),
                 EditorialBatch,
@@ -1414,7 +1482,7 @@ async def assess_in_batches(
         qualification_passed=not unavailable,
         paragraphs_faithful=True,
         coherent=not editor.editorial_issues,
-        coherence_issues=editor.editorial_issues,
+        coherence_issues=editor.editorial_issues[:12],
         editorial_review_available=grounded and editorial_failure is None,
         grounding_unavailable=unavailable,
         coverage_issues=[*omissions, *link_missing, *editor.coverage_issues],

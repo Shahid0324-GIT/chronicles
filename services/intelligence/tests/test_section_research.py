@@ -7,10 +7,12 @@ from uuid import uuid4
 
 from sqlalchemy import select
 
+from src.application.arc_intelligence import ArcIntelligence
 from src.application.inference import InferenceRouter
 from src.application.knowledge_contracts import SectionVerification
 from src.application.research import ResearchRequest, SourceInput
 from src.application.research_contracts import InferenceResult, InferenceUsage
+from src.application.research_policy import ResearchPolicy
 from src.domain.entities import now
 from src.domain.research import SourceDocument, digest, passages_for
 from src.infrastructure.persistence.models import ContinuityModel
@@ -121,6 +123,14 @@ async def test_acquired_exact_evidence_survives_an_empty_ranked_retrieval_window
     result = await workflow.verifier(state)
     assert result["verified"] == 1
     assert result["semantic_assessments"][state["candidates"][0]["id"]]["in_universe"] is True
+    assert len(result["section_verification"]) == 1
+
+    async def no_repeat(*args, **kwargs):
+        raise AssertionError("Unchanged, valid section review should be reused")
+
+    workflow.infer = no_repeat
+    resumed = await workflow.verifier(result)
+    assert resumed["verified"] == 1
 
 
 async def test_extraction_focus_cannot_authorize_an_unacquired_source(factory):
@@ -146,3 +156,55 @@ async def test_current_source_revocation_blocks_acquired_passage_reuse(factory):
     workflow.retrieval = SimpleNamespace(transactions=transaction)
     result = await workflow.verifier(state)
     assert result["verified"] == 0
+
+
+def test_story_research_questions_do_not_include_failed_plan_or_reviewer_diagnostics():
+    scope = {"key": "opening", "title": "Opening", "questions": ["Who reached the harbor?"]}
+    section = {
+        "plan": scope,
+        "coverage": {"gaps": ["Grounding batch has incomplete IDs?"]},
+        "development_plan": {
+            "factual": {"status": "passed"},
+            "structural": {"status": "passed"},
+            "relationship_review": {"issues": ["Was the reviewer unavailable?"]},
+            "gaps": ["Why was the reviewer unavailable?"],
+            "evidence_questions": ["Who opened the gate?", "Why did the visitors leave?"],
+            "developments": [{"unresolved": ["Was the archive witness misattributed?"]}],
+        },
+    }
+    dossier = {"sections": [section], "accepted_facts": [{"id": "archived"}]}
+    assert ArcIntelligence.research_questions(dossier, ["opening"]) == [
+        "Opening — Who opened the gate?",
+        "Opening — Why did the visitors leave?",
+    ]
+    assert not ArcIntelligence.research_questions(dossier, ["another-section"])
+    section["development_plan"]["structural"]["status"] = "unavailable"
+    assert not ArcIntelligence.research_questions(dossier, ["opening"])
+    section["development_plan"] = None
+    assert not ArcIntelligence.research_questions(dossier, ["opening"])
+    dossier["accepted_facts"] = []
+    assert ArcIntelligence.research_questions(dossier, ["opening"]) == [
+        "Opening — Who reached the harbor?"
+    ]
+
+
+def test_targeted_arc_research_reopens_only_when_essential_coverage_advances():
+    workflow = ResearchWorkflow(None, SimpleNamespace(usage=[]), None, knowledge=object())
+    state = {
+        "stage": "promotion_policy",
+        "policy": ResearchPolicy(max_passes=2).model_dump(),
+        "iteration": 1,
+        "search_allowed": True,
+        "coverage": {"outcome": "SUFFICIENT_FOR_PRESENTATION"},
+        "arc_research": {
+            "targeted_online": True,
+            "questions": ["What connected the rescue and departure?"],
+            "essential_progress": True,
+        },
+    }
+    assert workflow.resume_stage(state) == "planner"
+    stalled = {**state, "arc_research": {**state["arc_research"], "essential_progress": False}}
+    assert workflow.resume_stage(stalled) == "narrative_builder"
+    assert workflow.resume_stage({**state, "iteration": 2}) == "narrative_builder"
+    denied = {**state, "coverage": {"outcome": "BLOCKED_BY_SOURCE_ACCESS"}}
+    assert workflow.resume_stage(denied) == "narrative_builder"

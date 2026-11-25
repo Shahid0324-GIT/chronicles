@@ -299,6 +299,37 @@ async def test_alignment_reuses_sentences_outside_an_edited_neighborhood():
     assert calls == [["1", "2", "3", "4"], ["3", "4"]]
 
 
+async def test_alignment_keeps_late_sentence_coordinates_with_local_batch_ids():
+    prose = " ".join(f"Mira describes matter {i}." for i in range(1, 8))
+    context = {
+        "frames": {str(i): {"action": f"Mira describes matter {i}."} for i in range(1, 8)},
+        "essential_frames": [],
+        "relationships": {},
+    }
+    calls = []
+
+    async def infer(prompt, schema, task):
+        payload = json.loads(prompt.rsplit("\n", 1)[1])
+        if schema is PlainScene:
+            return PlainScene(paragraphs=[prose])
+        calls.append(list(payload["spans"]))
+        return schema.model_validate(
+            {
+                "spans": [
+                    {"span": int(local), "frames": [sentence.split()[-1].rstrip(".")]}
+                    for local, sentence in payload["spans"].items()
+                ]
+            }
+        )
+
+    async def checkpoint():
+        pass
+
+    paragraphs, _ = await write_and_align(context, infer, {}, checkpoint)
+    assert calls == [["1", "2", "3", "4", "5"], ["1", "2"]]
+    assert [claim.clauses for claim in paragraphs[0].claims] == [[str(i)] for i in range(1, 8)]
+
+
 async def test_empty_reconstruction_recovers_essential_actions_from_archive():
     proposal, facts, evidence, *scope = material()
     plan = plan_from_proposal(proposal, facts, evidence, *scope)
@@ -1112,6 +1143,17 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
     assert calls.count("Mira tried to open it.") == 3
     assert all(calls.count(str(case["text"])) == 1 for case in ROLE_CALIBRATION)
     assert checkpoints == [1, 2, 3, 4]
+    unchanged = await assess_in_batches(
+        draft,
+        plan.model_copy(update={"revision": "new-unrelated-plan-revision"}),
+        notes,
+        reviewer,
+        cache,
+        checkpoint,
+    )
+    assert unchanged.claims == result.claims
+    assert calls.count("The gate stayed closed.") == 1
+    assert calls.count("Mira tried to open it.") == 3
 
     for key, value in list(cache.items()):
         if "editorial_issues" in value:
@@ -1134,6 +1176,22 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
     assert not result.editorial_review_available
     assert not result.originality_issues
     assert not review_ok(result, 2)
+
+    async def many_editorial_issues(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        assert "paragraphs" in json.loads(prompt.split("\n", 1)[1])
+        return schema.model_validate(
+            {
+                "editorial_issues": [f"Observed editorial issue {i}." for i in range(13)],
+                "originality_issues": [],
+                "coverage_issues": [],
+                "revise_paragraphs": [],
+            }
+        )
+
+    result = await assess_in_batches(draft, plan, notes, many_editorial_issues, cache, checkpoint)
+    assert result.editorial_review_available
+    assert len(result.coherence_issues) == 12
+    assert not result.coherent and not review_ok(result, 2)
 
 
 async def test_grounding_never_uses_positive_vote_to_resolve_conflicting_decisions():
@@ -1596,6 +1654,18 @@ def test_plan_reference_namespaces_bind_exactly_and_reject_fact_as_evidence():
     proposal.developments[0].clauses[0].evidence_ids = ["fact-1"]
     with pytest.raises(ValueError, match="Unknown development evidence"):
         plan_from_proposal(proposal, facts, evidence, *scope)
+
+
+def test_plan_reconciles_exact_duplicate_but_preserves_distinct_assertion_accounting():
+    proposal, facts, evidence, *scope = material()
+    facts[0].update(kind="entity", target_id=str(uuid4()))
+    duplicate = {**facts[0], "id": "additional-source-assertion"}
+    plan = plan_from_proposal(proposal, [*facts, duplicate], evidence, *scope)
+    assert plan.omissions[-1].reason == "duplicate"
+    assert plan.omissions[-1].fact_ids == [duplicate["id"]]
+    duplicate["target_id"] = str(uuid4())
+    with pytest.raises(ValueError, match="Unaccounted references"):
+        plan_from_proposal(proposal, [*facts, duplicate], evidence, *scope)
 
 
 def test_structured_review_cannot_override_modality_negation_or_caption_failure():

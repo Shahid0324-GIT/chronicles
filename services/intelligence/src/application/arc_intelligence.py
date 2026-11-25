@@ -363,6 +363,7 @@ class ArcIntelligence:
         providers: Callable[[], list[dict[str, Any]]],
         *,
         compose: bool = True,
+        reconstruct: bool = False,
         retry_withheld: bool = False,
         section_keys: list[str] | None = None,
         allowed_sources: list[UUID] | None = None,
@@ -641,7 +642,7 @@ class ArcIntelligence:
                 providers(),
                 evidence_revision=evidence_revision,
             )
-        if compose:
+        if compose or reconstruct:
             await self.compose(
                 dossier,
                 scope.boundary,
@@ -650,8 +651,32 @@ class ArcIntelligence:
                 retry_withheld=retry_withheld,
                 section_keys=section_keys,
                 allowed_sources=allowed_sources,
+                reconstruction_only=not compose,
             )
         return await self.read(universe, continuity, arc, boundary, allowed_sources)
+
+    @staticmethod
+    def research_questions(dossier: dict[str, Any], section_keys: list[str]) -> list[str]:
+        """Keep story evidence gaps separate from errors processing an existing assertion."""
+        questions: list[str] = []
+        for section in dossier.get("sections", []):
+            scope = section["plan"]
+            if section_keys and scope["key"] not in section_keys:
+                continue
+            plan = section.get("development_plan")
+            if not plan:
+                # An invalid proposal is not evidence of missing story material.
+                if dossier.get("accepted_facts"):
+                    continue
+                gaps = scope["questions"]
+            elif plan["factual"]["status"] == "passed" and plan["structural"]["status"] == "passed":
+                gaps = plan.get("evidence_questions", [])
+            else:
+                continue
+            questions.extend(
+                f"{scope['title']} — {gap.strip()}" for gap in gaps if gap.strip().endswith("?")
+            )
+        return list(dict.fromkeys(questions))
 
     async def prepare_developments(
         self,
@@ -909,7 +934,8 @@ class ArcIntelligence:
             if not section.developments and not section.narrative_developments:
                 continue
             if (
-                stored
+                not reconstruction_only
+                and stored
                 and stored["knowledge_revision"] == section.revision
                 and not (retry_withheld and stored["grounding_status"] != "validated")
             ):
@@ -959,8 +985,16 @@ class ArcIntelligence:
                     stored_batches = await repo.get(
                         self.identifier(section_id, "arc_prose_batches", boundary_key)
                     )
-                if stored_batches and stored_batches["knowledge_revision"] == section.revision:
-                    cached_batches.update(stored_batches["payload"])
+                if stored_batches:
+                    cached_batches.update(
+                        stored_batches["payload"]
+                        if stored_batches["knowledge_revision"] == section.revision
+                        else {
+                            key: row
+                            for key, row in stored_batches["payload"].items()
+                            if "evidence_dependency" in row or "calibration_verdicts" in row
+                        }
+                    )
             try:
                 if plan is not None:
                     async with self.presentations() as repo:
@@ -989,7 +1023,7 @@ class ArcIntelligence:
                             providers()[offset:],
                         )
                     if reconstruction_only:
-                        return
+                        continue
                     if not state.ready:
                         raise ValueError("Verified frame and scene reconstruction gate failed")
                     reconstruction_revision = fingerprint([state.model_dump(mode="json")])
@@ -1310,6 +1344,8 @@ class ArcIntelligence:
                         },
                     }
             except InferenceFailure as error:
+                if reconstruction_only:
+                    raise
                 stop_after_section = "budget" in error.code
                 status = "withheld"
                 payload = {
@@ -1321,6 +1357,8 @@ class ArcIntelligence:
                     "assessment": {"reason": error.code, "review_attempts": review_attempts},
                 }
             except ValueError as error:
+                if reconstruction_only:
+                    raise
                 # A bad section cannot discard other validated partial sections.
                 status = "withheld"
                 payload = {
@@ -1351,6 +1389,8 @@ class ArcIntelligence:
             sections.append(payload)
             if stop_after_section:
                 break
+        if reconstruction_only:
+            return
         article = ArcArticle(
             arc_id=dossier.arc_id,
             continuity_id=dossier.continuity_id,

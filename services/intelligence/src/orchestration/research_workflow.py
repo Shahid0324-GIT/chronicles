@@ -174,6 +174,7 @@ class ResearchState(TypedDict, total=False):
     search_allowed: bool
     resolutions: dict[str, dict[str, Any]]
     semantic_assessments: dict[str, dict[str, Any]]
+    section_verification: dict[str, dict[str, Any]]
     publication: dict[str, Any]
 
 
@@ -296,6 +297,8 @@ class ResearchWorkflow:
         stage = state.get("stage", "")
         if stage not in stages:
             return "planner"
+        if stage == "promotion_policy":
+            return "planner" if self.after_verification(state) == "refine" else "narrative_builder"
         if stage == stages[-1]:
             return "planner" if self.after_verification(state) == "refine" else "done"
         return stages[stages.index(stage) + 1]
@@ -303,6 +306,20 @@ class ResearchWorkflow:
     def after_verification(self, state: ResearchState) -> str:
         if state.get("policy"):
             policy = ResearchPolicy.model_validate(state["policy"])
+            arc = state.get("arc_research", {})
+            if arc.get("targeted_online"):
+                return (
+                    "refine"
+                    if arc.get("questions")
+                    and arc.get("essential_progress")
+                    and state.get("search_allowed")
+                    and state.get("iteration", 0) < min(self.max_iterations, policy.max_passes)
+                    and len(state.get("used_queries", [])) < self.max_queries
+                    and state.get("source_retrievals", 0) < self.max_sources
+                    and state.get("coverage", {}).get("outcome")
+                    not in {"BLOCKED_BY_SOURCE_ACCESS", "BUDGET_EXHAUSTED"}
+                    else "end"
+                )
             if state.get("coverage", {}).get("outcome") == "SUFFICIENT_FOR_PRESENTATION":
                 return "end"
             return (
@@ -575,7 +592,9 @@ class ResearchWorkflow:
 
     async def planner(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
-        if request.arc_id and self.atlas and not request.arc_section_keys:
+        if self.atlas and self.targeted_arc_research(request) and not state.get("arc_research"):
+            state = await self.arc_stage(state, request, compose=False)
+        elif request.arc_id and self.atlas and not request.arc_section_keys:
             state = await self.arc_stage(state, request, compose=False)
         async with self.transactions() as archive:
             context = await archive.context(request.universe_id, request.continuity_id)
@@ -642,41 +661,56 @@ class ResearchWorkflow:
                     "local_passage_ids": [str(h.passage.id) for h in local_hits],
                     "local_sources_reused": len(state["archive_source_ids"]),
                 }
-        plan = await self.infer(
-            state,
-            "Plan targeted, diverse questions and queries about the objective's missing evidence. "
-            "Consider source-language aliases, primary documents and relationships. "
-            "Do not assume an episode synopsis supplies complete subject coverage. "
-            "Choose focus=story for occurrences or encyclopedia for biography, lore, documents "
-            "and locations. Adapt to the unanswered questions. "
-            "Search queries should contain 3–12 focused keywords, a subject and a missing fact. "
-            "Start with a broad subject query within an approved official site. Avoid quoted "
-            "phrases and piling constraints into every query; these can hide relevant pages. "
-            "Include a broad query without site: restrictions and use grounded original-language "
-            "names where available. Official/reference sites are preferences, not domain fences. "
-            "Never invent domain names or translated aliases. "
-            "Existing curated titles are context, NOT newly discovered evidence. "
-            + json.dumps(
-                {
-                    "objective": request.objective,
-                    "arc_section_research": state.get("arc_research"),
-                    "context": context,
-                    "previous_errors": state.get("errors", []),
-                    "follow_up": state.get("publication", {}).get("unresolved", []),
-                    "profile": state.get("profile"),
-                    "local_dossier": state.get("dossier"),
-                    "pending_lead_ids": state.get("lead_ids", []),
-                    "pending_questions": [
-                        lead.question for lead in leads if lead.status != "RESOLVED"
-                    ]
-                    if self.memory and state.get("policy")
-                    else [],
-                },
-                ensure_ascii=False,
-            ),
-            ResearchPlan,
-            "planning",
-        )
+        try:
+            plan = await self.infer(
+                state,
+                "Plan targeted questions and queries about the objective's missing evidence. "
+                "Consider source-language aliases, primary documents and relationships. "
+                "Do not assume an episode synopsis supplies complete subject coverage. "
+                "Choose focus=story for occurrences or encyclopedia for biography, lore, documents "
+                "and locations. Adapt to the unanswered questions. "
+                "Use 3–12 focused keywords per query, including a subject and a missing fact. "
+                "Start with a broad subject query within an approved official site. Avoid quoted "
+                "phrases and piling constraints into every query; these can hide relevant pages. "
+                "Include a broad query without site: restrictions. Use original-language names "
+                "when supported. Official and reference sites are preferences, not domain fences. "
+                "Never invent domain names or translated aliases. "
+                "Existing curated titles are context, NOT newly discovered evidence. "
+                + json.dumps(
+                    {
+                        "objective": request.objective,
+                        "arc_section_research": {
+                            k: v
+                            for k, v in state.get("arc_research", {}).items()
+                            if k != "fact_ids"
+                        },
+                        "context": context,
+                        "previous_errors": state.get("errors", []),
+                        "follow_up": state.get("publication", {}).get("unresolved", []),
+                        "profile": state.get("profile"),
+                        "local_dossier": state.get("dossier"),
+                        "pending_lead_ids": state.get("lead_ids", []),
+                        "pending_questions": [
+                            lead.question for lead in leads if lead.status != "RESOLVED"
+                        ]
+                        if self.memory and state.get("policy")
+                        else [],
+                    },
+                    ensure_ascii=False,
+                ),
+                ResearchPlan,
+                "planning",
+            )
+        except InferenceFailure as error:
+            if (
+                not self.targeted_arc_research(request)
+                or error.code != "structured_output_exhausted"
+            ):
+                raise
+            questions = state.get("arc_research", {}).get("questions") or [request.objective]
+            queries = [" ".join(question.split()[:16]).strip("?.") for question in questions[:5]]
+            plan = ResearchPlan(questions=questions[:5], queries=queries, focus="story")
+            state["errors"] = [*state.get("errors", []), "arc_query_planner_unavailable"]
         if request.extraction_types:
             # Explicit typed jobs must retain their requested extraction mode.
             plan = plan.model_copy(update={"focus": request.research_focus})
@@ -743,6 +777,12 @@ class ResearchWorkflow:
                         await memory.save_lead(lead)
         sources = list(request.sources)
         used = list(state.get("used_queries", []))
+        query_limit = self.max_queries
+        if self.targeted_arc_research(request):
+            remaining_passes = max(1, self.max_iterations - state.get("iteration", 1) + 1)
+            query_limit = len(used) + math.ceil(
+                max(0, self.max_queries - len(used)) / remaining_passes
+            )
 
         async def reserve_query(query: str) -> None:
             state["used_queries"] = list(used)
@@ -820,7 +860,7 @@ class ResearchWorkflow:
                             universe_name=state["context"]["universe"],
                         ),
                         max_queries=math.ceil(
-                            max(0, self.max_queries - len(used)) / (len(adapters) - adapter_index)
+                            max(0, query_limit - len(used)) / (len(adapters) - adapter_index)
                         ),
                         result_limit=self.policy(state).results_per_query,
                         used_queries=used,
@@ -882,7 +922,7 @@ class ResearchWorkflow:
                 errors.append("source_registry_has_no_permitted_sources")
         if request.allow_search and self.search and not request.use_registry:
             for query in state["plan"].get("queries", []):
-                if query in used or len(used) >= self.max_queries:
+                if query in used or len(used) >= query_limit:
                     continue
                 used.append(query)
                 await reserve_query(query)
@@ -1766,6 +1806,7 @@ class ResearchWorkflow:
                 ).validate_endpoints(source, target)
             valid[claim["id"]] = list({(e["passage_id"], e["start"]): e for e in evidence}.values())
         assessments: dict[str, Any] = {}
+        saved_verification = dict(state.get("section_verification", {}))
         # Small local models reliably assess one atomic claim at a time.
         for current in state.get("candidates", []):
             if current["id"] not in valid:
@@ -1883,17 +1924,42 @@ class ResearchWorkflow:
                 else Verification
             )
             try:
-                verification = verification_schema.model_validate(
-                    (
-                        await self.infer(
-                            state,
-                            prompt,
-                            verification_schema,
-                            "verification",
-                            state.get("public_only", False),
+                key = digest(prompt) if request.arc_section_keys else None
+                if key and key in saved_verification:
+                    verification = verification_schema.model_validate(saved_verification[key])
+                else:
+                    verification = verification_schema.model_validate(
+                        (
+                            await self.infer(
+                                state,
+                                prompt,
+                                verification_schema,
+                                "verification",
+                                state.get("public_only", False),
+                            )
+                        ).model_dump()
+                    )
+                    if (
+                        key
+                        and [str(a.claim_id) for a in verification.assessments] == [current["id"]]
+                        and all(
+                            a.decision != "supported"
+                            or (ids := set(getattr(a, "supporting_unit_ids", [])))
+                            and ids <= {u["id"] for u in support_units}
+                            for a in verification.assessments
                         )
-                    ).model_dump()
-                )
+                    ):
+                        saved_verification[key] = verification.model_dump(mode="json")
+                        state["section_verification"] = saved_verification
+                        async with self.transactions() as archive:
+                            job_id = UUID(state["job_id"])
+                            job = await archive.get_job(job_id)
+                            if job:
+                                checkpoint = {
+                                    **job["checkpoint"],
+                                    "section_verification": saved_verification,
+                                }
+                                await archive.update_job(job_id, checkpoint=checkpoint)
             except InferenceFailure as failure:
                 reasons[current["id"]] = "Verifier inference unavailable: " + failure.code
                 continue
@@ -2391,6 +2457,8 @@ class ResearchWorkflow:
             state = await self.reconstruction_stage({**state, "publication": publication}, request)
         if self.memory and self.atlas and state.get("policy"):
             state = await self.assess_coverage({**state, "publication": publication})
+        if self.atlas and self.targeted_arc_research(request):
+            state = await self.arc_stage(state, request, compose=False)
         return await self.snapshot("promotion_policy", {**state, "publication": publication})
 
     async def assess_coverage(self, state: ResearchState) -> ResearchState:
@@ -3015,6 +3083,17 @@ class ResearchWorkflow:
             "narrative_builder", await self.reconstruction_stage(state, request)
         )
 
+    @staticmethod
+    def targeted_arc_research(request: ResearchRequest) -> bool:
+        return bool(
+            request.arc_id
+            and request.arc_section_keys
+            and request.allow_search
+            and request.adaptive_research
+            and not request.presentation_only
+            and not request.relationship_subjects
+        )
+
     async def arc_stage(
         self, state: ResearchState, request: ResearchRequest, *, compose: bool
     ) -> ResearchState:
@@ -3024,6 +3103,8 @@ class ResearchWorkflow:
         if not self.atlas or not request.arc_id:
             return state
         arc_id = request.arc_id
+        targeted = self.targeted_arc_research(request)
+        previous = state.get("arc_research", {})
 
         async def can_review(writing: int, checking: int) -> bool:
             async with self.transactions() as archive:
@@ -3100,15 +3181,21 @@ class ResearchWorkflow:
                 infer,
                 lambda: [asdict(u) for u in self.inference.usage[offset:]],
                 compose=compose,
-                retry_withheld=request.retry_withheld_presentations,
+                reconstruct=targeted and not compose,
+                retry_withheld=request.retry_withheld_presentations and (compose or not targeted),
                 section_keys=request.arc_section_keys,
                 allowed_sources=request.presentation_source_ids,
             )
-        except ValueError as error:
+        except (ValueError, InferenceFailure) as error:
+            if isinstance(error, InferenceFailure) and (
+                compose or "budget" in error.code or error.code == "job_duration_exceeded"
+            ):
+                raise
             # Editorial validation failure cannot erase accepted research or hide
             # behind the worker's generic execution-error category.
             state["arc_research"] = {
                 "arc_id": str(request.arc_id),
+                "targeted_online": targeted,
                 "status": "withheld",
                 "reason": "arc_organization_validation_failed",
                 "detail": str(error)[:200],
@@ -3120,9 +3207,29 @@ class ResearchWorkflow:
                 )
             return state
         dossier = result.get("dossier") or {}
-        questions = [g for s in dossier.get("sections", []) for g in s["coverage"]["gaps"]]
+        questions = service.research_questions(dossier, request.arc_section_keys)[
+            : self.policy(state).max_leads
+        ]
+        prior_questions = set(previous.get("questions", []))
+        fact_ids = sorted(
+            {
+                fact_id
+                for section in dossier.get("sections", [])
+                if not request.arc_section_keys
+                or section["plan"]["key"] in request.arc_section_keys
+                for binding in section.get("developments", [])
+                for fact_id in binding["fact_ids"]
+            }
+        )
+        essential_progress = bool(
+            set(fact_ids) - set(previous.get("fact_ids", []))
+            and (prior_questions - set(questions) or not prior_questions and questions)
+        )
         state["arc_research"] = {
             "arc_id": str(request.arc_id),
+            "targeted_online": targeted,
+            "essential_progress": essential_progress,
+            "fact_ids": fact_ids,
             "revision": dossier.get("revision"),
             "sections": [
                 {
@@ -3144,7 +3251,19 @@ class ResearchWorkflow:
                 questions,
                 "arc-coverage-v1",
                 self.policy(state),
+                depth=state.get("iteration", 0),
             )
+        if targeted:
+            async with self.transactions() as archive:
+                await archive.event(
+                    UUID(state["job_id"]),
+                    "research.arc_gap_review",
+                    {
+                        "phase": "composition" if compose else "reconstruction",
+                        "questions": questions,
+                        "essential_progress": essential_progress,
+                    },
+                )
         return state
 
     async def outline_evidence(
