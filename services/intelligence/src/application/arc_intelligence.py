@@ -19,6 +19,7 @@ from src.application.knowledge_presentation import Infer, KnowledgeAtlas, finger
 from src.application.ports.presentation import PresentationTransaction
 from src.application.ports.retrieval import DevelopmentEvidenceProvider
 from src.application.research_contracts import InferenceFailure, Task
+from src.application.story_bible import build_story_bible
 
 POLICY = "arc-intelligence-v30"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
@@ -272,6 +273,7 @@ class ArcIntelligence:
             spoiler_position=boundary,
             source_range=source_range,
             accepted_facts=facts,
+            bible=build_story_bible(scope.knowledge.nodes, facts, boundary),
             sections=[],
             reconstruction={},
             organization_warnings=evidence_issues,

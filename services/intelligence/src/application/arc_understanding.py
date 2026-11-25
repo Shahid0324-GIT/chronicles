@@ -29,6 +29,7 @@ from src.application.arc_contracts import (
 from src.application.arc_grounding import CALIBRATION, assertion, word_spans
 from src.application.knowledge_presentation import Infer, fingerprint
 from src.application.research_contracts import InferenceFailure
+from src.application.story_bible import allowed_vocabulary, prompt_bible, unlicensed_names
 from src.application.story_position import source_position
 
 
@@ -82,6 +83,7 @@ async def review_passages(
     infer: Infer,
     *,
     rejections: list[ParagraphRejection] | None = None,
+    vocabulary: set[str] | None = None,
 ) -> tuple[list[ArcParagraph], int, bool]:
     """Keep good passages and continue after malformed or unsupported siblings.
 
@@ -131,6 +133,20 @@ async def review_passages(
         if any(i not in support for claim in paragraph.claims for i in claim.fact_ids):
             if rejections is not None:
                 rejections.append(ParagraphRejection(paragraph=number, category="unknown_citation"))
+            continue
+        foreign = unlicensed_names(paragraph.text, vocabulary) if vocabulary is not None else []
+        if foreign:
+            if rejections is not None:
+                rejections.append(
+                    ParagraphRejection(
+                        paragraph=number,
+                        category="unlicensed_name",
+                        reasons=[
+                            f"Name absent from the story bible and cited sources: {n}"
+                            for n in foreign
+                        ][:8],
+                    )
+                )
             continue
         reviews: dict[int, ArcEntailment | None] = {}
         for offset in range(0, len(paragraph.claims), 4):
@@ -204,6 +220,15 @@ async def build_arc_understanding(
                 issues=["No scoped accepted assertions have inspectable archived evidence"],
             ),
         )
+    vocabulary = allowed_vocabulary(
+        dossier.bible,
+        [
+            *(u["assertion"] for u in unique.values()),
+            *(q for u in unique.values() for q in u["archive"]),
+            dossier.title,
+        ],
+    )
+    bible = prompt_bible(dossier.bible)
     refs = {str(i): k for i, k in enumerate(unique, 1)}
     # Wider quotations can mention unrelated actions. The reviewer receives them.
     brief = {i: unique[k]["assertion"] for i, k in refs.items()}
@@ -233,6 +258,7 @@ async def build_arc_understanding(
                     "arc": dossier.title,
                     "scope": dossier.source_range,
                     "spoiler_position": dossier.spoiler_position,
+                    "story_bible": bible,
                     "accepted": brief,
                 },
                 ensure_ascii=False,
@@ -244,7 +270,7 @@ async def build_arc_understanding(
     resolve_assertion_ids(draft, refs)
     rejections: list[ParagraphRejection] = []
     paragraphs, withheld, unavailable = await review_passages(
-        draft.paragraphs, unique, infer, rejections=rejections
+        draft.paragraphs, unique, infer, rejections=rejections, vocabulary=vocabulary
     )
     if paragraphs and withheld and not unavailable:
         targets = [p for p in draft.paragraphs if p not in paragraphs]
@@ -263,6 +289,7 @@ async def build_arc_understanding(
                         + json.dumps(
                             {
                                 "targets": [p.text for p in targets],
+                                "story_bible": bible,
                                 "remaining_context": [p.text for p in paragraphs],
                                 "eligible_assertions": {i: brief[i] for i in local_refs},
                             },
@@ -278,6 +305,7 @@ async def build_arc_understanding(
                         repaired.paragraphs,
                         {i: unique[i] for i in local_refs.values()},
                         infer,
+                        vocabulary=vocabulary,
                     )
                     replacements = zip(targets, repaired.paragraphs, strict=True)
                     approved = {id(old): new for old, new in replacements if new in repaired_ok}
@@ -314,6 +342,7 @@ async def build_arc_understanding(
                         {
                             "scope": dossier.source_range,
                             "arc": dossier.title,
+                            "story_bible": bible,
                             "paragraphs": [p.text for p in paragraphs],
                             "inventory": list(
                                 dict.fromkeys(u["assertion"] for u in unique.values())
@@ -414,6 +443,7 @@ async def write_arc_article(
     if document.status != "qualified" or not document.coverage.complete:
         raise ValueError("A qualified arc understanding is required before outlining")
     account = {str(i): p.text for i, p in enumerate(document.paragraphs, 1)}
+    bible = prompt_bible(dossier.bible)
     outline = ArcOutline.model_validate(
         await infer(
             "Derive the article headings from meaningful changes in the qualified story below. "
@@ -436,6 +466,7 @@ async def write_arc_article(
             "Cover every account paragraph. No assumed knowledge.\n"
             + json.dumps(
                 {
+                    "story_bible": bible,
                     "account": account,
                     "outline": outline.model_dump(),
                 },
@@ -449,7 +480,7 @@ async def write_arc_article(
         raise ValueError("Article headings must follow the derived outline")
     witnesses = accepted_witnesses(dossier.accepted_facts, units)
     facts = {f["id"]: f for f in dossier.accepted_facts}
-    support = {
+    support: dict[str, dict[str, Any]] = {
         ref: {
             "account": text,
             "evidence": [
@@ -459,12 +490,27 @@ async def write_arc_article(
         }
         for ref, text in account.items()
     }
+    vocabulary = allowed_vocabulary(
+        dossier.bible,
+        [
+            dossier.title,
+            *account.values(),
+            *(
+                text
+                for row in support.values()
+                for e in row["evidence"]
+                for text in (e["assertion"], *e["quotes"])
+            ),
+        ],
+    )
     copied = set().union(*(word_spans(u.text, 18) for u in units))
 
     async def assess_section(section: ArcSectionDraft, refs: set[str]) -> dict[str, bool]:
         if {i for p in section.paragraphs for i in p.fact_ids} != refs:
             return {"grounded": False, "original": False, "unavailable": False}
-        _, missing, unavailable = await review_passages(section.paragraphs, support, infer)
+        _, missing, unavailable = await review_passages(
+            section.paragraphs, support, infer, vocabulary=vocabulary
+        )
         original = not any(word_spans(p.text, 18) & copied for p in section.paragraphs)
         return {
             "grounded": not missing and not unavailable,
@@ -492,6 +538,7 @@ async def write_arc_article(
                             "section": section.model_dump(mode="json"),
                             "account": {k: v for k, v in account.items() if k in refs},
                             "assessment": assessment,
+                            "story_bible": bible,
                             "headings": [p.heading for p in outline.sections],
                         },
                         ensure_ascii=False,
@@ -515,6 +562,7 @@ async def write_arc_article(
             "developments. Return short specific issues; leave search_questions empty.\n"
             + json.dumps(
                 {
+                    "story_bible": bible,
                     "account": account,
                     "article": [
                         {"heading": s.heading, "paragraphs": [p.text for p in s.paragraphs]}

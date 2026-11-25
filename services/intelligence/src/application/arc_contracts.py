@@ -216,6 +216,20 @@ class NarrativeDevelopmentPlan(StructuredModel):
     revision: str
 
 
+class BibleName(StructuredModel):
+    id: str
+    english: str
+    aliases: list[str] = Field(default_factory=list)
+
+
+class StoryBible(StructuredModel):
+    """Shared naming, tense and spoiler policy handed to every arc writer and reviewer."""
+
+    names: list[BibleName] = Field(default_factory=list)
+    tense_rule: str
+    spoiler_fence: str
+
+
 class ArcDossier(StructuredModel):
     version: Literal["arc-dossier-v1"] = "arc-dossier-v1"
     arc_id: UUID
@@ -235,6 +249,7 @@ class ArcDossier(StructuredModel):
     accepted_facts: list[dict[str, Any]]
     reconstruction: dict[str, Any]
     narrative_context: list[dict[str, Any]] = Field(default_factory=list)
+    bible: StoryBible | None = None
     understanding: "ArcUnderstandingDocument | None" = None
     revision: str
 
@@ -353,6 +368,7 @@ class ArcAccountCoverage(StructuredModel):
 
 RejectionCategory = Literal[
     "unknown_citation",
+    "unlicensed_name",
     "contradicted",
     "not_established",
     "reviewer_unavailable",

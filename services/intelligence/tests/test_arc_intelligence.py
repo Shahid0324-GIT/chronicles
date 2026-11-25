@@ -183,7 +183,7 @@ def holistic_inference(calls, *, gap=False, bad_article=False, invalid_outline=F
                 }
             )
         if schema is ArcContinuousDraft:
-            assert set(data) == {"account", "outline"}
+            assert set(data) == {"account", "outline", "story_bible"}
             return schema.model_validate(
                 {
                     "sections": [
@@ -513,3 +513,31 @@ def test_reference_order_uses_source_position_then_stable_id():
     shuffled = [fact("c", None), fact("b", 3), fact("z", 1), fact("a", 3)]
     ordered = [f["id"] for f in sorted(shuffled, key=reference_order)]
     assert ordered == ["z", "a", "b", "c"]
+
+
+async def test_unlicensed_name_is_withheld_before_model_review():
+    from src.application.story_bible import allowed_vocabulary, build_story_bible
+
+    paragraph = ArcParagraph.model_validate(
+        {"claims": [{"text": "Mira met Captain Voss at the pier.", "fact_ids": ["a"]}]}
+    )
+    calls = []
+
+    async def infer(prompt, schema, _task):
+        calls.append(prompt)
+        raise AssertionError("A paragraph with an invented name must not reach the reviewer")
+
+    vocabulary = allowed_vocabulary(
+        build_story_bible([], [], None), ["Mira met the keeper at the pier."]
+    )
+    rejections: list[ParagraphRejection] = []
+    kept, withheld, _ = await review_passages(
+        [paragraph],
+        {"a": {"assertion": "Mira met the keeper."}},
+        infer,
+        rejections=rejections,
+        vocabulary=vocabulary,
+    )
+    assert kept == [] and withheld == 1 and calls == []
+    assert rejections[0].category == "unlicensed_name"
+    assert "Captain" in rejections[0].reasons[0] or "Voss" in rejections[0].reasons[0]
