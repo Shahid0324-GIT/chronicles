@@ -1,0 +1,505 @@
+{
+  "input_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "controlled_publication": "withheld",
+  "publication_gate": {
+    "reason": "Verified frame and scene reconstruction gate failed",
+    "review_attempts": []
+  },
+  "scene_gaps": {
+    "Shanks Rescues Luffy from Bandits and Sea King": [
+      "4.10"
+    ],
+    "Luffy's Promise, Hat Gift, and Departure": [
+      "5.1",
+      "5.2"
+    ]
+  },
+  "live_api": {
+    "http_status": 200,
+    "status": "pending",
+    "article": null,
+    "spoiler_position": 7,
+    "reason": "Current evidence has no matching dossier"
+  },
+  "diagnostics": {
+    "alignment": {
+      "mapped": 6,
+      "unmapped_span_ids": []
+    },
+    "initial_grounding": {
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 1,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 2,
+          "verdict": "supported",
+          "reason": "The evidence and verified frame confirm that Luffy attempted to persuade Captain Red-Haired Shanks to let him join the crew.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 3,
+          "verdict": "unsupported",
+          "reason": "Evidence only supports that bandits led by Higuma entered the bar and demanded alcohol; there is no evidence for pirates and Luffy going to the bar or toasting.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 4,
+          "verdict": "supported",
+          "reason": "The evidence directly states that Higuma broke the bottle over Shanks' head after Shanks offered it and that Shanks apologized and cleaned up the mess.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 5,
+          "verdict": "unsupported",
+          "reason": "No provided evidence mentions Luffy feeling anger toward Shanks or Shanks attempting to grab Luffy's arm; the evidence only describes unrelated bar events.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 6,
+          "verdict": "supported",
+          "reason": "The evidence confirms that the Red Hair Pirates realized the Gomu Gomu no Mi was missing and that Shanks revealed Luffy's body is rubber and cannot swim.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 7,
+          "verdict": "supported",
+          "reason": "Both clauses are directly backed by the provided evidence strings.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 8,
+          "verdict": "supported",
+          "reason": "Both the alert to Mayor Woop Slap and the encounter with Lucky Roux are explicitly stated in the evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 9,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 10,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 11,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 12,
+          "verdict": "supported",
+          "reason": "The sentence is directly corroborated by the provided evidence sentences describing the Sea King moving to eat Luffy and Shanks arriving to save him.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 13,
+          "verdict": "supported",
+          "reason": "Both clauses about Shanks giving Luffy his straw hat and Shanks and Beckman anticipating Luffy's future are explicitly stated in the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        }
+      ],
+      "paragraphs_faithful": true,
+      "coherent": false,
+      "coherence_issues": [],
+      "unsupported_connections": [],
+      "originality_issues": [],
+      "revision_paragraphs": [
+        2,
+        3
+      ],
+      "qualification_passed": true,
+      "coverage_issues": [
+        "Unrepresented required note 9: {'clause': '3.4', 'kind': 'emotion', 'action': 'Luffy felt anger toward Shanks', 'actor': '', 'patient': '', 'experiencer': 'Luffy', 'speaker': '', 'subject': '', 'location': '', 'purpose': '', 'outcome': '', 'modality': 'completed', 'negated': False, 'function': 'aftermath', 'development_id': 'bae577bd-7db1-542d-a5f3-d301a1060c7a', 'roles': {'experiencer': {'name': 'Luffy', 'identity_id': 'a5e58ae4-a1c3-535d-8602-443f806fd372', 'identity': 'source_named'}}, 'revises_clause': False}"
+      ],
+      "relationship_issues": [],
+      "editorial_review_available": false,
+      "grounding_unavailable": []
+    },
+    "repair_grounding": {
+      "claims": [
+        {
+          "index": 0,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 1,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 2,
+          "verdict": "unsupported",
+          "reason": "No evidence supports the claim that the Red Hair Pirates arrived at Foosha Village bringing Monkey D. Luffy.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 3,
+          "verdict": "supported",
+          "reason": "The evidence directly states that Luffy attempted to persuade Captain Red‑Haired Shanks to let him join the crew.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 4,
+          "verdict": "unsupported",
+          "reason": "The evidence supports the bandits entering the bar, but provides no support for the temporal clause \"while they were in the village\".",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 5,
+          "verdict": "supported",
+          "reason": "The evidence directly states that Higuma broke the bottle over Shanks' head after Shanks offered it.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 6,
+          "verdict": "supported",
+          "reason": "The evidence confirms that Shanks apologized and cleaned up the mess.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 7,
+          "verdict": "supported",
+          "reason": "The evidence contains both claims: the Red Hair Pirates realized the Gomu Gomu no Mi was missing and Shanks revealed Luffy's body is rubber and cannot swim.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 8,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 9,
+          "verdict": "supported",
+          "reason": "Both the alert to Mayor Woop Slap and the encounter with Lucky Roux are explicitly stated in the evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 10,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 11,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 12,
+          "verdict": "supported",
+          "reason": "Supported by the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 13,
+          "verdict": "supported",
+          "reason": "The sentence is directly corroborated by the provided evidence sentences describing the Sea King moving to eat Luffy and Shanks arriving to save him.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        },
+        {
+          "index": 14,
+          "verdict": "supported",
+          "reason": "Both clauses about Shanks giving Luffy his straw hat and Shanks and Beckman anticipating Luffy's future are explicitly stated in the supplied evidence.",
+          "conclusion": null,
+          "observed_modality": null,
+          "observed_negated": null,
+          "issues": [],
+          "additional_evidence_ids": []
+        }
+      ],
+      "paragraphs_faithful": true,
+      "coherent": false,
+      "coherence_issues": [],
+      "unsupported_connections": [],
+      "originality_issues": [],
+      "revision_paragraphs": [
+        2
+      ],
+      "qualification_passed": true,
+      "coverage_issues": [
+        "Unrepresented required note 9: {'clause': '3.4', 'kind': 'emotion', 'action': 'Luffy felt anger toward Shanks', 'actor': '', 'patient': '', 'experiencer': 'Luffy', 'speaker': '', 'subject': '', 'location': '', 'purpose': '', 'outcome': '', 'modality': 'completed', 'negated': False, 'function': 'aftermath', 'development_id': 'bae577bd-7db1-542d-a5f3-d301a1060c7a', 'roles': {'experiencer': {'name': 'Luffy', 'identity_id': 'a5e58ae4-a1c3-535d-8602-443f806fd372', 'identity': 'source_named'}}, 'revises_clause': False}"
+      ],
+      "relationship_issues": [],
+      "editorial_review_available": false,
+      "grounding_unavailable": []
+    }
+  },
+  "provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 959,
+      "output_tokens": 118,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation",
+      "input_tokens": 2871,
+      "output_tokens": 441,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 719,
+      "output_tokens": 259,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 649,
+      "output_tokens": 188,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "rate_limited",
+      "task": "presentation_verification",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 2815,
+      "output_tokens": 362,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 1574,
+      "output_tokens": 101,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 933,
+      "output_tokens": 83,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation",
+      "input_tokens": 2854,
+      "output_tokens": 527,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 517,
+      "output_tokens": 178,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "invalid_output",
+      "task": "presentation_verification",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 520,
+      "output_tokens": 337,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 613,
+      "output_tokens": 183,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 1786,
+      "output_tokens": 367,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "rate_limited",
+      "task": "presentation_verification",
+      "input_tokens": 0,
+      "output_tokens": 0,
+      "model_call": true
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "status": "ok",
+      "task": "presentation_verification",
+      "input_tokens": 1608,
+      "output_tokens": 243,
+      "model_call": true
+    }
+  ]
+}

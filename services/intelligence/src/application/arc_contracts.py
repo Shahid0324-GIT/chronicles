@@ -326,6 +326,7 @@ class ArcSemanticReview(StructuredModel):
     coverage_issues: list[str] = Field(default_factory=list)
     relationship_issues: list[str] = Field(default_factory=list)
     editorial_review_available: bool = True
+    grounding_unavailable: list[int] = Field(default_factory=list)
 
 
 class ArcSectionDraft(StructuredModel):

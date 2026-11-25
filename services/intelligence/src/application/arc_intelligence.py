@@ -36,12 +36,9 @@ from src.application.arc_grounding import (
 )
 from src.application.arc_prose import (
     FrameCitations,
-    assess_in_batches,
-    compose_reconstruction,
+    compose_grounded_section,
     composition_requirements,
     frame_citations,
-    originality_candidates,
-    revision_note_targets,
     validate_scene_alignment_order,
 )
 from src.application.arc_reconstruction import Reconstruction, reconstruct_arc
@@ -66,7 +63,7 @@ REQUIRED: list[Facet] = [
     "conflict",
     "consequence",
 ]
-POLICY = "arc-intelligence-v29"
+POLICY = "arc-intelligence-v30"
 ORGANIZATION_POLICY = "arc-intelligence-v9"
 
 
@@ -200,6 +197,8 @@ class ArcIntelligence:
             return "arc-intelligence-v2"
         if kind == "arc_development_plan":
             return "development-plan-v3"
+        if kind in {"arc_reconstruction", "arc_prose_batches"}:
+            return "arc-intelligence-v29"
         return ORGANIZATION_POLICY if kind == "arc_dossier" else POLICY
 
     @staticmethod
@@ -915,6 +914,9 @@ class ArcIntelligence:
             reconstruction_revision: str | None = None
             plan = section.development_plan
             resumed = False
+            planned_review: ArcSemanticReview | None = None
+            composition_audit: dict[str, Any] = {}
+            payload: dict[str, Any]
             cached_batches: dict[str, dict[str, object]] = {}
 
             async def save_batches(
@@ -937,17 +939,11 @@ class ArcIntelligence:
 
             if plan is not None:
                 async with self.presentations() as repo:
-                    pending = await repo.get(
-                        self.identifier(section_id, "arc_pending_review", boundary_key)
-                    )
                     stored_batches = await repo.get(
                         self.identifier(section_id, "arc_prose_batches", boundary_key)
                     )
                 if stored_batches and stored_batches["knowledge_revision"] == section.revision:
                     cached_batches.update(stored_batches["payload"])
-                if pending and pending["knowledge_revision"] == section.revision:
-                    draft = ArcSectionDraft.model_validate(pending["payload"]["draft"])
-                    resumed = True
             try:
                 if plan is not None:
                     async with self.presentations() as repo:
@@ -980,28 +976,25 @@ class ArcIntelligence:
                     if not state.ready:
                         raise ValueError("Verified frame and scene reconstruction gate failed")
                     reconstruction_revision = fingerprint([state.model_dump(mode="json")])
-                    if (
-                        pending
-                        and pending["payload"].get("reconstruction") != reconstruction_revision
-                    ):
-                        draft = None
-                        resumed = False
                     notes = frame_citations(state, plan)
-                    if draft is None:
-                        writes, reviews = composition_requirements(
-                            state, plan, notes, cached_batches, section.plan.title
-                        )
-                        if self.can_review and not await self.can_review(writes, reviews):
-                            raise InferenceFailure("publication_review_budget_reserved")
-                        draft = await compose_reconstruction(
-                            state,
-                            plan,
-                            notes,
-                            section.plan.title,
-                            infer,
-                            cached_batches,
-                            save_batches,
-                        )
+                    writes, reviews = composition_requirements(
+                        state, plan, notes, cached_batches, section.plan.title
+                    )
+                    if self.can_review and not await self.can_review(writes, reviews):
+                        raise InferenceFailure("publication_review_budget_reserved")
+                    resumed = writes == 0
+                    draft, planned_review = await compose_grounded_section(
+                        state,
+                        plan,
+                        notes,
+                        section.plan.title,
+                        infer,
+                        cached_batches,
+                        save_batches,
+                        reviewer_model,
+                        diagnostics=composition_audit,
+                        can_review=self.can_review,
+                    )
                 draft = draft or ArcSectionDraft.model_validate(
                     await infer(
                         "Write original, connected encyclopedia prose for this arc section "
@@ -1095,24 +1088,23 @@ class ArcIntelligence:
                     if section.development_plan is not None:
                         from src.application.development_plan import validate_draft_structure
 
+                        await self.save(
+                            dossier.universe_id,
+                            dossier.continuity_id,
+                            section_id,
+                            "arc_pending_review",
+                            boundary_key,
+                            section.revision,
+                            {
+                                "draft": draft.model_dump(mode="json"),
+                                "reconstruction": reconstruction_revision,
+                            },
+                            "withheld",
+                            providers()[offset:],
+                        )
                         validate_draft_structure(draft, section.development_plan)
                         if state is not None:
                             validate_scene_alignment_order(draft, state, section.development_plan)
-                        if not resumed:
-                            await self.save(
-                                dossier.universe_id,
-                                dossier.continuity_id,
-                                section_id,
-                                "arc_pending_review",
-                                boundary_key,
-                                section.revision,
-                                {
-                                    "draft": draft.model_dump(mode="json"),
-                                    "reconstruction": reconstruction_revision,
-                                },
-                                "withheld",
-                                providers()[offset:],
-                            )
                         repeated_source = copied_paragraphs(draft, section.development_plan)
                         if repeated_source and notes is None:
                             raise ValueError(
@@ -1120,19 +1112,11 @@ class ArcIntelligence:
                                 f"paragraphs {repeated_source}"
                             )
                     if plan:
-                        if self.can_review and not await self.can_review(0, 1):
-                            raise InferenceFailure("publication_review_budget_reserved")
                         if notes is None:
                             raise ValueError("Planned prose is missing its writing notes")
-                        assessment = await assess_in_batches(
-                            draft,
-                            plan,
-                            notes,
-                            infer,
-                            cached_batches,
-                            save_batches,
-                            reconstruction=state,
-                        )
+                        if planned_review is None:
+                            raise ValueError("Planned prose is missing its grounded review")
+                        assessment = planned_review
                         qualified = assessment.qualification_passed is True
                         qualification = {"passed": qualified, "model": reviewer_model()}
                     elif qualification is None:
@@ -1169,134 +1153,6 @@ class ArcIntelligence:
                     review_attempts.append(dict(assessment_payload))
                     if status == "validated" or not qualified:
                         break
-                if (
-                    status == "withheld"
-                    and qualified
-                    and assessment is not None
-                    and plan
-                    and notes
-                    and state
-                ):
-                    indices = set(assessment.revision_paragraphs)
-                    if assessment.originality_issues:
-                        indices.update(
-                            int(str(match["paragraph"]))
-                            for match in originality_candidates(draft, plan)
-                        )
-                    index = 0
-                    rejected = {
-                        c.index: c.reason for c in assessment.claims if c.verdict != "supported"
-                    }
-                    for paragraph_index, paragraph in enumerate(draft.paragraphs, 1):
-                        if any(i in rejected for i in range(index, index + len(paragraph.claims))):
-                            indices.add(paragraph_index)
-                        index += len(paragraph.claims)
-                    # A general editorial concern without an identified failing paragraph
-                    # does not authorize regeneration of the entire section.
-                    if indices and (not self.can_review or await self.can_review(1, 2)):
-                        targets = revision_note_targets(draft, plan, notes)
-                        replacements = await compose_reconstruction(
-                            state,
-                            plan,
-                            notes,
-                            draft.heading,
-                            infer,
-                            cached_batches,
-                            save_batches,
-                            repair={
-                                "targets": [
-                                    {
-                                        "paragraph": i,
-                                        "note_ids": sorted(targets[i], key=int),
-                                        "previous": (
-                                            draft.paragraphs[i - 2].text
-                                            if i > 1 and i - 1 not in indices
-                                            else None
-                                        ),
-                                        "next": (
-                                            draft.paragraphs[i].text
-                                            if i < len(draft.paragraphs) and i + 1 not in indices
-                                            else None
-                                        ),
-                                    }
-                                    for i in sorted(indices)
-                                ],
-                                "section_draft": [p.text for p in draft.paragraphs],
-                                "factual_issues_by_claim": rejected,
-                                "editorial_issues": assessment.coherence_issues,
-                                "originality_issues": assessment.originality_issues,
-                                "coverage_issues": assessment.coverage_issues,
-                                "relationship_issues": assessment.relationship_issues,
-                            },
-                        )
-                        if len(replacements.paragraphs) != len(indices):
-                            raise ValueError(
-                                "Paragraph repair returned an incorrect paragraph count"
-                            )
-                        essential = {
-                            str(i) for i, note in enumerate(notes.notes, 1) if note.essential
-                        }
-                        protected = {
-                            note
-                            for p in draft.paragraphs
-                            for claim in p.claims
-                            for note in claim.writing_note_ids
-                            if note in essential
-                        }
-                        updated = list(draft.paragraphs)
-                        for i, paragraph in zip(
-                            sorted(indices), replacements.paragraphs, strict=True
-                        ):
-                            if (
-                                not {
-                                    r for claim in paragraph.claims for r in claim.writing_note_ids
-                                }
-                                <= targets[i]
-                            ):
-                                raise ValueError("Paragraph repair used notes outside its scope")
-                            updated[i - 1] = paragraph
-                        if not protected <= {
-                            note for p in updated for c in p.claims for note in c.writing_note_ids
-                        }:
-                            raise ValueError("Paragraph repair dropped previously cited essentials")
-                        draft = draft.model_copy(update={"paragraphs": updated})
-                        validate_claims(draft, facts, dossier.accepted_facts)
-                        validate_draft_structure(draft, plan)
-                        validate_scene_alignment_order(draft, state, plan)
-                        await self.save(
-                            dossier.universe_id,
-                            dossier.continuity_id,
-                            section_id,
-                            "arc_pending_review",
-                            boundary_key,
-                            section.revision,
-                            {
-                                "draft": draft.model_dump(mode="json"),
-                                "reconstruction": reconstruction_revision,
-                            },
-                            "withheld",
-                            providers()[offset:],
-                        )
-                        assessment = await assess_in_batches(
-                            draft,
-                            plan,
-                            notes,
-                            infer,
-                            cached_batches,
-                            save_batches,
-                            reconstruction=state,
-                        )
-                        qualified = assessment.qualification_passed is True
-                        qualification = {"passed": qualified, "model": reviewer_model()}
-                        status = (
-                            "validated"
-                            if qualified
-                            and review_ok(assessment, sum(len(p.claims) for p in draft.paragraphs))
-                            else "withheld"
-                        )
-                        assessment_payload = assessment.model_dump(mode="json")
-                        assessment_payload["repaired_paragraphs"] = sorted(indices)
-                        review_attempts.append(dict(assessment_payload))
                 if status == "withheld" and qualified and assessment is not None and plan is None:
                     partial = supported_projection(draft, assessment)
                     if partial is not None:
@@ -1363,6 +1219,7 @@ class ArcIntelligence:
                             "status": "passed"
                             if qualified
                             and assessment
+                            and not assessment.grounding_unavailable
                             and all(claim.verdict == "supported" for claim in assessment.claims)
                             else "blocked"
                         },
@@ -1419,6 +1276,12 @@ class ArcIntelligence:
                     "status": status,
                     "revision": section.revision,
                     "assessment": {"reason": str(error)[:200], "review_attempts": review_attempts},
+                }
+            if composition_audit:
+                payload["assessment"]["composition"] = {
+                    k: v
+                    for k, v in composition_audit.items()
+                    if k not in {"initial", "repair", "revision", "selected"}
                 }
             await self.save(
                 dossier.universe_id,

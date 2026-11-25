@@ -6,14 +6,16 @@ from uuid import uuid4
 import pytest
 from pydantic import BaseModel
 
+from src.application import arc_prose
 from src.application.arc_contracts import ArcSectionDraft, DevelopmentEvidence, DevelopmentOrdering
 from src.application.arc_grounding import CALIBRATION, copied_paragraphs, review_ok
 from src.application.arc_prose import (
     ROLE_CALIBRATION,
+    FrameCitation,
+    FrameCitations,
     PlainScene,
     Propositions,
     ProseDraft,
-    RevisionReview,
     SceneAlignment,
     SceneDraft,
     aligned_scene,
@@ -26,6 +28,7 @@ from src.application.arc_prose import (
     composition_requirements,
     flatten_scenes,
     frame_citations,
+    grounding_rows,
     originality_candidates,
     revision_note_targets,
     scene_inputs,
@@ -171,20 +174,7 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
             frame = packet["frames"]["1"]
             assert frame["roles"]["speaker"]["name"] == "Shanks"
             assert frame["roles"]["experiencer"]["name"] == "Luffy"
-            if "draft" in packet:
-                assert packet["draft"] == ["Luffy had changed.", "Ron opened it."]
-                return PlainScene(paragraphs=["Luffy had changed. Ron opened it."])
-            return PlainScene(paragraphs=["Luffy had changed.", "Ron opened it."])
-        if schema is RevisionReview:
-            return schema.model_validate(
-                {
-                    "essential": [
-                        {"frame": key, "initial": True, "revised": True}
-                        for key in packet["essential"]
-                    ],
-                    "unsupported": [],
-                }
-            )
+            return PlainScene(paragraphs=["Luffy had changed. Ron opened it."])
         if schema is SceneAlignment:
             assert list(packet["spans"]) == ["1", "2"]
             return schema.model_validate(
@@ -227,7 +217,7 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert [len(batch) for batch in review_batches] == [2, 1]
     notes = frame_citations(reconstruction, plan)
     cache = {}
-    assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (2, 6)
+    assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (1, 5)
     draft = await compose_reconstruction(
         reconstruction, plan, notes, "Change", infer, cache, checkpoint
     )
@@ -236,9 +226,8 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
     assert [claim.writing_note_ids for claim in draft.paragraphs[0].claims] == [["1"], ["2"]]
 
 
-async def test_revision_preserves_essential_beats_and_alignment_retries_only_invalid_rows():
+async def test_alignment_retries_only_invalid_rows():
     original = "Mira asked to join the group. Ron led the group to town."
-    edited = "Mira rode into town alongside Ron."
     context = {
         "frames": {
             "1": {"action": "Mira asked to join the group."},
@@ -252,14 +241,7 @@ async def test_revision_preserves_essential_beats_and_alignment_retries_only_inv
     async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
         payload = json.loads(prompt.rsplit("\n", 1)[1])
         if schema is PlainScene:
-            return PlainScene(paragraphs=[edited if "draft" in payload else original])
-        if schema is RevisionReview:
-            return RevisionReview.model_validate(
-                {
-                    "essential": [{"frame": "1", "initial": True, "revised": False}],
-                    "unsupported": ["Mira rode alongside Ron."],
-                }
-            )
+            return PlainScene(paragraphs=[original])
         assert schema is SceneAlignment
         alignment_calls.append(list(payload["spans"]))
         if len(alignment_calls) == 1:
@@ -287,12 +269,38 @@ async def test_revision_preserves_essential_beats_and_alignment_retries_only_inv
     paragraphs, _ = await write_and_align(
         context, infer, cache, checkpoint, diagnostics=diagnostics
     )
-    assert diagnostics["revision_withheld"] is True
-    assert diagnostics["lost_essential"] == ["1"]
     assert " ".join(c.text for c in paragraphs[0].claims) == original
     assert alignment_calls == [["1", "2"], ["2"], ["2"]]
     await write_and_align(context, infer, cache, checkpoint)
     assert len(alignment_calls) == 3
+
+
+async def test_alignment_reuses_sentences_outside_an_edited_neighborhood():
+    original = ["Mira asked to join. Ron waved. The group left. Mira stayed behind."]
+    revised = ["Mira asked to join.", "Ron waved. The group left. Mira waited by the gate."]
+    calls = []
+    context = {
+        "frames": {"1": {"action": "Qualified fixture action."}},
+        "essential_frames": ["1"],
+        "relationships": {},
+    }
+
+    async def infer(prompt, schema, task):
+        packet = json.loads(prompt.split("\n", 1)[1])
+        if schema is PlainScene:
+            return PlainScene(paragraphs=revised if "grounded" in packet else original)
+        calls.append(list(packet["spans"]))
+        return schema.model_validate(
+            {"spans": [{"span": int(ref), "frames": ["1"]} for ref in packet["spans"]]}
+        )
+
+    async def checkpoint():
+        pass
+
+    cache = {}
+    await write_and_align(context, infer, cache, checkpoint)
+    await write_and_align(context, infer, cache, checkpoint, edit={"draft": original})
+    assert calls == [["1", "2", "3", "4"], ["3", "4"]]
 
 
 async def test_empty_reconstruction_recovers_essential_actions_from_archive():
@@ -1157,27 +1165,31 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
                     "revise_paragraphs": [],
                 }
             )
-        sentence = packet["s1"]["sentence"]
-        calls.append(sentence)
+        calls.extend(row["sentence"] for row in packet.values())
         decisions = [
             {
                 "id": i,
-                "verdict": "unsupported" if i in {"check-a", "check-c", "check-d"} else "supported",
+                "verdict": "unsupported" if i in {"check-1", "check-3", "check-4"} else "supported",
                 "reason": "Evidence checked",
             }
             for i in packet
         ]
-        if len(calls) == 2:
-            decisions.pop()
+        if "Mira tried to open it." in calls and calls.count("Mira tried to open it.") <= 2:
+            decisions = []
         return schema.model_validate({"decisions": decisions})
 
-    with pytest.raises(ValueError, match="incomplete or duplicate"):
-        await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
-    assert checkpoints == [1]
+    partial = await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
+    assert [c.index for c in partial.claims] == [0]
+    assert partial.grounding_unavailable == [1]
+    assert not review_ok(partial, 2)
+    assert checkpoints == [2]
     result = await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
     assert result.qualification_passed
-    assert calls == ["The gate stayed closed.", "Mira tried to open it.", "Mira tried to open it."]
-    assert checkpoints == [1, 2, 3]
+    assert not result.grounding_unavailable
+    assert calls.count("The gate stayed closed.") == 1
+    assert calls.count("Mira tried to open it.") == 3
+    assert all(calls.count(str(case["text"])) == 1 for case in ROLE_CALIBRATION)
+    assert checkpoints == [2, 3, 4]
 
     for key, value in list(cache.items()):
         if "editorial_issues" in value:
@@ -1200,6 +1212,148 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
     assert not result.editorial_review_available
     assert not result.originality_issues
     assert not review_ok(result, 2)
+
+
+async def test_grounding_never_uses_positive_vote_to_resolve_conflicting_decisions():
+    packet = {key: {"sentence": f"Claim {key}."} for key in ("s1", "s2", "s3")}
+    cache: dict[str, dict[str, object]] = {}
+    calls = []
+
+    async def checkpoint() -> None:
+        pass
+
+    async def reviewer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
+        supplied = json.loads(prompt.split("\n", 1)[1])
+        calls.append(list(supplied))
+
+        def decision(key: str, verdict: str) -> dict[str, str]:
+            return {"id": key, "verdict": verdict, "reason": "Evidence checked"}
+
+        if len(calls) == 1:
+            return schema.model_validate(
+                {
+                    "decisions": [
+                        decision("s1", "supported"),
+                        decision("s2", "supported"),
+                        decision("s2", "unsupported"),
+                        {"id": "s3", "verdict": "broken"},
+                    ]
+                }
+            )
+        return schema.model_validate(
+            {
+                "decisions": [
+                    decision(
+                        key,
+                        "unsupported" if key in {"check-1", "check-3", "check-4"} else "supported",
+                    )
+                    for key in supplied
+                ]
+            }
+        )
+
+    result = await grounding_rows(packet, reviewer, cache, checkpoint, tuple)
+    assert set(result) == {"s1", "s3"}
+    assert calls[-1] == ["s2", "s3"]
+    resumed = await grounding_rows(packet, reviewer, cache, checkpoint, tuple)
+    assert set(resumed) == {"s1", "s3"}
+    assert calls[-2:] == [["s2"], ["s2"]]
+
+
+async def test_section_repairs_omissions_before_edit_and_rechecks_new_facts(monkeypatch):
+    proposal, facts, evidence, *scope = material()
+    plan = plan_from_proposal(proposal, facts, evidence, *scope)
+    plan.factual.status = plan.structural.status = "passed"
+    refs = sorted(clause_map(plan), key=lambda ref: clause_map(plan)[ref][1].fact_id)
+    notes = FrameCitations(notes=[FrameCitation(id=ref, essential=True) for ref in refs])
+    initial = "Ron opened the gate and carried Mira through it."
+    repaired = ["Mira tried to open the gate.", "Ron opened the gate."]
+    replacement = "Mira rode through the gate with Ron."
+    order = []
+
+    def draft(sentences, frame_ids):
+        return bind_writing_notes(
+            ProseDraft.model_validate(
+                {
+                    "paragraphs": [
+                        {
+                            "claims": [
+                                {"text": text, "clauses": [ref]}
+                                for text, ref in zip(sentences, frame_ids, strict=True)
+                            ]
+                        }
+                    ]
+                }
+            ),
+            plan,
+            notes,
+            "Gate",
+        )
+
+    async def compose(*args, repair=None, edit=None, **kwargs):
+        if repair:
+            order.append("repair")
+            assert repair["targets"][0]["missing"] == ["1"]
+            return draft(repaired, ["1", "2"])
+        if edit:
+            order.append("edit")
+            assert edit["protected_frames"] == ["1", "2"]
+            return draft([replacement], ["2"])
+        order.append("initial")
+        return draft([initial], ["2"])
+
+    async def reviewer(prompt, schema, task):
+        packet = json.loads(prompt.split("\n", 1)[1])
+        if "paragraphs" in packet:
+            order.append("editorial")
+            return schema.model_validate(
+                {
+                    "editorial_issues": ["The sentences need a smoother transition."],
+                    "originality_issues": [],
+                    "coverage_issues": [],
+                    "revise_paragraphs": [1],
+                }
+            )
+        rejected = {"check-1", "check-3", "check-4"}
+        if "s1" in packet:
+            order.append("ground")
+            if packet["s1"]["sentence"] in {initial, replacement}:
+                rejected.add("s1")
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {
+                        "id": ref,
+                        "verdict": "unsupported" if ref in rejected else "supported",
+                        "reason": "Evidence checked",
+                    }
+                    for ref in packet
+                ],
+            }
+        )
+
+    async def checkpoint():
+        pass
+
+    monkeypatch.setattr(arc_prose, "compose_reconstruction", compose)
+    diagnostics = {}
+    result, assessment = await arc_prose.compose_grounded_section(
+        Reconstruction(),
+        plan,
+        notes,
+        "Gate",
+        reviewer,
+        {},
+        checkpoint,
+        tuple,
+        diagnostics=diagnostics,
+    )
+    assert order[:6] == ["initial", "ground", "repair", "ground", "editorial", "edit"]
+    assert order[6] == "ground"
+    assert diagnostics["edit_withheld"] is True
+    assert diagnostics["edited_review"]["claims"][0]["verdict"] == "unsupported"
+    assert result.paragraphs[0].text == " ".join(repaired)
+    assert not review_ok(assessment, 2)
 
 
 def test_scene_checkpoint_depends_on_neighbor_relationships_and_notes():
@@ -1270,22 +1424,27 @@ async def test_scene_review_preserves_context_and_rejects_unknown_archive_anchor
         "Bridge",
     )
 
+    checkpoints = []
+
     async def checkpoint() -> None:
-        pytest.fail("An invalid archive anchor must not be saved")
+        checkpoints.append(True)
 
     async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
         packet = json.loads(prompt.split("\n", 1)[1])
-        assert packet["s2"]["nearby_prose"] == ["Ada was at the bridge."]
-        assert packet["s2"]["archive_alternatives"] == {
-            "a1": "At the bridge Ada raised the lantern."
-        }
+        if "s2" in packet:
+            assert packet["s2"]["nearby_prose"] == "Ada was at the bridge."
+            assert packet["s2"]["archive_alternatives"] == {
+                "a1": "At the bridge Ada raised the lantern."
+            }
         return schema.model_validate(
             {
                 "decisions": [
                     {
                         "id": key,
-                        "verdict": "supported",
-                        "reason": "Accepted",
+                        "verdict": "unsupported"
+                        if key in {"check-1", "check-3", "check-4"}
+                        else "supported",
+                        "reason": "Evidence checked",
                         "anchors": ["made-up-id"] if key == "s2" else [],
                     }
                     for key in packet
@@ -1293,8 +1452,10 @@ async def test_scene_review_preserves_context_and_rejects_unknown_archive_anchor
             }
         )
 
-    with pytest.raises(ValueError, match="unavailable archive anchor"):
-        await assess_in_batches(draft, plan, notes, infer, {}, checkpoint)
+    review = await assess_in_batches(draft, plan, notes, infer, {}, checkpoint)
+    assert [c.index for c in review.claims] == [0]
+    assert review.grounding_unavailable == [1]
+    assert checkpoints == [True]
 
 
 def test_scene_prose_keeps_reader_paragraphs_and_rejects_foreign_citations():

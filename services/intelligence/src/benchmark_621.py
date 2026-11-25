@@ -24,19 +24,12 @@ from src.application.arc_contracts import (
 from src.application.arc_intelligence import ArcIntelligence, article_markdown
 from src.application.arc_prose import (
     SECTION_REVISION,
-    GroundingBatch,
     PlainScene,
     Propositions,
-    ProseDraft,
     SceneProse,
-    assess_in_batches,
-    bind_writing_notes,
+    compose_grounded_section,
     frame_citations,
-    prose_spans,
-    section_writing_packet,
     validate_propositions,
-    validate_scene_alignment_order,
-    write_and_align,
 )
 from src.application.arc_reconstruction import Reconstruction, build_discourse
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
@@ -87,6 +80,7 @@ SCOPES: dict[str, tuple[str, list[tuple[str, str | None, str | None]]]] = {
 class MemoryPresentation:
     def __init__(self) -> None:
         self.rows: dict[UUID, dict[str, Any]] = {}
+        self.prose_checkpoint: Path | None = None
 
     async def get(self, identifier: UUID) -> dict[str, Any] | None:
         return self.rows.get(identifier)
@@ -113,6 +107,10 @@ class MemoryPresentation:
             evidence_fingerprint=evidence,
             grounding_status=status,
         )
+        if kind == "arc_prose_batches" and self.prose_checkpoint is not None:
+            temporary = self.prose_checkpoint.with_suffix(".tmp")
+            temporary.write_text(json.dumps(payload), encoding="utf8")
+            temporary.replace(self.prose_checkpoint)
 
 
 class BenchmarkArc(ArcIntelligence):
@@ -142,6 +140,8 @@ async def main() -> None:
     parser.add_argument("--reconstruction-only", action="store_true")
     parser.add_argument("--reuse-checkpoint", type=Path)
     parser.add_argument("--writer-only", action="store_true")
+    parser.add_argument("--grounded-replay", action="store_true")
+
     parser.add_argument("--unresolved-clause", action="append", default=[])
     parser.add_argument("--retry-relationships", action="store_true")
     parser.add_argument("--recompose", action="store_true")
@@ -154,6 +154,8 @@ async def main() -> None:
         parser.error("Reconstruction-only runs require --verified-frames")
     if args.reuse_checkpoint and not (args.verified_frames and args.original and args.autonomous):
         parser.error("Checkpoint reuse requires a new autonomous verified-frame benchmark")
+    if args.grounded_replay and not args.writer_only:
+        parser.error("Grounded replay requires the saved writer benchmark")
     if args.writer_only and not args.reuse_checkpoint:
         parser.error("A writer-only run requires a saved reconstruction checkpoint")
     if args.unresolved_clause and not args.writer_only:
@@ -196,7 +198,11 @@ async def main() -> None:
         if not args.handoff:
             parser.error("Verified frame runs require --handoff")
         folder = Path("../../.tmp") / (
-            "benchmark625-flow" if args.writer_only else "benchmark625-recovery-check"
+            "benchmark625-grounded"
+            if args.grounded_replay
+            else "benchmark625-flow"
+            if args.writer_only
+            else "benchmark625-recovery-check"
         )
     folder /= section_key
     if args.freeze:
@@ -358,7 +364,7 @@ async def main() -> None:
     prior = []
     writing_notes = None
     result_path = folder / "result.json"
-    if result_path.exists() and not (args.resume_review or args.compose):
+    if result_path.exists() and not (args.resume_review or args.compose or args.writer_only):
         raise ValueError("This fixed dossier already has a saved result. Resume the saved review.")
     if args.resume_review or args.compose or args.stabilize or args.original:
         saved_path = args.reuse_checkpoint or (
@@ -412,6 +418,11 @@ async def main() -> None:
             memory.rows[
                 ArcIntelligence.identifier(section.id, "arc_prose_batches", evidence.revision)
             ] = saved["review_batches"]
+    if args.grounded_replay and result_path.exists():
+        previous = json.loads(result_path.read_text(encoding="utf8"))
+        if previous["input_revision"] != evidence.revision:
+            raise ValueError("Saved writer budget belongs to a different evidence revision")
+        prior = previous["provider_usage"]
     router = create_inference(settings)
     router.restore_budget(prior)
     review_continuation = 0
@@ -471,7 +482,13 @@ async def main() -> None:
         )
         print(task, result.usage.provider, result.usage.status, flush=True)
         if args.writer_only and schema is PlainScene:
-            stage = "revised" if prompt.startswith(SECTION_REVISION) else "first-draft"
+            stage = (
+                "revised"
+                if prompt.startswith(SECTION_REVISION)
+                else "factual-repair"
+                if prompt.startswith("Repair only")
+                else "first-draft"
+            )
             (folder / f"{stage}.md").write_text(
                 "\n\n".join(PlainScene.model_validate(result.value).paragraphs) + "\n",
                 encoding="utf8",
@@ -510,6 +527,8 @@ async def main() -> None:
         return result.value
 
     if args.writer_only:
+        section = ArcSectionDossier.model_validate(saved["dossier"]["sections"][0])
+        dossier.sections = [section]
         writer_plan = NarrativeDevelopmentPlan.model_validate(
             saved["stored_plan"]["payload"]["plan"]
         )
@@ -531,101 +550,96 @@ async def main() -> None:
             scene.gaps.extend(f"Unresolved clause {ref}" for ref in scene.missing_essential)
         state.beats.clear()
         build_discourse(state, writer_plan)
-        notes = frame_citations(state, writer_plan)
+        section.development_plan = writer_plan
+        memory.rows[service.identifier(section.id, "arc_reconstruction", evidence.revision)] = {
+            "knowledge_revision": section.revision,
+            "payload": state.model_dump(mode="json"),
+        }
         cache_path = folder / "writer-checkpoint.json"
-        cache: dict[str, dict[str, object]] = (
-            json.loads(cache_path.read_text(encoding="utf8")) if cache_path.exists() else {}
-        )
-        diagnostics: dict[str, Any] = {}
-        packet = section_writing_packet(state, writer_plan, notes, title)
+        if not cache_path.exists() and args.grounded_replay:
+            cache_path = folder.parent.parent / "benchmark625-flow" / section_key / cache_path.name
+        cache = json.loads(cache_path.read_text(encoding="utf8")) if cache_path.exists() else {}
+        cache_id = service.identifier(section.id, "arc_prose_batches", evidence.revision)
+        memory.rows[cache_id] = {"knowledge_revision": section.revision, "payload": cache}
+        memory.prose_checkpoint = folder / "writer-checkpoint.json"
+        diagnostic: dict[str, Any] = {}
 
         async def checkpoint() -> None:
-            cache_path.write_text(json.dumps(cache), encoding="utf8")
+            if memory.prose_checkpoint is not None:
+                temporary = memory.prose_checkpoint.with_suffix(".tmp")
+                temporary.write_text(json.dumps(cache), encoding="utf8")
+                temporary.replace(memory.prose_checkpoint)
 
-        assessment: dict[str, Any] = {}
-        try:
-            paragraphs, _ = await write_and_align(
-                packet, infer, cache, checkpoint, diagnostics=diagnostics
-            )
-            draft = bind_writing_notes(ProseDraft(paragraphs=paragraphs), writer_plan, notes, title)
-            (folder / "aligned-draft.json").write_text(
-                draft.model_dump_json(indent=2), encoding="utf8"
-            )
-            validate_scene_alignment_order(draft, state, writer_plan)
-            review = await assess_in_batches(
-                draft, writer_plan, notes, infer, cache, checkpoint, reconstruction=state
-            )
-            assessment = review.model_dump(mode="json")
-        except (InferenceFailure, ValueError) as error:
-            assessment = {"halted": getattr(error, "code", str(error))}
-            if prose := diagnostics.get("revision") or diagnostics.get("selected"):
-                spans = prose_spans(PlainScene(paragraphs=prose))
-                diagnostic_checks: list[dict[str, Any]] = []
-                for start in range(0, len(spans), 5):
-                    claims = {
-                        str(i): text
-                        for i, (_, text) in enumerate(spans[start : start + 5], start + 1)
-                    }
-                    try:
-                        checked = GroundingBatch.model_validate(
-                            await infer(
-                                "For every numbered sentence return the ID, verdict and reason. "
-                                "Check whether all its factual claims, including inferred cause, "
-                                "location, timing and participant identity, follow from the "
-                                "available frames or explicit links. Flag unsupported or uncertain "
-                                "sentences and identify the exact added detail. This is a "
-                                "diagnostic check without citations. Use an empty anchors array.\n"
-                                + json.dumps(
-                                    {
-                                        "claims": claims,
-                                        "frames": {
-                                            i: {
-                                                k: f[k]
-                                                for k in ("action", "roles", "modality", "negated")
-                                                if k in f
-                                            }
-                                            for i, f in packet["frames"].items()
-                                        },
-                                        "relationships": packet["relationships"],
-                                    },
-                                    ensure_ascii=False,
-                                ),
-                                GroundingBatch,
-                                "presentation_verification",
-                            )
-                        )
-                    except (InferenceFailure, ValueError) as diagnostic_error:
-                        diagnostic_checks.append({"unavailable": str(diagnostic_error)})
-                        continue
-                    decision_ids = [decision.id for decision in checked.decisions]
-                    diagnostic_checks.append(
-                        {
-                            "claims": claims,
-                            "incomplete": len(decision_ids) != len(claims)
-                            or set(decision_ids) != claims.keys(),
-                            **checked.model_dump(mode="json"),
-                        }
-                    )
-                assessment["unaligned_diagnostic_review"] = diagnostic_checks
-        finally:
-            (folder / "writer-audit.json").write_text(
-                json.dumps(
-                    {
-                        "publication": "diagnostic_only",
-                        "excluded_clauses": sorted(unresolved),
-                        "scene_gaps": {
-                            scene.title: scene.missing_essential
-                            for scene in state.scenes
-                            if scene.missing_essential
-                        },
-                        "assessment": assessment,
-                        "composition": diagnostics,
-                        "provider_usage": providers(),
-                    },
-                    indent=2,
+        def reviewer_model() -> tuple[Any, ...]:
+            usage = next(
+                (
+                    row
+                    for row in reversed(providers())
+                    if row["task"] == "presentation_verification"
+                    and row["status"] in {"ok", "cache_hit"}
                 ),
-                encoding="utf8",
+                {},
             )
+            return tuple(usage.get(key) for key in ("provider", "model", "model_digest"))
+
+        try:
+            await service.compose(
+                dossier, evidence.revision, infer, providers, section_keys=[section_key]
+            )
+            if not state.ready:
+                try:
+                    await compose_grounded_section(
+                        state,
+                        writer_plan,
+                        frame_citations(state, writer_plan),
+                        title,
+                        infer,
+                        cache,
+                        checkpoint,
+                        reviewer_model,
+                        diagnostics=diagnostic,
+                        can_review=can_review,
+                        diagnostic_partial=True,
+                    )
+                except (InferenceFailure, ValueError) as error:
+                    diagnostic["halted"] = getattr(error, "code", str(error))
+        finally:
+            (folder / "writer-checkpoint.json").write_text(
+                json.dumps(memory.rows[cache_id]["payload"]), encoding="utf8"
+            )
+            article = memory.rows.get(
+                service.identifier(A, "arc_article", evidence.revision), {}
+            ).get("payload")
+            result = {
+                "dossier": dossier.model_dump(mode="json"),
+                "article": article,
+                "scene_gaps": {
+                    scene.title: scene.missing_essential
+                    for scene in state.scenes
+                    if scene.missing_essential
+                },
+                "provider_usage": prior + providers(),
+                "input_revision": evidence.revision,
+                "diagnostic_only": diagnostic,
+            }
+            pending = memory.rows.get(
+                service.identifier(section.id, "arc_pending_review", evidence.revision), {}
+            ).get("payload")
+            if pending:
+                result["selected_draft"] = pending["draft"]
+                (folder / "selected-draft.md").write_text(
+                    "# Controlled draft\n\n"
+                    + "\n\n".join(paragraph["text"] for paragraph in pending["draft"]["paragraphs"])
+                    + "\n",
+                    encoding="utf8",
+                )
+            elif prose := diagnostic.get("selected") or diagnostic.get("initial"):
+                (folder / "selected-draft.md").write_text(
+                    "# Withheld diagnostic draft\n\n" + "\n\n".join(prose) + "\n",
+                    encoding="utf8",
+                )
+            result_path.write_text(json.dumps(result, indent=2), encoding="utf8")
+            (folder / "article.md").write_text(article_markdown(result), encoding="utf8")
         return
 
     try:
