@@ -612,3 +612,104 @@ async def test_salvage_keeps_entailed_claims_and_rereviews_the_projection():
     assert rejections[0].salvaged and rejections[0].claims == [1]
     plain, plain_withheld, _ = await review_passages([paragraph], support, infer)
     assert plain == [] and plain_withheld == 1
+
+
+async def test_coverage_pass_continues_the_account_over_uncited_assertions():
+    from uuid import uuid4
+
+    from src.application.arc_contracts import ArcDossier, DevelopmentEvidence
+    from src.application.arc_understanding import build_arc_understanding
+
+    statements = [f"Mira opened door {n}." for n in range(1, 7)]
+    source, passage = uuid4(), uuid4()
+    facts, units = [], []
+    for n, text in enumerate(statements):
+        facts.append(
+            {
+                "id": f"f{n}",
+                "target_id": f"t{n}",
+                "payload": {"atomic": {"statement": text}},
+                "sources": [
+                    {
+                        "id": str(source),
+                        "passage_id": str(passage),
+                        "content_hash": "h",
+                        "quote": text,
+                        "quote_start": n * 40,
+                        "quote_end": n * 40 + len(text),
+                        "provenance": {
+                            "position_basis": "broadcast-presentation",
+                            "presentation_position": n + 1,
+                        },
+                    }
+                ],
+            }
+        )
+        units.append(
+            DevelopmentEvidence(
+                id=f"u{n}",
+                source_id=source,
+                source_hash="h",
+                passage_id=passage,
+                passage_hash="p",
+                passage_start=0,
+                start=n * 40,
+                end=n * 40 + len(text),
+                text=text,
+                source_group="g",
+            )
+        )
+    dossier = ArcDossier(
+        arc_id=uuid4(),
+        universe_id=uuid4(),
+        continuity_id=uuid4(),
+        title="Doors",
+        perspective="full_lore",
+        spoiler_position=None,
+        source_range=(1, 6),
+        accepted_facts=facts,
+        sections=[],
+        reconstruction={},
+        revision="r",
+    )
+    continuation_prompts = []
+
+    async def infer(prompt, schema, _task):
+        data = json.loads(prompt.split("\n", 1)[1])
+        if schema is ArcAccountDraft and "uncovered" in data:
+            continuation_prompts.append(data)
+            ids = list(data["uncovered"])
+            return schema.model_validate(
+                {
+                    "paragraphs": [
+                        {"claims": [{"text": data["uncovered"][i], "fact_ids": [i]} for i in ids]}
+                    ]
+                }
+            )
+        if schema is ArcAccountDraft:
+            return schema.model_validate(
+                {"paragraphs": [{"claims": [{"text": "Mira opened door 1.", "fact_ids": ["1"]}]}]}
+            )
+        if schema is ArcEntailmentBatch:
+            rows = data.get("claims") or [{"index": i} for i, _ in enumerate(CALIBRATION)]
+            return schema.model_validate(
+                {
+                    "decisions": [
+                        {
+                            "index": r["index"],
+                            "finding": "entailed"
+                            if "cases" not in data or CALIBRATION[r["index"]]["expected"]
+                            else "not_established",
+                            "reason": "Owned check",
+                        }
+                        for r in rows
+                    ]
+                }
+            )
+        return schema(coherent=True, complete=True)
+
+    document = await build_arc_understanding(dossier, units, infer)
+    assert len(continuation_prompts) == 1 and len(continuation_prompts[0]["uncovered"]) == 5
+    assert continuation_prompts[0]["established"] == ["Mira opened door 1."]
+    assert [p.text for p in document.paragraphs][0] == "Mira opened door 1."
+    assert document.uncited_assertions == 0 and len(document.paragraphs) == 2

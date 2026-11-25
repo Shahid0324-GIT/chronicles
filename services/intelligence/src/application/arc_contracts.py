@@ -385,6 +385,7 @@ class ParagraphRejection(StructuredModel):
     claims: list[int] = Field(default_factory=list)
     reasons: list[str] = Field(default_factory=list, max_length=8)
     salvaged: bool = False
+    stage: Literal["draft", "continuation"] = "draft"
 
 
 class ArcUnderstandingDocument(StructuredModel):
@@ -395,6 +396,7 @@ class ArcUnderstandingDocument(StructuredModel):
     coverage: ArcAccountCoverage
     withheld_paragraphs: int = 0
     rejections: list[ParagraphRejection] = Field(default_factory=list)
+    uncited_assertions: int = 0
 
 
 class ArcOutlinePart(StructuredModel):
