@@ -765,9 +765,29 @@ class ResearchWorkflow:
                 self.policy(state).max_queries,
             )
             if self.targeted_arc_research(request):
-                # The per-round allowance must reach actual evidence queries before
-                # generic expansions of the (often lengthy) user objective.
-                queries = list(dict.fromkeys([*plan.model_dump()["queries"], *queries]))[
+                arc = state.get("arc_research", {})
+                survey = arc.get("survey") or {}
+                proposed = plan.model_dump()
+                generated = [
+                    q
+                    for q in [*proposed["queries"], *proposed["questions"]]
+                    if 3 <= len(q.split()) <= 12
+                ]
+                if arc.get("understanding_status"):
+                    gap_terms = terms(" ".join(arc.get("questions", [])))
+                    generated.sort(key=lambda q: -len(gap_terms & terms(q)))
+                if not arc.get("understanding_status") and survey.get("source_range"):
+                    first, last = survey["source_range"]
+                    coordinate = (
+                        "chapters"
+                        if survey.get("position_basis") == "manga-chapter"
+                        else "positions"
+                    )
+                    arc_terms = (
+                        f"{context['universe']} {survey['title']} {coordinate} {first}-{last}"
+                    )
+                    generated = [f"{arc_terms} review", *generated, f"{arc_terms} story summary"]
+                queries = list(dict.fromkeys([*generated, *queries]))[
                     : self.policy(state).max_queries
                 ]
             state = {
@@ -2404,17 +2424,37 @@ class ResearchWorkflow:
             # This prompt contains only source-grounded candidate names, IDs and passages.
             return await self.infer(state, prompt, schema, task, state.get("public_only", False))
 
+        passages = await self.selected_passages(state)
+        if request.arc_id:
+            anchors = {
+                e["passage_id"]
+                for c in state.get("candidates", [])
+                for e in c["payload"].get("evidence", [])
+            }
+            selected = []
+            remaining = self.policy(state).dossier_tokens
+            for passage in sorted(passages, key=lambda p: str(p.id) not in anchors):
+                cost = token_estimate(passage.text)
+                if cost <= remaining:
+                    selected.append(passage)
+                    remaining -= cost
+            passages = selected
         try:
             candidates = await self.knowledge.relationships(
                 UUID(state["job_id"]),
                 state.get("candidates", []),
                 state.get("resolutions", {}),
-                await self.selected_passages(state),
+                passages,
                 infer,
                 grounded=request.narrative_research or bool(request.arc_id),
             )
         except InferenceFailure as failure:
-            if failure.code != "stage_model_budget_exhausted":
+            invalid_request = (
+                request.arc_id
+                and failure.code == "provider_unavailable"
+                and "provider_invalid_request" in failure.issues
+            )
+            if failure.code != "stage_model_budget_exhausted" and not invalid_request:
                 raise
             # Optional new edge discovery is withheld. Existing literal event edges
             # must still pass the verifier and every publication invariant.
@@ -2425,7 +2465,9 @@ class ResearchWorkflow:
                     dict.fromkeys(
                         [
                             *state.get("errors", []),
-                            "additional_relationship_analysis_budget_exhausted",
+                            "additional_relationship_analysis_provider_invalid_request"
+                            if invalid_request
+                            else "additional_relationship_analysis_budget_exhausted",
                         ]
                     )
                 ),
@@ -2510,7 +2552,7 @@ class ResearchWorkflow:
                     self.policy(state),
                     depth=state.get("iteration", 1),
                 )
-        if self.atlas:
+        if self.atlas and not request.arc_id:
             state = await self.reconstruction_stage({**state, "publication": publication}, request)
         if self.memory and self.atlas and state.get("policy"):
             state = await self.assess_coverage({**state, "publication": publication})
@@ -2973,12 +3015,12 @@ class ResearchWorkflow:
 
     async def narrative_builder(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
-        state = await self.reconstruction_stage(state, request)
         if request.arc_id:
             state = await self.arc_stage(
                 state, request, compose=request.compose_presentations or request.presentation_only
             )
             return await self.snapshot("narrative_builder", state)
+        state = await self.reconstruction_stage(state, request)
         enough = (
             not state.get("policy")
             or not self.policy(state).presentation_requires_coverage
@@ -3159,7 +3201,6 @@ class ResearchWorkflow:
         survey_only: bool = False,
     ) -> ResearchState:
         from src.application.arc_intelligence import ArcIntelligence
-        from src.application.arc_prose import PlainScene, Propositions
 
         if not self.atlas or not request.arc_id:
             return state
@@ -3167,34 +3208,7 @@ class ResearchWorkflow:
         targeted = self.targeted_arc_research(request)
         previous = state.get("arc_research", {})
 
-        async def can_review(writing: int, checking: int) -> bool:
-            if request.research_policy is None:
-                return True
-            async with self.transactions() as archive:
-                job_id = UUID(state["job_id"])
-                current = await archive.get_job(job_id)
-                events = await archive.events(job_id)
-            ledger = budget_ledger(events, (current or {}).get("provider_usage", []))
-            policy = self.policy(state)
-            limit = min(
-                policy.max_model_calls, getattr(self.inference, "max_calls", policy.max_model_calls)
-            )
-            if sum(r["calls"] for r in ledger.values()) + writing + checking > limit:
-                return False
-            limits = getattr(self.inference, "stage_limits", {})
-            for task, required in (
-                ("presentation", writing),
-                ("presentation_verification", checking),
-            ):
-                if ledger.get(task, {}).get("calls", 0) + required > limits.get(task, limit):
-                    return False
-            # The router also checks the full prompt and schema estimates on each call.
-            return (
-                sum(r["tokens"] for r in ledger.values()) + 4000 * (writing + checking)
-                <= policy.max_tokens
-            )
-
-        service = ArcIntelligence(self.atlas, self.atlas.presentations, self.retrieval, can_review)
+        service = ArcIntelligence(self.atlas, self.atlas.presentations, self.retrieval)
 
         async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
             # The whole current dossier participates in organization. Permission
@@ -3229,14 +3243,13 @@ class ResearchWorkflow:
                     schema,
                     task,
                     public,
-                    reserve_review_calls=2 if schema in (Propositions, PlainScene) else 0,
                 )
             finally:
                 state.pop("arc_inference_source_ids", None)
 
         offset = len(self.inference.usage)
         try:
-            result = await service.rebuild(
+            result = await service.rebuild_understanding(
                 request.universe_id,
                 request.continuity_id,
                 request.arc_id,
@@ -3245,8 +3258,6 @@ class ResearchWorkflow:
                 lambda: [asdict(u) for u in self.inference.usage[offset:]],
                 compose=compose,
                 survey_only=survey_only,
-                retry_withheld=request.retry_withheld_presentations and (compose or not targeted),
-                section_keys=request.arc_section_keys,
                 allowed_sources=request.presentation_source_ids,
             )
         except (ValueError, InferenceFailure) as error:
@@ -3280,19 +3291,20 @@ class ResearchWorkflow:
             else service.research_questions(dossier, request.arc_section_keys)
         )[: self.policy(state).max_leads]
         prior_questions = set(previous.get("questions", []))
-        fact_ids = sorted(
-            {
-                fact_id
-                for section in dossier.get("sections", [])
-                if not request.arc_section_keys
-                or section["plan"]["key"] in request.arc_section_keys
-                for binding in section.get("developments", [])
-                for fact_id in binding["fact_ids"]
-            }
+        account = dossier.get("understanding") or {}
+        fact_ids = (
+            survey.get("fact_ids", [])
+            if survey_only
+            else sorted({i for p in account.get("paragraphs", []) for i in p["fact_ids"]})
         )
         essential_progress = bool(
-            set(fact_ids) - set(previous.get("fact_ids", []))
-            and (prior_questions - set(questions) or not prior_questions and questions)
+            questions
+            and (
+                not survey_only
+                and not previous.get("understanding_status")
+                or set(fact_ids) - set(previous.get("fact_ids", []))
+                and prior_questions - set(questions)
+            )
         )
         state["arc_research"] = {
             "arc_id": str(request.arc_id),
@@ -3301,6 +3313,9 @@ class ResearchWorkflow:
             "essential_progress": essential_progress,
             "fact_ids": fact_ids,
             "revision": dossier.get("revision"),
+            "understanding_status": survey.get("understanding_status")
+            if survey_only
+            else account.get("status"),
             "sections": [
                 {
                     "key": s["plan"]["key"],
@@ -3312,6 +3327,25 @@ class ResearchWorkflow:
             "questions": questions,
             "article_quality": (result.get("article") or {}).get("quality"),
         }
+        if account:
+            coverage = state.get("coverage", {})
+            complete = account.get("status") == "qualified"
+            article_ok = bool((result.get("article") or {}).get("quality", {}).get("complete"))
+            outcome = coverage.get("outcome")
+            if outcome not in {"BLOCKED_BY_SOURCE_ACCESS", "BUDGET_EXHAUSTED"}:
+                outcome = (
+                    "SUFFICIENT_FOR_PRESENTATION"
+                    if complete and (not compose or article_ok)
+                    else "PARTIAL_COVERAGE"
+                )
+            state["coverage"] = {
+                **coverage,
+                "outcome": outcome,
+                "arc_understanding_status": account["status"],
+                "article_validated": article_ok,
+            }
+            if request.presentation_only and article_ok:
+                state["verified"] = 1
         if self.memory and questions and not request.presentation_only:
             await ResearchFrontierService(self.memory).discover(
                 request.universe_id,

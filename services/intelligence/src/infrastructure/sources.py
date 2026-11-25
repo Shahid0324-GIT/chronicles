@@ -443,14 +443,19 @@ class SearxngSearch:
             finally:
                 self.last_search = time.monotonic()
         accepted = []
+        has_absolute_url = False
         seen: set[str] = set()
         for item in results:
             try:
                 if not isinstance(item, dict) or not isinstance(item.get("url"), str):
                     continue
+                parsed = urlsplit(item["url"])
+                if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+                    continue
+                has_absolute_url = True
                 candidate_policy = self.policy
                 if self.navigation_only:
-                    host = urlsplit(item["url"]).hostname or ""
+                    host = parsed.hostname
                     if host in {"localhost", "localhost.localdomain"}:
                         continue
                     try:
@@ -471,6 +476,8 @@ class SearxngSearch:
                 )
                 if len(accepted) >= min(limit, 20):
                     break
-            except (SourceRejected, KeyError):
+            except (SourceRejected, KeyError, ValueError):
                 continue
+        if results and not has_absolute_url:
+            raise SourceRejected("search_result_urls_unusable")
         return accepted

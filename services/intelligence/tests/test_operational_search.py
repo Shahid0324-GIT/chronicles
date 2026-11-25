@@ -89,6 +89,25 @@ async def test_searx_failure_is_not_a_successful_empty_search(code):
             await SearxngSearch("http://127.0.0.1:8080", PublicSourcePolicy([])).search("Owned", 2)
 
 
+async def test_searx_hostless_result_urls_report_an_upstream_failure():
+    real = httpx.AsyncClient
+
+    def client(**kwargs):
+        return real(
+            **kwargs,
+            transport=httpx.MockTransport(
+                lambda _: httpx.Response(
+                    200,
+                    json={"results": [{"url": "http:///redirect/opaque", "title": "Owned result"}]},
+                )
+            ),
+        )
+
+    with patch("src.infrastructure.sources.httpx.AsyncClient", client):
+        with pytest.raises(SourceRejected, match="search_result_urls_unusable"):
+            await SearxngSearch("http://127.0.0.1:8080", PublicSourcePolicy([])).search("Owned", 2)
+
+
 async def test_groq_health_uses_id_not_display_name():
     real = httpx.AsyncClient
 

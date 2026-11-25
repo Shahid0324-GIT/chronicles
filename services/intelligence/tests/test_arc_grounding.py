@@ -5,12 +5,9 @@ import pytest
 from src.application.arc_contracts import (
     ArcSectionDraft,
     ArcSemanticReview,
-    ArcUnderstanding,
-    DevelopmentOmission,
 )
 from src.application.arc_grounding import (
     CALIBRATION,
-    ground_understanding,
     qualify_reviewer,
     review_ok,
     validate_claims,
@@ -117,24 +114,3 @@ def test_missing_or_duplicate_semantic_verdicts_do_not_validate_prose():
     assert not review_ok(review, 2)
     review.claims.append(review.claims[0])
     assert not review_ok(review, 2)
-
-
-def test_organization_cannot_silently_drop_contextual_developments():
-    facts = [
-        fact("a", "Mira entered the observatory."),
-        fact("b", "Ron unlocked the door for Mira."),
-    ]
-    understanding = ArcUnderstanding(
-        bindings=[dict(section_key="entry", facet="action", fact_ids=["1"])]
-    )
-    with pytest.raises(ValueError, match="Every input assertion"):
-        ground_understanding(understanding, facts, {"entry"})
-    understanding.omissions = [
-        DevelopmentOmission(
-            fact_ids=["2"],
-            reason="insufficient_context",
-            explanation="Owned explicit missing context test",
-        )
-    ]
-    ground_understanding(understanding, facts, {"entry"})
-    assert understanding.omissions[0].fact_ids == ["b"]

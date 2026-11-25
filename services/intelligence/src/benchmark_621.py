@@ -42,6 +42,7 @@ from src.infrastructure.persistence.database import create_database
 from src.infrastructure.persistence.evidence_index import SqlEvidenceIndex
 from src.infrastructure.persistence.models.research import SourceDocumentModel, SourcePassageModel
 from src.infrastructure.research_runtime import build_atlas
+from src.legacy_arc_benchmark import HistoricalSectionDiagnostics
 
 U, C, A = map(
     UUID,
@@ -112,7 +113,7 @@ class MemoryPresentation:
             temporary.replace(self.prose_checkpoint)
 
 
-class BenchmarkArc(ArcIntelligence):
+class BenchmarkArc(HistoricalSectionDiagnostics):
     dossier: ArcDossier
 
     async def read(self, *args: Any, **kwargs: Any) -> dict[str, Any]:

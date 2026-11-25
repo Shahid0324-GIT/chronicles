@@ -7,7 +7,6 @@ from typing import Any
 from src.application.arc_contracts import (
     ArcSectionDraft,
     ArcSemanticReview,
-    ArcUnderstanding,
     NarrativeDevelopmentPlan,
 )
 from src.application.knowledge_presentation import Infer
@@ -23,42 +22,6 @@ def assertion(fact: dict[str, Any]) -> str:
 def assertion_context(facts: list[dict[str, Any]]) -> list[dict[str, str]]:
     # Graph entity types and target UUIDs are administrative, not story claims.
     return [{"id": str(i + 1), "statement": assertion(f)} for i, f in enumerate(facts)]
-
-
-def ground_understanding(
-    understanding: ArcUnderstanding, facts: list[dict[str, Any]], sections: set[str]
-) -> None:
-    references = {str(i + 1): f["id"] for i, f in enumerate(facts)}
-    ids = {f["id"] for f in facts}
-    for binding in understanding.bindings:
-        binding.fact_ids = [references.get(i, i) for i in binding.fact_ids]
-        if binding.section_key not in sections or not set(binding.fact_ids) <= ids:
-            raise ValueError("Unlicensed dossier assignment")
-    keys: set[tuple[str, str]] = set()
-    for development in understanding.developments:
-        coordinate = (development.section_key, development.key)
-        if coordinate in keys:
-            raise ValueError("Duplicate narrative development")
-        development.fact_ids = [references.get(i, i) for i in development.fact_ids]
-        if development.section_key not in sections or not set(development.fact_ids) <= ids:
-            raise ValueError("Unlicensed narrative development")
-        for connection in development.connections:
-            connection.fact_ids = [references.get(i, i) for i in connection.fact_ids]
-            if (development.section_key, connection.from_key) not in keys:
-                raise ValueError("Connection must reference an earlier development in this section")
-            if not set(connection.fact_ids) <= ids:
-                raise ValueError("Unlicensed development connection")
-        keys.add(coordinate)
-    accounted = {i for b in understanding.bindings for i in b.fact_ids} | {
-        i for d in understanding.developments for i in d.fact_ids
-    }
-    for omission in understanding.omissions:
-        omission.fact_ids = [references.get(i, i) for i in omission.fact_ids]
-        if not set(omission.fact_ids) <= ids:
-            raise ValueError("Unlicensed organization omission")
-        accounted.update(omission.fact_ids)
-    if accounted != ids:
-        raise ValueError("Every input assertion needs a section assignment or an explicit omission")
 
 
 def validate_claims(

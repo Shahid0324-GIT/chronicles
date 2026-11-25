@@ -1795,7 +1795,7 @@ def test_originality_check_flags_only_long_verbatim_paragraphs():
 
 @pytest.mark.asyncio
 async def test_missing_archive_context_blocks_composition_and_reuses_diagnostics():
-    from .test_arc_intelligence import arc_fixture, inference
+    from .test_arc_intelligence import arc_fixture, holistic_inference
 
     class MissingEvidence:
         async def development_evidence(self, *args):
@@ -1805,12 +1805,15 @@ async def test_missing_archive_context_blocks_composition_and_reuses_diagnostics
     service.evidence = MissingEvidence()
     calls = []
     for _ in range(2):
-        result = await service.rebuild(
-            universe, continuity, arc, 7, inference(calls), lambda: [], section_keys=["entry"]
+        result = await service.rebuild_understanding(
+            universe, continuity, arc, 7, holistic_inference(calls), lambda: []
         )
         assert result["article"]["status"] == "withheld"
-        assert result["dossier"]["sections"][0]["coverage"]["research"] == "blocked"
-    assert calls == ["planning"]
+        assert result["dossier"]["understanding"]["paragraphs"] == []
+        assert (
+            "missing_or_ineligible_archived_evidence" in result["dossier"]["organization_warnings"]
+        )
+    assert calls == []
 
 
 @pytest.mark.asyncio

@@ -48,29 +48,12 @@ class ArcSectionPlan(StructuredModel):
         return self
 
 
-class ArcPlan(StructuredModel):
-    status: Literal["provisional_not_canon"] = "provisional_not_canon"
-    sections: list[ArcSectionPlan] = Field(min_length=1, max_length=20)
-
-    @model_validator(mode="after")
-    def unique(self) -> "ArcPlan":
-        if len({s.key for s in self.sections}) != len(self.sections):
-            raise ValueError("Section keys must be unique")
-        return self
-
-
 class DevelopmentBinding(StructuredModel):
     """An editorial assignment of accepted assertions, not new story assertions."""
 
     section_key: str
     facet: Facet
     fact_ids: list[str] = Field(min_length=1, max_length=16)
-
-
-class ArcUnderstanding(StructuredModel):
-    bindings: list[DevelopmentBinding] = Field(default_factory=list, max_length=200)
-    developments: list["NarrativeDevelopment"] = Field(default_factory=list, max_length=80)
-    omissions: list["DevelopmentOmission"] = Field(default_factory=list, max_length=80)
 
 
 class DevelopmentOmission(StructuredModel):
@@ -252,6 +235,7 @@ class ArcDossier(StructuredModel):
     accepted_facts: list[dict[str, Any]]
     reconstruction: dict[str, Any]
     narrative_context: list[dict[str, Any]] = Field(default_factory=list)
+    understanding: "ArcUnderstandingDocument | None" = None
     revision: str
 
 
@@ -336,6 +320,57 @@ class ArcSemanticReview(StructuredModel):
 class ArcSectionDraft(StructuredModel):
     heading: str = Field(min_length=3, max_length=150)
     paragraphs: list[ArcParagraph] = Field(min_length=1, max_length=12)
+
+
+class ArcEvidenceQuestion(StructuredModel):
+    question: str = Field(min_length=10, max_length=500)
+    kind: Literal["missing_evidence", "archive_unresolved", "ambiguous_identity", "interpretation"]
+    essential: bool
+
+
+class ArcAccountDraft(StructuredModel):
+    paragraphs: list[ArcParagraph] = Field(min_length=1, max_length=32)
+    gaps: list[ArcEvidenceQuestion] = Field(default_factory=list, max_length=24)
+
+
+class ArcEntailment(StructuredModel):
+    index: int = Field(ge=0)
+    finding: Literal["entailed", "contradicted", "not_established"]
+    reason: str = Field(min_length=3, max_length=400)
+
+
+class ArcEntailmentBatch(StructuredModel):
+    decisions: list[ArcEntailment]
+
+
+class ArcAccountCoverage(StructuredModel):
+    coherent: bool
+    complete: bool
+    issues: list[str] = Field(default_factory=list, max_length=24)
+    search_questions: list[str] = Field(default_factory=list, max_length=24)
+    gaps: list[ArcEvidenceQuestion] = Field(default_factory=list, max_length=24)
+
+
+class ArcUnderstandingDocument(StructuredModel):
+    title: str
+    status: Literal["partial", "qualified", "review_unavailable"]
+    paragraphs: list[ArcParagraph]
+    gaps: list[ArcEvidenceQuestion]
+    coverage: ArcAccountCoverage
+    withheld_paragraphs: int = 0
+
+
+class ArcOutlinePart(StructuredModel):
+    heading: str = Field(min_length=3, max_length=150)
+    paragraphs: list[int] = Field(min_length=1)
+
+
+class ArcOutline(StructuredModel):
+    sections: list[ArcOutlinePart] = Field(min_length=1, max_length=20)
+
+
+class ArcContinuousDraft(StructuredModel):
+    sections: list[ArcSectionDraft] = Field(min_length=1, max_length=20)
 
 
 class ArcArticle(StructuredModel):
