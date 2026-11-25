@@ -13,7 +13,12 @@ from src.application.promotion import CanonicalGraphPromotionService
 from src.application.research import ResearchRequest
 from src.application.research_contracts import StructuredModel
 from src.application.research_summary import research_summary
-from src.application.research_use_cases import CancelResearch, QueueResearch, ResumeResearch
+from src.application.research_use_cases import (
+    CancelResearch,
+    QueueResearch,
+    ResumeResearch,
+    set_research_paused,
+)
 from src.application.use_cases import GetUniverse
 from src.domain.exceptions import NotFoundError
 from src.domain.knowledge import PromotionPolicy
@@ -48,6 +53,8 @@ async def job_response(archive: ResearchRepository, job_id: UUID) -> JobResponse
     job = await archive.get_job(job_id)
     if not job:
         raise NotFoundError("Research job not found")
+    if job["status"] in {"pausing", "paused"}:
+        job["status"] = "queued"
     return JobResponse(
         **{key: job[key] for key in JobResponse.model_fields if key not in {"stage", "iteration"}},
         stage=job["checkpoint"].get("active_stage") or job["checkpoint"].get("stage", "queued"),
@@ -58,7 +65,7 @@ async def job_response(archive: ResearchRepository, job_id: UUID) -> JobResponse
 @router.post("/research/jobs", response_model=JobResponse, status_code=202)
 async def create_job(command: ResearchRequest, archive: Archive, request: Request) -> JobResponse:
     settings: Settings = request.app.state.settings
-    if command.adaptive_research and command.research_policy is None:
+    if command.adaptive_research and command.arc_id is None and command.research_policy is None:
         command = command.model_copy(update={"research_policy": settings.research_focused_policy})
     use_case = QueueResearch(
         archive,
@@ -141,6 +148,18 @@ async def events(job_id: UUID, archive: Archive) -> list[dict[str, Any]]:
 @router.post("/research/jobs/{job_id}/cancel", response_model=JobResponse)
 async def cancel(job_id: UUID, archive: Archive) -> JobResponse:
     await CancelResearch(archive).execute(job_id)
+    return await job_response(archive, job_id)
+
+
+@router.post("/research/jobs/{job_id}/pause", response_model=JobResponse)
+async def pause(job_id: UUID, archive: Archive) -> JobResponse:
+    await set_research_paused(archive, job_id, True)
+    return await job_response(archive, job_id)
+
+
+@router.post("/research/jobs/{job_id}/resume", response_model=JobResponse)
+async def resume(job_id: UUID, archive: Archive) -> JobResponse:
+    await set_research_paused(archive, job_id, False)
     return await job_response(archive, job_id)
 
 

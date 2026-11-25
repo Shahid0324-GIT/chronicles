@@ -218,6 +218,14 @@ async def test_frame_review_holds_wrong_owner_and_retains_supported_speaker_role
         reconstruction, plan, notes, "Change", infer, cache, checkpoint
     )
     assert composition_requirements(reconstruction, plan, notes, cache, "Change") == (0, 2)
+    assert composition_requirements(
+        reconstruction,
+        plan,
+        notes,
+        cache,
+        "Change",
+        {"sections_in_presentation_order": [{"heading": "Previous section", "status": "ready"}]},
+    ) == (1, 5)
     assert [p.text for p in draft.paragraphs] == ["Luffy had changed. Ron opened it."]
     assert [claim.writing_note_ids for claim in draft.paragraphs[0].claims] == [["1"], ["2"]]
 

@@ -166,6 +166,9 @@ SECTION_WRITING = (
     "vary paragraph boundaries with the story. Use only frames for facts, including in "
     "the opening. The heading and scene labels do not establish facts. Do not add background "
     "from your knowledge of the characters. "
+    "When arc_context is present, use the surrounding sections to avoid repeating introductions "
+    "and to understand where this section sits. Their facts belong in their own sections. "
+    "Do not assert a new cross-section connection, even if sections are adjacent. "
     "Treat frames as individual facts and use relationships only for the exact connection "
     "they license. Presentation layers and neighboring frames guide paragraph order only. "
     "Keep independent events in separate sentences when joining them would imply someone "
@@ -426,6 +429,7 @@ def section_writing_packet(
     plan: NarrativeDevelopmentPlan,
     notes: Propositions | FrameCitations,
     heading: str,
+    arc_context: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     covered = {note.id for note in notes.notes}
     relationships = {
@@ -436,6 +440,7 @@ def section_writing_packet(
     scenes = scene_writing_packets(state, relationships)
     return {
         "section": heading,
+        **({"arc_context": arc_context} if arc_context else {}),
         "frames": {k: f for scene in scenes for k, f in scene["frames"].items()},
         "essential_frames": [str(i) for i, n in enumerate(notes.notes, 1) if n.essential],
         "scenes": [
@@ -458,8 +463,9 @@ def composition_requirements(
     notes: FrameCitations,
     cached: dict[str, dict[str, object]],
     heading: str,
+    arc_context: dict[str, Any] | None = None,
 ) -> tuple[int, int]:
-    packet = section_writing_packet(state, plan, notes, heading)
+    packet = section_writing_packet(state, plan, notes, heading, arc_context)
     writing = 1
     alignment = max(1, (len(state.beats) * 3 + 4) // 5)
     grounding = len(state.beats)
@@ -493,6 +499,7 @@ async def compose_reconstruction(
     edit: dict[str, Any] | None = None,
     diagnostics: dict[str, Any] | None = None,
     diagnostic_partial: bool = False,
+    arc_context: dict[str, Any] | None = None,
 ) -> ArcSectionDraft:
     if not state.ready and not (diagnostic_partial and state.beats):
         raise ValueError("A qualified reconstruction is required before writing")
@@ -527,7 +534,7 @@ async def compose_reconstruction(
         )
     else:
         paragraphs, _ = await write_and_align(
-            section_writing_packet(state, plan, notes, heading),
+            section_writing_packet(state, plan, notes, heading, arc_context),
             infer,
             cached,
             checkpoint,
@@ -1544,6 +1551,7 @@ async def compose_grounded_section(
     can_review: Callable[[int, int], Awaitable[bool]] | None = None,
     diagnostic_partial: bool = False,
     diagnostic_editorial: bool = False,
+    arc_context: dict[str, Any] | None = None,
 ) -> tuple[ArcSectionDraft, ArcSemanticReview]:
     async def compose(**kwargs: Any) -> ArcSectionDraft:
         return await compose_reconstruction(
@@ -1556,6 +1564,7 @@ async def compose_grounded_section(
             checkpoint,
             diagnostics=diagnostics,
             diagnostic_partial=diagnostic_partial,
+            arc_context=arc_context,
             **kwargs,
         )
 

@@ -11,6 +11,7 @@ from src.application.arc_intelligence import ArcIntelligence
 from src.application.inference import InferenceRouter
 from src.application.knowledge_contracts import SectionVerification
 from src.application.research import ResearchRequest, SourceInput
+from src.application.research_budget import DeferredInference
 from src.application.research_contracts import InferenceResult, InferenceUsage
 from src.application.research_policy import ResearchPolicy
 from src.domain.entities import now
@@ -18,6 +19,7 @@ from src.domain.research import SourceDocument, digest, passages_for
 from src.infrastructure.persistence.models import ContinuityModel
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.orchestration.research_workflow import ResearchWorkflow
+from src.research_worker import MAX_PROVIDER_DEFERRALS, defer_provider
 
 
 async def prepared(factory, *, missing_focus=False):
@@ -208,3 +210,29 @@ def test_targeted_arc_research_reopens_only_when_essential_coverage_advances():
     assert workflow.resume_stage({**state, "iteration": 2}) == "narrative_builder"
     denied = {**state, "coverage": {"outcome": "BLOCKED_BY_SOURCE_ACCESS"}}
     assert workflow.resume_stage(denied) == "narrative_builder"
+
+
+def test_whole_arc_online_request_enters_coverage_path_without_section_keys():
+    request = ResearchRequest(
+        universe_id=uuid4(),
+        continuity_id=uuid4(),
+        arc_id=uuid4(),
+        objective="Research the complete owned arc",
+        allow_search=True,
+    )
+    assert ResearchWorkflow.targeted_arc_research(request)
+    assert not ResearchWorkflow.targeted_arc_research(
+        request.model_copy(update={"allow_search": False})
+    )
+
+
+def test_provider_deferral_preserves_progress_and_active_allowance_with_bounded_attempts():
+    checkpoint = {"stage": "extractor", "deadline_at": 750.0, "candidates": ["kept"]}
+    failure = DeferredInference("review-1", 90, "rate_limited")
+    for _ in range(MAX_PROVIDER_DEFERRALS):
+        assert defer_provider(checkpoint, failure, 500.0)
+    assert not defer_provider(checkpoint, failure, 500.0)
+    assert checkpoint["provider_resume_at"] == 590.0
+    assert checkpoint["active_seconds_remaining"] == 250.0
+    assert checkpoint["candidates"] == ["kept"] and checkpoint["stage"] == "extractor"
+    assert not defer_provider(checkpoint, DeferredInference("review-2", 3, "timeout"), 750.0)

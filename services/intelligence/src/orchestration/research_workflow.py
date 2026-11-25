@@ -67,7 +67,7 @@ from src.application.relationship_contracts import (
     RelationshipInvestigation,
 )
 from src.application.research import FetchedDocument, ResearchRequest, SourceInput, SourceRejected
-from src.application.research_budget import budget_ledger, reserve_inference
+from src.application.research_budget import DeferredInference, budget_ledger, reserve_inference
 from src.application.research_contracts import (
     CandidateEntity,
     Extraction,
@@ -179,6 +179,10 @@ class ResearchState(TypedDict, total=False):
 
 
 class ResearchCancelled(Exception):
+    pass
+
+
+class ResearchPaused(Exception):
     pass
 
 
@@ -348,12 +352,14 @@ class ResearchWorkflow:
         return "end"
 
     async def check(self, state: ResearchState) -> ResearchRequest:
-        if state.get("deadline_at") is not None and time.time() >= state["deadline_at"]:
-            raise InferenceFailure("job_duration_exceeded")
         async with self.transactions() as archive:
             job = await archive.get_job(UUID(state["job_id"]))
         if not job or job["cancel_requested"]:
             raise ResearchCancelled()
+        if job.get("status") == "pausing":
+            raise ResearchPaused()
+        if state.get("deadline_at") is not None and time.time() >= state["deadline_at"]:
+            raise InferenceFailure("job_duration_exceeded")
         return ResearchRequest.model_validate(job["request"])
 
     def observed(
@@ -380,6 +386,10 @@ class ResearchWorkflow:
                             "elapsed_ms": int((time.monotonic() - started) * 1000),
                             "error": error.code
                             if isinstance(error, InferenceFailure)
+                            else error.cause
+                            if isinstance(error, DeferredInference)
+                            else "user_paused"
+                            if isinstance(error, ResearchPaused)
                             else "stage_interrupted",
                         },
                     )
@@ -434,6 +444,7 @@ class ResearchWorkflow:
         reserve_review_calls: int = 0,
     ) -> BaseModel:
         request = await self.check(state)
+        managed_arc = request.arc_id is not None and request.research_policy is None
         system = (
             ARC_PRESENTATION_RULES
             if "arc_inference_source_ids" in state
@@ -448,8 +459,10 @@ class ResearchWorkflow:
             }
             if request.arc_id:
                 identifiers.update(UUID(i) for i in state.get("arc_inference_source_ids", []))
-                if request.arc_section_keys:
-                    identifiers.update(UUID(i) for i in state.get("source_ids", []))
+                identifiers.update(
+                    UUID(i)
+                    for i in [*state.get("source_ids", []), *state.get("archive_source_ids", [])]
+                )
             if self.retrieval and identifiers:
                 async with self.retrieval.transactions() as index:
                     metadata = await index.source_metadata(
@@ -501,7 +514,7 @@ class ResearchWorkflow:
                         + (4000 if provider == "groq" else outputs[role])
                     )
                 async with self.transactions() as archive:
-                    if state.get("policy"):
+                    if state.get("policy") and not managed_arc:
                         reservations = await archive.events(UUID(state["job_id"]))
                         current = await archive.get_job(UUID(state["job_id"]))
                         completed = {
@@ -568,13 +581,34 @@ class ResearchWorkflow:
                 task,
                 public_source_content=public,
                 **(
-                    {"reserve_calls": reserve_review_calls}
-                    if isinstance(self.inference, InferenceRouter) and reserve_review_calls
+                    {"reserve_calls": reserve_review_calls, "limit_calls": not managed_arc}
+                    if isinstance(self.inference, InferenceRouter)
                     else {}
                 ),
             )
             return result.value
         except InferenceFailure as failure:
+            if (
+                request.arc_id
+                and failure.code == "provider_unavailable"
+                and (
+                    failure.retry_after > 0
+                    or set(failure.issues)
+                    & {
+                        "rate_limited",
+                        "timeout",
+                        "health_unavailable",
+                        "provider_http_error",
+                        "model_unavailable",
+                        "inference_failed",
+                    }
+                )
+            ):
+                raise DeferredInference(
+                    digest(json.dumps([task, schema.__name__, prompt])),
+                    failure.retry_after,
+                    failure.issues[0] if failure.issues else failure.code,
+                ) from failure
             if "budget" in failure.code:
                 state["errors"] = list(dict.fromkeys([*state.get("errors", []), failure.code]))
                 async with self.transactions() as archive:
@@ -593,9 +627,7 @@ class ResearchWorkflow:
     async def planner(self, state: ResearchState) -> ResearchState:
         request = await self.check(state)
         if self.atlas and self.targeted_arc_research(request) and not state.get("arc_research"):
-            state = await self.arc_stage(state, request, compose=False)
-        elif request.arc_id and self.atlas and not request.arc_section_keys:
-            state = await self.arc_stage(state, request, compose=False)
+            state = await self.arc_stage(state, request, compose=False, survey_only=True)
         async with self.transactions() as archive:
             context = await archive.context(request.universe_id, request.continuity_id)
         if self.atlas:
@@ -679,7 +711,7 @@ class ResearchWorkflow:
                 + json.dumps(
                     {
                         "objective": request.objective,
-                        "arc_section_research": {
+                        "arc_research": {
                             k: v
                             for k, v in state.get("arc_research", {}).items()
                             if k != "fact_ids"
@@ -732,6 +764,12 @@ class ResearchWorkflow:
                 profile.primary_categories if profile else [],
                 self.policy(state).max_queries,
             )
+            if self.targeted_arc_research(request):
+                # The per-round allowance must reach actual evidence queries before
+                # generic expansions of the (often lengthy) user objective.
+                queries = list(dict.fromkeys([*plan.model_dump()["queries"], *queries]))[
+                    : self.policy(state).max_queries
+                ]
             state = {
                 **state,
                 "lead_ids": [
@@ -1392,7 +1430,7 @@ class ResearchWorkflow:
 
     async def selected_passages(self, state: ResearchState) -> list[SourcePassage]:
         request = await self.check(state)
-        if request.arc_section_keys:
+        if request.arc_id:
             return await self.acquired_passages(state, request)
         async with self.transactions() as archive:
             values = await archive.get_passages(
@@ -1424,7 +1462,16 @@ class ResearchWorkflow:
     async def acquired_passages(
         self, state: ResearchState, request: ResearchRequest
     ) -> list[SourcePassage]:
-        identifiers = [UUID(i) for i in state.get("source_ids", [])]
+        survey = state.get("arc_research", {}).get("survey") or {}
+        identifiers = list(
+            dict.fromkeys(
+                UUID(i)
+                for i in [
+                    *state.get("source_ids", []),
+                    *(state.get("archive_source_ids", []) if survey else []),
+                ]
+            )
+        )
         if self.retrieval and identifiers:
             async with self.retrieval.transactions() as index:
                 metadata = await index.source_metadata(
@@ -1434,6 +1481,16 @@ class ResearchWorkflow:
                 i
                 for i in identifiers
                 if i in metadata
+                and (
+                    not survey
+                    or (
+                        metadata[i].get("position_basis") == survey["position_basis"]
+                        and type(metadata[i].get("presentation_position")) is int
+                        and survey["source_range"][0]
+                        <= metadata[i]["presentation_position"]
+                        <= survey["source_range"][1]
+                    )
+                )
                 and (
                     request.spoiler_position is None
                     or (
@@ -1462,7 +1519,7 @@ class ResearchWorkflow:
             if state.get("iteration", 1) == 1
             else (state.get("plan", {}).get("focus") or request.research_focus)
         )
-        if request.arc_section_keys:
+        if request.arc_id:
             passages = await self.acquired_passages(state, request)
         elif request.sources and not request.use_registry and not request.allow_search:
             async with self.transactions() as archive:
@@ -1535,7 +1592,7 @@ class ResearchWorkflow:
                 entry_infer,
                 request.extraction_types,
                 request.subject_names,
-                section_developments=bool(request.arc_section_keys),
+                section_developments=bool(request.arc_id),
             )
         elif self.knowledge and request.narrative_research and focus == "story":
 
@@ -1686,7 +1743,7 @@ class ResearchWorkflow:
             extraction = Extraction.model_validate(
                 (await self.infer(state, prompt, Extraction, "extraction")).model_dump()
             )
-        if (request.narrative_research or request.arc_section_keys) and self.knowledge:
+        if (request.narrative_research or request.arc_id) and self.knowledge:
             for entity in extraction.entities:
                 if entity.event:
                     context = next(
@@ -1700,7 +1757,7 @@ class ResearchWorkflow:
                     if context.get("position_basis") in {"broadcast-presentation", "manga-chapter"}:
                         entity.event["source_position"] = context.get("presentation_position")
                         entity.event["position_basis"] = context["position_basis"]
-            if not request.arc_section_keys:
+            if not request.arc_id:
                 extraction = await self.knowledge.ground_aliases(
                     UUID(state["job_id"]), extraction, passages
                 )
@@ -1731,7 +1788,7 @@ class ResearchWorkflow:
         if request.relationship_subjects and state.get("investigation"):
             return await self.atomic_verifier(state, request)
         passages = {str(p.id): p for p in await self.selected_passages(state)}
-        if request.arc_section_keys:
+        if request.arc_id:
             # Retrieval rank/window is not a validity boundary for exact citations
             # acquired by this job. Context prompts remain bounded separately below.
             acquired = await self.acquired_passages(state, request)
@@ -1818,9 +1875,9 @@ class ResearchWorkflow:
                     "Nonactual or unconfirmed reported event requires actual supporting evidence."
                 )
                 continue
-            story_verification = request.narrative_research or bool(request.arc_section_keys)
+            story_verification = request.narrative_research or bool(request.arc_id)
             comparison_passages = list(passages.values())
-            if request.arc_section_keys:
+            if request.arc_id:
                 comparison_passages = [
                     p
                     for p in comparison_passages
@@ -1838,7 +1895,7 @@ class ResearchWorkflow:
                     )
                     comparison_passages = [h.passage for h in hits]
             support_units = []
-            if request.arc_section_keys:
+            if request.arc_id:
                 support_passages = {
                     p.id: p
                     for p in [
@@ -1884,7 +1941,7 @@ class ResearchWorkflow:
                     "These units become persisted evidence. A nearby event is not automatically "
                     "support for the claim. If the attached excerpts omit necessary context, "
                     "select the additional units explicitly; otherwise choose insufficient. "
-                    if request.arc_section_keys
+                    if request.arc_id
                     else ""
                 )
                 + "EVENT names are descriptive action labels; no official event title is required. "
@@ -1896,7 +1953,7 @@ class ResearchWorkflow:
                     {
                         "continuity": state["context"]["continuity"],
                         "cross_source_passages": []
-                        if request.arc_section_keys
+                        if request.arc_id
                         else [{"id": str(p.id), "text": p.text} for p in comparison_passages],
                         "support_units": [
                             {"id": u["id"], "text": u["text"]} for u in support_units
@@ -1916,7 +1973,7 @@ class ResearchWorkflow:
             )
             verification_schema = (
                 SectionVerification
-                if request.arc_section_keys
+                if request.arc_id
                 else NarrativeVerification
                 if story_verification
                 else KnowledgeVerification
@@ -1924,7 +1981,7 @@ class ResearchWorkflow:
                 else Verification
             )
             try:
-                key = digest(prompt) if request.arc_section_keys else None
+                key = digest(prompt) if request.arc_id else None
                 if key and key in saved_verification:
                     verification = verification_schema.model_validate(saved_verification[key])
                 else:
@@ -1964,7 +2021,7 @@ class ResearchWorkflow:
                 reasons[current["id"]] = "Verifier inference unavailable: " + failure.code
                 continue
             for assessment in verification.assessments:
-                if request.arc_section_keys:
+                if request.arc_id:
                     selected_ids = set(getattr(assessment, "supporting_unit_ids", []))
                     if assessment.decision == "supported" and (
                         not selected_ids or not selected_ids <= {u["id"] for u in support_units}
@@ -2312,12 +2369,12 @@ class ResearchWorkflow:
             state.get("candidates", []),
             passages,
             infer,
-            grounded=request.narrative_research or bool(request.arc_section_keys),
+            grounded=request.narrative_research or bool(request.arc_id),
             completed=state.get("investigation", {}).get("resolution_progress")
             if request.relationship_subjects
             else None,
             progress=identity_progress if request.relationship_subjects else None,
-            source_infer=source_infer if request.arc_section_keys else None,
+            source_infer=source_infer if request.arc_id else None,
             source_revisions=source_revisions,
         )
         return await self.snapshot("identity_resolver", {**state, "resolutions": resolutions})
@@ -2354,7 +2411,7 @@ class ResearchWorkflow:
                 state.get("resolutions", {}),
                 await self.selected_passages(state),
                 infer,
-                grounded=request.narrative_research or bool(request.arc_section_keys),
+                grounded=request.narrative_research or bool(request.arc_id),
             )
         except InferenceFailure as failure:
             if failure.code != "stage_model_budget_exhausted":
@@ -2846,7 +2903,7 @@ class ResearchWorkflow:
             request.continuity_id,
             request.objective + " " + " ".join(state.get("plan", {}).get("questions", [])),
             allowed_sources=[UUID(i) for i in state["source_ids"]]
-            if request.arc_section_keys and state.get("source_ids")
+            if request.arc_id and state.get("source_ids")
             else None,
             spoiler_position=request.spoiler_position,
             names=names,
@@ -3087,7 +3144,6 @@ class ResearchWorkflow:
     def targeted_arc_research(request: ResearchRequest) -> bool:
         return bool(
             request.arc_id
-            and request.arc_section_keys
             and request.allow_search
             and request.adaptive_research
             and not request.presentation_only
@@ -3095,7 +3151,12 @@ class ResearchWorkflow:
         )
 
     async def arc_stage(
-        self, state: ResearchState, request: ResearchRequest, *, compose: bool
+        self,
+        state: ResearchState,
+        request: ResearchRequest,
+        *,
+        compose: bool,
+        survey_only: bool = False,
     ) -> ResearchState:
         from src.application.arc_intelligence import ArcIntelligence
         from src.application.arc_prose import PlainScene, Propositions
@@ -3107,6 +3168,8 @@ class ResearchWorkflow:
         previous = state.get("arc_research", {})
 
         async def can_review(writing: int, checking: int) -> bool:
+            if request.research_policy is None:
+                return True
             async with self.transactions() as archive:
                 job_id = UUID(state["job_id"])
                 current = await archive.get_job(job_id)
@@ -3181,14 +3244,17 @@ class ResearchWorkflow:
                 infer,
                 lambda: [asdict(u) for u in self.inference.usage[offset:]],
                 compose=compose,
-                reconstruct=targeted and not compose,
+                survey_only=survey_only,
                 retry_withheld=request.retry_withheld_presentations and (compose or not targeted),
                 section_keys=request.arc_section_keys,
                 allowed_sources=request.presentation_source_ids,
             )
         except (ValueError, InferenceFailure) as error:
             if isinstance(error, InferenceFailure) and (
-                compose or "budget" in error.code or error.code == "job_duration_exceeded"
+                survey_only
+                or compose
+                or "budget" in error.code
+                or error.code == "job_duration_exceeded"
             ):
                 raise
             # Editorial validation failure cannot erase accepted research or hide
@@ -3207,9 +3273,12 @@ class ResearchWorkflow:
                 )
             return state
         dossier = result.get("dossier") or {}
-        questions = service.research_questions(dossier, request.arc_section_keys)[
-            : self.policy(state).max_leads
-        ]
+        survey = result.get("survey") or previous.get("survey", {})
+        questions = (
+            survey.get("questions", [])
+            if survey_only
+            else service.research_questions(dossier, request.arc_section_keys)
+        )[: self.policy(state).max_leads]
         prior_questions = set(previous.get("questions", []))
         fact_ids = sorted(
             {
@@ -3228,6 +3297,7 @@ class ResearchWorkflow:
         state["arc_research"] = {
             "arc_id": str(request.arc_id),
             "targeted_online": targeted,
+            "survey": survey,
             "essential_progress": essential_progress,
             "fact_ids": fact_ids,
             "revision": dossier.get("revision"),
@@ -3259,7 +3329,11 @@ class ResearchWorkflow:
                     UUID(state["job_id"]),
                     "research.arc_gap_review",
                     {
-                        "phase": "composition" if compose else "reconstruction",
+                        "phase": "survey"
+                        if survey_only
+                        else "composition"
+                        if compose
+                        else "reconstruction",
                         "questions": questions,
                         "essential_progress": essential_progress,
                     },

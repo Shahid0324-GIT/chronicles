@@ -109,7 +109,9 @@ class SqlResearchRepository:
             select(ResearchJobModel)
             .where(
                 ResearchJobModel.request_hash == key,
-                ResearchJobModel.status.in_(["queued", "running", "completed", "partial"]),
+                ResearchJobModel.status.in_(
+                    ["queued", "running", "pausing", "paused", "completed", "partial"]
+                ),
                 ResearchJobModel.created_at >= now() - timedelta(hours=24),
             )
             .order_by(ResearchJobModel.created_at.desc())
@@ -205,11 +207,12 @@ class SqlResearchRepository:
         )
         if not row:
             raise NotFoundError("Research job not found")
-        if row.status not in {"queued", "running"}:
+        if row.status not in {"queued", "running", "pausing", "paused"}:
             return False
         row.cancel_requested = True
-        if row.status == "queued":
+        if row.status in {"queued", "paused"}:
             row.status = "cancelled"
+            row.error = None
         row.updated_at = now()
         await self.session.flush()
         return True

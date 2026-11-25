@@ -308,7 +308,7 @@ async def test_sources_and_identical_jobs_are_deduplicated(factory):
         assert await session.scalar(select(func.count()).select_from(SourceDocumentModel)) == 1
 
 
-async def test_research_api_queue_cancel_and_input_validation(app):
+async def test_research_api_queue_cancel_and_input_validation(app, factory):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as client:
         graph = (await client.get("/api/universes/re-zero/graph")).json()
         payload = {
@@ -327,6 +327,17 @@ async def test_research_api_queue_cancel_and_input_validation(app):
         assert response.status_code == 202
         identifier = response.json()["id"]
         assert (await client.get(f"/api/research/jobs/{identifier}/findings")).json() == []
+        paused = await client.post(f"/api/research/jobs/{identifier}/pause")
+        assert paused.status_code == 200 and paused.json()["error"] == "user_paused"
+        assert paused.json()["status"] == "queued"
+        resumed = await client.post(f"/api/research/jobs/{identifier}/resume")
+        assert resumed.status_code == 200 and resumed.json()["error"] is None
+        assert resumed.json()["status"] == "queued"
+        arc = await client.post("/api/research/jobs", json={**payload, "arc_id": str(uuid4())})
+        assert arc.status_code == 202
+        async with factory() as session:
+            scoped_job = await SqlResearchRepository(session).get_job(UUID(arc.json()["id"]))
+        assert scoped_job and scoped_job["request"]["research_policy"] is None
         assert (await client.post(f"/api/research/jobs/{identifier}/cancel")).json()[
             "status"
         ] == "cancelled"

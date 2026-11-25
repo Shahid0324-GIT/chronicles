@@ -8,6 +8,21 @@ from src.application.research_policy import ResearchPolicy
 PROTECTED_TASKS = {"verification", "presentation", "presentation_verification"}
 
 
+class DeferredInference(RuntimeError):
+    """A provider pause, separate from story and structured-output validation."""
+
+    def __init__(self, operation: str, delay: float, cause: str) -> None:
+        super().__init__(cause)
+        self.operation, self.delay, self.cause = operation, max(60.0, delay), cause
+
+
+def freeze_active_time(checkpoint: dict[str, Any], current_time: float) -> None:
+    if "deadline_at" in checkpoint:
+        checkpoint.setdefault(
+            "active_seconds_remaining", max(0, checkpoint["deadline_at"] - current_time)
+        )
+
+
 def budget_ledger(
     events: list[dict[str, Any]], usage: list[dict[str, Any]]
 ) -> dict[str, dict[str, int]]:

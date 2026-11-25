@@ -421,12 +421,18 @@ def plan_from_proposal(
             if fact and not clause.clause:
                 clause.clause = assertion(fact)
             if not fact or not clause.clause.strip() or clause.clause not in assertion(fact):
-                raise ValueError("Development clause must be an exact accepted assertion span")
+                raise DevelopmentBindingError(
+                    f"Development {candidate.key}: clause for {raw.fact_id} must be an exact "
+                    "accepted assertion span. Leave clause empty to use the entire assertion."
+                )
             if not set(clause.evidence_ids) <= by_unit.keys():
                 raise DevelopmentBindingError("Unknown development evidence")
             fact_sources = {s["id"] for s in fact["sources"]}
             if any(str(by_unit[i].source_id) not in fact_sources for i in clause.evidence_ids):
-                raise ValueError("Clause evidence is not from its accepted sources")
+                raise DevelopmentBindingError(
+                    f"Development {candidate.key}: evidence for {raw.fact_id} must come from "
+                    "that assertion's eligible evidence IDs."
+                )
             event = fact["payload"].get("event") or {}
             known_modality = {
                 "intended": "intended",
@@ -1093,21 +1099,27 @@ def planning_packet(
     facts: list[dict[str, Any]], evidence: list[DevelopmentEvidence]
 ) -> dict[str, Any]:
     sources = sorted({str(u.source_id) for u in evidence})
-    exact = {u.text: f"evidence-{i}" for i, u in enumerate(evidence, 1)}
-    return {
-        "assertions": [
+    assertions = []
+    for i, fact in enumerate(facts, 1):
+        text = assertion(fact)
+        accepted_sources = {s["id"] for s in fact["sources"]}
+        eligible = [
+            (f"evidence-{j}", u.text)
+            for j, u in enumerate(evidence, 1)
+            if str(u.source_id) in accepted_sources
+        ]
+        exact = next((ref for ref, passage in eligible if passage == text), None)
+        assertions.append(
             {
-                "id": f"fact-{i + 1}",
-                **(
-                    {"evidence_unit": exact[assertion(f)]}
-                    if assertion(f) in exact
-                    else {"text": assertion(f)}
-                ),
-                "name": f["payload"].get("name"),
-                "type": f["payload"].get("type"),
+                "id": f"fact-{i}",
+                **({"evidence_unit": exact} if exact else {"text": text}),
+                "eligible_evidence_ids": [ref for ref, _ in eligible],
+                "name": fact["payload"].get("name"),
+                "type": fact["payload"].get("type"),
             }
-            for i, f in enumerate(facts)
-        ],
+        )
+    return {
+        "assertions": assertions,
         "evidence": [
             {
                 "id": f"evidence-{i + 1}",
@@ -1134,15 +1146,17 @@ async def propose_plan(
     *,
     binding_issue: str = "",
 ) -> PlanProposal:
-    return PlanProposal.model_validate(
+    proposal = PlanProposal.model_validate(
         await infer(
             "Organize a complete source-supported section BEFORE writing prose. No prose "
             "generation. "
             "Group connected circumstances, actions, decisions, conflict, outcomes and "
             "consequences. "
-            "Use an empty clause string to preserve the whole assertion verbatim. "
-            "For a narrower clause use an exact substring. Never add a fact from context. "
+            "Select complete accepted assertions by ID. Leave clause empty. "
+            "Never write replacement assertion text or add a fact from context. "
             "Give each clause its modality/negation and the exact evidence unit IDs supporting it. "
+            "Choose evidence only from that assertion's eligible_evidence_ids. Eligibility "
+            "identifies accepted sources; the selected text must still support the clause. "
             "Copy fact-* IDs only from assertions. Copy evidence-* IDs only from evidence. "
             "For anchor_ids use evidence-* IDs already cited by a clause in that development. "
             "An attempted demonstration is not an achieved result; threatened/intended harm is "
@@ -1184,3 +1198,8 @@ async def propose_plan(
             "relationship_analysis",
         )
     )
+    # The model selects accepted assertions. Only their archived wording reaches binding.
+    for development in proposal.developments:
+        for clause in development.clauses:
+            clause.clause = ""
+    return proposal

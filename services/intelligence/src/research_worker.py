@@ -3,10 +3,12 @@
 import argparse
 import asyncio
 import time
+from typing import Any
 from uuid import UUID
 
-from sqlalchemy import select, text
+from sqlalchemy import or_, select, text
 
+from src.application.research_budget import DeferredInference, freeze_active_time
 from src.application.research_contracts import InferenceFailure
 from src.application.research_frontier import ResearchFrontierService
 from src.domain.entities import now
@@ -16,9 +18,25 @@ from src.infrastructure.persistence.models.research import ResearchJobModel
 from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.infrastructure.research_runtime import build_workflow
-from src.orchestration.research_workflow import ResearchCancelled
+from src.orchestration.research_workflow import ResearchCancelled, ResearchPaused
 
 WORKER_LOCK = 1128813135
+MAX_PROVIDER_DEFERRALS = 3
+
+
+def defer_provider(
+    checkpoint: dict[str, Any], failure: DeferredInference, current_time: float
+) -> bool:
+    attempts = dict(checkpoint.get("provider_deferrals", {}))
+    remaining = checkpoint.get("deadline_at", current_time) - current_time
+    count = attempts.get(failure.operation, 0)
+    if count >= MAX_PROVIDER_DEFERRALS or remaining <= 0:
+        return False
+    attempts[failure.operation] = count + 1
+    checkpoint["provider_deferrals"] = attempts
+    checkpoint["provider_resume_at"] = current_time + failure.delay
+    checkpoint["active_seconds_remaining"] = remaining
+    return True
 
 
 async def worker(settings: Settings, once: bool = False, job_id: UUID | None = None) -> int:
@@ -36,10 +54,20 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
             try:
                 async with factory() as session, session.begin():
                     interrupted = await session.scalars(
-                        select(ResearchJobModel).where(ResearchJobModel.status == "running")
+                        select(ResearchJobModel).where(
+                            ResearchJobModel.status.in_(["running", "pausing"])
+                        )
                     )
                     for job in interrupted:
-                        job.status = "cancelled" if job.cancel_requested else "queued"
+                        if job.cancel_requested:
+                            job.status = "cancelled"
+                        elif job.status == "pausing":
+                            job.status = "paused"
+                            checkpoint = dict(job.checkpoint)
+                            freeze_active_time(checkpoint, time.time())
+                            job.checkpoint = checkpoint
+                        else:
+                            job.status = "queued"
                         job.updated_at = now()
                 workflow = build_workflow(settings, factory)
                 while True:
@@ -47,6 +75,15 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         query = (
                             select(ResearchJobModel)
                             .where(ResearchJobModel.status == "queued")
+                            .where(
+                                or_(
+                                    ResearchJobModel.checkpoint["provider_resume_at"]
+                                    .as_float()
+                                    .is_(None),
+                                    ResearchJobModel.checkpoint["provider_resume_at"].as_float()
+                                    <= time.time(),
+                                )
+                            )
                             .order_by(ResearchJobModel.created_at)
                             .with_for_update(skip_locked=True)
                             .limit(1)
@@ -58,13 +95,23 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         checkpoint = dict(row.checkpoint) if row else {}
                         if row:
                             row.status = "running"
+                            checkpoint.pop("provider_resume_at", None)
+                            if "active_seconds_remaining" in checkpoint:
+                                checkpoint["deadline_at"] = time.time() + checkpoint.pop(
+                                    "active_seconds_remaining"
+                                )
+                                row.error = None
                             checkpoint.setdefault(
                                 "deadline_at",
                                 time.time()
                                 + min(
                                     settings.agent_max_job_seconds,
                                     (row.request.get("research_policy") or {}).get(
-                                        "max_seconds", settings.agent_max_job_seconds
+                                        "max_seconds",
+                                        settings.research_focused_policy.max_seconds
+                                        if row.request.get("arc_id")
+                                        and row.request.get("adaptive_research")
+                                        else settings.agent_max_job_seconds,
                                     ),
                                 ),
                             )
@@ -76,6 +123,7 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                         await asyncio.sleep(1)
                         continue
                     status, error = "completed", None
+                    deferred: DeferredInference | None = None
                     try:
                         async with asyncio.timeout(max(0, checkpoint["deadline_at"] - time.time())):
                             state = await workflow.run(selected_id, checkpoint)
@@ -94,6 +142,11 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                             status = "partial"
                     except ResearchCancelled:
                         status = "cancelled"
+                    except ResearchPaused:
+                        status, error = "paused", "user_paused"
+                    except DeferredInference as failure:
+                        deferred = failure
+                        status, error = "failed", failure.cause
                     except InferenceFailure as failure:
                         status, error = (
                             (
@@ -116,15 +169,35 @@ async def worker(settings: Settings, once: bool = False, job_id: UUID | None = N
                             .with_for_update()
                         )
                         if finished_job and finished_job.cancel_requested:
-                            status = "cancelled"
+                            status, error = "cancelled", None
+                        elif finished_job and finished_job.status == "pausing":
+                            status, error = "paused", "user_paused"
+                            frozen = dict(finished_job.checkpoint)
+                            freeze_active_time(frozen, time.time())
+                            await archive.update_job(selected_id, checkpoint=frozen)
+                        if finished_job and deferred and status not in {"cancelled", "paused"}:
+                            retry_checkpoint = dict(finished_job.checkpoint)
+                            if defer_provider(retry_checkpoint, deferred, time.time()):
+                                status = "queued"
+                                await archive.update_job(selected_id, checkpoint=retry_checkpoint)
+                                await archive.event(
+                                    selected_id,
+                                    "research.provider_paused",
+                                    {
+                                        "cause": deferred.cause,
+                                        "resume_at": retry_checkpoint["provider_resume_at"],
+                                        "operation": deferred.operation,
+                                    },
+                                )
                         if finished_job and finished_job.checkpoint.get("policy"):
                             final_state = dict(finished_job.checkpoint)
                             coverage = dict(final_state.get("coverage", {}))
                             if error and ("budget" in error or error == "job_duration_exceeded"):
                                 coverage.update(outcome="BUDGET_EXHAUSTED", reason=error)
-                            else:
+                            elif not deferred and status != "paused":
                                 coverage.setdefault("outcome", "PARTIAL_COVERAGE")
-                            final_state["coverage"] = coverage
+                            if coverage:
+                                final_state["coverage"] = coverage
                             await archive.update_job(selected_id, checkpoint=final_state)
                             memory = SqlResearchMemory(session)
                             leads = await memory.leads(

@@ -8,6 +8,7 @@ from uuid import UUID
 import pytest
 
 from src.application.arc_contracts import (
+    ArcDossier,
     ArcPlan,
     ArcSectionDraft,
     ArcSemanticReview,
@@ -157,6 +158,78 @@ def inference(calls):
         raise AssertionError(schema)
 
     return infer
+
+
+async def test_arc_survey_requires_no_development_plan_and_excludes_future_sections():
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    calls = []
+
+    async def plan(prompt, schema, task):
+        calls.append(task)
+        assert schema is ArcPlan
+        assert "Mira entered the observatory." in prompt
+        return ArcPlan.model_validate(
+            {
+                "sections": [
+                    {
+                        "key": "entry",
+                        "title": "Arrival at the observatory",
+                        "objective": "Investigate entry and its missing circumstances",
+                        "first_position": 1,
+                        "questions": ["Why enter?"],
+                    },
+                    {
+                        "key": "later",
+                        "title": "After the visit",
+                        "objective": "Investigate what happened after the visit",
+                        "first_position": 6,
+                        "questions": ["Where did she go?"],
+                    },
+                ]
+            }
+        )
+
+    kwargs = dict(compose=False, survey_only=True)
+    result = await service.rebuild(universe, continuity, arc, 5, plan, lambda: [], **kwargs)
+    assert result["survey"]["source_range"] == [1, 5]
+    assert [s["key"] for s in result["survey"]["sections"]] == ["entry"]
+    assert result["survey"]["questions"] == ["Owned arc / Arrival at the observatory — Why enter?"]
+    assert (
+        await service.rebuild(universe, continuity, arc, 5, plan, lambda: [], **kwargs)
+    ) == result
+    assert calls == ["planning"]
+    assert (await service.read(universe, continuity, arc, 5))["status"] == "pending"
+
+
+async def test_arc_scope_assignment_accounts_for_ids_and_preserves_existing_scope_on_error():
+    service, universe, continuity, arc, _, _ = arc_fixture()
+    result = await service.rebuild(universe, continuity, arc, 7, inference([]), lambda: [])
+    dossier = ArcDossier.model_validate(result["dossier"])
+
+    async def assign(_, schema, task):
+        assert schema is ArcUnderstanding and task == "relationship_analysis"
+        return ArcUnderstanding.model_validate(
+            {
+                "bindings": [{"section_key": "entry", "facet": "action", "fact_ids": ["1"]}],
+                "omissions": [
+                    {
+                        "fact_ids": [str(i) for i in range(2, len(dossier.accepted_facts) + 1)],
+                        "reason": "duplicate",
+                        "explanation": "The same assertion appears more than once.",
+                    }
+                ],
+            }
+        )
+
+    await service.assign_accepted_scope(dossier, assign)
+    assert dossier.sections[0].accepted_scope_ids == [dossier.accepted_facts[0]["id"]]
+
+    async def incomplete(*_):
+        return ArcUnderstanding(bindings=[])
+
+    with pytest.raises(ValueError, match="Every input assertion"):
+        await service.assign_accepted_scope(dossier, incomplete)
+    assert dossier.sections[0].accepted_scope_ids == [dossier.accepted_facts[0]["id"]]
 
 
 async def test_dossier_survives_jobs_and_unchanged_sections_reuse_without_inference():

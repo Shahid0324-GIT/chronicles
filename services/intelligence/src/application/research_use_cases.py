@@ -1,8 +1,11 @@
+import time
 from typing import Protocol
 from uuid import UUID
 
 from src.application.ports.research import ResearchRepository
 from src.application.research import ResearchRequest
+from src.application.research_budget import freeze_active_time
+from src.domain.exceptions import NotFoundError
 
 
 class ResearchRequestError(Exception):
@@ -55,6 +58,30 @@ class CancelResearch:
             await self.archive.event(job_id, "research.cancel_requested", {})
 
 
+async def set_research_paused(archive: ResearchRepository, job_id: UUID, paused: bool) -> None:
+    job = await archive.lock_job(job_id)
+    if not job:
+        raise NotFoundError("Research job not found")
+    status = job["status"]
+    checkpoint = dict(job["checkpoint"])
+    if paused and status in {"running", "queued"}:
+        freeze_active_time(checkpoint, time.time())
+        await archive.update_job(
+            job_id,
+            status="pausing" if status == "running" else "paused",
+            error="user_paused",
+            checkpoint=checkpoint,
+        )
+        await archive.event(job_id, "research.pause_requested", {})
+    elif not paused and status == "paused":
+        await archive.update_job(job_id, status="queued", error=None)
+        await archive.event(job_id, "research.resumed", {})
+    elif (paused and status not in {"pausing", "paused"}) or not paused:
+        raise ResearchRequestError(
+            "Pause requires an active job and resume requires an acknowledged pause"
+        )
+
+
 class ResumeResearch:
     """Bounded retries of a frozen extraction; new acquisition uses a refreshed job."""
 
@@ -76,7 +103,7 @@ class ResumeResearch:
             from src.domain.exceptions import NotFoundError
 
             raise NotFoundError("Research job not found")
-        if job["status"] in {"queued", "running"}:
+        if job["status"] in {"queued", "running", "pausing", "paused"}:
             raise ResearchRequestError("An active job cannot be requeued")
         checkpoint = dict(job["checkpoint"])
         count = checkpoint.get("resume_count", 0)

@@ -116,6 +116,7 @@ class ArcSectionDossier(StructuredModel):
     narrative_developments: list[NarrativeDevelopment] = Field(default_factory=list)
     coverage: ArcSectionCoverage
     revision: str
+    accepted_scope_ids: list[str] | None = None
     development_plan: "NarrativeDevelopmentPlan | None" = None
 
 
@@ -250,6 +251,7 @@ class ArcDossier(StructuredModel):
     sections: list[ArcSectionDossier]
     accepted_facts: list[dict[str, Any]]
     reconstruction: dict[str, Any]
+    narrative_context: list[dict[str, Any]] = Field(default_factory=list)
     revision: str
 
 

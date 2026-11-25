@@ -36,7 +36,7 @@ def research_summary(
         )
     return {
         "id": job["id"],
-        "status": job["status"],
+        "status": "queued" if job["status"] in {"pausing", "paused"} else job["status"],
         "stage": state.get("active_stage") or state.get("stage", "queued"),
         "error": job["error"],
         "coverage": state.get("coverage"),
