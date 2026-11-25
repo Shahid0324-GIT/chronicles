@@ -301,7 +301,7 @@ async def qualify_frames(
                 )
             ],
         }
-        key = fingerprint(["semantic-proposition-entailment-v3", item, frame.evidence_ids])
+        key = fingerprint(["semantic-proposition-entailment-v4", item, frame.evidence_ids])
         previous_item = {k: v for k, v in item.items() if k != "evidence_id"} | {
             "evidence": list(evidence_ids.values())
         }
@@ -309,6 +309,12 @@ async def qualify_frames(
             ["semantic-proposition-entailment-v2", previous_item, frame.evidence_ids]
         )
         saved = cache.get(key)
+        if saved is None:
+            previous = cache.get(
+                fingerprint(["semantic-proposition-entailment-v3", item, frame.evidence_ids])
+            )
+            if previous and previous.get("supported") is True:
+                saved = previous
         if saved is None and not frame.revises_clause:
             prior = cache.get(previous_key)
             if prior and prior.get("supported") is True:
@@ -326,6 +332,9 @@ async def qualify_frames(
                 "For every numbered proposition, check its meaning against the archive. "
                 "Use nearby text only to resolve referents. A report or promise does not prove "
                 "its content happened. Attempts, beliefs, and negation must stay intact. "
+                "Judge modality for the proposition's main action or state. Evidence that "
+                "someone was preparing establishes the preparation occurred. It does not "
+                "establish completion of the action they were preparing to perform. "
                 "A wound below a wrist is not a wound to the wrist. Check precise identities, "
                 "location, and outcome. Ignore equivalent phrasing and role labels. Return "
                 "decisions keyed by record ID. For support, return supported=true, the ID of "

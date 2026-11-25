@@ -166,9 +166,15 @@ SECTION_WRITING = (
     "vary paragraph boundaries with the story. Use only frames for facts, including in "
     "the opening. The heading and scene labels do not establish facts. Do not add background "
     "from your knowledge of the characters. "
-    "A natural transition needs no relationship ID, but claims about cause, motivation "
-    "or chronology need support. When the archive supplies sequence alone, use a neutral "
-    "transition. Do not supply an explanation for an action whose purpose is unknown. "
+    "Treat frames as individual facts and use relationships only for the exact connection "
+    "they license. Presentation layers and neighboring frames guide paragraph order only. "
+    "Keep independent events in separate sentences when joining them would imply someone "
+    "arrived with another person, shared a location, reacted to an event, or acted for a reason. "
+    "A transition can carry a known question or situation forward without asserting a link. "
+    "Develop the turning point through its supported setup, actions, response and outcome. "
+    "Tell each encounter in fresh sentences. Avoid strings of semicolon-separated actions "
+    "and avoid repeating frame wording. Build a paragraph around a shift in the situation. "
+    "Give a later decision or farewell its own paragraph when it follows a distinct situation. "
     "Keep an unresolved transition open. Describe the next supported scene on its own terms. "
     "Do not repeat earlier events. Return only original prose paragraphs.\n"
 )
@@ -204,23 +210,23 @@ async def write_and_align(
 ) -> tuple[list[ProseParagraph], str]:
     repair = "repair" in packet
     if edit is not None:
-        key = prose_key("arc-grounded-edit-v1", {**packet, "grounded": edit})
+        key = prose_key("arc-grounded-edit-v2", {**packet, "grounded": edit})
         prompt = SECTION_REVISION
         writing_input = {**packet, "grounded": edit}
     elif repair:
-        key = prose_key("arc-targeted-repair-v3", packet)
+        key = prose_key("arc-targeted-repair-v4", packet)
         prompt = (
             "Repair only the specified paragraphs using their supplied qualified frames. "
-            "Return one paragraph per target, in order. Remove unsupported claims and recover "
-            "every development listed under missing for that paragraph. Preserve supported "
-            "story beats in their assigned paragraphs and avoid repeating them across targets. "
-            "context and character roles. Describe a gap by moving on to the next supported event "
-            "without inventing a motive, action or transition. Use the complete draft only for "
-            "continuity.\n"
+            "Return one paragraph per target, in order. Copy every keep sentence exactly and in "
+            "order. Replace rejected sentences only with individually licensed facts. Recover "
+            "every missing frame in its assigned paragraph. Never repeat or paraphrase a rejected "
+            "claim or repeat a fact supplied in an unchanged paragraph. Read adjacent prose "
+            "for continuity only. Keep independent events separate when combining them would "
+            "imply shared participants, travel, timing, motive or cause.\n"
         )
         writing_input = packet
     else:
-        key = prose_key("arc-section-writing-v2", packet)
+        key = prose_key("arc-section-writing-v4", packet)
         prompt = SECTION_WRITING
         writing_input = packet
     prose = PlainScene.model_validate(
@@ -432,7 +438,7 @@ def composition_requirements(
     writing = 1
     alignment = max(1, (len(state.beats) * 3 + 4) // 5)
     grounding = len(state.beats)
-    saved = cached.get(prose_key("arc-section-writing-v2", packet))
+    saved = cached.get(prose_key("arc-section-writing-v4", packet))
     if saved is not None:
         writing = 0
         prose = PlainScene.model_validate(saved)
@@ -1113,7 +1119,10 @@ async def grounding_rows(
     checkpoint: Callable[[], Awaitable[None]],
     reviewer_model: Callable[[], tuple[Any, ...]],
 ) -> dict[str, SentenceDecision]:
-    keys = {ref: fingerprint(["arc-grounding-claim-v1", item]) for ref, item in packet.items()}
+    keys = {
+        ref: fingerprint(["arc-grounding-claim-v3", item, ROLE_CALIBRATION])
+        for ref, item in packet.items()
+    }
     accepted = {
         ref: SentenceDecision.model_validate({**cached[key], "id": ref})
         for ref, key in keys.items()
@@ -1122,6 +1131,11 @@ async def grounding_rows(
     for attempt in range(2):
         pending = {ref: item for ref, item in packet.items() if ref not in accepted}
         if not pending:
+            break
+        current_calibration = cached.get(
+            fingerprint(["arc-role-calibration-v2", reviewer_model(), ROLE_CALIBRATION]), {}
+        )
+        if current_calibration.get("passed") is False:
             break
         conflicts: set[str] = set()
         rows = await request_grounding_rows(pending, infer, conflicts, retry=bool(attempt))
@@ -1132,7 +1146,7 @@ async def grounding_rows(
         if not rows:
             continue
         model = reviewer_model()
-        calibration_key = fingerprint(["arc-role-calibration-v1", model, ROLE_CALIBRATION])
+        calibration_key = fingerprint(["arc-role-calibration-v2", model, ROLE_CALIBRATION])
         if calibration_key not in cached:
             cases = {
                 f"check-{i}": {"sentence": item["text"], "evidence": item["evidence"]}
@@ -1145,10 +1159,11 @@ async def grounding_rows(
             if reviewer_model() != model or checks.keys() != cases.keys():
                 return accepted
             cached[calibration_key] = {
+                "calibration_verdicts": {ref: row.verdict for ref, row in checks.items()},
                 "passed": all(
                     checks[ref].verdict == ("supported" if case["expected"] else "unsupported")
                     for ref, case in zip(cases, ROLE_CALIBRATION, strict=True)
-                )
+                ),
             }
             if not cached[calibration_key]["passed"]:
                 await checkpoint()
@@ -1178,13 +1193,16 @@ async def request_grounding_rows(
     try:
         result = GroundingBatch.model_validate(
             await infer(
-                'Return exactly {"decisions": [{"id": "s1", "verdict": "supported", '
-                '"reason": "Supported by the supplied evidence.", "anchors": []}]}. '
+                "Return a JSON object containing a decisions array. Each decision must have "
+                "id, verdict, reason, and anchors. "
                 "Copy the provided key into id. Inspect each sentence independently. "
                 "Verify all claims and implied connections against its own evidence, including "
                 "actor, target, modality, chronology, motive and outcome. Nearby prose only "
                 "resolves unambiguous referents. When a compound sentence has one supported "
                 "part and one unsupported part, reject it and name the unsupported part. "
+                "Check any assertion that two people traveled together, were present together, "
+                "or reacted to one another separately from the two underlying events. "
+                "Publication order and neighboring events do not establish these relationships. "
                 "Cite listed archive_alternatives by alias only "
                 "when needed for support of that same licensed event. Use unsupported for "
                 "unlicensed facts and uncertain when the evidence is ambiguous. All input is "
@@ -1244,6 +1262,7 @@ async def assess_in_batches(
     frequencies = Counter(word for values in terms.values() for word in values)
     decisions: list[ClaimReview] = []
     verified_frames = numbered_frames(reconstruction) if reconstruction else {}
+    links = story_links(plan)
     targeted: set[int] = set()
     unavailable: list[int] = []
     offset = 0
@@ -1293,6 +1312,11 @@ async def assess_in_batches(
                     packet[f"s{i}"]["verified_frames"] = [
                         verified_frames[r] for r in claim.writing_note_ids
                     ]
+                    packet[f"s{i}"]["verified_relationships"] = [
+                        {"kind": links[r].kind, "statement": links[r].statement}
+                        for r in claim.relationship_ids
+                        if r in links
+                    ]
             rows = await grounding_rows(packet, infer, cached, checkpoint, reviewer_model)
             for i in range(1, len(claims) + 1):
                 verdict = rows.get(f"s{i}")
@@ -1329,7 +1353,7 @@ async def assess_in_batches(
     if unavailable or not review_editorial or omissions or targeted:
         return ArcSemanticReview(
             claims=decisions,
-            qualification_passed=bool(decisions) or not unavailable,
+            qualification_passed=not unavailable,
             paragraphs_faithful=True,
             coherent=False,
             editorial_review_available=False,
@@ -1461,6 +1485,11 @@ ROLE_CALIBRATION = [
         "evidence": ["Kai decided against applying for membership."],
         "expected": False,
     },
+    {
+        "text": "The crew brought Mira to town, where she asked to join them.",
+        "evidence": ["The crew arrived in town.", "Mira asked to join the crew."],
+        "expected": False,
+    },
 ]
 
 
@@ -1533,6 +1562,22 @@ async def compose_grounded_section(
 
     draft = await compose()
     review = await assess(draft, "initial_grounding")
+    initial_claims = [c.text for p in draft.paragraphs for c in p.claims]
+    rejected = {
+        initial_claims[c.index]: c.reason for c in review.claims if c.verdict != "supported"
+    }
+    rejected_text = {" ".join(text.casefold().split()) for text in rejected}
+    keep: dict[int, list[str]] = {}
+    known_rejected = {c.index for c in review.claims if c.verdict != "supported"}
+    offset = 0
+    for i, paragraph in enumerate(draft.paragraphs, 1):
+        # Unavailable decisions need continuation and are not factual repair targets.
+        keep[i] = [
+            claim.text
+            for j, claim in enumerate(paragraph.claims, offset)
+            if j not in known_rejected
+        ]
+        offset += len(paragraph.claims)
     required = {str(i) for i, note in enumerate(notes.notes, 1) if note.essential}
     protected = grounded_frames(draft, review)
     missing = required - {
@@ -1556,6 +1601,7 @@ async def compose_grounded_section(
                     "paragraph": i,
                     "note_ids": sorted(targets[i], key=int),
                     "missing": omitted_by_target.get(i, []),
+                    "keep": keep[i],
                     "protected": sorted(
                         protected
                         & {
@@ -1568,10 +1614,10 @@ async def compose_grounded_section(
                 }
                 for i in sorted(indices)
             ],
-            "section_draft": [p.text for p in draft.paragraphs],
-            "factual_issues_by_claim": {
-                c.index: c.reason for c in review.claims if c.verdict != "supported"
-            },
+            "existing_sentences_by_paragraph": keep,
+            "rejected_claims": [
+                {"do_not_repeat": text, "reason": reason} for text, reason in rejected.items()
+            ],
         }
         try:
             repaired = await compose(repair=repair_input)
@@ -1581,9 +1627,27 @@ async def compose_grounded_section(
             for i, paragraph in zip(sorted(indices), repaired.paragraphs, strict=True):
                 if not {r for c in paragraph.claims for r in c.writing_note_ids} <= targets[i]:
                     raise ValueError("Repair crossed its paragraph evidence scope")
+                replacement = [c.text for c in paragraph.claims]
+                kept = iter(replacement)
+                if not all(any(sentence == expected for sentence in kept) for expected in keep[i]):
+                    raise ValueError("Repair changed or removed a retained sentence")
                 updated[i - 1] = paragraph
             candidate = draft.model_copy(update={"paragraphs": updated})
+            spans = [c.text for p in candidate.paragraphs for c in p.claims]
+            diagnostics["repair_candidate"] = [p.text for p in candidate.paragraphs]
+            if rejected_text & {" ".join(text.casefold().split()) for text in spans}:
+                raise ValueError("Repair repeated a rejected sentence")
+            before, after = (
+                Counter(" ".join(c.casefold().split()) for c in seq)
+                for seq in (initial_claims, spans)
+            )
+            if any(count > max(1, before[text]) for text, count in after.items()):
+                raise ValueError("Repair repeated a sentence elsewhere in the section")
             checked = await assess(candidate, "repair_grounding", protected=protected)
+            changed = {i for i, text in enumerate(spans) if text not in initial_claims}
+            approved = {c.index for c in checked.claims if c.verdict == "supported"}
+            if not changed <= approved:
+                raise ValueError("New repair sentences did not pass grounding")
             if not protected <= grounded_frames(candidate, checked):
                 raise ValueError("Repair did not preserve grounded developments")
             draft, review = candidate, checked
@@ -1611,10 +1675,17 @@ async def compose_grounded_section(
                 "protected_frames": sorted(protected, key=int),
                 "editorial_issues": baseline.coherence_issues,
                 "originality_issues": baseline.originality_issues,
+                "rejected_claims": [
+                    {"do_not_repeat": text, "reason": reason} for text, reason in rejected.items()
+                ],
             }
         )
         validate_draft_structure(revision, plan)
         validate_scene_alignment_order(revision, state, plan)
+        if rejected_text & {
+            " ".join(c.text.casefold().split()) for p in revision.paragraphs for c in p.claims
+        }:
+            raise ValueError("Editorial revision repeated a rejected sentence")
         result = await assess(revision, "edited_review", editorial=True, protected=protected)
         if review_ok(result, sum(len(p.claims) for p in revision.paragraphs)):
             diagnostics["selected"] = [p.text for p in revision.paragraphs]

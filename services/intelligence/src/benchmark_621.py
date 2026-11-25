@@ -621,6 +621,9 @@ async def main() -> None:
                 "provider_usage": prior + providers(),
                 "input_revision": evidence.revision,
                 "diagnostic_only": diagnostic,
+                "reviewer_calibration": [
+                    row for row in cache.values() if "calibration_verdicts" in row
+                ],
             }
             pending = memory.rows.get(
                 service.identifier(section.id, "arc_pending_review", evidence.revision), {}

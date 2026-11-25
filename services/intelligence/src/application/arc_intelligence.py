@@ -1215,18 +1215,39 @@ class ArcIntelligence:
 
                     validate_draft_structure(draft, section.development_plan)
                     payload["validation_stages"] = {
+                        "grounding": {
+                            "status": "complete"
+                            if assessment
+                            and not assessment.grounding_unavailable
+                            and len(assessment.claims)
+                            == sum(len(p.claims) for p in draft.paragraphs)
+                            else "unavailable",
+                            "decisions": len(assessment.claims) if assessment else 0,
+                            "expected": sum(len(p.claims) for p in draft.paragraphs),
+                            "unavailable_claims": assessment.grounding_unavailable
+                            if assessment
+                            else [],
+                        },
                         "factual": {
                             "status": "passed"
                             if qualified
                             and assessment
                             and not assessment.grounding_unavailable
                             and all(claim.verdict == "supported" for claim in assessment.claims)
-                            else "blocked"
+                            else "rejected"
+                            if assessment
+                            and any(c.verdict != "supported" for c in assessment.claims)
+                            else "unavailable"
                         },
                         "relationships": {
                             "status": "passed"
-                            if qualified and assessment and not assessment.relationship_issues
-                            else "blocked",
+                            if qualified
+                            and assessment
+                            and assessment.editorial_review_available
+                            and not assessment.relationship_issues
+                            else "blocked"
+                            if assessment and assessment.relationship_issues
+                            else "unavailable",
                             "issues": assessment.relationship_issues if assessment else [],
                         },
                         "structural": section.development_plan.structural.model_dump(mode="json"),
@@ -1236,7 +1257,9 @@ class ArcIntelligence:
                             and assessment.editorial_review_available
                             and assessment_payload.get("coherent")
                             and not assessment_payload.get("coherence_issues")
-                            else "blocked"
+                            else "rejected"
+                            if assessment and assessment.editorial_review_available
+                            else "unavailable"
                         },
                         "originality": {
                             "status": "passed"
@@ -1251,7 +1274,9 @@ class ArcIntelligence:
                             if assessment
                             and assessment.editorial_review_available
                             and not assessment.coverage_issues
-                            else "blocked",
+                            else "missing"
+                            if assessment and assessment.coverage_issues
+                            else "unavailable",
                             "issues": assessment.coverage_issues if assessment else [],
                         },
                     }
@@ -1281,7 +1306,7 @@ class ArcIntelligence:
                 payload["assessment"]["composition"] = {
                     k: v
                     for k, v in composition_audit.items()
-                    if k not in {"initial", "repair", "revision", "selected"}
+                    if k not in {"initial", "repair", "repair_candidate", "revision", "selected"}
                 }
             await self.save(
                 dossier.universe_id,

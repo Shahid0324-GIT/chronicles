@@ -1169,7 +1169,9 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
         decisions = [
             {
                 "id": i,
-                "verdict": "unsupported" if i in {"check-1", "check-3", "check-4"} else "supported",
+                "verdict": "unsupported"
+                if i in {"check-1", "check-3", "check-4", "check-5"}
+                else "supported",
                 "reason": "Evidence checked",
             }
             for i in packet
@@ -1181,6 +1183,7 @@ async def test_batched_grounding_resumes_without_repeating_completed_sentences()
     partial = await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
     assert [c.index for c in partial.claims] == [0]
     assert partial.grounding_unavailable == [1]
+    assert partial.qualification_passed is False
     assert not review_ok(partial, 2)
     assert checkpoints == [2]
     result = await assess_in_batches(draft, plan, notes, reviewer, cache, checkpoint)
@@ -1245,7 +1248,9 @@ async def test_grounding_never_uses_positive_vote_to_resolve_conflicting_decisio
                 "decisions": [
                     decision(
                         key,
-                        "unsupported" if key in {"check-1", "check-3", "check-4"} else "supported",
+                        "unsupported"
+                        if key in {"check-1", "check-3", "check-4", "check-5"}
+                        else "supported",
                     )
                     for key in supplied
                 ]
@@ -1260,7 +1265,10 @@ async def test_grounding_never_uses_positive_vote_to_resolve_conflicting_decisio
     assert calls[-2:] == [["s2"], ["s2"]]
 
 
-async def test_section_repairs_omissions_before_edit_and_rechecks_new_facts(monkeypatch):
+@pytest.mark.parametrize("repeats_rejection", [False, True])
+async def test_section_repairs_omissions_before_edit_and_rechecks_new_facts(
+    monkeypatch, repeats_rejection
+):
     proposal, facts, evidence, *scope = material()
     plan = plan_from_proposal(proposal, facts, evidence, *scope)
     plan.factual.status = plan.structural.status = "passed"
@@ -1294,6 +1302,9 @@ async def test_section_repairs_omissions_before_edit_and_rechecks_new_facts(monk
         if repair:
             order.append("repair")
             assert repair["targets"][0]["missing"] == ["1"]
+            assert repair["rejected_claims"][0]["do_not_repeat"] == initial
+            if repeats_rejection:
+                return draft([repaired[0], initial], ["1", "2"])
             return draft(repaired, ["1", "2"])
         if edit:
             order.append("edit")
@@ -1314,7 +1325,7 @@ async def test_section_repairs_omissions_before_edit_and_rechecks_new_facts(monk
                     "revise_paragraphs": [1],
                 }
             )
-        rejected = {"check-1", "check-3", "check-4"}
+        rejected = {"check-1", "check-3", "check-4", "check-5"}
         if "s1" in packet:
             order.append("ground")
             if packet["s1"]["sentence"] in {initial, replacement}:
@@ -1348,6 +1359,12 @@ async def test_section_repairs_omissions_before_edit_and_rechecks_new_facts(monk
         tuple,
         diagnostics=diagnostics,
     )
+    if repeats_rejection:
+        assert order == ["initial", "ground", "repair"]
+        assert diagnostics["repair_unavailable"] == "Repair repeated a rejected sentence"
+        assert result.paragraphs[0].text == initial
+        assert not review_ok(assessment, 1)
+        return
     assert order[:6] == ["initial", "ground", "repair", "ground", "editorial", "edit"]
     assert order[6] == "ground"
     assert diagnostics["edit_withheld"] is True
@@ -1442,7 +1459,7 @@ async def test_scene_review_preserves_context_and_rejects_unknown_archive_anchor
                     {
                         "id": key,
                         "verdict": "unsupported"
-                        if key in {"check-1", "check-3", "check-4"}
+                        if key in {"check-1", "check-3", "check-4", "check-5"}
                         else "supported",
                         "reason": "Evidence checked",
                         "anchors": ["made-up-id"] if key == "s2" else [],

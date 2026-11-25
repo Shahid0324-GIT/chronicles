@@ -1,0 +1,292 @@
+{
+  "controlled_writer": {
+    "input_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+    "scene_gaps": {
+      "Shanks Rescues Luffy from Bandits and Sea King": [
+        "4.10"
+      ],
+      "Luffy's Promise, Hat Gift, and Departure": [
+        "5.1",
+        "5.2"
+      ]
+    },
+    "gate": {
+      "reason": "Verified frame and scene reconstruction gate failed",
+      "review_attempts": []
+    },
+    "alignment": {
+      "mapped": 22,
+      "unmapped_span_ids": []
+    },
+    "initial_grounding": {
+      "claims": [],
+      "paragraphs_faithful": true,
+      "coherent": false,
+      "coherence_issues": [],
+      "unsupported_connections": [],
+      "originality_issues": [],
+      "revision_paragraphs": [],
+      "qualification_passed": false,
+      "coverage_issues": [],
+      "relationship_issues": [],
+      "editorial_review_available": false,
+      "grounding_unavailable": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21
+      ]
+    },
+    "completed_calibration_records": [],
+    "provider_usage": [
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation",
+        "status": "ok",
+        "input_tokens": 4966,
+        "output_tokens": 636,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1123,
+        "output_tokens": 170,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1105,
+        "output_tokens": 225,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "rate_limited",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1136,
+        "output_tokens": 138,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1184,
+        "output_tokens": 211,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1071,
+        "output_tokens": 298,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1071,
+        "output_tokens": 161,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 955,
+        "output_tokens": 229,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 973,
+        "output_tokens": 329,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "rate_limited",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1401,
+        "output_tokens": 390,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1422,
+        "output_tokens": 335,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1976,
+        "output_tokens": 542,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 2003,
+        "output_tokens": 523,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "rate_limited",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1061,
+        "output_tokens": 265,
+        "model_call": true
+      },
+      {
+        "provider": "groq",
+        "model": "openai/gpt-oss-120b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 1079,
+        "output_tokens": 306,
+        "model_call": true
+      }
+    ]
+  },
+  "farewell_recheck": {
+    "candidate_count": 1,
+    "unavailable": 0,
+    "outcomes": [
+      {
+        "clause": "5.1",
+        "status": "unsupported",
+        "detail": "The evidence states the pirates were 'preparing to leave,' which establishes the preparation occurred but does not confirm the proposition's claim that they had 'left for good' (a "
+      }
+    ],
+    "provider_usage": [
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "task": "presentation_verification",
+        "status": "ok",
+        "input_tokens": 351,
+        "output_tokens": 73,
+        "model_call": true
+      }
+    ]
+  },
+  "production": {
+    "api": {
+      "http_status": 200,
+      "status": "partial",
+      "has_dossier": true,
+      "article_status": "withheld",
+      "validated_sections": 0,
+      "section_hold": "development_plan_not_validated"
+    },
+    "setup_coverage": {
+      "research": "blocked",
+      "presentation": "withheld",
+      "supported_facets": [],
+      "missing_facets": [
+        "circumstances",
+        "development",
+        "action",
+        "decision",
+        "conflict",
+        "consequence"
+      ],
+      "gaps": [
+        "Unknown development evidence"
+      ]
+    },
+    "provider_usage": [
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "task": "relationship_analysis",
+        "status": "invalid_output",
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "model_call": true
+      },
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "task": "relationship_analysis",
+        "status": "ok",
+        "input_tokens": 5148,
+        "output_tokens": 2394,
+        "model_call": true
+      }
+    ]
+  }
+}
