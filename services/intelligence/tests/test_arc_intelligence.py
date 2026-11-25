@@ -1,6 +1,7 @@
 """Owned fixtures, not live research or One Piece findings."""
 
 import json
+import re
 from contextlib import asynccontextmanager
 from copy import deepcopy
 from dataclasses import replace
@@ -713,3 +714,184 @@ async def test_coverage_pass_continues_the_account_over_uncited_assertions():
     assert continuation_prompts[0]["established"] == ["Mira opened door 1."]
     assert [p.text for p in document.paragraphs][0] == "Mira opened door 1."
     assert document.uncited_assertions == 0 and len(document.paragraphs) == 2
+
+
+def doors_dossier(count=6):
+    from uuid import uuid4
+
+    from src.application.arc_contracts import ArcDossier, DevelopmentEvidence
+
+    source, passage = uuid4(), uuid4()
+    facts, units = [], []
+    for n in range(count):
+        text = f"Mira opened door {n + 1}."
+        facts.append(
+            {
+                "id": f"f{n}",
+                "target_id": f"t{n}",
+                "payload": {"atomic": {"statement": text}},
+                "sources": [
+                    {
+                        "id": str(source),
+                        "passage_id": str(passage),
+                        "content_hash": "h",
+                        "quote": text,
+                        "quote_start": n * 40,
+                        "quote_end": n * 40 + len(text),
+                        "provenance": {
+                            "position_basis": "broadcast-presentation",
+                            "presentation_position": n + 1,
+                        },
+                    }
+                ],
+            }
+        )
+        units.append(
+            DevelopmentEvidence(
+                id=f"u{n}",
+                source_id=source,
+                source_hash="h",
+                passage_id=passage,
+                passage_hash="p",
+                passage_start=0,
+                start=n * 40,
+                end=n * 40 + len(text),
+                text=text,
+                source_group="g",
+            )
+        )
+    dossier = ArcDossier(
+        arc_id=uuid4(),
+        universe_id=uuid4(),
+        continuity_id=uuid4(),
+        title="Doors",
+        perspective="full_lore",
+        spoiler_position=None,
+        source_range=(1, count),
+        accepted_facts=facts,
+        sections=[],
+        reconstruction={},
+        revision="r",
+    )
+    return dossier, units
+
+
+async def test_rejected_continuation_is_repaired_with_the_rejection_reasons():
+    from src.application.arc_understanding import build_arc_understanding
+
+    dossier, units = doors_dossier()
+    repairs = []
+
+    async def infer(prompt, schema, _task):
+        data = json.loads(prompt.split("\n", 1)[1])
+        if schema is ArcAccountDraft and "uncovered" in data:
+            ids = list(data["uncovered"])
+            return schema.model_validate(
+                {
+                    "paragraphs": [
+                        {
+                            "claims": [
+                                {
+                                    "text": "Later, "
+                                    + data["uncovered"][i][0].lower()
+                                    + data["uncovered"][i][1:],
+                                    "fact_ids": [i],
+                                }
+                                for i in ids
+                            ]
+                        }
+                    ]
+                }
+            )
+        if schema is ArcAccountDraft and "targets" in data:
+            repairs.append(data)
+            return schema.model_validate(
+                {
+                    "paragraphs": [
+                        {
+                            "claims": [
+                                {"text": text, "fact_ids": [ref]}
+                                for ref, text in data["eligible_assertions"].items()
+                            ]
+                        }
+                    ]
+                }
+            )
+        if schema is ArcAccountDraft:
+            return schema.model_validate(
+                {"paragraphs": [{"claims": [{"text": "Mira opened door 1.", "fact_ids": ["1"]}]}]}
+            )
+        if schema is ArcEntailmentBatch:
+            rows = data.get("claims") or [{"index": i} for i, _ in enumerate(CALIBRATION)]
+            return schema.model_validate(
+                {
+                    "decisions": [
+                        {
+                            "index": r["index"],
+                            "finding": "entailed"
+                            if "cases" not in data or CALIBRATION[r["index"]]["expected"]
+                            else "not_established",
+                            "reason": "Owned check",
+                        }
+                        for r in rows
+                    ]
+                }
+            )
+        return schema(coherent=True, complete=True)
+
+    document = await build_arc_understanding(dossier, units, infer)
+    assert len(repairs) == 1
+    reasons = repairs[0]["targets"][0]["rejected_because"]
+    assert any(r.startswith("unlicensed_connector:") and "later" in r for r in reasons)
+    assert document.uncited_assertions == 0
+    stages = {(r.stage, r.category) for r in document.rejections}
+    assert ("continuation", "unlicensed_connector") not in stages
+
+
+async def test_duplicate_markup_and_copied_claims_are_dropped_not_reviewed():
+    paragraph = ArcParagraph.model_validate(
+        {
+            "claims": [
+                {"text": "Mira entered the observatory.", "fact_ids": ["a"]},
+                {"text": "[1] Mira entered the observatory today.", "fact_ids": ["a"]},
+                {"text": "Mira entered the observatory!", "fact_ids": ["a"]},
+            ]
+        }
+    )
+    seen_rows = []
+
+    async def infer(prompt, schema, _task):
+        rows = json.loads(prompt.split("\n", 1)[1])["claims"]
+        seen_rows.append([r["text"] for r in rows])
+        return schema.model_validate(
+            {
+                "decisions": [
+                    {"index": r["index"], "finding": "entailed", "reason": "Owned check"}
+                    for r in rows
+                ]
+            }
+        )
+
+    known = {"mira entered the observatory"}
+    from src.application.arc_understanding import review_each
+
+    rejections: list[ParagraphRejection] = []
+    out, _ = await review_each(
+        [paragraph],
+        {"a": {"assertion": "Mira entered."}},
+        infer,
+        rejections=rejections,
+        salvage=True,
+        checks=[
+            (
+                "duplicate_claim",
+                lambda c: (
+                    ["dup"] if " ".join(re.findall(r"\w+", c.text.casefold())) in known else []
+                ),
+            ),
+            ("copied_source", lambda c: ["markup"] if "[1]" in c.text else []),
+        ],
+    )
+    assert out == [None] or out[0] is None
+    assert seen_rows == []
+    assert {r.category for r in rejections} == {"duplicate_claim", "copied_source"}

@@ -371,6 +371,8 @@ RejectionCategory = Literal[
     "unknown_citation",
     "unlicensed_name",
     "unlicensed_connector",
+    "duplicate_claim",
+    "copied_source",
     "contradicted",
     "not_established",
     "reviewer_unavailable",

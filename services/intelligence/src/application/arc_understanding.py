@@ -1,8 +1,9 @@
 """Understand the arc before assigning any boundaries to its prose."""
 
 import json
+import re
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any
 from uuid import UUID
 
@@ -87,6 +88,7 @@ async def review_each(
     vocabulary: set[str] | None = None,
     licence: Callable[[ArcClaim], list[str]] | None = None,
     salvage: bool = False,
+    checks: Sequence[tuple[RejectionCategory, Callable[[ArcClaim], list[str]]]] = (),
 ) -> tuple[list[ArcParagraph | None], bool]:
     """Review every paragraph; the result is aligned with the input, ``None`` if withheld.
 
@@ -183,24 +185,31 @@ async def review_each(
         else:
             origin = list(range(len(paragraph.claims)))
             work = paragraph
-            bad = (
-                {i: words for i, c in enumerate(paragraph.claims) if (words := licence(c))}
-                if licence is not None
-                else {}
+            gates: list[tuple[RejectionCategory, Callable[[ArcClaim], list[str]]]] = (
+                [("unlicensed_connector", licence)] if licence is not None else []
             )
-            if bad:
+            gates.extend(checks)
+            bad: dict[int, list[str]] = {}
+            for category_name, gate in gates:
+                found = {i: w for i, c in enumerate(paragraph.claims) if (w := gate(c))}
+                if not found:
+                    continue
                 notes.append(
                     ParagraphRejection(
                         paragraph=number,
-                        category="unlicensed_connector",
-                        claims=sorted(bad),
+                        category=category_name,
+                        claims=sorted(found),
                         reasons=[
                             "Connector not supported by cited sources or an explicit link: "
                             f"{', '.join(words)}"
-                            for _, words in sorted(bad.items())
+                            if category_name == "unlicensed_connector"
+                            else "; ".join(words)
+                            for _, words in sorted(found.items())
                         ][:8],
                     )
                 )
+                bad.update(found)
+            if bad:
                 origin = [i for i in origin if i not in bad]
                 if salvage and origin:
                     work = project(paragraph, origin)
@@ -374,7 +383,87 @@ async def build_arc_understanding(
     ).model_copy(deep=True)
     resolve_assertion_ids(draft, refs)
     rejections: list[ParagraphRejection] = []
-    reviewed, unavailable = await review_each(
+    copied = set().union(*(word_spans(u.text, 18) for u in units)) if units else set()
+    known: set[str] = set()
+    unavailable = False
+
+    def normal(text: str) -> str:
+        return " ".join(re.findall(r"\w+", text.casefold()))
+
+    def duplicate(claim: ArcClaim) -> list[str]:
+        return ["Repeats a claim the account already makes"] if normal(claim.text) in known else []
+
+    def sourced_copy(claim: ArcClaim) -> list[str]:
+        if re.search(r"\[\d+\]", claim.text):
+            return ["Contains source markup such as [1]; write original prose"]
+        return (
+            ["Copies archived wording; write original prose"]
+            if word_spans(claim.text, 18) & copied
+            else []
+        )
+
+    gates: list[tuple[RejectionCategory, Callable[[ArcClaim], list[str]]]] = [
+        ("duplicate_claim", duplicate),
+        ("copied_source", sourced_copy),
+    ]
+
+    def feedback(numbers: list[int], notes: list[ParagraphRejection]) -> list[list[str]]:
+        return [
+            [
+                f"{r.category}: {reason}"
+                for r in notes
+                if r.paragraph == number and not r.salvaged
+                for reason in (r.reasons or ["no detail"])
+            ]
+            for number in numbers
+        ]
+
+    async def repair(
+        targets: list[ArcParagraph],
+        notes: list[list[str]],
+        numbered: dict[str, str],
+        context: list[str],
+    ) -> ArcAccountDraft | None:
+        nonlocal unavailable
+        try:
+            result = ArcAccountDraft.model_validate(
+                await infer(
+                    "Repair ONLY the rejected paragraphs. Each target lists why it was rejected; "
+                    "fix exactly those problems: remove unsupported connectors and inferences, "
+                    "do not repeat established claims, and rewrite copied wording in original "
+                    "prose. Keep the supported parts. Preserve names, motives, order, causality "
+                    "and whether actions were intended or completed. Return one paragraph per "
+                    "target in order. Cite the numbered assertion IDs as strings. Other "
+                    "paragraphs have passed and must not be rewritten.\n"
+                    + json.dumps(
+                        {
+                            "targets": [
+                                {"text": t.text, "rejected_because": n}
+                                for t, n in zip(targets, notes, strict=True)
+                            ],
+                            "story_bible": bible,
+                            "remaining_context": context,
+                            "eligible_assertions": {
+                                ref: unique[key]["assertion"] for ref, key in numbered.items()
+                            },
+                        },
+                        ensure_ascii=False,
+                    ),
+                    ArcAccountDraft,
+                    "presentation",
+                )
+            ).model_copy(deep=True)
+        except InferenceFailure as error:
+            if error.code != "structured_output_exhausted":
+                raise
+            unavailable = True
+            return None
+        if len(result.paragraphs) != len(targets):
+            return None
+        resolve_assertion_ids(result, numbered)
+        return result
+
+    reviewed, flagged_draft = await review_each(
         draft.paragraphs,
         unique,
         infer,
@@ -382,58 +471,47 @@ async def build_arc_understanding(
         vocabulary=vocabulary,
         licence=account_licence,
         salvage=True,
+        checks=gates,
     )
+    unavailable = unavailable or flagged_draft
     paragraphs = [p for p in reviewed if p is not None]
     withheld = len(draft.paragraphs) - len(paragraphs)
+    known.update(normal(c.text) for p in paragraphs for c in p.claims)
     if withheld and not unavailable:
         slots = [i for i, p in enumerate(reviewed) if p is None]
         targets = [draft.paragraphs[i] for i in slots]
         local_refs = {
             ref: key for ref, key in refs.items() if any(key in p.fact_ids for p in targets)
         }
-        if local_refs:
-            try:
-                repaired = ArcAccountDraft.model_validate(
-                    await infer(
-                        "Repair ONLY the rejected paragraphs. Keep the supported parts and drop "
-                        "unsupported inferences. Preserve names, motives, order, causality and "
-                        "whether actions were intended or completed. Return one paragraph per "
-                        "target in order. Cite the numbered assertion IDs as strings. Other "
-                        "paragraphs have passed and must not be rewritten.\n"
-                        + json.dumps(
-                            {
-                                "targets": [p.text for p in targets],
-                                "story_bible": bible,
-                                "remaining_context": [p.text for p in paragraphs],
-                                "eligible_assertions": {i: brief[i] for i in local_refs},
-                            },
-                            ensure_ascii=False,
-                        ),
-                        ArcAccountDraft,
-                        "presentation",
-                    )
-                ).model_copy(deep=True)
-                if len(repaired.paragraphs) == len(targets):
-                    resolve_assertion_ids(repaired, local_refs)
-                    again, unavailable = await review_each(
-                        repaired.paragraphs,
-                        {i: unique[i] for i in local_refs.values()},
-                        infer,
-                        vocabulary=vocabulary,
-                        licence=account_licence,
-                        salvage=True,
-                    )
-                    replaced = {slot for slot, new in zip(slots, again, strict=True) if new}
-                    for slot, new in zip(slots, again, strict=True):
-                        reviewed[slot] = new
-                    paragraphs = [p for p in reviewed if p is not None]
-                    withheld = len(draft.paragraphs) - len(paragraphs)
-                    rejections = [r for r in rejections if r.paragraph - 1 not in replaced]
-                    draft.gaps.extend(repaired.gaps)
-            except InferenceFailure as error:
-                if error.code != "structured_output_exhausted":
-                    raise
-                unavailable = True
+        fixed = (
+            await repair(
+                targets,
+                feedback([i + 1 for i in slots], rejections),
+                local_refs,
+                [p.text for p in paragraphs],
+            )
+            if local_refs
+            else None
+        )
+        if fixed is not None:
+            again, flagged = await review_each(
+                fixed.paragraphs,
+                {i: unique[i] for i in local_refs.values()},
+                infer,
+                vocabulary=vocabulary,
+                licence=account_licence,
+                salvage=True,
+                checks=gates,
+            )
+            unavailable = unavailable or flagged
+            replaced = {slot for slot, new in zip(slots, again, strict=True) if new}
+            for slot, new in zip(slots, again, strict=True):
+                reviewed[slot] = new
+            paragraphs = [p for p in reviewed if p is not None]
+            withheld = len(draft.paragraphs) - len(paragraphs)
+            rejections = [r for r in rejections if r.paragraph - 1 not in replaced]
+            known.update(normal(c.text) for p in paragraphs for c in p.claims)
+            draft.gaps.extend(fixed.gaps)
     order = {key: i for i, key in enumerate(unique)}
     far = len(order)
 
@@ -492,8 +570,36 @@ async def build_arc_understanding(
             vocabulary=vocabulary,
             licence=account_licence,
             salvage=True,
+            checks=gates,
         )
         unavailable = unavailable or flagged
+        failed = [i for i, p in enumerate(added) if p is None]
+        numbered = {
+            n: k for n, k in local.items() if any(k in extra.paragraphs[i].fact_ids for i in failed)
+        }
+        if failed and numbered and not unavailable:
+            fixed = await repair(
+                [extra.paragraphs[i] for i in failed],
+                feedback([i + 1 for i in failed], notes),
+                numbered,
+                [p.text for p in paragraphs],
+            )
+            if fixed is not None:
+                again, flagged = await review_each(
+                    fixed.paragraphs,
+                    {k: unique[k] for k in numbered.values()},
+                    infer,
+                    vocabulary=vocabulary,
+                    licence=account_licence,
+                    salvage=True,
+                    checks=gates,
+                )
+                unavailable = unavailable or flagged
+                mended = {slot for slot, new in zip(failed, again, strict=True) if new}
+                for slot, new in zip(failed, again, strict=True):
+                    added[slot] = new
+                notes = [r for r in notes if r.paragraph - 1 not in mended]
+                draft.gaps.extend(fixed.gaps)
         rejections.extend(n.model_copy(update={"stage": "continuation"}) for n in notes)
         for new in (p for p in added if p is not None):
             position = next(
@@ -501,7 +607,24 @@ async def build_arc_understanding(
                 len(paragraphs),
             )
             paragraphs.insert(position, new)
+            known.update(normal(c.text) for c in new.claims)
         draft.gaps.extend(extra.gaps)
+    seen: set[str] = set()
+    deduped: list[ArcParagraph] = []
+    for paragraph in paragraphs:
+        claims = []
+        for claim in paragraph.claims:
+            key = normal(claim.text)
+            if key not in seen:
+                seen.add(key)
+                claims.append(claim)
+        if len(claims) == len(paragraph.claims):
+            deduped.append(paragraph)
+        elif claims:
+            deduped.append(
+                ArcParagraph.model_validate({"claims": [c.model_dump() for c in claims]})
+            )
+    paragraphs = deduped
     uncited = len(unique) - len({i for p in paragraphs for i in p.fact_ids} & set(unique))
     coverage = ArcAccountCoverage(coherent=False, complete=False)
     if draft.paragraphs:
