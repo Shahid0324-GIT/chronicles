@@ -26,12 +26,11 @@ from src.application.arc_prose import (
     SECTION_REVISION,
     PlainScene,
     Propositions,
-    SceneProse,
     compose_grounded_section,
     frame_citations,
     validate_propositions,
 )
-from src.application.arc_reconstruction import Reconstruction, build_discourse
+from src.application.arc_reconstruction import Reconstruction, build_discourse, reconstruct_arc
 from src.application.controlled_narrative import FixedDevelopmentEvidence, reference_assertions
 from src.application.development_plan import clause_map
 from src.application.event_extraction import evidence_units
@@ -141,6 +140,13 @@ async def main() -> None:
     parser.add_argument("--reuse-checkpoint", type=Path)
     parser.add_argument("--writer-only", action="store_true")
     parser.add_argument("--grounded-replay", action="store_true")
+    parser.add_argument("--replay-directory", type=Path)
+    parser.add_argument("--writer-cache", type=Path)
+    parser.add_argument(
+        "--refresh-reconstruction",
+        action="store_true",
+        help="Refresh saved frames on a new replay and retain that state on continuation.",
+    )
 
     parser.add_argument("--unresolved-clause", action="append", default=[])
     parser.add_argument("--retry-relationships", action="store_true")
@@ -158,6 +164,10 @@ async def main() -> None:
         parser.error("Grounded replay requires the saved writer benchmark")
     if args.writer_only and not args.reuse_checkpoint:
         parser.error("A writer-only run requires a saved reconstruction checkpoint")
+    if (args.replay_directory or args.writer_cache or args.refresh_reconstruction) and not (
+        args.grounded_replay
+    ):
+        parser.error("Replay overrides require a grounded writer replay")
     if args.unresolved_clause and not args.writer_only:
         parser.error("Only the diagnostic writer can omit unresolved clauses")
     if args.autonomous and args.reviewed_notes:
@@ -205,6 +215,8 @@ async def main() -> None:
             else "benchmark625-recovery-check"
         )
     folder /= section_key
+    if args.replay_directory:
+        folder = args.replay_directory
     if args.freeze:
         folder = baseline
     folder.mkdir(parents=True, exist_ok=True)
@@ -362,6 +374,7 @@ async def main() -> None:
         yield memory
 
     prior = []
+    previous: dict[str, Any] = {}
     writing_notes = None
     result_path = folder / "result.json"
     if result_path.exists() and not (args.resume_review or args.compose or args.writer_only):
@@ -497,10 +510,13 @@ async def main() -> None:
             (folder / "generated-draft.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
-        if schema is SceneProse:
-            with (folder / "generated-scene-passages.jsonl").open("a", encoding="utf8") as log:
-                log.write(result.value.model_dump_json() + "\n")
-        if schema.__name__ in {"FrameCandidates", "FrameDecisions", "PlainScene", "SceneAlignment"}:
+        if schema.__name__ in {
+            "FrameCandidates",
+            "FrameDecisions",
+            "PlainScene",
+            "SceneAlignment",
+            "GroundingBatch",
+        }:
             with (folder / "verified-frames.jsonl").open("a", encoding="utf8") as log:
                 log.write(
                     json.dumps(
@@ -513,9 +529,6 @@ async def main() -> None:
             (folder / f"{name}.json").write_text(
                 result.value.model_dump_json(indent=2), encoding="utf8"
             )
-        if schema.__name__ == "PlannedProseReview":
-            with (folder / "reviews.jsonl").open("a", encoding="utf8") as reviews:
-                reviews.write(result.value.model_dump_json() + "\n")
         if schema.__name__ in {
             "RelationshipCandidates",
             "RelationshipVerdicts",
@@ -533,32 +546,14 @@ async def main() -> None:
             saved["stored_plan"]["payload"]["plan"]
         )
         state = Reconstruction.model_validate(saved["reconstruction"]["payload"])
-        unresolved = set(args.unresolved_clause)
-        refs = clause_map(writer_plan)
-        if unresolved - refs.keys():
-            raise ValueError("Unknown unresolved clause in the saved reconstruction")
-        for scene in state.scenes:
-            scene.frames = [frame for frame in scene.frames if frame.clause not in unresolved]
-            scene.missing_essential = list(
-                dict.fromkeys(
-                    [
-                        *scene.missing_essential,
-                        *(ref for ref in unresolved if refs[ref][0].id == scene.id),
-                    ]
-                )
-            )
-            scene.gaps.extend(f"Unresolved clause {ref}" for ref in scene.missing_essential)
-        state.beats.clear()
-        build_discourse(state, writer_plan)
-        section.development_plan = writer_plan
-        memory.rows[service.identifier(section.id, "arc_reconstruction", evidence.revision)] = {
-            "knowledge_revision": section.revision,
-            "payload": state.model_dump(mode="json"),
-        }
         cache_path = folder / "writer-checkpoint.json"
+        if not cache_path.exists() and args.writer_cache:
+            cache_path = args.writer_cache
         if not cache_path.exists() and args.grounded_replay:
             cache_path = folder.parent.parent / "benchmark625-flow" / section_key / cache_path.name
         cache = json.loads(cache_path.read_text(encoding="utf8")) if cache_path.exists() else {}
+        if args.refresh_reconstruction:
+            cache = {**saved["review_batches"]["payload"], **cache}
         cache_id = service.identifier(section.id, "arc_prose_batches", evidence.revision)
         memory.rows[cache_id] = {"knowledge_revision": section.revision, "payload": cache}
         memory.prose_checkpoint = folder / "writer-checkpoint.json"
@@ -583,8 +578,46 @@ async def main() -> None:
             return tuple(usage.get(key) for key in ("provider", "model", "model_digest"))
 
         try:
+            unresolved = set(args.unresolved_clause)
+            if args.refresh_reconstruction:
+                if (
+                    previous.get("qualified_scenes")
+                    and previous.get("scene_plan_revision") == writer_plan.revision
+                    and previous.get("excluded_clauses") == sorted(unresolved)
+                ):
+                    state = Reconstruction.model_validate(previous["qualified_scenes"])
+                else:
+                    state = await reconstruct_arc(
+                        writer_plan, dossier.accepted_facts, infer, cache, checkpoint
+                    )
+            refs = clause_map(writer_plan)
+            if unresolved - refs.keys():
+                raise ValueError("Unknown unresolved clause in the saved reconstruction")
+            for scene in state.scenes:
+                scene.frames = [frame for frame in scene.frames if frame.clause not in unresolved]
+                scene.missing_essential = list(
+                    dict.fromkeys(
+                        [
+                            *scene.missing_essential,
+                            *(ref for ref in unresolved if refs[ref][0].id == scene.id),
+                        ]
+                    )
+                )
+                scene.gaps.extend(f"Unresolved clause {ref}" for ref in scene.missing_essential)
+            state.beats.clear()
+            build_discourse(state, writer_plan)
+            section.development_plan = writer_plan
+            memory.rows[service.identifier(section.id, "arc_reconstruction", evidence.revision)] = {
+                "knowledge_revision": section.revision,
+                "payload": state.model_dump(mode="json"),
+            }
             await service.compose(
-                dossier, evidence.revision, infer, providers, section_keys=[section_key]
+                dossier,
+                evidence.revision,
+                infer,
+                providers,
+                section_keys=[section_key],
+                diagnostic_editorial=True,
             )
             if not state.ready:
                 try:
@@ -604,8 +637,9 @@ async def main() -> None:
                 except (InferenceFailure, ValueError) as error:
                     diagnostic["halted"] = getattr(error, "code", str(error))
         finally:
+            completed_cache = memory.rows[cache_id]["payload"]
             (folder / "writer-checkpoint.json").write_text(
-                json.dumps(memory.rows[cache_id]["payload"]), encoding="utf8"
+                json.dumps(completed_cache), encoding="utf8"
             )
             article = memory.rows.get(
                 service.identifier(A, "arc_article", evidence.revision), {}
@@ -621,8 +655,16 @@ async def main() -> None:
                 "provider_usage": prior + providers(),
                 "input_revision": evidence.revision,
                 "diagnostic_only": diagnostic,
+                "qualified_scenes": state.model_dump(mode="json"),
+                "scene_plan_revision": writer_plan.revision,
+                "excluded_clauses": sorted(unresolved),
+                "claim_observations": [
+                    row
+                    for row in completed_cache.values()
+                    if "response_id" in row and "decision" in row
+                ],
                 "reviewer_calibration": [
-                    row for row in cache.values() if "calibration_verdicts" in row
+                    row for row in completed_cache.values() if "calibration_verdicts" in row
                 ],
             }
             pending = memory.rows.get(

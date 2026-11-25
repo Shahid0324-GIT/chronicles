@@ -1,0 +1,871 @@
+{
+  "input_revision": "3b2b776fc1e369fdc174296eac58facdf92067cc2762dea518c19f5a7f418c23",
+  "controlled_publication": "withheld",
+  "first_pass": {
+    "decisions": 4,
+    "unavailable": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      16,
+      17,
+      18,
+      19
+    ]
+  },
+  "calibration": [
+    {
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "calibration_verdicts": {
+        "check-1": "unsupported",
+        "check-2": "supported",
+        "check-3": "unsupported",
+        "check-4": "unsupported",
+        "check-5": "unsupported"
+      },
+      "passed": true
+    }
+  ],
+  "probe": {
+    "parsed": {
+      "check-1": "supported"
+    },
+    "expected": {
+      "check-1": "unsupported",
+      "check-2": "supported",
+      "check-3": "unsupported",
+      "check-4": "unsupported",
+      "check-5": "unsupported"
+    },
+    "usage": [
+      [
+        "groq",
+        "openai/gpt-oss-120b",
+        "invalid_output"
+      ],
+      [
+        "groq",
+        "openai/gpt-oss-120b",
+        "invalid_output"
+      ],
+      [
+        "ollama",
+        "qwen3.5:4b",
+        "ok"
+      ]
+    ]
+  },
+  "validation_stages": {
+    "grounding": {
+      "status": "complete",
+      "decisions": 14,
+      "expected": 14,
+      "unavailable_claims": []
+    },
+    "factual": {
+      "status": "passed"
+    },
+    "relationships": {
+      "status": "blocked",
+      "issues": [
+        "link-11 misattributed: The connection states the Sea King moved to eat Luffy, but the archive shows it moved to eat Higuma, changing the target."
+      ]
+    },
+    "structural": {
+      "status": "passed",
+      "issues": []
+    },
+    "editorial": {
+      "status": "passed"
+    },
+    "originality": {
+      "status": "blocked",
+      "issues": [
+        "Paragraph 5: The draft passage closely mirrors the source wording, reproducing the same sequence of ideas and phrasing, indicating non‑original content."
+      ]
+    },
+    "coverage": {
+      "status": "missing",
+      "issues": [
+        "Verified relationship not cited in the draft: link-11",
+        "Verified relationship not cited in the draft: link-12",
+        "Verified relationship not cited in the draft: link-13",
+        "Verified relationship not cited in the draft: link-14"
+      ]
+    }
+  },
+  "model_claim_review": [
+    {
+      "sentence": "Gold Roger amassed immense wealth, fame, and power, an achievement that sparked the onset of the Great Pirate Era.",
+      "clauses": [
+        "1.1",
+        "1.2"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 0,
+        "verdict": "supported",
+        "reason": "Both the claim that Gold Roger amassed immense wealth, fame, and power and the claim that this achievement sparked the onset of the Great Pirate Era are directly supported by the provided evidence statements.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "The Red‑Hair Pirates arrived at Foosha Village, where Monkey D. Luffy entered their ship and stabbed his left eye to demonstrate his toughness; the crew then celebrated his audacity with food and drink, and Luffy attempted to persuade Captain Red‑Haired Shanks to let him join the crew.",
+      "clauses": [
+        "2.1",
+        "2.2",
+        "2.3",
+        "2.4"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 1,
+        "verdict": "supported",
+        "reason": "All asserted events in the sentence—Red‑Hair Pirates arriving at Foosha Village, Luffy stabbing his left eye on the ship to prove toughness, the crew celebrating with food and drink, and Luffy attempting to persuade Captain Shanks to let him join—are directly confirmed by the provided evidence entries.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Bandits led by Higuma barged into the bar and demanded alcohol; after Shanks offered a bottle, Higuma smashed it over Shanks' head, prompting Shanks to apologize and clean up the mess, which left Luffy angry at Shanks.",
+      "clauses": [
+        "3.1",
+        "3.2",
+        "3.3",
+        "3.4"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 2,
+        "verdict": "supported",
+        "reason": "All asserted events—Higuma's bandits entering and demanding alcohol, Higuma breaking the bottle over Shanks after Shanks offered it, Shanks apologizing and cleaning up, and Luffy feeling anger toward Shanks—are directly stated in the evidence.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Shanks then tried to grab Luffy's arm, and the Red‑Hair Pirates realized the Gomu Gomu no Mi was missing, leading Shanks to reveal that Luffy's body had become rubber and that he could not swim.",
+      "clauses": [
+        "3.5",
+        "3.6",
+        "3.7"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 3,
+        "verdict": "supported",
+        "reason": "Each claim—Shanks attempting to grab Luffy's arm, the Red‑Hair Pirates realizing the Gomu Gomu no Mi was missing, and Shanks revealing Luffy's rubber body and inability to swim—is explicitly present in the evidence.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "While the Red‑Hair Pirates set sail again, Luffy began to enjoy his rubber body.",
+      "clauses": [
+        "4.1"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 4,
+        "verdict": "supported",
+        "reason": "Both the Red‑Hair Pirates setting sail again and Luffy beginning to enjoy his rubber body are directly stated in the evidence.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Later, Luffy was sitting in Makino's bar when Higuma's gang returned and demanded alcohol; Makino alerted Mayor Woop Slap that Luffy had been kidnapped after a fight with the bandits.",
+      "clauses": [
+        "4.2",
+        "4.3"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 5,
+        "verdict": "supported",
+        "reason": "The evidence confirms Luffy was in Makino's bar when Higuma's gang demanded alcohol and that Makino alerted Mayor Woop Slap about Luffy's kidnapping after a fight with the bandits.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "The Red‑Hair Pirates returned; a bandit pointed a gun at Shanks, and pirate Lucky Roux shot the bandit.",
+      "clauses": [
+        "4.5"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 6,
+        "verdict": "supported",
+        "reason": "The evidence matches the claim that the Red‑Hair Pirates returned, a bandit pointed a gun at Shanks, and Lucky Roux shot the bandit.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Shanks declared he could tolerate insults but would never forgive anyone who harmed his friends.",
+      "clauses": [
+        "4.6"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 7,
+        "verdict": "supported",
+        "reason": "Shanks' statement about tolerating insults but not forgiving harm to his friends is directly supported by the evidence.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Benn Beckman single‑handedly overpowered the bandits, while Higuma escaped with Luffy by throwing a smoke bomb.",
+      "clauses": [
+        "4.7"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 8,
+        "verdict": "supported",
+        "reason": "The evidence confirms that Benn Beckman overpowered the bandits single‑handedly and that Higuma escaped with Luffy by throwing a smoke bomb.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Higuma then took Luffy out to sea, kicked him overboard to drown him, and a Sea King known as Lord of the Coast moved to eat Higuma; Shanks arrived just in time to rescue Luffy and scare the beast away.",
+      "clauses": [
+        "4.8",
+        "4.9"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 9,
+        "verdict": "supported",
+        "reason": "All actions (Higuma taking Luffy out to sea, kicking him overboard, the Sea King moving to eat Higuma and Luffy, and Shanks arriving to rescue Luffy and scare the beast away) are directly supported by the provided evidence.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Shanks was relieved that Luffy survived, though Luffy was saddened by the loss of his arm during the rescue.",
+      "clauses": [
+        "4.10"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 10,
+        "verdict": "supported",
+        "reason": "Both Shanks being relieved that Luffy survived and Luffy being saddened by the loss of his arm are explicitly stated in the evidence.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "The Red‑Hair Pirates prepared to leave Foosha Village permanently.",
+      "clauses": [
+        "5.1"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 11,
+        "verdict": "supported",
+        "reason": "Evidence states the Red Hair Pirates were preparing to leave Foosha Village for good, matching the claim of preparing to leave permanently.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Luffy decided not to try to join them, declaring his intention to form his own crew stronger than Shanks', to find the greatest treasure, and to become the Pirate King.",
+      "clauses": [
+        "5.2"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 12,
+        "verdict": "supported",
+        "reason": "Evidence confirms Luffy decided not to join, and declared intentions to form a stronger crew, find the greatest treasure, and become Pirate King.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    },
+    {
+      "sentence": "Shanks gave Luffy his straw hat and told him to return it once he had surpassed him, while Shanks and Beckman looked forward to Luffy's future achievements.",
+      "clauses": [
+        "5.3",
+        "5.4"
+      ],
+      "relationships": [],
+      "review": {
+        "index": 13,
+        "verdict": "supported",
+        "reason": "Evidence shows Shanks gave Luffy his straw hat and asked for its return after surpassing him, and also shows Shanks and Beckman anticipating Luffy's future achievements.",
+        "conclusion": null,
+        "observed_modality": null,
+        "observed_negated": null,
+        "issues": [],
+        "additional_evidence_ids": []
+      }
+    }
+  ],
+  "claim_observations": [
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "Both clauses are directly supported by the provided evidence: Gold Roger's wealth, fame, and power are confirmed, and his announcement is stated to have caused the world to enter the Great Pirate Era.",
+        "anchors": [
+          "a1",
+          "a2"
+        ],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "ad89036df9070e20ac29769901fded03f2f4717ec0fe4127918441a135cce542",
+      "response_id": "a78dca7d78337e29d06456c323c62d783b0683c063e3a971c5f04449a8995b46"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "The provided evidence directly states that Luffy began enjoying his rubber body during a later voyage, matching the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "1da123750d0421299529a3df4bfd04bc7e1437cf176f767f0cdcdd208ac3363f",
+      "response_id": "0086cca7d16ce347ee5a68fb773ad4bf4a2d194d58a2c9e80c9a2b9473686589"
+    },
+    {
+      "decision": {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "The evidence confirms Luffy was sitting in Makino’s bar when Higuma’s gang returned and demanded alcohol, aligning with the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "e5e0270549705d156ce1f4642edcce62f1019463440e65d801d4f6d0a9af761c",
+      "response_id": "0086cca7d16ce347ee5a68fb773ad4bf4a2d194d58a2c9e80c9a2b9473686589"
+    },
+    {
+      "decision": {
+        "id": "s3",
+        "verdict": "supported",
+        "reason": "The evidence shows Makino alerted Mayor Woop Slap that Luffy had been kidnapped after picking a fight with the bandits, which matches the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "19b709cb91451be25e7a22ce11f6c2349749bcd8aea7d948967b71bca0e3b6d5",
+      "response_id": "0086cca7d16ce347ee5a68fb773ad4bf4a2d194d58a2c9e80c9a2b9473686589"
+    },
+    {
+      "decision": {
+        "id": "s4",
+        "verdict": "supported",
+        "reason": "The evidence describes Shanks and the Red‑Hair Pirates returning, a bandit pointing a gun at Shanks, and Lucky Roux shooting the bandit, consistent with the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "d2ee23a0fbfba00d5872a43cc5ffa00efa50a1507826cba776bfbba7168006f8",
+      "response_id": "0086cca7d16ce347ee5a68fb773ad4bf4a2d194d58a2c9e80c9a2b9473686589"
+    },
+    {
+      "decision": {
+        "id": "s5",
+        "verdict": "supported",
+        "reason": "The evidence records Shanks stating he could accept an insult toward him but would not forgive anyone who harms his friends, directly supporting the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "a431aa51e0f57519e216dd1a14bd4910582cae5319754a43a6e84a705f35bed4",
+      "response_id": "0086cca7d16ce347ee5a68fb773ad4bf4a2d194d58a2c9e80c9a2b9473686589"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "The evidence directly states that Benn Beckman overpowered the bandits single‑handedly and that Higuma escaped with Luffy in tow by throwing a smoke bomb, matching the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "f9e17a580a28cb641a61cd8232145b2eda50aa6b71ea72422674ca04ce704538",
+      "response_id": "5e583f8eeb105728b66dfcccdee252006962719170f963d58daf205cf96a8c6a"
+    },
+    {
+      "decision": {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "The evidence confirms that Higuma took Luffy out to sea, kicked him off the boat to drown him, and that a Sea King known as Lord of the Coast came to eat Higuma, exactly as described.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "0c6b7bfc61d8b31c9948cd52f42719e77f1ed2049223331e095703a9d6293307",
+      "response_id": "5e583f8eeb105728b66dfcccdee252006962719170f963d58daf205cf96a8c6a"
+    },
+    {
+      "decision": {
+        "id": "s3",
+        "verdict": "supported",
+        "reason": "The evidence shows the Sea King moved to eat Luffy and that Shanks arrived in time to save Luffy and scare the beast away, aligning with the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "8504adf154a3f1ee22b54572388c215dd0c96fc64cfb00ce6aa2ae029452cbea",
+      "response_id": "5e583f8eeb105728b66dfcccdee252006962719170f963d58daf205cf96a8c6a"
+    },
+    {
+      "decision": {
+        "id": "s4",
+        "verdict": "supported",
+        "reason": "The evidence states that Shanks was glad Luffy was okay and that Luffy was saddened about losing his arm while saving Shanks, which matches the sentence.",
+        "anchors": [],
+        "entails_all": null
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "3bb9c26b41bc65e9226c698f8b0f25a0e98067ab6b2bc871eefca00740676708",
+      "response_id": "5e583f8eeb105728b66dfcccdee252006962719170f963d58daf205cf96a8c6a"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "Both the claim that Gold Roger amassed immense wealth, fame, and power and the claim that this achievement sparked the onset of the Great Pirate Era are directly supported by the provided evidence statements.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "c99a7b413e5ce5ca15fba39452ac378a715a1b0e0cf95f6e8f2428f051fec39f",
+      "response_id": "9fd15fddd7af534a58d6df0bef094bbc7d11e465c952719f4bb48ab199b88253"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "All asserted events in the sentence—Red‑Hair Pirates arriving at Foosha Village, Luffy stabbing his left eye on the ship to prove toughness, the crew celebrating with food and drink, and Luffy attempting to persuade Captain Shanks to let him join—are directly confirmed by the provided evidence entries.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "6112188315b50a059ba28a71700ade4db43a18adaf1a724dc109d055feab8ff2",
+      "response_id": "d62d950af56be8ebc1e12d9cbd060d0109e933b4179688752d9d6ebf53eacb9e"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "All asserted events—Higuma's bandits entering and demanding alcohol, Higuma breaking the bottle over Shanks after Shanks offered it, Shanks apologizing and cleaning up, and Luffy feeling anger toward Shanks—are directly stated in the evidence.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "5f9dba8efa66e7ef4d676697308c8110cc475fb882cb8ba61bb0210ab8bcaae0",
+      "response_id": "d836169ec8e9b792e31ec74558a6f08cb350426d68269c42f6c658195d3e0a22"
+    },
+    {
+      "decision": {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "Each claim—Shanks attempting to grab Luffy's arm, the Red‑Hair Pirates realizing the Gomu Gomu no Mi was missing, and Shanks revealing Luffy's rubber body and inability to swim—is explicitly present in the evidence.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "55f1aa5ae5b36ddd3f53c12b606a000b0b52cf3f93c5f4ba6aac0405940362d8",
+      "response_id": "d836169ec8e9b792e31ec74558a6f08cb350426d68269c42f6c658195d3e0a22"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "Both the Red‑Hair Pirates setting sail again and Luffy beginning to enjoy his rubber body are directly stated in the evidence.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "87e56c20c1c922a6423e37c6fba4c04ac3b6e741423fec72e4798680f59f7cfe",
+      "response_id": "8c3ff04ad44935f82b46acee2db1c8b9b80582623f71db14a25e142bee3c322f"
+    },
+    {
+      "decision": {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "The evidence confirms Luffy was in Makino's bar when Higuma's gang demanded alcohol and that Makino alerted Mayor Woop Slap about Luffy's kidnapping after a fight with the bandits.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "5a60ecce8183103c090645230ca6dd620ea7309f2057a38559dafa935e153c39",
+      "response_id": "8c3ff04ad44935f82b46acee2db1c8b9b80582623f71db14a25e142bee3c322f"
+    },
+    {
+      "decision": {
+        "id": "s3",
+        "verdict": "supported",
+        "reason": "The evidence matches the claim that the Red‑Hair Pirates returned, a bandit pointed a gun at Shanks, and Lucky Roux shot the bandit.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "76f1ab7793201a4147eb00bb5898c3d6262ce24637aef80278fb9a2d30b572af",
+      "response_id": "8c3ff04ad44935f82b46acee2db1c8b9b80582623f71db14a25e142bee3c322f"
+    },
+    {
+      "decision": {
+        "id": "s4",
+        "verdict": "supported",
+        "reason": "Shanks' statement about tolerating insults but not forgiving harm to his friends is directly supported by the evidence.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "3764c5278df21313741ebd4f4c077df4e31e56251841093d225784b2e528b955",
+      "response_id": "8c3ff04ad44935f82b46acee2db1c8b9b80582623f71db14a25e142bee3c322f"
+    },
+    {
+      "decision": {
+        "id": "s5",
+        "verdict": "supported",
+        "reason": "The evidence confirms that Benn Beckman overpowered the bandits single‑handedly and that Higuma escaped with Luffy by throwing a smoke bomb.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "3643f339fecf521cadac109fc0c0494c43d8ae4edbdcc039e0a8736d3f002397",
+      "response_id": "8c3ff04ad44935f82b46acee2db1c8b9b80582623f71db14a25e142bee3c322f"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "All actions (Higuma taking Luffy out to sea, kicking him overboard, the Sea King moving to eat Higuma and Luffy, and Shanks arriving to rescue Luffy and scare the beast away) are directly supported by the provided evidence.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "d67d5408e184815e44083a1a276af1c6e42a9194e60283731d1e4df784923a61",
+      "response_id": "6e655a40a3fbc30cc6417cc61d516b4074c2e4c5b62f93c7c241a729ca61470b"
+    },
+    {
+      "decision": {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "Both Shanks being relieved that Luffy survived and Luffy being saddened by the loss of his arm are explicitly stated in the evidence.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "cb366c4dea5e0538d37fa44ae11fe899e2c0b201f2ef1e0818813f7c1db76678",
+      "response_id": "6e655a40a3fbc30cc6417cc61d516b4074c2e4c5b62f93c7c241a729ca61470b"
+    },
+    {
+      "decision": {
+        "id": "s1",
+        "verdict": "supported",
+        "reason": "Evidence states the Red Hair Pirates were preparing to leave Foosha Village for good, matching the claim of preparing to leave permanently.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "5b6d6be3f85285ecfb908922b6552ba5302930ef332bcf567b1e362a21801dd7",
+      "response_id": "c167f48c70d83823898426dc5ef3ed6ed91fe108a839a3a87a0ab8a40a72685d"
+    },
+    {
+      "decision": {
+        "id": "s2",
+        "verdict": "supported",
+        "reason": "Evidence confirms Luffy decided not to join, and declared intentions to form a stronger crew, find the greatest treasure, and become Pirate King.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "619c54dc50dca05284ba0e2572d4df99f4ec25714cbc31865d975dc9532b9702",
+      "response_id": "c167f48c70d83823898426dc5ef3ed6ed91fe108a839a3a87a0ab8a40a72685d"
+    },
+    {
+      "decision": {
+        "id": "s3",
+        "verdict": "supported",
+        "reason": "Evidence shows Shanks gave Luffy his straw hat and asked for its return after surpassing him, and also shows Shanks and Beckman anticipating Luffy's future achievements.",
+        "anchors": [],
+        "entails_all": true
+      },
+      "reviewer": [
+        "groq",
+        "openai/gpt-oss-120b",
+        null
+      ],
+      "policy": "arc-grounding-v4",
+      "evidence_dependency": "cfd182eb8514b2ff20ca18618b26efcc855b763b59320f2f0156d942fa01aee4",
+      "response_id": "c167f48c70d83823898426dc5ef3ed6ed91fe108a839a3a87a0ab8a40a72685d"
+    }
+  ],
+  "edit_unavailable": "Alignment incomplete for spans 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 20, 21, 22",
+  "editorial_alignment": {
+    "mapped": 7,
+    "unmapped_span_ids": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      15,
+      16,
+      17,
+      18,
+      20,
+      21,
+      22
+    ]
+  },
+  "manual_audit": [
+    "The opening asserts causation from Roger's achievement without evidence establishing that causal subject.",
+    "The injury passage remains ambiguous. An earlier qualified review rationale reverses the rescuer and the rescued.",
+    "A complete set of model verdicts does not establish factual approval."
+  ],
+  "controlled_provider_usage": [
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "ok",
+      "model_call": true,
+      "count": 3
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation",
+      "status": "rate_limited",
+      "model_call": true,
+      "count": 2
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "ok",
+      "model_call": true,
+      "count": 35
+    },
+    {
+      "provider": "groq",
+      "model": "openai/gpt-oss-120b",
+      "task": "presentation_verification",
+      "status": "rate_limited",
+      "model_call": true,
+      "count": 11
+    }
+  ],
+  "production": {
+    "api": {
+      "http_status": 200,
+      "status": "partial",
+      "dossier": true,
+      "article_status": "withheld",
+      "validated_sections": 0,
+      "section_hold": "development_plan_not_validated"
+    },
+    "setup_coverage": {
+      "research": "blocked",
+      "presentation": "withheld",
+      "supported_facets": [],
+      "missing_facets": [
+        "circumstances",
+        "development",
+        "action",
+        "decision",
+        "conflict",
+        "consequence"
+      ],
+      "gaps": [
+        "structured_output_exhausted"
+      ]
+    },
+    "provider_usage": [
+      {
+        "provider": "ollama",
+        "model": "qwen3.5:4b",
+        "task": "relationship_analysis",
+        "status": "invalid_output",
+        "model_call": true,
+        "count": 2
+      }
+    ]
+  }
+}

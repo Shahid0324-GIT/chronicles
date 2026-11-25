@@ -43,6 +43,7 @@ from src.application.arc_prose import (
 )
 from src.application.arc_reconstruction import Reconstruction, reconstruct_arc
 from src.application.development_plan import (
+    DevelopmentBindingError,
     fence_repeated_anchors,
     plan_from_proposal,
     propose_fixed_plan,
@@ -695,7 +696,9 @@ class ArcIntelligence:
                     plan = fence_repeated_anchors(plan)
             diagnostics = (cached or {}).get("payload", {}).get("diagnostics", [])
             proposal = (cached or {}).get("payload", {}).get("candidate")
-            if cached and not (retry_withheld and plan and plan.structural.status == "unavailable"):
+            if cached and not (
+                retry_withheld and (plan is None or plan.structural.status == "unavailable")
+            ):
                 pass
             else:
                 try:
@@ -715,14 +718,27 @@ class ArcIntelligence:
                                 dossier.accepted_facts, units, section.plan.objective, infer
                             )
                         proposal = proposed.model_dump(mode="json")
-                        plan = plan_from_proposal(
-                            proposed,
+                        args = (
                             dossier.accepted_facts,
                             units,
                             dossier.arc_id,
                             section.id,
                             dossier.continuity_id,
                         )
+                        try:
+                            plan = plan_from_proposal(proposed, *args)
+                        except DevelopmentBindingError as error:
+                            if dossier.claims_origin == "controlled_reference_dossier":
+                                raise
+                            proposed = await propose_plan(
+                                dossier.accepted_facts,
+                                units,
+                                section.plan.objective,
+                                infer,
+                                binding_issue=str(error),
+                            )
+                            proposal = proposed.model_dump(mode="json")
+                            plan = plan_from_proposal(proposed, *args)
                     plan = await review_developments(plan, infer, dossier.accepted_facts)
                     diagnostics = [*plan.factual.issues, *plan.structural.issues]
                 except InferenceFailure as error:
@@ -842,6 +858,7 @@ class ArcIntelligence:
         section_keys: list[str] | None = None,
         allowed_sources: list[UUID] | None = None,
         reconstruction_only: bool = False,
+        diagnostic_editorial: bool = False,
     ) -> None:
         sections: list[dict[str, Any]] = []
         qualification = None
@@ -994,6 +1011,7 @@ class ArcIntelligence:
                         reviewer_model,
                         diagnostics=composition_audit,
                         can_review=self.can_review,
+                        diagnostic_editorial=diagnostic_editorial,
                     )
                 draft = draft or ArcSectionDraft.model_validate(
                     await infer(
@@ -1118,7 +1136,18 @@ class ArcIntelligence:
                             raise ValueError("Planned prose is missing its grounded review")
                         assessment = planned_review
                         qualified = assessment.qualification_passed is True
-                        qualification = {"passed": qualified, "model": reviewer_model()}
+                        models = list(
+                            dict.fromkeys(
+                                tuple(claim.review_provenance["reviewer"])
+                                for claim in assessment.claims
+                                if "reviewer" in claim.review_provenance
+                            )
+                        )
+                        qualification = {
+                            "passed": qualified,
+                            "model": models[0] if len(models) == 1 else None,
+                            "models": models,
+                        }
                     elif qualification is None:
                         qualified, qualification = await qualify_reviewer(infer)
                         qualified_model = reviewer_model()

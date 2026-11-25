@@ -312,6 +312,7 @@ class ClaimReview(StructuredModel):
     observed_negated: bool | None = None
     issues: list[str] = Field(default_factory=list)
     additional_evidence_ids: list[str] = Field(default_factory=list)
+    review_provenance: dict[str, Any] = Field(default_factory=dict)
 
 
 class ArcSemanticReview(StructuredModel):

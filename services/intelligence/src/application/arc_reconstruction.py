@@ -131,7 +131,18 @@ class Reconstruction(StructuredModel):
 
     @property
     def ready(self) -> bool:
-        return bool(self.beats) and not self.frame_issues and not self.scene_issues
+        return (
+            bool(self.beats)
+            and not self.frame_issues
+            and not self.scene_issues
+            and all(
+                scene.frames
+                and scene.qualification != "blocked"
+                and not scene.pending_essential
+                and not scene.missing_essential
+                for scene in self.scenes
+            )
+        )
 
 
 def archive_context(plan: NarrativeDevelopmentPlan) -> dict[str, list[str]]:
