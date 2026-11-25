@@ -15,6 +15,7 @@ from src.application.arc_contracts import (
     ArcDossier,
 )
 from src.application.arc_understanding import build_arc_understanding, write_arc_article
+from src.application.connector_lint import LINKING_TYPES
 from src.application.knowledge_presentation import Infer, KnowledgeAtlas, fingerprint
 from src.application.ports.presentation import PresentationTransaction
 from src.application.ports.retrieval import DevelopmentEvidenceProvider
@@ -274,6 +275,11 @@ class ArcIntelligence:
             source_range=source_range,
             accepted_facts=facts,
             bible=build_story_bible(scope.knowledge.nodes, facts, boundary),
+            ordering_links=[
+                (str(e.source_node_id), str(e.target_node_id))
+                for e in scope.edges()
+                if e.relationship_type.value in LINKING_TYPES
+            ],
             sections=[],
             reconstruction={},
             organization_warnings=evidence_issues,

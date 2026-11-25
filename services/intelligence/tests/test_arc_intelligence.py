@@ -541,3 +541,35 @@ async def test_unlicensed_name_is_withheld_before_model_review():
     assert kept == [] and withheld == 1 and calls == []
     assert rejections[0].category == "unlicensed_name"
     assert "Captain" in rejections[0].reasons[0] or "Voss" in rejections[0].reasons[0]
+
+
+def test_connectors_need_sourced_text_or_an_explicit_link():
+    from src.application.connector_lint import unlicensed_connectors
+
+    claim = "Luffy ate the fruit and later set sail."
+    assert unlicensed_connectors(claim, ["Luffy ate the fruit.", "Luffy set sail."]) == ["later"]
+    assert unlicensed_connectors(claim, ["Luffy set sail later that year."]) == []
+    assert unlicensed_connectors(claim, ["Luffy ate the fruit."], linked=True) == []
+    assert unlicensed_connectors("Luffy ate the fruit.", []) == []
+
+
+async def test_unlicensed_connector_is_withheld_before_model_review():
+    paragraph = ArcParagraph.model_validate(
+        {"claims": [{"text": "Mira entered, setting the stage for a duel.", "fact_ids": ["a"]}]}
+    )
+
+    async def infer(prompt, schema, _task):
+        raise AssertionError("Connector failures must not reach the reviewer")
+
+    from src.application.connector_lint import unlicensed_connectors
+
+    rejections: list[ParagraphRejection] = []
+    kept, withheld, _ = await review_passages(
+        [paragraph],
+        {"a": {"assertion": "Mira entered."}},
+        infer,
+        rejections=rejections,
+        licence=lambda c: unlicensed_connectors(c.text, ["Mira entered."]),
+    )
+    assert kept == [] and withheld == 1
+    assert rejections[0].category == "unlicensed_connector" and rejections[0].claims == [0]

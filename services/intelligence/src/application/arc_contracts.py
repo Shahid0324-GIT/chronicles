@@ -250,6 +250,7 @@ class ArcDossier(StructuredModel):
     reconstruction: dict[str, Any]
     narrative_context: list[dict[str, Any]] = Field(default_factory=list)
     bible: StoryBible | None = None
+    ordering_links: list[tuple[str, str]] = Field(default_factory=list)
     understanding: "ArcUnderstandingDocument | None" = None
     revision: str
 
@@ -369,6 +370,7 @@ class ArcAccountCoverage(StructuredModel):
 RejectionCategory = Literal[
     "unknown_citation",
     "unlicensed_name",
+    "unlicensed_connector",
     "contradicted",
     "not_established",
     "reviewer_unavailable",

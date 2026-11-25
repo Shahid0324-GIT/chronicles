@@ -27,6 +27,7 @@ from src.application.arc_contracts import (
     RejectionCategory,
 )
 from src.application.arc_grounding import CALIBRATION, assertion, word_spans
+from src.application.connector_lint import unlicensed_connectors
 from src.application.knowledge_presentation import Infer, fingerprint
 from src.application.research_contracts import InferenceFailure
 from src.application.story_bible import allowed_vocabulary, prompt_bible, unlicensed_names
@@ -84,6 +85,7 @@ async def review_passages(
     *,
     rejections: list[ParagraphRejection] | None = None,
     vocabulary: set[str] | None = None,
+    licence: Callable[[ArcClaim], list[str]] | None = None,
 ) -> tuple[list[ArcParagraph], int, bool]:
     """Keep good passages and continue after malformed or unsupported siblings.
 
@@ -144,6 +146,26 @@ async def review_passages(
                         reasons=[
                             f"Name absent from the story bible and cited sources: {n}"
                             for n in foreign
+                        ][:8],
+                    )
+                )
+            continue
+        unlicensed = (
+            {i: words for i, c in enumerate(paragraph.claims) if (words := licence(c))}
+            if licence is not None
+            else {}
+        )
+        if unlicensed:
+            if rejections is not None:
+                rejections.append(
+                    ParagraphRejection(
+                        paragraph=number,
+                        category="unlicensed_connector",
+                        claims=sorted(unlicensed),
+                        reasons=[
+                            f"Connector not supported by cited sources or an explicit link: "
+                            f"{', '.join(words)}"
+                            for _, words in sorted(unlicensed.items())
                         ][:8],
                     )
                 )
@@ -229,6 +251,19 @@ async def build_arc_understanding(
         ],
     )
     bible = prompt_bible(dossier.bible)
+    fact_target = {f["id"]: f["target_id"] for f in dossier.accepted_facts}
+
+    def account_licence(claim: ArcClaim) -> list[str]:
+        cited = {fact_target[i] for i in claim.fact_ids if i in fact_target}
+        linked = any(a in cited and b in cited for a, b in dossier.ordering_links)
+        evidence = [
+            text
+            for i in claim.fact_ids
+            if i in unique
+            for text in (unique[i]["assertion"], *unique[i]["archive"])
+        ]
+        return unlicensed_connectors(claim.text, evidence, linked)
+
     refs = {str(i): k for i, k in enumerate(unique, 1)}
     # Wider quotations can mention unrelated actions. The reviewer receives them.
     brief = {i: unique[k]["assertion"] for i, k in refs.items()}
@@ -270,7 +305,12 @@ async def build_arc_understanding(
     resolve_assertion_ids(draft, refs)
     rejections: list[ParagraphRejection] = []
     paragraphs, withheld, unavailable = await review_passages(
-        draft.paragraphs, unique, infer, rejections=rejections, vocabulary=vocabulary
+        draft.paragraphs,
+        unique,
+        infer,
+        rejections=rejections,
+        vocabulary=vocabulary,
+        licence=account_licence,
     )
     if paragraphs and withheld and not unavailable:
         targets = [p for p in draft.paragraphs if p not in paragraphs]
@@ -306,6 +346,7 @@ async def build_arc_understanding(
                         {i: unique[i] for i in local_refs.values()},
                         infer,
                         vocabulary=vocabulary,
+                        licence=account_licence,
                     )
                     replacements = zip(targets, repaired.paragraphs, strict=True)
                     approved = {id(old): new for old, new in replacements if new in repaired_ok}
@@ -505,11 +546,23 @@ async def write_arc_article(
     )
     copied = set().union(*(word_spans(u.text, 18) for u in units))
 
+    def article_licence(claim: ArcClaim) -> list[str]:
+        evidence = [
+            text
+            for ref in claim.fact_ids
+            if ref in support
+            for text in (
+                support[ref]["account"],
+                *(t for e in support[ref]["evidence"] for t in (e["assertion"], *e["quotes"])),
+            )
+        ]
+        return unlicensed_connectors(claim.text, evidence)
+
     async def assess_section(section: ArcSectionDraft, refs: set[str]) -> dict[str, bool]:
         if {i for p in section.paragraphs for i in p.fact_ids} != refs:
             return {"grounded": False, "original": False, "unavailable": False}
         _, missing, unavailable = await review_passages(
-            section.paragraphs, support, infer, vocabulary=vocabulary
+            section.paragraphs, support, infer, vocabulary=vocabulary, licence=article_licence
         )
         original = not any(word_spans(p.text, 18) & copied for p in section.paragraphs)
         return {
