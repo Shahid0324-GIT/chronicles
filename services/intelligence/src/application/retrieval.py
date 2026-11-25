@@ -8,9 +8,42 @@ from src.application.arc_contracts import DevelopmentEvidence
 from src.application.event_extraction import evidence_units
 from src.application.evidence_bundles import EvidenceBundleBuilder
 from src.application.evidence_dossier import token_estimate
-from src.application.ports.retrieval import EmbeddingProvider, EvidenceHit, EvidenceIndexTransaction
+from src.application.ports.retrieval import (
+    ArcPassageSet,
+    ArcSource,
+    EmbeddingProvider,
+    EvidenceHit,
+    EvidenceIndexTransaction,
+)
 from src.application.relationship_contracts import EvidenceBundle, InvestigationSubject
 from src.domain.research import digest
+
+
+def sentence_evidence(
+    hit: EvidenceHit, sentence: dict[str, Any], meta: dict[str, Any]
+) -> DevelopmentEvidence | None:
+    """Stable, exact-offset sentence evidence; None if the archive coordinates drifted."""
+    start = hit.passage.start + sentence["start"]
+    text = sentence["text"]
+    if hit.source.text[start : start + len(text)] != text:
+        return None
+    return DevelopmentEvidence(
+        id=digest(f"{hit.source.id}:{hit.source.content_hash}:{start}:{text}"),
+        source_id=hit.source.id,
+        source_hash=hit.source.content_hash,
+        passage_id=hit.passage.id,
+        passage_hash=hit.passage.content_hash,
+        passage_start=hit.passage.start,
+        start=start,
+        end=start + len(text),
+        text=text,
+        eligibility_boundary=meta.get("presentation_position"),
+        position_basis=meta.get("position_basis"),
+        authority=meta.get("authority"),
+        source_group=str(
+            meta.get("derived_from") or hit.source.independence_key or hit.source.publisher
+        ),
+    )
 
 
 class EvidenceRetrieval:
@@ -79,37 +112,11 @@ class EvidenceRetrieval:
             }
             neighbors = {j for i in direct for j in (i - 1, i, i + 1) if 0 <= j < len(units)}
             for i in neighbors:
-                sentence = units[i]
-                start = hit.passage.start + sentence["start"]
-                text = sentence["text"]
-                if hit.source.text[start : start + len(text)] != text:
+                evidence = sentence_evidence(hit, units[i], metadata[hit.source.id])
+                if evidence is None:
                     issues.append("archive_coordinates_do_not_match_document")
                     continue
-                meta = metadata[hit.source.id]
-                selected.append(
-                    (
-                        i not in direct,
-                        DevelopmentEvidence(
-                            id=digest(f"{hit.source.id}:{hit.source.content_hash}:{start}:{text}"),
-                            source_id=hit.source.id,
-                            source_hash=hit.source.content_hash,
-                            passage_id=hit.passage.id,
-                            passage_hash=hit.passage.content_hash,
-                            passage_start=hit.passage.start,
-                            start=start,
-                            end=start + len(text),
-                            text=text,
-                            eligibility_boundary=meta.get("presentation_position"),
-                            position_basis=meta.get("position_basis"),
-                            authority=meta.get("authority"),
-                            source_group=str(
-                                meta.get("derived_from")
-                                or hit.source.independence_key
-                                or hit.source.publisher
-                            ),
-                        ),
-                    )
-                )
+                selected.append((i not in direct, evidence))
         result: list[DevelopmentEvidence] = []
         used = 0
         for context, unit in sorted(
@@ -123,6 +130,88 @@ class EvidenceRetrieval:
             used += size
             result.append(unit)
         return sorted(result, key=lambda u: (str(u.source_id), u.start)), sorted(set(issues))
+
+    async def arc_passages(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        *,
+        first_position: int,
+        last_position: int,
+        position_basis: str,
+        spoiler_position: int | None,
+        allowed_sources: list[UUID] | None = None,
+    ) -> ArcPassageSet:
+        """Every permitted archived sentence of the arc, ordered by source presentation.
+
+        Registry permission, arc bounds and the spoiler boundary are applied here, before
+        any text can reach inference. Order is presentation order, not story chronology.
+        """
+        ceiling = (
+            last_position if spoiler_position is None else min(last_position, spoiler_position)
+        )
+        async with self.transactions() as repo:
+            metadata = await repo.source_metadata(universe, continuity, allowed_sources)
+            chosen = [
+                identifier
+                for identifier, meta in metadata.items()
+                if meta.get("position_basis") == position_basis
+                and type(meta.get("presentation_position")) is int
+                and first_position <= meta["presentation_position"] <= ceiling
+            ]
+            hits = await repo.passages(universe, continuity, chosen) if chosen else []
+        issues: list[str] = []
+        by_source: dict[UUID, list[EvidenceHit]] = {}
+        for hit in hits:
+            meta = metadata.get(hit.source.id)
+            if (
+                meta is None
+                or hit.source.id not in chosen
+                or hit.source.universe_id != universe
+                or hit.source.continuity_id != continuity
+                or meta.get("content_hash") != hit.source.content_hash
+            ):
+                continue
+            by_source.setdefault(hit.source.id, []).append(hit)
+        sources: list[ArcSource] = []
+        sentences: list[DevelopmentEvidence] = []
+        ordered = sorted(
+            by_source.values(),
+            key=lambda group: (
+                metadata[group[0].source.id]["presentation_position"],
+                group[0].source.title,
+                str(group[0].source.id),
+            ),
+        )
+        for group in ordered:
+            source = group[0].source
+            meta = metadata[source.id]
+            sources.append(
+                ArcSource(
+                    id=source.id,
+                    label=source.title,
+                    position=meta["presentation_position"],
+                    position_basis=position_basis,
+                    authority=meta.get("authority"),
+                    source_group=str(
+                        meta.get("derived_from") or source.independence_key or source.publisher
+                    ),
+                    cloud_eligible=bool(
+                        (meta.get("public_web") and meta.get("cloud_content_allowed"))
+                        or meta.get("import_cloud_allowed")
+                    ),
+                )
+            )
+            for hit in sorted(group, key=lambda h: h.passage.ordinal):
+                for unit in evidence_units([hit.passage]):
+                    evidence = sentence_evidence(hit, unit, meta)
+                    if evidence is None:
+                        issues.append("archive_coordinates_do_not_match_document")
+                    else:
+                        sentences.append(evidence)
+        if not sources:
+            issues.append("no_permitted_archived_sources_in_arc_range")
+        return ArcPassageSet(sentences, sources, sorted(set(issues)))
 
     async def bundles(
         self,

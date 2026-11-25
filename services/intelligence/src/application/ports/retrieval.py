@@ -19,6 +19,46 @@ class DevelopmentEvidenceProvider(Protocol):
 
 
 @dataclass(frozen=True)
+class ArcSource:
+    """One permitted archived source inside an arc's presentation range."""
+
+    id: UUID
+    label: str
+    position: int
+    position_basis: str
+    authority: str | None
+    source_group: str
+    cloud_eligible: bool
+
+
+@dataclass(frozen=True)
+class ArcPassageSet:
+    """Archived sentences in source presentation order, fenced before any inference."""
+
+    sentences: list[DevelopmentEvidence]
+    sources: list[ArcSource]
+    issues: list[str]
+
+    @property
+    def cloud_eligible(self) -> bool:
+        return bool(self.sources) and all(s.cloud_eligible for s in self.sources)
+
+
+class ArcPassageProvider(Protocol):
+    async def arc_passages(
+        self,
+        universe: UUID,
+        continuity: UUID,
+        *,
+        first_position: int,
+        last_position: int,
+        position_basis: str,
+        spoiler_position: int | None,
+        allowed_sources: list[UUID] | None = None,
+    ) -> ArcPassageSet: ...
+
+
+@dataclass(frozen=True)
 class EmbeddingIdentity:
     model: str
     digest: str
