@@ -29,6 +29,7 @@ class ArcSource:
     authority: str | None
     source_group: str
     cloud_eligible: bool
+    url: str = ""
 
 
 @dataclass(frozen=True)

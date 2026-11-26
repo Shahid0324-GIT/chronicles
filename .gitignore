@@ -17,3 +17,5 @@ node_modules/
 
 playwright-report/
 test-results/
+# Draft story packs quote source text
+story-packs/

@@ -109,3 +109,8 @@ Atomic assertions must pass literal subject/predicate/object/direction binding a
 Investigations and partial identity/verification progress use existing job checkpoints and frontier records. Reuse only under current scope, source/permission/revision, policy and relevant contradiction-context fingerprints. Preserve old deadlines and incomplete reservations. The configurable verification reserve protects calls and tokens; never replenish an old job on resume.
 
 Inference dossiers omit full archive navigation metadata, preserving citation identities and hashes. Reader composition uses accepted atomic clauses and direct graph connections, preserves joint roles, and keeps failed grounding withheld even on cache reuse. GETs perform no inference. See `docs/phase-3-increment-5-4.md` and the real-run audit: the benchmark publishes three interactions as seven nodes/eight edges, but one reader draft remains withheld and broader questions/chronology remain unresolved. Owned tests are not live research. No automatic frontend redesign or image work.
+
+## Story packs (draft worlds)
+
+The product is an all-in-one story atlas: events with causes, cast, places, deep entry pages and lore. Story packs (`application/story_pack.py`, `story_pack_builder.py`, `docs/story-packs.md`) are AI-drafted, user-reviewed files loaded only into `-draft` universes. They are never canonical, never presented as verified, and must not write into other universes. Keep citations, the chapter boundary and the explicit-cause rule.
+

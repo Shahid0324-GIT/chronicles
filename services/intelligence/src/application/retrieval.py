@@ -208,6 +208,7 @@ class EvidenceRetrieval:
                 ArcSource(
                     id=source.id,
                     label=source.title,
+                    url=source.url,
                     position=meta["presentation_position"],
                     position_basis=position_basis,
                     authority=meta.get("authority"),
