@@ -10,11 +10,15 @@ from src.application.arc_story import (
     GroupReading,
     PropositionAudit,
     SectionRepair,
+    StoryOrder,
     StoryParagraph,
     StorySectionDraft,
     build_arc_story,
+    limit_sections,
+    merge_scenes,
     reading_groups,
     render_markdown,
+    tidy,
     verify,
 )
 from src.application.evidence_dossier import token_estimate
@@ -93,9 +97,14 @@ def script(*, drop_third=True, bad_cause=True, outage=False, log=None):
                     "carried_state": f"State after excerpts up to {last}.",
                 }
             )
+        if schema is StoryOrder:
+            ids = [scene["id"] for scene in data["scenes"]]
+            return schema.model_validate(
+                {"beats": [{"summary": f"Story event number {i}", "scenes": [i]} for i in ids]}
+            )
         if schema is ArcAccount:
             state["synth"] += 1
-            scenes = [s for r in data["readings"] for s in r["scenes"]]
+            scenes = data["beats"]
             keep = scenes[:2] if drop_third and state["synth"] == 1 else scenes
             return schema.model_validate(
                 {
@@ -179,7 +188,7 @@ async def test_reading_synthesis_coverage_repair_and_markdown():
     # but the first synthesis omitted position 3, so exactly one coverage rewrite follows.
     assert names.count("ArcAccount") == 2
     rewrite = [d for n, d in log if n == "ArcAccount"][1]
-    assert "previous_draft" in rewrite and rewrite["required_positions"] == [1, 2, 3]
+    assert "previous_draft" in rewrite and [b["beat"] for b in rewrite["beats"]] == [1, 2, 3]
     assert all(count > 0 for count in story.coverage.values())
     # Unknown sentence number 999 was dropped, never resolved.
     assert all(999 not in p.sentences for p in story.account.paragraphs)
@@ -370,3 +379,104 @@ async def test_copied_wording_is_rewritten_from_facts_without_showing_the_prose(
     assert "[" not in section.paragraphs[1].text
     assert section.paragraphs[1].sentences == [1, 2, 3]
     assert len(section.paragraphs) == 2
+
+
+async def test_retold_events_merge_into_one_beat_and_forgotten_scenes_survive():
+    readings = [
+        GroupReading(
+            scenes=[
+                {"summary": "Mira leaves the harbor village at dawn.", "sentences": [1]},
+                {"summary": "Tobin's lantern hangs at the marsh edge.", "sentences": [2]},
+            ],
+            carried_state="Mira is travelling.",
+        ),
+        GroupReading(
+            scenes=[
+                {"summary": "A recap: Mira left her village at dawn.", "sentences": [3]},
+                {"summary": "Mira finds Tobin in the fisher's hut.", "sentences": [4]},
+            ],
+            carried_state="Tobin is found.",
+        ),
+    ]
+
+    async def infer(prompt, schema, task):
+        return schema.model_validate(
+            {
+                "beats": [
+                    {"summary": "Mira leaves the village", "scenes": [1, 3]},
+                    {"summary": "Mira finds Tobin", "scenes": [4, 99]},
+                ]
+            }
+        )
+
+    beats = await merge_scenes("Marsh", readings, [[1], [7]], infer)
+    assert [b.summary for b in beats][0] == "Mira leaves the village"
+    assert beats[0].sentences == [1, 3]
+    # The forgotten lantern scene follows its neighbour instead of disappearing.
+    assert [b.sentences for b in beats] == [[1, 3], [2], [4]]
+
+
+async def test_one_failed_audit_batch_does_not_block_other_repairs():
+    numbered = {i: s for i, s in enumerate(passage_set().sentences, 1)}
+    paragraphs = [
+        StoryParagraph(text=f"Paragraph number {i} about Mira's long journey.", sentences=[1])
+        for i in range(6)
+    ]
+
+    async def infer(prompt, schema, task):
+        data = payload(prompt)
+        if schema is PropositionAudit:
+            indices = [p["index"] for p in data["paragraphs"]]
+            if 3 in indices:
+                raise InferenceFailure("structured_output_exhausted")
+            return schema.model_validate(
+                {
+                    "findings": [
+                        {
+                            "paragraph": i,
+                            "proposition": "A claim",
+                            "kind": "event",
+                            "verdict": "unsupported"
+                            if i == 0 and "Fixed" not in data["paragraphs"][0]["text"]
+                            else "supported",
+                            "reason": "Checked",
+                        }
+                        for i in indices
+                    ]
+                }
+            )
+        return schema.model_validate(
+            {
+                "paragraphs": [
+                    {
+                        "index": 0,
+                        "text": "Fixed paragraph describing Mira's departure plainly.",
+                        "sentences": [1],
+                    }
+                ]
+            }
+        )
+
+    section = await verify("Marsh", paragraphs, numbered, {"mira"}, set(), {}, {}, infer)
+    assert section.paragraphs[0].text.startswith("Fixed")
+    assert section.status == "unverified" and section.note == "structured_output_exhausted"
+    assert len(section.paragraphs) == 6 and section.unresolved == []
+
+
+def test_bracketed_citations_leave_prose_and_sections_are_capped():
+    numbered = {i: s for i, s in enumerate(passage_set().sentences, 1)}
+    cleaned = tidy(
+        StoryParagraph(
+            text="Mira left at dawn (1, 2) and returned in the year (1997) [3].", sentences=[1]
+        ),
+        numbered,
+    )
+    assert cleaned is not None
+    assert cleaned.text == "Mira left at dawn and returned in the year (1997)."
+    assert cleaned.sentences == [1, 3, 2] or sorted(cleaned.sentences) == [1, 2, 3]
+    outline = ArcOutline.model_validate(
+        {"sections": [{"heading": f"Part {i}", "paragraphs": [i]} for i in range(1, 10)]}
+    )
+    capped = limit_sections(outline)
+    assert len(capped.sections) == 6
+    assert [n for p in capped.sections for n in p.paragraphs] == list(range(1, 10))

@@ -34,7 +34,9 @@ excerpts state or clearly show. Excerpt order is the order sources present event
 necessarily in-world chronology; say so when order matters. Never add events, motives,
 dialogue, identities or causes from outside knowledge. Attribute reports and beliefs, keep
 intentions as intentions, and say plainly when the sources do not explain something. Write
-original prose; never copy source wording. Return exactly the requested JSON structure."""
+original prose; never copy source wording. Do not comment on themes, symbolism or
+significance (such as what an event sets up, showcases or cements) unless an excerpt says
+so; show importance through what changes. Return exactly the requested JSON structure."""
 
 # Estimated tokens of source or account material per request. With instructions and
 # JSON overhead this stays inside an 8,000 token-per-minute provider limit.
@@ -45,6 +47,14 @@ AUDIT_BATCH = 3
 WORDING = "Wording"
 COPY_WORDS = 18
 INLINE = re.compile(r"\s*\[(\d+(?:\s*[,–-]\s*\d+)*)\]")
+BRACKETED = re.compile(r"\s*\((\d+(?:\s*[,–-]\s*\d+)*)\)")
+MAX_SECTIONS = 6
+FILLER = re.compile(
+    r"\b(sets? the stage|showcas\w+|foreshadow\w*|cement(s|ed|ing)|solidif\w+|underscor\w+|"
+    r"highlight(s|ed|ing) the|reinforc\w+ the theme|"
+    r"this (moment|encounter|clash|gesture|scene|event) (marks|symboli[sz]es|demonstrates))\b",
+    re.I,
+)
 
 
 class ReadingScene(StructuredModel):
@@ -58,6 +68,24 @@ class GroupReading(StructuredModel):
     relationships: list[str] = Field(default_factory=list, max_length=16)
     carried_state: str = Field(min_length=10, max_length=1200)
     open_questions: list[ArcEvidenceQuestion] = Field(default_factory=list, max_length=8)
+
+
+class StoryBeat(StructuredModel):
+    summary: str = Field(min_length=10, max_length=400)
+    scenes: list[int] = Field(min_length=1, max_length=40)
+
+
+class StoryOrder(StructuredModel):
+    beats: list[StoryBeat] = Field(min_length=1, max_length=40)
+
+
+@dataclass
+class Beat:
+    """One story event, merged from every scene that retells it."""
+
+    summary: str
+    details: list[str]
+    sentences: list[int]
 
 
 class StoryParagraph(StructuredModel):
@@ -184,8 +212,17 @@ def tidy(
     paragraph: StoryParagraph, numbered: dict[int, DevelopmentEvidence]
 ) -> StoryParagraph | None:
     """Move citation numbers a model wrote into the prose into the citation list."""
-    inline = [int(n) for group in INLINE.findall(paragraph.text) for n in re.findall(r"\d+", group)]
-    text = INLINE.sub("", paragraph.text).strip()
+    inline: list[int] = []
+
+    def take(match: re.Match[str]) -> str:
+        found = [int(n) for n in re.findall(r"\d+", match.group(1))]
+        # Parentheses hold citations only when every number is a known sentence.
+        if match.re is BRACKETED and not all(n in numbered for n in found):
+            return match.group()
+        inline.extend(found)
+        return ""
+
+    text = BRACKETED.sub(take, INLINE.sub(take, paragraph.text)).strip()
     sentences = valid([*paragraph.sentences, *inline], numbered)
     if not sentences or len(text) < 40:
         return None
@@ -254,47 +291,109 @@ def coverage_by_position(
     return {p: cited.get(p, 0) for p in expected}
 
 
-async def synthesize(
+async def merge_scenes(
     title: str,
     readings: list[GroupReading],
     group_positions: list[list[int]],
+    infer: Infer,
+) -> list[Beat]:
+    """One ordered story outline: sources that retell an event contribute to one beat."""
+    scenes: dict[int, tuple[list[int], ReadingScene]] = {}
+    for reading, positions in zip(readings, group_positions, strict=True):
+        for scene in reading.scenes:
+            scenes[len(scenes) + 1] = (positions, scene)
+    width = max(90, min(240, REQUEST_TOKENS * 3 // max(1, len(scenes)) - 50))
+    order = StoryOrder.model_validate(
+        await infer(
+            "These scene summaries come from several sources, and some sources recap events "
+            "that others tell in full. Build one story outline of the whole arc: group the IDs "
+            "of scenes describing the same event into a single beat, and order the beats as "
+            "the story itself unfolds, using the order of events stated within the scenes "
+            "rather than which source or position they came from. A recap never creates a "
+            "second beat. Keep a flashback where the story shows it. Every scene ID belongs "
+            "to exactly one beat.\n"
+            'Return only JSON: {"beats":[{"summary":"","scenes":[1]}]}\n'
+            + json.dumps(
+                {
+                    "arc": title,
+                    "scenes": [
+                        {"id": i, "source_position": p, "summary": scene.summary[:width]}
+                        for i, (p, scene) in scenes.items()
+                    ],
+                },
+                ensure_ascii=False,
+            ),
+            StoryOrder,
+            "presentation",
+        )
+    )
+    used: set[int] = set()
+    members: list[tuple[str, list[int]]] = []
+    for item in order.beats:
+        ids = [i for i in dict.fromkeys(item.scenes) if i in scenes and i not in used]
+        used.update(ids)
+        if ids:
+            members.append((item.summary, ids))
+    # A scene the outline forgot is kept, placed after its preceding neighbour.
+    for i in sorted(set(scenes) - used):
+        after = next(
+            (n for n, (_, ids) in reversed(list(enumerate(members))) if i - 1 in ids), None
+        )
+        members.insert(0 if after is None else after + 1, (scenes[i][1].summary[:400], [i]))
+    return [
+        Beat(
+            summary,
+            [scenes[i][1].summary[:300] for i in ids],
+            list(dict.fromkeys(n for i in ids for n in scenes[i][1].sentences))[:40],
+        )
+        for summary, ids in members
+    ]
+
+
+def missing_beats(paragraphs: list[StoryParagraph], beats: list[tuple[int, Beat]]) -> list[int]:
+    cited = {i for p in paragraphs for i in p.sentences}
+    return [number for number, beat in beats if not cited & set(beat.sentences)]
+
+
+async def synthesize(
+    title: str,
+    readings: list[GroupReading],
+    beats: list[Beat],
     numbered: dict[int, DevelopmentEvidence],
     position: dict[int, int],
     bible: dict[str, Any],
     infer: Infer,
 ) -> tuple[ArcAccount, dict[int, int]]:
-    expected = sorted({p for p in position.values()})
-    rows: list[dict[str, Any]] = [
-        {
-            "positions": positions,
-            "scenes": [s.model_dump() for s in r.scenes],
-            "participants": r.participants,
-            "relationships": r.relationships,
-            "carried_state": r.carried_state,
-            "open_questions": [q.question for q in r.open_questions],
+    def row(number: int, beat: Beat) -> dict[str, Any]:
+        return {
+            "beat": number,
+            "summary": beat.summary,
+            "details": beat.details,
+            "sentences": beat.sentences,
         }
-        for r, positions in zip(readings, group_positions, strict=True)
-    ]
-    stretches: list[list[dict[str, Any]]] = []
-    for row in rows:
-        if stretches and token_estimate([*stretches[-1], row]) <= REQUEST_TOKENS:
-            stretches[-1].append(row)
+
+    stretches: list[list[tuple[int, Beat]]] = []
+    for item in enumerate(beats, 1):
+        if stretches and token_estimate([row(*x) for x in (*stretches[-1], item)]) <= (
+            REQUEST_TOKENS
+        ):
+            stretches[-1].append(item)
         else:
-            stretches.append([row])
-    # Every stretch sees the whole arc's shape, so synthesis stays arc-wide.
-    arc_map = [{"positions": r["positions"], "state_after": r["carried_state"][:400]} for r in rows]
+            stretches.append([item])
+    outline = [beat.summary[:120] for beat in beats]
+    per_stretch = max(2, 14 // len(stretches))
     instruction = (
-        "Write the Arc Understanding Document for the ENTIRE arc by synthesizing across all the "
-        "readings. Give a connected account in presentation order: the starting circumstances, "
-        "the people and what they want, how relationships and circumstances change, the major "
-        "conflicts and turning points, how each is resolved and what that changes. Carry "
-        "developments forward instead of restarting each paragraph, explain significance and "
-        "connections only where the excerpts state or clearly show them, and keep what the "
-        "sources do not explain as gaps. Distinguish what the story shows from what characters "
-        "believe or report. Give every required position real attention; each paragraph should "
-        "cover a coherent stretch of the story in about 80-140 words (at most 16 paragraphs), "
-        "cite the supporting sentence numbers, and list the story threads you are following in "
-        "threads. Original wording only.\n"
+        "Write the Arc Understanding Document for the ENTIRE arc from the ordered story "
+        "beats. Give one connected account that follows the beat order and tells each event "
+        "exactly once: the starting circumstances, the people and what they want, how "
+        "relationships and circumstances change, the major conflicts and turning points, how "
+        "each is resolved and what that changes. Carry developments forward instead of "
+        "restarting, connect events only where the beats state or clearly show the "
+        "connection, distinguish what happens from what characters believe or report, and "
+        "keep what the sources do not explain as gaps. Cover every beat; combine neighbouring "
+        f"beats into paragraphs of about 80-140 words (at most {per_stretch} paragraphs), "
+        "cite the supporting sentence numbers in the sentences field only, and list the story "
+        "threads you are following in threads. Original wording only.\n"
         'Return only JSON: {"paragraphs":[{"text":"","sentences":[1]}],"threads":[""],'
         '"gaps":[{"question":"...?","kind":"missing_evidence","essential":false}]}\n'
     )
@@ -302,37 +401,33 @@ async def synthesize(
     threads: list[str] = []
     gaps: list[ArcEvidenceQuestion] = []
     for number, stretch in enumerate(stretches, 1):
-        required = sorted({p for row in stretch for p in row["positions"]})
-        base = {
+        base: dict[str, Any] = {
             "arc": title,
             "story_bible": bible,
-            "readings": stretch,
-            "required_positions": required,
+            "participants": list(dict.fromkeys(n for r in readings for n in r.participants))[:24],
+            "beats": [row(*x) for x in stretch],
         }
         scope = instruction
         if len(stretches) > 1:
-            base["whole_arc_map"] = arc_map
+            base["whole_arc_outline"] = outline
             base["account_so_far"] = [p.text for p in paragraphs[-2:]]
             base["threads_so_far"] = threads
             scope = (
-                f"This is stretch {number} of {len(stretches)}. Write only the paragraphs "
-                "for these readings, continuing the account so far without restarting or "
-                "repeating it, with the whole arc map in view.\n" + instruction
+                f"This is part {number} of {len(stretches)}. Write only the paragraphs for "
+                "these beats, continuing the account so far without restarting or repeating "
+                "it, with the whole arc outline in view.\n" + instruction
             )
         draft = ArcAccount.model_validate(
             await infer(scope + json.dumps(base, ensure_ascii=False), ArcAccount, "presentation")
         )
         written = tidy_all(draft.paragraphs, numbered)
-        covered = coverage_by_position([p.sentences for p in written], position, required)
-        missing = [p for p, count in covered.items() if count == 0]
-        if missing:
+        if skipped := missing_beats(written, stretch):
             draft = ArcAccount.model_validate(
                 await infer(
                     scope
-                    + "The previous draft gave no coverage to positions "
-                    + ", ".join(map(str, missing))
-                    + ". Rewrite these paragraphs so every required position is covered in "
-                    "its place.\n"
+                    + "The previous draft left out beats "
+                    + ", ".join(map(str, skipped))
+                    + ". Rewrite these paragraphs so every beat is told in its place.\n"
                     + json.dumps(
                         {**base, "previous_draft": [p.text for p in written]},
                         ensure_ascii=False,
@@ -346,8 +441,21 @@ async def synthesize(
         threads = list(dict.fromkeys([*threads, *draft.threads]))[:10]
         gaps.extend(g for g in draft.gaps if g.question not in {q.question for q in gaps})
     account = ArcAccount(paragraphs=paragraphs[:60], threads=threads, gaps=gaps[:16])
-    coverage = coverage_by_position([p.sentences for p in account.paragraphs], position, expected)
+    coverage = coverage_by_position(
+        [p.sentences for p in account.paragraphs], position, sorted(set(position.values()))
+    )
     return account, coverage
+
+
+def limit_sections(outline: ArcOutline, limit: int = MAX_SECTIONS) -> ArcOutline:
+    """Merge the smallest neighbouring sections until the article has a readable shape."""
+    parts = [(p.heading, list(p.paragraphs)) for p in outline.sections]
+    while len(parts) > limit:
+        i = min(range(len(parts) - 1), key=lambda n: len(parts[n][1]) + len(parts[n + 1][1]))
+        parts[i : i + 2] = [(parts[i][0], parts[i][1] + parts[i + 1][1])]
+    return ArcOutline.model_validate(
+        {"sections": [{"heading": h, "paragraphs": p} for h, p in parts]}
+    )
 
 
 def check_outline(outline: ArcOutline, count: int) -> None:
@@ -408,6 +516,16 @@ def deterministic_findings(
                     reason=f"The name {name} appears in neither the story bible nor the excerpts",
                 )
             )
+        if filler := FILLER.search(paragraph.text):
+            findings.append(
+                PropositionFinding(
+                    paragraph=index,
+                    proposition="Editorial commentary",
+                    kind="description",
+                    verdict="unsupported",
+                    reason=f'Remove commentary such as "{filler.group()}"; say what happens',
+                )
+            )
         if phrase := copied_phrase(paragraph.text, copied):
             findings.append(
                 PropositionFinding(
@@ -426,42 +544,50 @@ async def audit(
     indices: list[int],
     numbered: dict[int, DevelopmentEvidence],
     infer: Infer,
-) -> list[PropositionFinding]:
-    """Every proposition, supported or not, for the paragraphs named by ``indices``."""
+) -> tuple[list[PropositionFinding], dict[int, str]]:
+    """Every proposition for the named paragraphs, and those whose audit failed."""
     findings: list[PropositionFinding] = []
+    failed: dict[int, str] = {}
     for batch in paragraph_batches(paragraphs, indices, numbered):
-        result = PropositionAudit.model_validate(
-            await infer(
-                "Audit this narrative against its cited excerpts. For each paragraph, list "
-                "every distinct factual proposition it asserts, including each relationship, "
-                "motivation, cause, ordering claim, consequence and claim of significance, even "
-                "when one sentence holds several. Mark a proposition supported only if the cited "
-                "excerpts state or clearly show it, unsupported if they do not establish it "
-                "(including an invented reason, link, order or significance), and contradicted "
-                "if they disagree. Check who does what to whom. A faithful paraphrase is "
-                "supported. Plain connecting phrases that assert nothing need no finding. Quote "
-                "each proposition briefly and give a short reason.\n"
-                'Return only JSON: {"findings":[{"paragraph":0,"proposition":"","kind":"event",'
-                '"verdict":"supported","reason":""}]}\n'
-                + json.dumps(
-                    {
-                        "paragraphs": [
-                            {
-                                "index": i,
-                                "text": paragraphs[i].text,
-                                "excerpts": evidence_for([paragraphs[i]], numbered),
-                            }
-                            for i in batch
-                        ]
-                    },
-                    ensure_ascii=False,
-                ),
-                PropositionAudit,
-                "presentation_verification",
+        try:
+            result = PropositionAudit.model_validate(
+                await infer(
+                    "Audit this narrative against its cited excerpts. For each paragraph, list "
+                    "every distinct factual proposition it asserts, including each relationship, "
+                    "motivation, cause, ordering claim, consequence "
+                    "and claim of significance, even "
+                    "when one sentence holds several. Mark a "
+                    "proposition supported only if the cited "
+                    "excerpts state or clearly show it, unsupported if they do not establish it "
+                    "(including an invented reason, link, order or significance), and contradicted "
+                    "if they disagree. Check who does what to whom. A faithful paraphrase is "
+                    "supported. Plain connecting phrases that "
+                    "assert nothing need no finding. Quote "
+                    "each proposition briefly and give a short reason.\n"
+                    'Return only JSON: {"findings":[{"paragraph":0,"proposition":"","kind":"event",'
+                    '"verdict":"supported","reason":""}]}\n'
+                    + json.dumps(
+                        {
+                            "paragraphs": [
+                                {
+                                    "index": i,
+                                    "text": paragraphs[i].text,
+                                    "excerpts": evidence_for([paragraphs[i]], numbered),
+                                }
+                                for i in batch
+                            ]
+                        },
+                        ensure_ascii=False,
+                    ),
+                    PropositionAudit,
+                    "presentation_verification",
+                )
             )
-        )
+        except InferenceFailure as error:
+            failed.update(dict.fromkeys(batch, error.code))
+            continue
         findings.extend(f for f in result.findings if f.paragraph in batch)
-    return findings
+    return findings, failed
 
 
 async def repair_section(
@@ -498,32 +624,35 @@ async def repair_section(
             else:
                 target["text"] = paragraphs[i].text
             targets.append(target)
-        result = SectionRepair.model_validate(
-            await infer(
-                "Repair these flagged paragraphs of a narrative. Make every statement "
-                "supported by the excerpts: replace an unsupported reason, link, order, "
-                "significance or role with what the excerpts do support, or state plainly "
-                "that the sources do not explain it. Keep supported detail, names, tense and "
-                "continuity with the text before and after, and keep a natural, full paragraph "
-                "rather than cutting it down. Where wording was copied, write the paragraph "
-                "afresh from the facts in a historian's third-person voice with your own "
-                "sentence structure; never reuse the excerpts' phrasing. Do not put sentence "
-                "numbers in the text. Return one replacement per target with its index.\n"
-                'Return only JSON: {"paragraphs":[{"index":0,"text":"","sentences":[1]}]}\n'
-                + json.dumps(
-                    {
-                        "heading": heading,
-                        "story_bible": bible,
-                        "targets": targets,
-                        "excerpts": evidence_for([paragraphs[i] for i in batch], numbered),
-                        **neighbours,
-                    },
-                    ensure_ascii=False,
-                ),
-                SectionRepair,
-                "presentation",
+        try:
+            result = SectionRepair.model_validate(
+                await infer(
+                    "Repair these flagged paragraphs of a narrative. Make every statement "
+                    "supported by the excerpts: replace an unsupported reason, link, order, "
+                    "significance or role with what the excerpts do support, or state plainly "
+                    "that the sources do not explain it. Keep supported detail, names, tense and "
+                    "continuity with the text before and after, and keep a natural, full paragraph "
+                    "rather than cutting it down. Where wording was copied, write the paragraph "
+                    "afresh from the facts in a historian's third-person voice with your own "
+                    "sentence structure; never reuse the excerpts' phrasing. Do not put sentence "
+                    "numbers in the text. Return one replacement per target with its index.\n"
+                    'Return only JSON: {"paragraphs":[{"index":0,"text":"","sentences":[1]}]}\n'
+                    + json.dumps(
+                        {
+                            "heading": heading,
+                            "story_bible": bible,
+                            "targets": targets,
+                            "excerpts": evidence_for([paragraphs[i] for i in batch], numbered),
+                            **neighbours,
+                        },
+                        ensure_ascii=False,
+                    ),
+                    SectionRepair,
+                    "presentation",
+                )
             )
-        )
+        except InferenceFailure:
+            continue  # these paragraphs stay unresolved; the others are still repaired
         for item in result.paragraphs:
             if item.index in batch:
                 fixed = tidy(StoryParagraph(text=item.text, sentences=item.sentences), numbered)
@@ -547,22 +676,25 @@ async def verify(
     problems: dict[int, list[PropositionFinding]] = {}
     supported: dict[int, list[str]] = {}
     pending = list(range(len(section.paragraphs)))
-    try:
-        for round_number in range(MAX_REPAIR_ROUNDS + 1):
-            findings = await audit(section.paragraphs, pending, numbered, infer)
-            local = deterministic_findings(section.paragraphs, vocabulary, copied)
-            for i in pending:
-                supported[i] = [
-                    f.proposition for f in findings if f.paragraph == i and f.verdict == "supported"
-                ]
-                problems[i] = [
-                    f for f in findings if f.paragraph == i and f.verdict != "supported"
-                ] + [f for f in local if f.paragraph == i]
-                if not problems[i]:
-                    del problems[i]
-            if not problems or round_number == MAX_REPAIR_ROUNDS:
-                break
-            replacements = await repair_section(
+    unaudited: dict[int, str] = {}
+    for round_number in range(MAX_REPAIR_ROUNDS + 1):
+        findings, failed = await audit(section.paragraphs, pending, numbered, infer)
+        local = deterministic_findings(section.paragraphs, vocabulary, copied)
+        for i in pending:
+            unaudited.pop(i, None)
+            supported[i] = [
+                f.proposition for f in findings if f.paragraph == i and f.verdict == "supported"
+            ]
+            problems[i] = [f for f in findings if f.paragraph == i and f.verdict != "supported"] + [
+                f for f in local if f.paragraph == i
+            ]
+            if not problems[i]:
+                del problems[i]
+        unaudited.update(failed)
+        if round_number == MAX_REPAIR_ROUNDS or not (problems or unaudited):
+            break
+        replacements = (
+            await repair_section(
                 heading,
                 section.paragraphs,
                 problems,
@@ -572,20 +704,25 @@ async def verify(
                 bible,
                 infer,
             )
-            if not replacements:
-                break
-            for i, paragraph in replacements.items():
-                section.paragraphs[i] = paragraph
-            pending = sorted(replacements)
-            section.repairs += 1
-        section.unresolved = [
-            f"Paragraph {i + 1}: {f.proposition} ({f.reason})"
-            for i, found in sorted(problems.items())
-            for f in found
-        ]
+            if problems
+            else {}
+        )
+        for i, paragraph in replacements.items():
+            section.paragraphs[i] = paragraph
+        pending = sorted({*replacements, *unaudited})
+        if not pending:
+            break
+        section.repairs += bool(replacements)
+    section.unresolved = [
+        f"Paragraph {i + 1}: {f.proposition} ({f.reason})"
+        for i, found in sorted(problems.items())
+        for f in found
+    ]
+    if unaudited:
+        section.status = "unverified"
+        section.note = ", ".join(sorted(set(unaudited.values())))
+    else:
         section.status = "unresolved" if problems else "verified"
-    except InferenceFailure as error:
-        section.status, section.note = "unverified", error.code
     return section
 
 
@@ -612,9 +749,8 @@ async def build_arc_story(
     if len(readings) != len(groups):
         group_positions = group_positions[: len(readings)]
     progress("synthesizing the arc")
-    account, coverage = await synthesize(
-        title, readings, group_positions, numbered, position, bible, infer
-    )
+    beats = await merge_scenes(title, readings, group_positions, infer)
+    account, coverage = await synthesize(title, readings, beats, numbered, position, bible, infer)
     progress("verifying the understanding")
     understanding = await verify(
         "Arc Understanding Document",
@@ -640,7 +776,7 @@ async def build_arc_story(
         await infer(
             "Derive article headings from meaningful changes in the story account below. Assign "
             "each numbered paragraph exactly once, in order. Return headings and paragraph "
-            "numbers only.\n"
+            "numbers only. Use between 4 and 6 sections.\n"
             'Return only JSON: {"sections":[{"heading":"","paragraphs":[1]}]}\n'
             + json.dumps(
                 {
@@ -653,6 +789,7 @@ async def build_arc_story(
         )
     )
     check_outline(outline, len(account.paragraphs))
+    outline = limit_sections(outline)
     sections: list[StorySection] = []
     for index, part in enumerate(outline.sections):
         source_paragraphs = [account.paragraphs[i - 1] for i in part.paragraphs]
