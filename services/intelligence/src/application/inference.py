@@ -281,7 +281,7 @@ class InferenceRouter:
                 "structured_output_exhausted"
                 if last_code == "invalid_output"
                 else last_code
-                if last_code == "rate_limited" and not allow_local_fallback
+                if last_code in {"rate_limited", "request_too_large"} and not allow_local_fallback
                 else "provider_unavailable"
             )
             raise InferenceFailure(

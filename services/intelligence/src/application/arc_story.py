@@ -36,7 +36,10 @@ dialogue, identities or causes from outside knowledge. Attribute reports and bel
 intentions as intentions, and say plainly when the sources do not explain something. Write
 original prose; never copy source wording. Return exactly the requested JSON structure."""
 
-GROUP_TOKENS = 5000
+# Estimated tokens of source or account material per request. With instructions and
+# JSON overhead this stays inside an 8,000 token-per-minute provider limit.
+REQUEST_TOKENS = 3200
+GROUP_TOKENS = REQUEST_TOKENS
 MAX_REPAIR_ROUNDS = 2
 AUDIT_BATCH = 3
 WORDING = "Wording"
@@ -63,7 +66,7 @@ class StoryParagraph(StructuredModel):
 
 
 class ArcAccount(StructuredModel):
-    paragraphs: list[StoryParagraph] = Field(min_length=1, max_length=20)
+    paragraphs: list[StoryParagraph] = Field(min_length=1, max_length=60)
     threads: list[str] = Field(default_factory=list, max_length=10)
     gaps: list[ArcEvidenceQuestion] = Field(default_factory=list, max_length=16)
 
@@ -135,7 +138,7 @@ def sentence_positions(
 def reading_groups(
     passages: ArcPassageSet, numbered: dict[int, DevelopmentEvidence], budget: int = GROUP_TOKENS
 ) -> list[list[int]]:
-    """Consecutive sentence numbers, split only at presentation-position boundaries."""
+    """Consecutive sentence numbers within the budget, preferring position boundaries."""
     position = sentence_positions(passages, numbered)
     groups: list[list[int]] = []
     current: list[int] = []
@@ -144,7 +147,7 @@ def reading_groups(
     for n in numbered:
         size = token_estimate(numbered[n].text)
         boundary = previous_position is not None and position[n] != previous_position
-        if current and boundary and used + size > budget:
+        if current and (used + size > budget or (boundary and used + size > budget // 2)):
             groups.append(current)
             current, used = [], 0
         current.append(n)
@@ -261,29 +264,25 @@ async def synthesize(
     infer: Infer,
 ) -> tuple[ArcAccount, dict[int, int]]:
     expected = sorted({p for p in position.values()})
-
-    def payload(extra: dict[str, Any]) -> str:
-        return json.dumps(
-            {
-                "arc": title,
-                "story_bible": bible,
-                "readings": [
-                    {
-                        "positions": positions,
-                        "scenes": [s.model_dump() for s in r.scenes],
-                        "participants": r.participants,
-                        "relationships": r.relationships,
-                        "carried_state": r.carried_state,
-                        "open_questions": [q.question for q in r.open_questions],
-                    }
-                    for r, positions in zip(readings, group_positions, strict=True)
-                ],
-                "required_positions": expected,
-                **extra,
-            },
-            ensure_ascii=False,
-        )
-
+    rows: list[dict[str, Any]] = [
+        {
+            "positions": positions,
+            "scenes": [s.model_dump() for s in r.scenes],
+            "participants": r.participants,
+            "relationships": r.relationships,
+            "carried_state": r.carried_state,
+            "open_questions": [q.question for q in r.open_questions],
+        }
+        for r, positions in zip(readings, group_positions, strict=True)
+    ]
+    stretches: list[list[dict[str, Any]]] = []
+    for row in rows:
+        if stretches and token_estimate([*stretches[-1], row]) <= REQUEST_TOKENS:
+            stretches[-1].append(row)
+        else:
+            stretches.append([row])
+    # Every stretch sees the whole arc's shape, so synthesis stays arc-wide.
+    arc_map = [{"positions": r["positions"], "state_after": r["carried_state"][:400]} for r in rows]
     instruction = (
         "Write the Arc Understanding Document for the ENTIRE arc by synthesizing across all the "
         "readings. Give a connected account in presentation order: the starting circumstances, "
@@ -299,28 +298,55 @@ async def synthesize(
         'Return only JSON: {"paragraphs":[{"text":"","sentences":[1]}],"threads":[""],'
         '"gaps":[{"question":"...?","kind":"missing_evidence","essential":false}]}\n'
     )
-    account = ArcAccount.model_validate(
-        await infer(instruction + payload({}), ArcAccount, "presentation")
-    ).model_copy(deep=True)
-    account.paragraphs = tidy_all(account.paragraphs, numbered)
-    coverage = coverage_by_position([p.sentences for p in account.paragraphs], position, expected)
-    missing = [p for p, count in coverage.items() if count == 0]
-    if missing:
-        account = ArcAccount.model_validate(
-            await infer(
-                instruction
-                + "The previous draft gave no coverage to positions "
-                + ", ".join(map(str, missing))
-                + ". Rewrite the complete account so every required position is covered in its "
-                "place.\n" + payload({"previous_draft": [p.text for p in account.paragraphs]}),
-                ArcAccount,
-                "presentation",
+    paragraphs: list[StoryParagraph] = []
+    threads: list[str] = []
+    gaps: list[ArcEvidenceQuestion] = []
+    for number, stretch in enumerate(stretches, 1):
+        required = sorted({p for row in stretch for p in row["positions"]})
+        base = {
+            "arc": title,
+            "story_bible": bible,
+            "readings": stretch,
+            "required_positions": required,
+        }
+        scope = instruction
+        if len(stretches) > 1:
+            base["whole_arc_map"] = arc_map
+            base["account_so_far"] = [p.text for p in paragraphs[-2:]]
+            base["threads_so_far"] = threads
+            scope = (
+                f"This is stretch {number} of {len(stretches)}. Write only the paragraphs "
+                "for these readings, continuing the account so far without restarting or "
+                "repeating it, with the whole arc map in view.\n" + instruction
             )
-        ).model_copy(deep=True)
-        account.paragraphs = tidy_all(account.paragraphs, numbered)
-        coverage = coverage_by_position(
-            [p.sentences for p in account.paragraphs], position, expected
+        draft = ArcAccount.model_validate(
+            await infer(scope + json.dumps(base, ensure_ascii=False), ArcAccount, "presentation")
         )
+        written = tidy_all(draft.paragraphs, numbered)
+        covered = coverage_by_position([p.sentences for p in written], position, required)
+        missing = [p for p, count in covered.items() if count == 0]
+        if missing:
+            draft = ArcAccount.model_validate(
+                await infer(
+                    scope
+                    + "The previous draft gave no coverage to positions "
+                    + ", ".join(map(str, missing))
+                    + ". Rewrite these paragraphs so every required position is covered in "
+                    "its place.\n"
+                    + json.dumps(
+                        {**base, "previous_draft": [p.text for p in written]},
+                        ensure_ascii=False,
+                    ),
+                    ArcAccount,
+                    "presentation",
+                )
+            )
+            written = tidy_all(draft.paragraphs, numbered) or written
+        paragraphs.extend(written)
+        threads = list(dict.fromkeys([*threads, *draft.threads]))[:10]
+        gaps.extend(g for g in draft.gaps if g.question not in {q.question for q in gaps})
+    account = ArcAccount(paragraphs=paragraphs[:60], threads=threads, gaps=gaps[:16])
+    coverage = coverage_by_position([p.sentences for p in account.paragraphs], position, expected)
     return account, coverage
 
 
@@ -341,6 +367,25 @@ def evidence_for(
 ) -> dict[str, str]:
     ids = sorted({i for p in paragraphs for i in p.sentences if i in numbered})
     return {str(i): numbered[i].text for i in ids}
+
+
+def paragraph_batches(
+    paragraphs: list[StoryParagraph],
+    indices: list[int],
+    numbered: dict[int, DevelopmentEvidence],
+    limit: int = AUDIT_BATCH,
+) -> list[list[int]]:
+    """Group paragraphs so each request's text and excerpts stay within the budget."""
+    batches: list[list[int]] = []
+    for i in indices:
+        if batches:
+            trial = [paragraphs[j] for j in (*batches[-1], i)]
+            size = token_estimate([[p.text for p in trial], evidence_for(trial, numbered)])
+            if len(trial) <= limit and size <= REQUEST_TOKENS:
+                batches[-1].append(i)
+                continue
+        batches.append([i])
+    return batches
 
 
 def copied_phrase(text: str, copied: set[tuple[str, ...]]) -> str | None:
@@ -384,8 +429,7 @@ async def audit(
 ) -> list[PropositionFinding]:
     """Every proposition, supported or not, for the paragraphs named by ``indices``."""
     findings: list[PropositionFinding] = []
-    for offset in range(0, len(indices), AUDIT_BATCH):
-        batch = indices[offset : offset + AUDIT_BATCH]
+    for batch in paragraph_batches(paragraphs, indices, numbered):
         result = PropositionAudit.model_validate(
             await infer(
                 "Audit this narrative against its cited excerpts. For each paragraph, list "
@@ -437,8 +481,7 @@ async def repair_section(
     """
     flagged = sorted(problems)
     replacements: dict[int, StoryParagraph] = {}
-    for offset in range(0, len(flagged), AUDIT_BATCH):
-        batch = flagged[offset : offset + AUDIT_BATCH]
+    for batch in paragraph_batches(paragraphs, flagged, numbered):
         targets = []
         for i in batch:
             target: dict[str, Any] = {
@@ -599,7 +642,12 @@ async def build_arc_story(
             "each numbered paragraph exactly once, in order. Return headings and paragraph "
             "numbers only.\n"
             'Return only JSON: {"sections":[{"heading":"","paragraphs":[1]}]}\n'
-            + json.dumps({str(i): p.text for i, p in enumerate(account.paragraphs, 1)}),
+            + json.dumps(
+                {
+                    str(i): split_sentences(p.text)[0][:240]
+                    for i, p in enumerate(account.paragraphs, 1)
+                }
+            ),
             ArcOutline,
             "presentation",
         )
@@ -617,39 +665,46 @@ async def build_arc_story(
             "threads": account.threads,
         }
         progress(f"writing section {index + 1}/{len(outline.sections)}: {part.heading}")
-        draft = StorySectionDraft.model_validate(
-            await infer(
-                "Write one section of the encyclopedia article from this part of the story "
-                "account. Develop the scenes in substantial connected paragraphs: establish "
-                "context, carry earlier developments forward, explain what people want, decide "
-                "and change, and why each turning point matters to the arc, but only as far as "
-                "the excerpts support. Use clear names where pronouns would be ambiguous. Open "
-                "so the section follows naturally from the previous section's ending, and close "
-                "so the next one can follow. Use the heading verbatim, cite supporting sentence "
-                "numbers per paragraph, never copy source wording, and say plainly when the "
-                "sources leave something unexplained. The excerpts are for checking facts: "
-                "write in a consistent third-person historian's voice with your own "
-                "sentence structure, and do not put sentence numbers in the text.\n"
-                'Return only JSON: {"heading":"","paragraphs":[{"text":"","sentences":[1]}]}\n'
-                + json.dumps(
-                    {
-                        "heading": part.heading,
-                        "story_bible": bible,
-                        "account": [
-                            {"text": p.text, "sentences": p.sentences} for p in source_paragraphs
-                        ],
-                        "excerpts": evidence_for(source_paragraphs, numbered),
-                        **neighbours,
-                    },
-                    ensure_ascii=False,
-                ),
-                StorySectionDraft,
-                "presentation",
-            )
-        ).model_copy(deep=True)
+        written: list[StoryParagraph] = []
+        for batch in paragraph_batches(
+            source_paragraphs, list(range(len(source_paragraphs))), numbered, limit=4
+        ):
+            chosen = [source_paragraphs[i] for i in batch]
+            draft = StorySectionDraft.model_validate(
+                await infer(
+                    "Write one section of the encyclopedia article from this part of the story "
+                    "account. Develop the scenes in substantial connected paragraphs: establish "
+                    "context, carry earlier developments forward, explain what people want, decide "
+                    "and change, and why each turning point matters to the arc, but only as far as "
+                    "the excerpts support. Use clear names where pronouns would be ambiguous. Open "
+                    "so the section follows naturally from the "
+                    "previous section's ending, and close "
+                    "so the next one can follow. Use the heading "
+                    "verbatim, cite supporting sentence "
+                    "numbers per paragraph, never copy source wording, and say plainly when the "
+                    "sources leave something unexplained. The excerpts are for checking facts: "
+                    "write in a consistent third-person historian's voice with your own "
+                    "sentence structure, and do not put sentence numbers in the text.\n"
+                    'Return only JSON: {"heading":"","paragraphs":[{"text":"","sentences":[1]}]}\n'
+                    + json.dumps(
+                        {
+                            "heading": part.heading,
+                            "story_bible": bible,
+                            "account": [{"text": p.text, "sentences": p.sentences} for p in chosen],
+                            "excerpts": evidence_for(chosen, numbered),
+                            **neighbours,
+                            "section_so_far": [p.text for p in written[-1:]],
+                        },
+                        ensure_ascii=False,
+                    ),
+                    StorySectionDraft,
+                    "presentation",
+                )
+            ).model_copy(deep=True)
+            written.extend(tidy_all(draft.paragraphs, numbered) or chosen)
         section = await verify(
             part.heading,
-            tidy_all(draft.paragraphs, numbered) or source_paragraphs,
+            written,
             numbered,
             vocabulary,
             copied,

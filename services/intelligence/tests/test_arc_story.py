@@ -17,6 +17,7 @@ from src.application.arc_story import (
     render_markdown,
     verify,
 )
+from src.application.evidence_dossier import token_estimate
 from src.application.ports.retrieval import ArcPassageSet, ArcSource, EvidenceHit
 from src.application.research_contracts import InferenceFailure
 from src.application.retrieval import EvidenceRetrieval
@@ -201,7 +202,12 @@ async def test_reading_synthesis_coverage_repair_and_markdown():
 async def test_reading_carries_story_state_across_position_groups():
     passages = passage_set()
     numbered = {i: s for i, s in enumerate(passages.sentences, 1)}
-    assert reading_groups(passages, numbered, budget=1) == [[1, 2], [3, 4], [5, 6]]
+    # Within budget, groups break where the source position changes.
+    sizes = [token_estimate(s.text) for s in numbered.values()]
+    budget = max(sum(sizes[i : i + 2]) for i in range(0, 6, 2))
+    assert reading_groups(passages, numbered, budget) == [[1, 2], [3, 4], [5, 6]]
+    # A single position larger than the budget is still split.
+    assert all(len(g) == 1 for g in reading_groups(passages, numbered, budget=1))
     log = []
     infer, _ = script(log=log)
     await build_arc_story("The Marsh", passages, None, infer)

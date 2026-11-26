@@ -194,6 +194,10 @@ class LangChainProvider:
                     except (ValueError, TypeError):
                         pass
                 raise InferenceFailure("invalid_output", issues=issues) from None
+            if code == 413:
+                # The request exceeds the account's per-request token limit; retrying
+                # the same prompt can never succeed.
+                raise InferenceFailure("request_too_large") from None
             if code == 400 and isinstance(detail, dict):
                 provider_code = str(detail.get("code", "unknown"))
                 safe_code = (
