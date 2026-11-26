@@ -11,10 +11,14 @@ from src.application.research_policy import ResearchLead, UniverseResearchProfil
 from src.application.research_use_cases import ResearchRequestError
 from src.application.source_contracts import SourceDiscovery, SourceEntry, SourceRegistration
 from src.application.source_intelligence import SourceDiscoveryService, SourceSelector
+from src.application.story_pack import StoryPack
+from src.application.story_pack import catalog as draft_catalog
+from src.application.story_pack import entries as draft_entries
 from src.application.use_cases import GetUniverse
 from src.domain.exceptions import NotFoundError
 from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.source_registry import SqlSourceRegistry
+from src.infrastructure.persistence.story_pack_store import SqlStoryPackStore
 from src.infrastructure.research_runtime import (
     build_arc_intelligence,
     build_atlas,
@@ -185,6 +189,23 @@ async def retrieve_evidence(command: RetrievalQuery, request: Request) -> dict[s
     }
 
 
+async def draft_pack(
+    request: Request,
+    slug: str,
+    universe: UUID,
+    continuity: UUID,
+    allowed_sources: list[UUID] | None,
+) -> StoryPack | None:
+    """The reviewed draft behind a "-draft" world; canonical worlds never have one."""
+    if not slug.endswith("-draft"):
+        return None
+    async with request.app.state.session_factory() as session:
+        pack = await SqlStoryPackStore(session).load(universe, continuity)
+    if pack and allowed_sources is not None:
+        raise ResearchRequestError("Source filtering is not supported for draft worlds")
+    return pack
+
+
 @router.get("/universes/{slug}/narrative")
 async def narrative(
     slug: str,
@@ -196,6 +217,9 @@ async def narrative(
     language: Literal["en"] = "en",
 ) -> dict[str, Any]:
     universe = await use_case.execute(slug)
+    pack = await draft_pack(request, slug, universe.id, continuity_id, allowed_source_id)
+    if pack:
+        return draft_catalog(pack, spoiler_position)
     return await build_atlas(request.app.state.session_factory).catalog(
         universe.id,
         continuity_id,
@@ -216,11 +240,16 @@ async def encyclopedia(
     language: Literal["en"] = "en",
 ) -> list[dict[str, Any]]:
     universe = await use_case.execute(slug)
-    entries = await build_atlas(request.app.state.session_factory).entries(
-        universe.id,
-        continuity_id,
-        allowed_sources=allowed_source_id,
-        spoiler_position=spoiler_position,
+    pack = await draft_pack(request, slug, universe.id, continuity_id, allowed_source_id)
+    entries = (
+        draft_entries(pack, spoiler_position)
+        if pack
+        else await build_atlas(request.app.state.session_factory).entries(
+            universe.id,
+            continuity_id,
+            allowed_sources=allowed_source_id,
+            spoiler_position=spoiler_position,
+        )
     )
     return [e for e in entries if category is None or e["entry_type"] == category]
 
