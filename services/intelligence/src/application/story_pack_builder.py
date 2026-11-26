@@ -125,6 +125,25 @@ def slugify(value: str, taken: set[str]) -> str:
     return key
 
 
+def merge_short_names(subjects: dict[str, dict[str, Any]], alias_of: dict[str, str]) -> None:
+    """Fold a lone surname or given name into the one fuller character name ending in it."""
+    characters = [k for k, s in subjects.items() if s["kind"] == "CHARACTER"]
+    for short in [k for k in characters if " " not in k]:
+        fuller = [k for k in characters if " " in k and k.split()[-1] == short]
+        if len(fuller) != 1:
+            continue
+        source, target = subjects.pop(short), subjects[fuller[0]]
+        target["aliases"] = list(
+            dict.fromkeys([*target["aliases"], source["name"], *source["aliases"]])
+        )
+        for field in ("ids", "context"):
+            target[field] = [*target[field], *source[field]]
+        target["introduction"] = target["introduction"] or source["introduction"]
+        for spelling, main in alias_of.items():
+            if main == short:
+                alias_of[spelling] = fuller[0]
+
+
 def clip(value: str, limit: int) -> str:
     value = " ".join(value.split())
     if len(value) <= limit:
@@ -413,6 +432,7 @@ async def build_story_pack(
                 "context": mention["context"],
             }
 
+    merge_short_names(subjects_by_name, alias_of)
     entities: dict[str, dict[str, Any]] = {}
     for spelling, subject in subjects_by_name.items():
         ids = list(dict.fromkeys(subject["ids"]))
@@ -641,7 +661,8 @@ def render_review(draft: PackDraft) -> str:
         titles = {e.key: e.title for e in arc.events}
         lines += [f"## {arc.title}", ""]
         for number, event in enumerate(arc.events, 1):
-            lines += [f"### {number}. {event.title} (by chapter {event.chapter})", ""]
+            label = event.label or f"by chapter {event.chapter}"
+            lines += [f"### {number}. {event.title} ({label})", ""]
             lines += [event.summary, ""]
             for label, keys in (
                 ("Characters", event.characters),

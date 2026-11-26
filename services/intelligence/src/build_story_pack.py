@@ -22,7 +22,13 @@ from src.application.arc_intelligence import ArcIntelligence
 from src.application.research_contracts import InferenceFailure, Task
 from src.application.story_bible import build_story_bible
 from src.application.story_pack import DRAFT_SUFFIX
-from src.application.story_pack_builder import PACK_RULES, build_story_pack, render_review
+from src.application.story_pack_builder import (
+    PACK_RULES,
+    PackDraft,
+    build_story_pack,
+    render_review,
+)
+from src.application.story_pack_edits import PackEdits, apply_edits
 from src.infrastructure.config.settings import Settings
 from src.infrastructure.inference import create_inference
 from src.infrastructure.model_runtime import LocalModelLease
@@ -131,6 +137,12 @@ async def run(arguments: argparse.Namespace) -> None:
         )
         out: Path = arguments.out
         out.mkdir(parents=True, exist_ok=True)
+        corrections = out / f"{definition.slug}.edits.json"
+        if corrections.exists():
+            edits = PackEdits.model_validate_json(corrections.read_text(encoding="utf-8"))
+            pack, skipped = apply_edits(draft.pack, edits)
+            draft = PackDraft(pack, [*skipped, *draft.notes])
+            say("Applied your saved corrections")
         pack_file = out / f"{definition.slug}.json"
         pack_file.write_text(draft.pack.model_dump_json(indent=2), encoding="utf-8")
         (out / f"{definition.slug}.md").write_text(render_review(draft), encoding="utf-8")

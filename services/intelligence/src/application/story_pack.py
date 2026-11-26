@@ -65,6 +65,7 @@ class PackEvent(StructuredModel):
     title: str = Field(min_length=3, max_length=100)
     summary: str = Field(min_length=20, max_length=1200)
     chapter: int = Field(ge=1)
+    label: str = Field(default="", max_length=60)
     characters: list[str] = Field(default_factory=list, max_length=16)
     places: list[str] = Field(default_factory=list, max_length=8)
     objects: list[str] = Field(default_factory=list, max_length=8)
@@ -350,7 +351,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                     "eventNodeId": own,
                     "title": event.title,
                     "body": event.summary,
-                    "episodeLabel": f"By chapter {event.chapter}",
+                    "episodeLabel": event.label or f"By chapter {event.chapter}",
                     "sourceIds": sources.ids(event.sources),
                     "loreThreadIds": [
                         i

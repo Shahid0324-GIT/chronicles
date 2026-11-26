@@ -12,7 +12,11 @@ Run from `services/intelligence`.
 ..\..\.venv\Scripts\python -m src.build_story_pack --world one-piece --arc romance-dawn --subject "Luffy" --subject "Shanks" --subject "Gomu Gomu no Mi"
 ```
 
-2. Read `story-packs/romance-dawn.md`, then edit `story-packs/romance-dawn.json`.
+2. Read `story-packs/romance-dawn.md`. Put corrections in `story-packs/romance-dawn.edits.json`;
+   they are reapplied whenever the draft is regenerated (editing the pack file directly is
+   overwritten by the next generation). Corrections are keyed by event and entry keys:
+   `events` (title, summary, label, sources, `after` to move), `chapter_labels`, `rename`,
+   `merge` (from into) and `drop`.
 
 3. Check and load it. Loading replaces only the draft world.
 

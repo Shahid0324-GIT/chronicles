@@ -14,6 +14,8 @@ from src.application.story_pack import (
     identifier,
     universe_id,
 )
+from src.application.story_pack_builder import merge_short_names
+from src.application.story_pack_edits import PackEdits, apply_edits
 from src.infrastructure.persistence.models import NodeModel, UniverseModel
 from src.infrastructure.persistence.story_pack_store import SqlStoryPackStore
 
@@ -222,3 +224,69 @@ async def test_story_map_and_entry_endpoints_serve_the_draft(app, factory):
         graph = await client.get(f"{base}/graph")
         assert graph.status_code == 200
         assert {n["title"] for n in graph.json()["nodes"]} >= {"Mira", "Mira leaves home"}
+
+
+def test_corrections_move_merge_drop_and_report_what_no_longer_matches():
+    value = sample()
+    value["entities"].append(
+        {
+            "key": "mira-short",
+            "type": "CHARACTER",
+            "name": "M.",
+            "introduction": "Another spelling of the traveller.",
+            "chapter": 1,
+            "sources": SOURCE,
+        }
+    )
+    value["arcs"][0]["events"][0]["characters"] = ["mira-short"]
+    value["arcs"][0]["events"].append(
+        {**value["arcs"][0]["events"][0], "key": "early", "title": "An earlier moment"}
+    )
+    edits = PackEdits.model_validate(
+        {
+            "events": {
+                "early": {"after": "departure", "summary": "Corrected account of this moment."},
+                "gone": {"title": "No longer drafted"},
+            },
+            "chapter_labels": {"3": "From the recap"},
+            "merge": {"mira-short": "mira"},
+            "drop": ["lantern"],
+            "rename": {"marsh": "The Great Marsh"},
+        }
+    )
+    pack, notes = apply_edits(StoryPack.model_validate(value), edits)
+    events = pack.arcs[0].events
+    assert [e.key for e in events] == ["departure", "early", "lantern-found"]
+    assert events[0].characters == ["mira"] and events[2].objects == []
+    assert events[1].summary.startswith("Corrected")
+    mira = next(e for e in pack.entities if e.key == "mira")
+    assert "M." in mira.aliases
+    assert next(e for e in pack.entities if e.key == "marsh").name == "The Great Marsh"
+    assert catalog(pack)["journeys"][0]["steps"][2]["episodeLabel"] == "From the recap"
+    assert notes == ["Edit skipped: no event gone"]
+
+
+def test_short_names_join_the_only_fuller_character_name():
+    def subject(name, kind="CHARACTER"):
+        return {
+            "name": name,
+            "kind": kind,
+            "aliases": [],
+            "ids": [1],
+            "context": [1],
+            "introduction": "",
+        }
+
+    subjects = {
+        "zoro": subject("Zoro"),
+        "roronoa zoro": subject("Roronoa Zoro"),
+        "base": subject("Base", "LOCATION"),
+        "marine base": subject("Marine Base", "LOCATION"),
+        "rika": subject("Rika"),
+        "rika s mother": subject("Rika's mother"),
+    }
+    alias_of = {k: k for k in subjects}
+    merge_short_names(subjects, alias_of)
+    assert "zoro" not in subjects and alias_of["zoro"] == "roronoa zoro"
+    assert subjects["roronoa zoro"]["aliases"] == ["Zoro"]
+    assert {"base", "rika"} <= set(subjects)
