@@ -39,13 +39,6 @@ it. Cite sentence numbers. Return exactly the requested JSON structure."""
 NameKind = Literal["CHARACTER", "LOCATION", "OBJECT", "MYSTERY"]
 
 
-class CauseDraft(StructuredModel):
-    beat: int
-    kind: Literal["CAUSED", "ENABLED"] = "CAUSED"
-    reason: str = ""
-    sentences: list[int] = Field(default_factory=list)
-
-
 class EventCard(StructuredModel):
     beat: int
     title: str
@@ -55,11 +48,22 @@ class EventCard(StructuredModel):
     objects: list[str] = Field(default_factory=list)
     mysteries: list[str] = Field(default_factory=list)
     sentences: list[int] = Field(default_factory=list)
-    causes: list[CauseDraft] = Field(default_factory=list)
 
 
 class CardBatch(StructuredModel):
-    events: list[EventCard] = Field(min_length=1, max_length=12)
+    events: list[EventCard] = Field(min_length=1, max_length=18)
+
+
+class LinkDraft(StructuredModel):
+    cause: int
+    effect: int
+    kind: Literal["CAUSED", "ENABLED"] = "CAUSED"
+    reason: str = ""
+    sentences: list[int] = Field(default_factory=list)
+
+
+class LinkList(StructuredModel):
+    links: list[LinkDraft] = Field(default_factory=list, max_length=40)
 
 
 class CastEntry(StructuredModel):
@@ -187,38 +191,31 @@ def _batches(items: list[Any], size: Callable[[Any], int], limit: int) -> list[l
 
 async def _cards(
     title: str, beats: list[Beat], evidence: _Evidence, infer: Infer
-) -> dict[int, EventCard]:
+) -> dict[int, list[EventCard]]:
+    """One card per distinct turning point; a crowded beat yields several, in order."""
     shown = {i: evidence.card_sentences(b) for i, b in enumerate(beats, 1)}
     rows = [
-        {"beat": i, "summary": b.summary, "excerpts": evidence.texts(shown[i], 900)}
+        {"beat": i, "summary": b.summary, "excerpts": evidence.texts(shown[i], 1400)}
         for i, b in enumerate(beats, 1)
         if shown[i]
     ]
-    cards: dict[int, EventCard] = {}
+    cards: dict[int, list[EventCard]] = {}
     names: list[str] = []
-    for batch in _batches(rows, token_estimate, 5):
+    for batch in _batches(rows, token_estimate, 3):
         result = CardBatch.model_validate(
             await infer(
-                "Write one event card for each beat. Give a short title, a 2 to 4 sentence "
-                "summary, and the characters, places, important objects and open mysteries "
-                "that the excerpts name for that event. Reuse known names exactly. In causes, "
-                "list an earlier beat only when an excerpt states or plainly shows that it "
-                "caused or enabled this event, with the reason and the sentence numbers; "
-                "order alone is not a cause.\n"
+                "Write event cards for these beats, in story order. Give every distinct "
+                "turning point its own card: a conflict, an injury or loss, gaining a power "
+                "or object, a revelation, a promise or decision, a capture, a rescue, a "
+                "victory or a departure. A crowded beat needs several cards (up to five); a "
+                "simple beat needs one. Never repeat an event. Each card has its beat number, "
+                "a short title, a 1 to 3 sentence summary of only that event, the characters, "
+                "places, important objects and open mysteries the excerpts name for it, and "
+                "the sentence numbers that tell it. Reuse known names exactly.\n"
                 'Return only JSON: {"events":[{"beat":1,"title":"","summary":"",'
-                '"characters":[],"places":[],"objects":[],"mysteries":[],"sentences":[1],'
-                '"causes":[{"beat":1,"kind":"CAUSED","reason":"","sentences":[1]}]}]}\n'
+                '"characters":[],"places":[],"objects":[],"mysteries":[],"sentences":[1]}]}\n'
                 + json.dumps(
-                    {
-                        "arc": title,
-                        "earlier_beats": [
-                            {"beat": i, "summary": b.summary[:100]}
-                            for i, b in enumerate(beats, 1)
-                            if i < batch[-1]["beat"]
-                        ],
-                        "known_names": names[-40:],
-                        "beats": batch,
-                    },
+                    {"arc": title, "known_names": names[-40:], "beats": batch},
                     ensure_ascii=False,
                 ),
                 CardBatch,
@@ -228,9 +225,57 @@ async def _cards(
         wanted = {row["beat"] for row in batch}
         for card in result.events:
             if card.beat in wanted:
-                cards[card.beat] = card
+                cards.setdefault(card.beat, []).append(card)
                 names = list(dict.fromkeys([*names, *card.characters, *card.places, *card.objects]))
     return cards
+
+
+async def _links(
+    title: str, events: dict[int, dict[str, Any]], evidence: _Evidence, infer: Infer
+) -> list[LinkDraft]:
+    """A pass that only looks for causes, over overlapping windows of neighbouring events."""
+    order = list(events)
+    found: dict[tuple[int, int], LinkDraft] = {}
+    window, step = 8, 5
+    for start in range(0, max(1, len(order) - (window - step)), step):
+        chosen = order[start : start + window]
+        if len(chosen) < 2:
+            continue
+        result = LinkList.model_validate(
+            await infer(
+                "Find cause links between these story events. For each pair where an "
+                "excerpt states or plainly shows that the earlier event brought about (CAUSED) "
+                "or made possible (ENABLED) the later one, such as a stated reason, a "
+                "response, a rescue from it or a result of it, give the earlier and later "
+                "event numbers, a one sentence reason and the sentence numbers that show it. "
+                "Check each neighbouring pair carefully. Order alone is never a cause.\n"
+                'Return only JSON: {"links":[{"cause":1,"effect":2,"kind":"CAUSED",'
+                '"reason":"","sentences":[1]}]}\n'
+                + json.dumps(
+                    {
+                        "arc": title,
+                        "events": [
+                            {
+                                "number": n,
+                                "title": events[n]["title"],
+                                "summary": events[n]["summary"][:240],
+                                "excerpts": evidence.texts(
+                                    events[n]["ids"], REQUEST_TOKENS // (len(chosen) + 1)
+                                ),
+                            }
+                            for n in chosen
+                        ],
+                    },
+                    ensure_ascii=False,
+                ),
+                LinkList,
+                "presentation",
+            )
+        )
+        for link in result.links:
+            if link.cause in chosen and link.effect in chosen:
+                found.setdefault((link.cause, link.effect), link)
+    return list(found.values())
 
 
 async def build_story_pack(
@@ -264,45 +309,51 @@ async def build_story_pack(
     taken: set[str] = set()
     events: dict[int, dict[str, Any]] = {}
     mentions: dict[str, dict[str, Any]] = {}
+    index = 0
     for number, beat in enumerate(beats, 1):
-        card = cards.get(number)
+        beat_cards = cards.get(number, [])
         shown = evidence.card_sentences(beat)
-        if card is None or not shown or len(" ".join(card.summary.split())) < 20:
-            notes.append(f"Event {number} has no usable card: {beat.summary}")
+        if not beat_cards or not shown:
+            notes.append(f"Event beat {number} has no usable card: {beat.summary}")
             continue
-        cited = [n for n in dict.fromkeys(card.sentences) if n in shown]
-        if not cited:
-            cited = shown[:6]
-            notes.append(f"'{card.title}' cited no shown sentence; check its sources")
-        event: dict[str, Any] = {
-            "key": slugify(card.title, taken),
-            "title": clip(card.title, 100),
-            "summary": clip(card.summary, 1200),
-            "chapter": evidence.chapter(shown),
-            "sources": evidence.citations(cited, 12),
-            "ids": cited,
-            "context": shown,
-            "names": {},
-        }
-        for field, kind in (
-            ("characters", "CHARACTER"),
-            ("places", "LOCATION"),
-            ("objects", "OBJECT"),
-            ("mysteries", "MYSTERY"),
-        ):
-            for raw in getattr(card, field):
-                name = clip(raw, 100)
-                if not name_key(name):
-                    continue
-                found = mentions.setdefault(
-                    name_key(name),
-                    {"name": name, "kind": kind, "events": [], "ids": [], "context": []},
-                )
-                found["events"].append(number)
-                found["ids"] += cited
-                found["context"] += shown
-                event["names"][name_key(name)] = None
-        events[number] = event
+        for card in beat_cards:
+            if len(" ".join(card.summary.split())) < 20:
+                notes.append(f"'{card.title}' has no usable summary")
+                continue
+            index += 1
+            cited = [n for n in dict.fromkeys(card.sentences) if n in shown]
+            if not cited:
+                cited = shown[:6]
+                notes.append(f"'{card.title}' cited no shown sentence; check its sources")
+            event: dict[str, Any] = {
+                "key": slugify(card.title, taken),
+                "title": clip(card.title, 100),
+                "summary": clip(card.summary, 1200),
+                "chapter": evidence.chapter(shown),
+                "sources": evidence.citations(cited, 12),
+                "ids": cited,
+                "context": shown if len(beat_cards) == 1 else cited,
+                "names": {},
+            }
+            for field, kind in (
+                ("characters", "CHARACTER"),
+                ("places", "LOCATION"),
+                ("objects", "OBJECT"),
+                ("mysteries", "MYSTERY"),
+            ):
+                for raw in getattr(card, field):
+                    name = clip(raw, 100)
+                    if not name_key(name):
+                        continue
+                    found = mentions.setdefault(
+                        name_key(name),
+                        {"name": name, "kind": kind, "events": [], "ids": [], "context": []},
+                    )
+                    found["events"].append(index)
+                    found["ids"] += cited
+                    found["context"] += shown
+                    event["names"][name_key(name)] = None
+            events[index] = event
 
     progress("naming the cast")
     cast = CastList(entries=[])
@@ -504,23 +555,29 @@ async def build_story_pack(
             }
         )
 
+    progress("linking causes")
     links = []
-    for number, event in events.items():
-        for cause in cards[number].causes:
-            ids = [n for n in dict.fromkeys(cause.sentences) if n in numbered]
-            reason = clip(cause.reason, 400)
-            if cause.beat in events and cause.beat < number and ids and len(reason) >= 8:
+    for link in await _links(arc_title, events, evidence, infer):
+        effect, cause = events.get(link.effect), events.get(link.cause)
+        reason = clip(link.reason, 400)
+        if cause and effect and link.cause < link.effect:
+            allowed = {*cause["context"], *effect["context"]}
+            ids = [n for n in dict.fromkeys(link.sentences) if n in allowed]
+            if ids and len(reason) >= 8:
                 links.append(
                     {
-                        "cause": events[cause.beat]["key"],
-                        "effect": event["key"],
-                        "kind": cause.kind,
+                        "cause": cause["key"],
+                        "effect": effect["key"],
+                        "kind": link.kind,
                         "reason": reason,
                         "sources": evidence.citations(ids, 4),
                     }
                 )
-            else:
-                notes.append(f"'{event['title']}': dropped an unsupported cause")
+                continue
+        title = effect["title"] if effect else f"event {link.effect}"
+        notes.append(f"'{title}': dropped an unsupported cause")
+    if not links:
+        notes.append("No cause links were supported; check the Causes panels")
 
     rows = []
     for event in events.values():

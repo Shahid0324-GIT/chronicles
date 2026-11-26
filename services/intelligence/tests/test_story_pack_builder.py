@@ -5,6 +5,7 @@ from src.application.story_pack import catalog, entries
 from src.application.story_pack_builder import (
     CardBatch,
     CastList,
+    LinkList,
     LoreDraft,
     PageDraft,
     build_story_pack,
@@ -48,17 +49,42 @@ def scripted():
                         "characters": ["Mira", "Mira the traveller"],
                         "places": ["Marsh"],
                         "sentences": [shown[0], 999],
-                        "causes": [
-                            # Supported, uncited, and backwards causes respectively.
-                            {"beat": 1, "reason": "The departure led here.", "sentences": [1]},
-                            {"beat": 1, "reason": "Nothing cites this.", "sentences": [999]},
-                            {"beat": 3, "reason": "A later cause.", "sentences": [1]},
-                        ]
-                        if number == 2
-                        else [],
                     }
                 )
+                if number == 1:
+                    # A crowded beat yields a second, separate turning point.
+                    events.append(
+                        {
+                            "beat": number,
+                            "title": "Mira takes a lantern",
+                            "summary": "Before setting out, Mira picks up an old lantern.",
+                            "characters": ["Mira"],
+                            "sentences": [shown[-1]],
+                        }
+                    )
             return schema.model_validate({"events": events})
+        if schema is LinkList:
+            assert [e["number"] for e in data["events"]] == [1, 2, 3, 4]
+            return schema.model_validate(
+                {
+                    "links": [
+                        # Supported, uncited, and backwards links respectively.
+                        {
+                            "cause": 1,
+                            "effect": 3,
+                            "reason": "The departure led here.",
+                            "sentences": [1],
+                        },
+                        {
+                            "cause": 2,
+                            "effect": 3,
+                            "reason": "Nothing cites this.",
+                            "sentences": [999],
+                        },
+                        {"cause": 4, "effect": 1, "reason": "A later cause.", "sentences": [1]},
+                    ]
+                }
+            )
         if schema is CastList:
             return schema.model_validate(
                 {
@@ -143,23 +169,23 @@ async def test_builder_drafts_a_valid_pack_and_reports_what_to_check():
     )
     pack = draft.pack
     arc = pack.arcs[0]
-    assert len(arc.events) == 3
-    assert [e.chapter for e in arc.events] == [1, 2, 3]
+    assert len(arc.events) == 4
+    assert [e.chapter for e in arc.events] == [1, 1, 2, 3]
     # Spellings merge into one character; invented sentence numbers never become sources.
     assert [e.name for e in pack.entities if e.type == "CHARACTER"] == ["Mira"]
     assert all(c.quote for e in arc.events for c in e.sources)
     assert [(link.cause, link.effect) for link in arc.links] == [
-        (arc.events[0].key, arc.events[1].key)
+        (arc.events[0].key, arc.events[2].key)
     ]
     mira = next(e for e in pack.entities if e.name == "Mira")
     assert [s.text for s in mira.sections[0].statements] == ["Her brother vanished into the marsh."]
     assert [t.title for t in pack.lore] == ["The flooding marsh"]
-    assert any(arc.events[1].lore) or any(arc.events[0].lore)
+    assert any(e.lore for e in arc.events)
     notes = " | ".join(draft.notes)
     assert "dropped uncited text" in notes and "dropped an unsupported cause" in notes
     assert "'Tobin' does not appear" in notes and "Unknown thread" in notes
     review = render_review(draft)
     assert "Led here:" in review and "## Check these" in review
     # The draft is immediately servable.
-    assert len(catalog(pack)["journeys"][0]["steps"]) == 3
+    assert len(catalog(pack)["journeys"][0]["steps"]) == 4
     assert any(p["display_title"] == "Mira" for p in entries(pack, 1))
