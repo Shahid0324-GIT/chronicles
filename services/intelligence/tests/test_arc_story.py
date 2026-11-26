@@ -4,15 +4,18 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 from src.application.arc_contracts import ArcOutline, DevelopmentEvidence
+from src.application.arc_grounding import word_spans
 from src.application.arc_story import (
     ArcAccount,
     GroupReading,
     PropositionAudit,
     SectionRepair,
+    StoryParagraph,
     StorySectionDraft,
     build_arc_story,
     reading_groups,
     render_markdown,
+    verify,
 )
 from src.application.ports.retrieval import ArcPassageSet, ArcSource, EvidenceHit
 from src.application.research_contracts import InferenceFailure
@@ -152,6 +155,7 @@ def script(*, drop_third=True, bad_cause=True, outage=False, log=None):
                 {
                     "paragraphs": [
                         {
+                            "index": 0,
                             "text": "Mira left the village at dawn to search for Tobin, who had "
                             "vanished into the marsh a year earlier; the sources give no other "
                             "reason, and she later found him hiding from the tax collector.",
@@ -183,7 +187,10 @@ async def test_reading_synthesis_coverage_repair_and_markdown():
     assert "owed her money" not in section.paragraphs[0].text
     assert "later found him hiding" in section.paragraphs[0].text
     repair = [d for n, d in log if n == "SectionRepair"][0]
-    assert repair["flagged"][0]["proposition"] == "Tobin owed Mira money"
+    target = repair["targets"][0]
+    assert target["problems"][0]["proposition"] == "Tobin owed Mira money"
+    assert "owed her money" in target["text"]
+    assert story.understanding.status == "verified"
     assert "Tobin had been hiding from the tax collector." in repair["excerpts"].values()
     markdown = render_markdown(story)
     assert "## Arc Understanding Document" in markdown and "## Article" in markdown
@@ -259,6 +266,7 @@ async def test_arc_passages_fence_range_spoilers_permissions_and_order():
         archived(
             universe, continuity, "local-only", 2, "Mira rested a day. She ate bread.", cloud=False
         ),
+        archived(universe, continuity, "copy-of-first", 1, "Mira left home. She walked north."),
         archived(
             universe,
             continuity,
@@ -284,9 +292,11 @@ async def test_arc_passages_fence_range_spoilers_permissions_and_order():
         position_basis="manga-chapter",
         spoiler_position=5,
     )
-    assert [s.label for s in result.sources] == ["first", "local-only", "later"]
+    assert [s.label for s in result.sources] == ["copy-of-first", "local-only", "later"]
     assert [s.text for s in result.sentences][:2] == ["Mira left home.", "She walked north."]
     assert all("stranger" not in s.text and "sailed" not in s.text for s in result.sentences)
+    texts = [s.text for s in result.sentences]
+    assert len(texts) == len(set(texts))  # the re-archived page adds nothing
     assert result.cloud_eligible is False  # one permitted source is local-only
     bounded = await retrieval.arc_passages(
         universe,
@@ -296,4 +306,61 @@ async def test_arc_passages_fence_range_spoilers_permissions_and_order():
         position_basis="manga-chapter",
         spoiler_position=2,
     )
-    assert [s.label for s in bounded.sources] == ["first", "local-only"]
+    assert [s.label for s in bounded.sources] == ["copy-of-first", "local-only"]
+
+
+async def test_copied_wording_is_rewritten_from_facts_without_showing_the_prose():
+    passages = passage_set()
+    numbered = {i: s for i, s in enumerate(passages.sentences, 1)}
+    copied_text = " ".join(s.text for s in passages.sentences[:3])
+    paragraphs = [
+        StoryParagraph(text="An untouched paragraph about the harbor village.", sentences=[1]),
+        StoryParagraph(text=copied_text, sentences=[1, 2, 3]),
+    ]
+    copied = set().union(*(word_spans(s.text, 18) for s in numbered.values()))
+    copied |= word_spans(copied_text, 18)
+    repairs = []
+
+    async def infer(prompt, schema, task):
+        data = payload(prompt)
+        if schema is PropositionAudit:
+            return schema.model_validate(
+                {
+                    "findings": [
+                        {
+                            "paragraph": p["index"],
+                            "proposition": f"Fact in paragraph {p['index']}",
+                            "kind": "event",
+                            "verdict": "supported",
+                            "reason": "Stated",
+                        }
+                        for p in data["paragraphs"]
+                    ]
+                }
+            )
+        repairs.append(data)
+        return schema.model_validate(
+            {
+                "paragraphs": [
+                    {
+                        "index": 1,
+                        "text": "At daybreak Mira set out, a year after losing her brother [2, 3].",
+                        "sentences": [1],
+                    },
+                    {
+                        "index": 0,
+                        "text": "An unrequested change to a paragraph that already passed.",
+                        "sentences": [1],
+                    },
+                ]
+            }
+        )
+
+    section = await verify("Marsh", paragraphs, numbered, set(), copied, {}, {}, infer)
+    target = repairs[0]["targets"][0]
+    assert "text" not in target
+    assert target["facts_to_express_in_new_words"] == ["Fact in paragraph 1"]
+    assert section.paragraphs[0] == paragraphs[0]
+    assert "[" not in section.paragraphs[1].text
+    assert section.paragraphs[1].sentences == [1, 2, 3]
+    assert len(section.paragraphs) == 2

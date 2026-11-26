@@ -76,6 +76,7 @@ class InferenceRouter:
         public_source_content: bool = False,
         reserve_calls: int = 0,
         limit_calls: bool = True,
+        allow_local_fallback: bool = True,
     ) -> InferenceResult:
         async with self.gate:
             contract = schema.model_json_schema()
@@ -108,6 +109,15 @@ class InferenceRouter:
                 candidate = next((p for p in self.cloud if p.credential not in self.disabled), None)
                 if candidate:
                     candidates.insert(0, candidate)
+            if not allow_local_fallback:
+                # Quality-critical callers wait and resume instead of silently
+                # downgrading to the local model.
+                candidates = [p for p in candidates if p is not self.local]
+                if not candidates:
+                    raise InferenceFailure(
+                        "cloud_unavailable" if prefer_cloud else "cloud_not_permitted",
+                        retry_after=self.cloud_wait() if prefer_cloud else 0,
+                    )
             for provider in candidates:
                 repair_prompt = prompt
                 for attempt in range(self.attempts):
@@ -267,13 +277,29 @@ class InferenceRouter:
                             )
                         elif code not in {"timeout", "inference_failed", "provider_http_error"}:
                             break
-            raise InferenceFailure(
+            failure = (
                 "structured_output_exhausted"
                 if last_code == "invalid_output"
-                else "provider_unavailable",
-                retry_after=max(0.0, self.cloud_until - self.clock()) if prefer_cloud else 0,
+                else last_code
+                if last_code == "rate_limited" and not allow_local_fallback
+                else "provider_unavailable"
+            )
+            raise InferenceFailure(
+                failure,
+                retry_after=self.cloud_wait() if prefer_cloud else 0,
                 issues=(last_code,),
             )
+
+    def cloud_wait(self) -> float:
+        """Seconds until the earliest enabled cloud credential may be tried again."""
+        if self.key_failover:
+            waits = [
+                max(0.0, self.cooldowns.get(p.credential, 0.0) - self.clock())
+                for p in self.cloud
+                if p.credential not in self.disabled
+            ]
+            return min(waits, default=0.0)
+        return max(0.0, self.cloud_until - self.clock())
 
     def status(self) -> dict[str, str | bool | list[str]]:
         return {

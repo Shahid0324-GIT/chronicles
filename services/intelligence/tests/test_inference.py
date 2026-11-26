@@ -218,3 +218,25 @@ async def test_key_failover_is_opt_in_and_uses_the_second_account_before_local()
         )
         assert primary.calls == 1
         assert (again.usage.provider == "secondary") is failover
+
+
+async def test_quality_critical_calls_never_fall_back_to_the_local_model():
+    local = Provider()
+    cloud = Provider("groq", [InferenceFailure("rate_limited", 90)])
+    router = InferenceRouter(local, [cloud], cloud_content_allowed=True)
+    for expected in ("rate_limited", "cloud_unavailable"):
+        with pytest.raises(InferenceFailure) as raised:
+            await router.generate(
+                "Owned",
+                "Owned",
+                ResearchPlan,
+                "presentation",
+                public_source_content=True,
+                allow_local_fallback=False,
+            )
+        assert raised.value.code == expected and raised.value.retry_after > 0
+    with pytest.raises(InferenceFailure, match="cloud_not_permitted"):
+        await router.generate(
+            "Owned", "Owned", ResearchPlan, "presentation", allow_local_fallback=False
+        )
+    assert local.calls == 0

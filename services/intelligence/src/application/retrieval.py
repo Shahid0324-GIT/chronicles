@@ -177,15 +177,33 @@ class EvidenceRetrieval:
         sentences: list[DevelopmentEvidence] = []
         ordered = sorted(
             by_source.values(),
+            # Larger documents first, so a page archived again as a subset adds nothing
+            # and the fuller document keeps its sentences contiguous.
             key=lambda group: (
                 metadata[group[0].source.id]["presentation_position"],
+                -len(group[0].source.text),
                 group[0].source.title,
                 str(group[0].source.id),
             ),
         )
+        seen: set[str] = set()
         for group in ordered:
             source = group[0].source
             meta = metadata[source.id]
+            fresh: list[DevelopmentEvidence] = []
+            for hit in sorted(group, key=lambda h: h.passage.ordinal):
+                for unit in evidence_units([hit.passage]):
+                    evidence = sentence_evidence(hit, unit, meta)
+                    if evidence is None:
+                        issues.append("archive_coordinates_do_not_match_document")
+                        continue
+                    key = " ".join(evidence.text.casefold().split())
+                    if key not in seen:
+                        seen.add(key)
+                        fresh.append(evidence)
+            if not fresh:
+                continue
+            sentences.extend(fresh)
             sources.append(
                 ArcSource(
                     id=source.id,
@@ -202,13 +220,6 @@ class EvidenceRetrieval:
                     ),
                 )
             )
-            for hit in sorted(group, key=lambda h: h.passage.ordinal):
-                for unit in evidence_units([hit.passage]):
-                    evidence = sentence_evidence(hit, unit, meta)
-                    if evidence is None:
-                        issues.append("archive_coordinates_do_not_match_document")
-                    else:
-                        sentences.append(evidence)
         if not sources:
             issues.append("no_permitted_archived_sources_in_arc_range")
         return ArcPassageSet(sentences, sources, sorted(set(issues)))
