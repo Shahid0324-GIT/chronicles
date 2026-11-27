@@ -204,6 +204,21 @@
 .chronicle-shell .context-panel .context-copy section p {
   margin-bottom: 8px;
 }
+.chronicle-shell .context-panel .entry-fold,
+.chronicle-shell .context-panel .thread-fold {
+  margin-top: 18px;
+}
+.chronicle-shell .context-panel .entry-fold summary,
+.chronicle-shell .context-panel .thread-fold summary {
+  cursor: pointer;
+  font: 18px var(--display);
+  color: var(--gold);
+  text-transform: capitalize;
+}
+.chronicle-shell .context-panel .entry-fold p {
+  font: 15px/1.7 var(--reading);
+  margin: 8px 0;
+}
 @media (max-width: 1150px) {
   .article-view {
     grid-template-columns: minmax(0, 720px);

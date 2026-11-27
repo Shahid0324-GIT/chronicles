@@ -157,7 +157,7 @@ async def scout(
 
 
 async def build(
-    files: StoryLibraryFiles, world_slug: str, arc_key: str, subjects: list[str]
+    files: StoryLibraryFiles, world_slug: str, arc_key: str, subjects: list[str], pages: int
 ) -> None:
     world = files.world(world_slug)
     arc = files.arc(world, arc_key)
@@ -182,6 +182,7 @@ async def build(
         passages=passages,
         story_bible=None,
         position_word=world.position_word,
+        deep_pages=pages,
         infer=infer,
         subjects=subjects,
         progress=say,
@@ -225,6 +226,7 @@ def main() -> None:
     parser.add_argument("--library", type=Path, default=root)
     parser.add_argument("--about", default="", help="what scout should cover")
     parser.add_argument("--start", action="append", default=[], help="overview page title")
+    parser.add_argument("--pages", type=int, default=12, help="deep pages for main names")
     parser.add_argument("--subject", action="append", default=[], help="deep page; repeatable")
     arguments = parser.parse_args()
     files = StoryLibraryFiles(arguments.library)
@@ -240,7 +242,9 @@ def main() -> None:
             )
             return
         if arguments.command == "build":
-            asyncio.run(build(files, arguments.world, arguments.arc, arguments.subject))
+            asyncio.run(
+                build(files, arguments.world, arguments.arc, arguments.subject, arguments.pages)
+            )
             return
         world = files.world(arguments.world)
         passages = library_passages(world, files.sources(world, arguments.arc))

@@ -1,10 +1,10 @@
 from dataclasses import replace
 
 from src.application.arc_story import GroupReading, StoryOrder
+from src.application.story_cast import CastList
 from src.application.story_pack import catalog, entries
 from src.application.story_pack_builder import (
     CardBatch,
-    CastList,
     LeadDraft,
     LinkList,
     LoreDraft,
@@ -90,6 +90,11 @@ def scripted():
                 }
             )
         if schema is CastList:
+
+            def cited_by(name):
+                rows = data["subjects"]
+                return next((s["excerpts"] for s in rows if s["name"] == name), [])
+
             return schema.model_validate(
                 {
                     "entries": [
@@ -98,11 +103,13 @@ def scripted():
                             "kind": "CHARACTER",
                             "same_as": ["Mira the traveller"],
                             "introduction": "A traveller searching for her brother.",
+                            "sentences": cited_by("Mira"),
                         },
                         {
                             "name": "Marsh",
                             "kind": "LOCATION",
                             "introduction": "Flooded ground beyond the village.",
+                            "sentences": cited_by("Marsh"),
                         },
                     ]
                 }

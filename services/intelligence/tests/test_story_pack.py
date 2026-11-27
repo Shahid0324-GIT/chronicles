@@ -169,7 +169,14 @@ def test_entry_pages_match_the_contract_and_hide_later_sections():
     for page in pages.values():
         EncyclopediaEntry.model_validate(page)
     mira = pages["Mira"]
-    assert [s["name"] for s in mira["sections"]] == ["backstory", "in the story"]
+    assert [s["name"] for s in mira["sections"]] == [
+        "backstory",
+        "appears alongside",
+        "in the story",
+    ]
+    # An event page says who was there, where, and what it led to.
+    events = [p for p in pages.values() if p["graph_type"] == "EVENT"]
+    assert {s["name"] for p in events for s in p["sections"]} >= {"who is there", "where"}
     assert mira["source_references"][0]["quote"] == "Owned fictional excerpt."
     assert mira["connections"]
     early = {p["display_title"]: p for p in entries(pack, 1)}
@@ -320,3 +327,21 @@ def test_entry_pages_show_one_section_per_name():
     page = next(p for p in entries(StoryPack.model_validate(value)) if p["display_title"] == "Mira")
     names = [s["name"] for s in page["sections"]]
     assert len(names) == len(set(names))
+
+
+def test_a_fuller_introduction_waits_for_the_boundary():
+    value = sample()
+    mira = next(e for e in value["entities"] if e["name"] == "Mira")
+    mira.update(overview="Mira, who later finds the lantern.", overview_chapter=3)
+    pack = StoryPack.model_validate(value)
+
+    def introduction(boundary):
+        pages = {p["display_title"]: p for p in entries(pack, boundary)}
+        return pages["Mira"]["short_introduction"]
+
+    assert introduction(None) == introduction(3) == "Mira, who later finds the lantern."
+    assert introduction(1) == mira["introduction"]
+    edited, _ = apply_edits(pack, PackEdits(introductions={mira["key"]: "A reviewed line here."}))
+    assert {p["short_introduction"] for p in entries(edited) if p["display_title"] == "Mira"} == {
+        "A reviewed line here."
+    }

@@ -28,6 +28,7 @@ from src.application.knowledge_presentation import Infer
 from src.application.ports.retrieval import ArcPassageSet
 from src.application.research_contracts import InferenceFailure, StructuredModel
 from src.application.story_bible import prompt_bible
+from src.application.story_cast import clip, name_cast, name_key
 from src.application.story_pack import StoryPack
 
 PACK_RULES = """You draft entries for a story atlas that a person will review. Source excerpts
@@ -36,13 +37,14 @@ show; never add events, motives, causes or lore from outside knowledge. Write sh
 prose, never copying source wording, and leave a field empty when the excerpts do not support
 it. Cite sentence numbers. Return exactly the requested JSON structure."""
 
-NameKind = Literal["CHARACTER", "LOCATION", "OBJECT", "MYSTERY"]
 # One article section: few events and a small excerpt budget, leaving room to write.
 STORY_EVENTS = 4
 STORY_TOKENS = 1800
 # A section shorter than this share of its source words is asked for again.
 STORY_COVERAGE = 0.6
 HEADING_CHARS = 60
+# A subject needs this many sentences before it earns a deep page unasked.
+DEEP_MINIMUM = 4
 
 
 class EventCard(StructuredModel):
@@ -70,17 +72,6 @@ class LinkDraft(StructuredModel):
 
 class LinkList(StructuredModel):
     links: list[LinkDraft] = Field(default_factory=list, max_length=40)
-
-
-class CastEntry(StructuredModel):
-    name: str
-    kind: NameKind
-    same_as: list[str] = Field(default_factory=list)
-    introduction: str
-
-
-class CastList(StructuredModel):
-    entries: list[CastEntry] = Field(max_length=60)
 
 
 class StatementDraft(StructuredModel):
@@ -184,19 +175,6 @@ def named_in(phrase: str, alias_of: dict[str, str]) -> str | None:
     return None
 
 
-def clip(value: str, limit: int) -> str:
-    # Models sometimes leave sentence numbers in their prose.
-    value = " ".join(re.sub(r"\s*\[\d+(?:\s*,\s*\d+)*\]", "", value).split())
-    if len(value) <= limit:
-        return value
-    cut = value[: limit - 3]
-    return cut[: cut.rfind(" ")] + "..." if " " in cut else cut + "..."
-
-
-def name_key(value: str) -> str:
-    return " ".join(re.findall(r"\w+", value.casefold()))
-
-
 class _Evidence:
     def __init__(self, passages: ArcPassageSet) -> None:
         self.numbered: dict[int, DevelopmentEvidence] = number_sentences(passages)
@@ -219,6 +197,21 @@ class _Evidence:
             chosen[str(n)] = self.numbered[n].text
             used += size
         return chosen
+
+    def spread(self, ids: list[int], budget: int = REQUEST_TOKENS) -> list[int]:
+        """Sentences from start to end of the arc, thinned evenly to fit a request."""
+        ordered = sorted(set(ids))
+        total = sum(token_estimate(self.numbered[n].text) for n in ordered)
+        if total <= budget:
+            return ordered
+        keep = max(1, len(ordered) * budget // total)
+        return [ordered[i * len(ordered) // keep] for i in range(keep)]
+
+    def local(self, ids: list[int]) -> tuple[dict[str, str], list[int]]:
+        """Excerpts numbered from 1, and the sentence behind each number."""
+        found = self.texts(ids)
+        excerpts = {str(i): text for i, text in enumerate(found.values(), 1)}
+        return excerpts, [int(n) for n in found]
 
     def chapter(self, ids: list[int]) -> int:
         # The latest cited position, so nothing appears before its sources allow.
@@ -642,6 +635,7 @@ async def build_story_pack(
     subjects: list[str],
     progress: Callable[[str], None] = lambda _message: None,
     position_word: str = "chapter",
+    deep_pages: int = 0,
 ) -> PackDraft:
     if not passages.sentences:
         raise ValueError("The arc has no permitted archived sentences")
@@ -708,70 +702,28 @@ async def build_story_pack(
             events[index] = event
 
     progress("naming the cast")
-    cast = CastList(entries=[])
-    if mentions:
-        cast = CastList.model_validate(
-            await infer(
-                "These names appear on event cards. Merge names that mean the same subject "
-                "(list the other spellings in same_as), correct the kind if needed, and give "
-                "each subject a one or two sentence introduction based only on its events.\n"
-                'Return only JSON: {"entries":[{"name":"","kind":"CHARACTER","same_as":[],'
-                '"introduction":""}]}\n'
-                + json.dumps(
-                    {
-                        "arc": arc_title,
-                        "subjects": [
-                            {
-                                "name": m["name"],
-                                "kind": m["kind"],
-                                "events": [events[n]["title"] for n in m["events"][:4]],
-                            }
-                            for m in list(mentions.values())[:60]
-                        ],
-                    },
-                    ensure_ascii=False,
-                ),
-                CastList,
-                "presentation",
-            )
-        )
-    subjects_by_name: dict[str, dict[str, Any]] = {}
-    alias_of: dict[str, str] = {}
-    for item in cast.entries:
-        spellings = [name_key(n) for n in (item.name, *item.same_as)]
-        members = [mentions[s] for s in spellings if s in mentions and s not in alias_of]
-        if not members:
-            continue
-        main = name_key(item.name)
-        subjects_by_name[main] = {
-            "name": clip(item.name, 100),
-            "kind": item.kind,
-            "introduction": item.introduction,
-            "aliases": [m["name"] for m in members if name_key(m["name"]) != main],
-            "ids": [n for m in members for n in m["ids"]],
-            "context": [n for m in members for n in m["context"]],
-        }
-        alias_of.update({name_key(m["name"]): main for m in members})
-        alias_of[main] = main
-    for spelling, mention in mentions.items():
-        if spelling not in alias_of:
-            alias_of[spelling] = spelling
-            subjects_by_name[spelling] = {
-                "name": mention["name"],
-                "kind": mention["kind"],
-                "introduction": "",
-                "aliases": [],
-                "ids": mention["ids"],
-                "context": mention["context"],
-            }
-
+    cast = await name_cast(
+        arc_title,
+        mentions,
+        {n: s.text for n, s in numbered.items()},
+        evidence.position,
+        infer,
+    )
+    subjects_by_name, alias_of = cast.subjects, cast.alias_of
+    notes += cast.notes
     merge_short_names(subjects_by_name, alias_of)
     entities: dict[str, dict[str, Any]] = {}
     for spelling, subject in subjects_by_name.items():
         ids = list(dict.fromkeys(subject["ids"]))
         introduction = clip(subject["introduction"], 350)
         if len(introduction) < 12:
-            introduction = clip(f"{subject['name']} appears in {arc_title}.", 350)
+            first = min(
+                (e for e in events.values() if spelling in {alias_of.get(n) for n in e["names"]}),
+                key=lambda e: e["chapter"],
+                default=None,
+            )
+            where = f"the event '{first['title']}'" if first else arc_title
+            introduction = clip(f"{subject['name']} appears in {where}.", 350)
             notes.append(f"{subject['name']} needs an introduction")
         entities[spelling] = {
             "key": slugify(subject["name"], taken),
@@ -785,6 +737,13 @@ async def build_story_pack(
             "sections": [],
         }
 
+    # Deep pages go to the names asked for, then to those the arc says most about.
+    weight = {k: len(set(subjects_by_name[k]["ids"])) for k in entities}
+    main_subjects = sorted(
+        (k for k in entities if entities[k]["type"] != "MYSTERY" and weight[k] >= DEEP_MINIMUM),
+        key=lambda k: (-weight[k], k),
+    )[:deep_pages]
+    deep: dict[str, str] = {}
     for wanted in subjects:
         target = alias_of.get(name_key(wanted)) or next(
             (k for k in entities if name_key(wanted) in k), None
@@ -792,6 +751,10 @@ async def build_story_pack(
         if target not in entities:
             notes.append(f"No deep page: '{wanted}' does not appear on any event card")
             continue
+        deep[target] = wanted
+    for key in main_subjects:
+        deep.setdefault(key, entities[key]["name"])
+    for target, wanted in deep.items():
         entity = entities[target]
         terms = {name_key(n) for n in (entity["name"], *entity["aliases"], wanted)}
         related = list(
@@ -803,20 +766,22 @@ async def build_story_pack(
             )
         )
         progress(f"deep page: {entity['name']}")
+        excerpts, shown = evidence.local(evidence.spread(related))
         page = PageDraft.model_validate(
             await infer(
-                "Write a detailed atlas page about this subject from the excerpts only. Use "
-                "whichever of these sections the excerpts support: identity, backstory, goals "
-                "and personality, abilities, relationships, items, mysteries. Each statement "
-                "is one or two original sentences with its sentence numbers. Omit anything "
-                "the excerpts do not say about this subject.\n"
+                "Write a detailed atlas page about this subject from the excerpts only, which "
+                "run from the start of the arc to its end. Use whichever of these sections the "
+                "excerpts support: identity, backstory, goals and personality, abilities, "
+                "relationships, items, mysteries. Each statement is one or two original "
+                "sentences about this subject, with its excerpt numbers. Omit anything the "
+                "excerpts do not say about this subject.\n"
                 'Return only JSON: {"introduction":"","sections":[{"name":"backstory",'
                 '"statements":[{"text":"","sentences":[1]}]}]}\n'
                 + json.dumps(
                     {
                         "subject": entity["name"],
                         "also_called": entity["aliases"],
-                        "excerpts": evidence.texts(sorted(related), REQUEST_TOKENS),
+                        "excerpts": excerpts,
                     },
                     ensure_ascii=False,
                 ),
@@ -824,12 +789,12 @@ async def build_story_pack(
                 "presentation",
             )
         )
-        if len(introduction := clip(page.introduction, 350)) >= 12:
-            entity["introduction"] = introduction
         for section in page.sections:
             statements = []
             for written in section.statements:
-                ids = [n for n in dict.fromkeys(written.sentences) if n in related]
+                ids = [
+                    shown[n - 1] for n in dict.fromkeys(written.sentences) if 0 < n <= len(shown)
+                ]
                 if ids and len(text := clip(written.text, 500)) >= 8:
                     statements.append(
                         {
@@ -841,12 +806,23 @@ async def build_story_pack(
                 else:
                     notes.append(f"{entity['name']}: dropped uncited text: {written.text[:80]}")
             if statements and len(section.name.strip()) >= 2:
+                # Statements read in the order the story reveals them.
+                statements.sort(key=lambda s: int(str(s["chapter"])))
                 entity["sections"].append(
                     {"name": clip(section.name.casefold(), 60), "statements": statements[:20]}
                 )
+        # The page's own introduction draws on the whole arc, so it waits until the
+        # reader's boundary covers everything the page says.
+        overview = clip(page.introduction, 350)
+        if entity["sections"] and len(overview) >= 12:
+            entity["overview"] = overview
+            entity["overview_chapter"] = max(
+                s["chapter"] for part in entity["sections"] for s in part["statements"]
+            )
 
     progress("following the lore")
     all_ids = list(dict.fromkeys(n for e in events.values() for n in e["ids"]))
+    lore_excerpts, lore_shown = evidence.local(evidence.spread(all_ids))
     lore = LoreDraft.model_validate(
         await infer(
             "Find the threads of lore this arc reveals: powers, promises, histories, objects "
@@ -862,7 +838,7 @@ async def build_story_pack(
                 {
                     "arc": arc_title,
                     "subjects": [e["name"] for e in entities.values()],
-                    "excerpts": evidence.texts(all_ids, REQUEST_TOKENS),
+                    "excerpts": lore_excerpts,
                 },
                 ensure_ascii=False,
             ),
@@ -877,7 +853,9 @@ async def build_story_pack(
         concept = alias_of.get(name_key(thread.subject)) or named_in(thread.subject, alias_of)
         discoveries: list[dict[str, Any]] = []
         for told in thread.discoveries:
-            ids = [n for n in dict.fromkeys(told.sentences) if n in numbered]
+            ids = [
+                lore_shown[n - 1] for n in dict.fromkeys(told.sentences) if 0 < n <= len(lore_shown)
+            ]
             explanation = clip(told.explanation, 1200)
             if ids and len(explanation) >= 12 and len(told.title.strip()) >= 3:
                 discoveries.append(
@@ -949,6 +927,8 @@ async def build_story_pack(
             "MYSTERY": [],
         }
         for spelling in event.pop("names"):
+            if alias_of.get(spelling) not in entities:
+                continue
             entity = entities[alias_of[spelling]]
             if entity["key"] not in cast_keys[entity["type"]]:
                 cast_keys[entity["type"]].append(entity["key"])

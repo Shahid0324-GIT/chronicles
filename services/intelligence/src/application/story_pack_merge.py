@@ -2,8 +2,8 @@
 
 from typing import Any
 
+from src.application.story_cast import name_key
 from src.application.story_pack import StoryPack
-from src.application.story_pack_builder import name_key
 
 CAST_FIELDS = ("characters", "places", "objects", "mysteries")
 

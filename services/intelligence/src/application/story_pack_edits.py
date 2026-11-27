@@ -83,6 +83,8 @@ def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]
     for key, introduction in edits.introductions.items():
         if key in entities:
             entities[key]["introduction"] = introduction
+            # A reviewer's wording replaces the drafted overview too.
+            entities[key]["overview"] = ""
         else:
             notes.append(f"Edit skipped: no entry {key} to introduce")
     unwanted = set(edits.drop_statements)

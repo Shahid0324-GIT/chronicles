@@ -59,6 +59,9 @@ class PackEntity(StructuredModel):
     name: str = Field(min_length=1, max_length=100)
     aliases: list[str] = Field(default_factory=list, max_length=12)
     introduction: str = Field(min_length=12, max_length=350)
+    # A fuller introduction, shown once the boundary reaches overview_chapter.
+    overview: str = Field(default="", max_length=350)
+    overview_chapter: int = Field(default=1, ge=1)
     chapter: int = Field(ge=1)
     sources: list[Citation] = Field(min_length=1, max_length=8)
     sections: list[PackSection] = Field(default_factory=list, max_length=12)
@@ -302,6 +305,7 @@ def _visible(chapter: int, boundary: int | None) -> bool:
 def _link_names(entities: list[PackEntity]) -> dict[str, str]:
     """Spellings that open an entry: names, aliases and unshared first names of characters."""
     names: dict[str, str] = {}
+    entities = [e for e in entities if e.type != "MYSTERY"]
     for entity in entities:
         for name in (entity.name, *entity.aliases):
             names.setdefault(name.casefold(), entity.key)
@@ -578,6 +582,7 @@ def entries(pack: StoryPack, boundary: int | None = None) -> list[dict[str, Any]
         }
 
     result = []
+    shown_names = {e.key: e.name for e in pack.entities if _visible(e.chapter, boundary)}
     for entity in pack.entities:
         if not _visible(entity.chapter, boundary):
             continue
@@ -598,20 +603,63 @@ def entries(pack: StoryPack, boundary: int | None = None) -> list[dict[str, Any]
             for e in events
             if entity.key in (*e.characters, *e.places, *e.objects, *e.mysteries)
         ]
+        beside = Counter(
+            key
+            for e in events
+            if entity.key in (*e.characters, *e.places, *e.objects, *e.mysteries)
+            for key in (*e.characters, *e.places)
+            if key != entity.key and key in shown_names
+        )
+        if beside:
+            together = [
+                f"{shown_names[key]}, in {count} shared event{'s' if count > 1 else ''}"
+                for key, count in beside.most_common(8)
+            ]
+            sections.append(statements(entity.key, "appears alongside", together))
         if own_events:
-            sections.append(statements(entity.key, "in the story", own_events[:20]))
+            sections.append(statements(entity.key, "in the story", own_events[:80]))
         result.append(
             page(
                 entity.key,
                 entity.type,
                 entity.name,
-                entity.introduction,
+                entity.overview
+                if entity.overview and _visible(entity.overview_chapter, boundary)
+                else entity.introduction,
                 entity.aliases,
                 sections,
                 citations,
             )
         )
+    titles_by_key = {e.key: e.title for e in events}
+    links = [link for arc in pack.arcs for link in arc.links]
     for event in events:
+
+        def named(label: str, keys: list[str]) -> list[str]:
+            known = [shown_names[k] for k in keys if k in shown_names]
+            return [f"{label}: {', '.join(known)}"] if known else []
+
+        about = [
+            ("who is there", named("Taking part", event.characters)),
+            ("where", named("Place", event.places)),
+            ("involves", named("Involves", [*event.objects, *event.mysteries])),
+            (
+                "led here",
+                [
+                    f"{titles_by_key[x.cause]}: {x.reason}"
+                    for x in links
+                    if x.effect == event.key and x.cause in titles_by_key
+                ],
+            ),
+            (
+                "leads to",
+                [
+                    f"{titles_by_key[x.effect]}: {x.reason}"
+                    for x in links
+                    if x.cause == event.key and x.effect in titles_by_key
+                ],
+            ),
+        ]
         introduction = event.summary if len(event.summary) <= 350 else event.summary[:347] + "..."
         result.append(
             page(
@@ -620,7 +668,7 @@ def entries(pack: StoryPack, boundary: int | None = None) -> list[dict[str, Any]
                 event.title,
                 introduction,
                 [],
-                [],
+                [statements(event.key, name, told) for name, told in about if told],
                 event.sources,
             )
         )

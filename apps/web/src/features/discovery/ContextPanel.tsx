@@ -7,7 +7,31 @@ import LoreEntryLinks from "@/features/narrative/LoreEntryLinks";
 import IconButton from "@/components/ui/IconButton";
 import MediaArtwork from "./MediaArtwork";
 import { resolveMedia } from "./media-registry";
-import { useEncyclopediaEntry } from "@/features/narrative/encyclopedia";
+import {
+  useEncyclopediaEntry,
+  type EncyclopediaEntry,
+} from "@/features/narrative/encyclopedia";
+type EntrySection = EncyclopediaEntry["sections"][number];
+/** Longer lists start folded, so a main character's page stays readable. */
+const LONG = 8;
+function EntrySectionView({ section }: { section: EntrySection }) {
+  const statements = section.statements.map((statement, index) => (
+    <p key={index}>{statement.text}</p>
+  ));
+  return section.statements.length > LONG ? (
+    <details className="entry-fold">
+      <summary>
+        {humanize(section.name)} ({section.statements.length})
+      </summary>
+      {statements}
+    </details>
+  ) : (
+    <section>
+      <h3>{humanize(section.name)}</h3>
+      {statements}
+    </section>
+  );
+}
 export default function ContextPanel() {
   const mode = useExploration((s) => s.mode);
   const graph = useExploration((s) => s.graph),
@@ -62,6 +86,44 @@ export default function ContextPanel() {
       (!continuity || !e.continuity_id || e.continuity_id === continuity),
   );
   const asset = resolveMedia(node.id, node.type);
+  const threads = (
+    <ul className="context-threads">
+      {edges.map((edge) => {
+        const outgoing = edge.source === node.id;
+        const other = graph.nodes.find(
+          (n) => n.id === (outgoing ? edge.target : edge.source),
+        );
+        if (!other) return null;
+        const visible = types.includes(other.type);
+        return (
+          <li key={edge.id}>
+            <span>
+              {outgoing ? "→" : "←"} {humanize(edge.relationship_type)}
+            </span>
+            <button
+              disabled={!visible}
+              title={
+                generated ? humanize(edge.relationship_type) : edge.description
+              }
+              onClick={() => select(other.id)}
+            >
+              {generated
+                ? (catalog.entryIndex?.find((item) => item.id === other.id)
+                    ?.displayTitle ?? "Related entry")
+                : other.title}
+              <span aria-hidden="true">↗</span>
+            </button>
+            {!visible && (
+              <small>
+                Enable {NODE_IDENTITIES[other.type].label.toLowerCase()} to
+                follow
+              </small>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  );
   const selectedEdge = edges.find((e) => e.id === selectedEdgeId);
   return (
     <aside
@@ -114,12 +176,7 @@ export default function ContextPanel() {
               )}
             {generated &&
               entry?.sections.map((section) => (
-                <section key={section.name}>
-                  <h3>{humanize(section.name)}</h3>
-                  {section.statements.map((statement, index) => (
-                    <p key={index}>{statement.text}</p>
-                  ))}
-                </section>
+                <EntrySectionView key={section.name} section={section} />
               ))}
             {generated && !!entry?.aliases.length && (
               <details>
@@ -161,49 +218,20 @@ export default function ContextPanel() {
               )}
             </div>
             <LoreEntryLinks nodeId={node.id} />
-            <div className="thread-title">
-              <h3>Follow a thread</h3>
-              <span>{edges.length}</span>
-            </div>
-            <ul className="context-threads">
-              {edges.map((edge) => {
-                const outgoing = edge.source === node.id;
-                const other = graph.nodes.find(
-                  (n) => n.id === (outgoing ? edge.target : edge.source),
-                );
-                if (!other) return null;
-                const visible = types.includes(other.type);
-                return (
-                  <li key={edge.id}>
-                    <span>
-                      {outgoing ? "→" : "←"} {humanize(edge.relationship_type)}
-                    </span>
-                    <button
-                      disabled={!visible}
-                      title={
-                        generated
-                          ? humanize(edge.relationship_type)
-                          : edge.description
-                      }
-                      onClick={() => select(other.id)}
-                    >
-                      {generated
-                        ? (catalog.entryIndex?.find(
-                            (item) => item.id === other.id,
-                          )?.displayTitle ?? "Related entry")
-                        : other.title}
-                      <span aria-hidden="true">↗</span>
-                    </button>
-                    {!visible && (
-                      <small>
-                        Enable {NODE_IDENTITIES[other.type].label.toLowerCase()}{" "}
-                        to follow
-                      </small>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            {generated && edges.length > LONG ? (
+              <details className="thread-fold">
+                <summary>All connections ({edges.length})</summary>
+                {threads}
+              </details>
+            ) : (
+              <>
+                <div className="thread-title">
+                  <h3>Follow a thread</h3>
+                  <span>{edges.length}</span>
+                </div>
+                {threads}
+              </>
+            )}
             {!edges.length && (
               <p className="muted">
                 No connections have been charted for this entry.

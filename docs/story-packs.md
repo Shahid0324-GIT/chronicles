@@ -101,6 +101,20 @@ whose own words show it; the quoted words must be in the moved paragraph.
   the paragraph before it, and a page's first paragraph never moves.
 - Set `"reorder": false` on an arc whose sources are already in order.
 
+## Entry pages
+
+- Names are judged in small groups beside the sentences that first mention them. Generic
+  words get no page; a name the story keeps using is always kept.
+- Spellings merge only when they are variants of one name, such as a surname or a shorter
+  place name. Anything else stays apart and is listed under "Check these"; use `merge` in
+  `edits.json` when they are the same.
+- An introduction uses only the subject's first appearance, so it does not spoil later
+  events.
+- The most mentioned subjects get a deep page drawn from across the whole arc
+  (`build --pages 12`; `--subject` adds one).
+- Each page also lists who the subject appears alongside and its events; event pages list
+  who is there, where, and what led to and from it. These are assembled, not written.
+
 ## The arc article
 
 A pack also tells the arc as an article: an opening paragraph, then headed sections of prose
