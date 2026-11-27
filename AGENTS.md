@@ -135,3 +135,10 @@ story a contrast-checked look served in the catalog. No story-specific colours, 
 reader checks a site, and no build starts without their terms confirmation; cloud sharing is a
 separate choice. Keep the local-header check on every write and the page-review pause.
 
+
+## Search and guide pages
+
+The home page is search (`application/search_intent.py`, `guide_*.py`, `docs/search-and-guides.md`).
+A whole story is never built. Guides read only English, Japanese and Chinese Wikipedia article
+pages, after the reader approves, and keep every paragraph tied to a source, with the original
+beside any translation. Missing sections say so. No story-specific code.

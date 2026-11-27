@@ -7,11 +7,12 @@ your own PC, localhost only, with no authentication, cloud storage or deployment
 
 ## Direction
 
-`name a world and arc -> find sources -> read -> build the atlas -> you review -> explore`
+`search -> say what you want -> read sources -> write a cited page -> you check it`
 
 | Step | State |
 |---|---|
 | Model chain: Groq, then Gemini, then local Ollama | working |
+| Search: ask for a summary, an arc or a character; pages from English, Japanese and Chinese Wikipedia | working, tried on Re:Zero ([search and guides](docs/search-and-guides.md)) |
 | Draft worlds open as a themed journey: a story tree, cited article and entry pages, built from a reviewed story pack | working ([story packs](docs/story-packs.md)) |
 | File-based story library, many arcs per world | working |
 | Agent that finds and saves an arc's pages from wikis you approve | working, tried on one wiki ([story packs](docs/story-packs.md)) |
@@ -89,7 +90,7 @@ Terminal 2, from the repository root:
 npm run dev --prefix apps/web
 ```
 
-Open [the atlas](http://127.0.0.1:3000) and [API documentation](http://127.0.0.1:8000/docs). Next.js server components fetch FastAPI through server-only `API_BASE_URL`; the browser receives a continuous illustrated atlas. Universe switching uses a same-origin forwarding route, and selection, camera, filters and relationship traversal use shared exploration state.
+Open [search](http://127.0.0.1:3000) (the story atlas is at `/atlas`) and [API documentation](http://127.0.0.1:8000/docs). Next.js server components fetch FastAPI through server-only `API_BASE_URL`; the browser receives a continuous illustrated atlas. Universe switching uses a same-origin forwarding route, and selection, camera, filters and relationship traversal use shared exploration state.
 
 Backend settings read process environment, the repository-root `.env`, and then `.env` in the current directory (process environment wins). `DATABASE_URL` must use `postgresql+asyncpg://`. Frontend `.env.local` sets `API_BASE_URL`; it is not a `NEXT_PUBLIC_` variable. Restart services after changing settings. CORS origins are an explicit JSON list for future direct browser API clients; the current frontend fetches server-side.
 

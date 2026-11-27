@@ -178,8 +178,8 @@ function Experience({ universes }: { universes: Universe[] }) {
         </nav>
         <Search />
         <ResearchControls />
-        <Link className="new-story-link" href="/new">
-          + New story
+        <Link className="new-story-link" href="/">
+          Search
         </Link>
       </header>
       {graph && status === "ready" && <ReaderControls />}
@@ -218,8 +218,8 @@ function Experience({ universes }: { universes: Universe[] }) {
               Enter {universes[0].title} ↗
             </button>
           ) : (
-            <Link className="primary-button" href="/new">
-              Chart your first story
+            <Link className="primary-button" href="/">
+              Search for a story
             </Link>
           )}
         </div>

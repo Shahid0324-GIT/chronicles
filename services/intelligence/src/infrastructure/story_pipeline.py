@@ -39,23 +39,31 @@ MAX_PAGE_BYTES = 3_000_000
 MIN_SOURCES = 3
 
 
-def model_calls(cache: Path, cloud_allowed: bool, say: Report) -> Infer:
+def model_calls(
+    cache: Path,
+    cloud_allowed: bool,
+    say: Report,
+    rules: str = PACK_RULES,
+    attempts: int = MAX_ATTEMPTS,
+) -> Infer:
     """Model calls that reuse saved replies and wait out free-tier limits."""
     router = create_inference(Settings())
     cache.mkdir(parents=True, exist_ok=True)
 
     async def infer(prompt: str, schema: type[BaseModel], task: Task) -> BaseModel:
-        key = hashlib.sha256(
-            json.dumps([task, schema.__name__, prompt], ensure_ascii=False).encode()
-        ).hexdigest()
+        asked = [task, schema.__name__, prompt]
+        # The default rules are left out of the key, so earlier saved replies still match.
+        if rules != PACK_RULES:
+            asked.append(rules)
+        key = hashlib.sha256(json.dumps(asked, ensure_ascii=False).encode()).hexdigest()
         saved = cache / f"{key}.json"
         if saved.exists():
             return schema.model_validate_json(saved.read_text(encoding="utf-8"))
         invalid = 0
-        for attempt in range(1, MAX_ATTEMPTS + 1):
+        for attempt in range(1, attempts + 1):
             try:
                 result = await router.generate(
-                    PACK_RULES,
+                    rules,
                     prompt,
                     schema,
                     task,
@@ -71,7 +79,7 @@ def model_calls(cache: Path, cloud_allowed: bool, say: Report) -> Infer:
                     if use.validation_errors:
                         say(f"  invalid reply from {use.provider}: {use.validation_errors}")
                 permanent = error.code in {"cloud_not_permitted", "request_too_large"}
-                if permanent or invalid >= MAX_INVALID or attempt == MAX_ATTEMPTS:
+                if permanent or invalid >= MAX_INVALID or attempt == attempts:
                     raise
                 wait = min(600.0, max(30.0, error.retry_after))
                 say(f"  waiting {wait:.0f}s ({error.code}, attempt {attempt})")

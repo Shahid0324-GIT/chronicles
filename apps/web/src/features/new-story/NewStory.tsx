@@ -104,7 +104,7 @@ export default function NewStory() {
       style={themeStyle(themeForUniverse())}
     >
       <header>
-        <Link href="/">← Back to the atlas</Link>
+        <Link href="/">← Back to search</Link>
         <h1>Chart a new story</h1>
         <p>
           Name one arc, choose where to read it, and check what was found. The

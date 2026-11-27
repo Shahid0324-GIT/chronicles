@@ -54,7 +54,7 @@ export default function RootLayout({
     <html lang="en" className={fonts}>
       <body>
         <a className="skip" href="#main">
-          Skip to the atlas
+          Skip to the content
         </a>
         <main id="main">{children}</main>
       </body>

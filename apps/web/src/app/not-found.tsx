@@ -6,7 +6,7 @@ export default function NotFound() {
       <h1>An uncharted world.</h1>
       <p>This universe is not in your local collection.</p>
       <Link className="primary-button" href="/">
-        Return to the atlas ↗
+        Return to search ↗
       </Link>
     </section>
   );

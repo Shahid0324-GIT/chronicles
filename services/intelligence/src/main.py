@@ -12,9 +12,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.application.research_use_cases import ResearchRequestError
 from src.domain.exceptions import DomainError, NotFoundError
 from src.infrastructure.config.settings import Settings, get_settings
+from src.infrastructure.guide_service import Guides
 from src.infrastructure.persistence.database import create_database
 from src.infrastructure.story_builds import StoryBuilds, default_library
 from src.presentation.api.builds import router as builds_router
+from src.presentation.api.guides import router as guides_router
 from src.presentation.api.research import router as research_router
 from src.presentation.api.routers import router
 from src.presentation.api.schemas import ErrorResponse
@@ -46,7 +48,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         },
     )
     app.state.settings = config
-    app.state.builds = StoryBuilds(Path(config.story_library_path or default_library()))
+    library = Path(config.story_library_path or default_library())
+    app.state.builds = StoryBuilds(library)
+    app.state.guides = Guides(library)
     app.include_router(source_router)
     app.add_middleware(
         CORSMiddleware,
@@ -89,6 +93,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(router)
     app.include_router(research_router)
     app.include_router(builds_router)
+    app.include_router(guides_router)
     return app
 
 

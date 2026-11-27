@@ -6,7 +6,7 @@ export async function openUniverse(
   title: RegExp,
   continuity?: string,
 ) {
-  await page.goto("/");
+  await page.goto("/atlas");
   await page.locator(".world-switch").click();
   await page
     .locator("#universe-menu button")
