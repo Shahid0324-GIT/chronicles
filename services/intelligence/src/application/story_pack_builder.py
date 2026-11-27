@@ -328,7 +328,9 @@ async def _story(
                 "as a list of events. Write flowing paragraphs that set the scene, follow "
                 "what people want and do, and carry the thread from the previous ending into "
                 "what comes next. Connect events with causes or motives only where the "
-                "excerpts show them. Use original wording and clear names, and no sentence "
+                "excerpts show them. Add no detail, description, timing, feeling or judgement "
+                "that the excerpts do not state; plain faithful prose is better than colour. "
+                "Use original wording and clear names, and no sentence "
                 "numbers in the text. Give each paragraph the event numbers it tells and the "
                 "sentence numbers that support it.\n"
                 'Return only JSON: {"heading":"","paragraphs":[{"text":"","events":[1],'
