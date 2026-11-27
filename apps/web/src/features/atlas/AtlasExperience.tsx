@@ -1,6 +1,7 @@
 "use client";
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import type { Universe, UniverseGraph } from "@/lib/contracts";
 import {
   ExplorationProvider,
@@ -177,6 +178,9 @@ function Experience({ universes }: { universes: Universe[] }) {
         </nav>
         <Search />
         <ResearchControls />
+        <Link className="new-story-link" href="/new">
+          + New story
+        </Link>
       </header>
       {graph && status === "ready" && <ReaderControls />}
       {graph &&
@@ -214,7 +218,9 @@ function Experience({ universes }: { universes: Universe[] }) {
               Enter {universes[0].title} ↗
             </button>
           ) : (
-            <p>No universes have been added to this local collection.</p>
+            <Link className="primary-button" href="/new">
+              Chart your first story
+            </Link>
           )}
         </div>
       )}

@@ -149,3 +149,28 @@ def test_a_site_is_reached_one_way():
     for settings in ({}, {"api": API, "pages": "https://wiki.example.org/"}):
         with pytest.raises(ValueError, match="either"):
             LibrarySite(**settings)
+
+
+async def test_headings_named_after_the_starting_page_are_the_arcs_own():
+    first, second = "The first game tells of the frost. " * 8, "A sequel tells of the thaw. " * 8
+    html = (
+        '<div class="mw-parser-output"><h2>Story</h2>'
+        f"<h3>Frost</h3><p>{first}</p><h3>Thaw</h3><p>{second}</p></div>"
+        '<a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">l</a>'
+    )
+
+    class Pages(PublicDocumentFetcher):
+        async def _request(self, url):
+            if url.endswith("/robots.txt"):
+                return 404, {}, b""
+            return 200, {"content-type": "text/html"}, html.encode()
+
+    config = LibrarySite(pages="https://wiki.example.org/")
+    reader = MediaWikiPages(
+        config, Pages(PublicSourcePolicy(["wiki.example.org"]), 100_000, 100_000)
+    )
+    planned = PlannedPage(site=config.address, title="Harbor", position=1)
+    own, _ = await read_page(planned, reader, None, "Thaw")
+    assert own and "thaw" in own.text and "frost" not in own.text
+    everything, _ = await read_page(planned, reader, None, "Spring")
+    assert everything and "frost" in everything.text and "thaw" in everything.text

@@ -65,6 +65,8 @@ class PagePlan(StructuredModel):
     """``pages.json``: what will be read, editable by the user before or after fetching."""
 
     pages: list[PlannedPage] = Field(max_length=80)
+    # The page the search started from; sections named after it are this arc's.
+    focus: str = Field(default="", max_length=250)
 
 
 class PageChoice(StructuredModel):
@@ -150,6 +152,14 @@ async def discover(
     return sorted(planned.values(), key=lambda p: (p.position, p.title))
 
 
+def _under(page: WikiPage, focus: str) -> str:
+    """Text under headings named after the arc's own page, such as one game among many."""
+    name = focus.casefold()
+    return "\n".join(
+        s.text for s in page.sections if name and name in s.heading.casefold().split(" / ")
+    )
+
+
 def story_text(page: WikiPage, wanted: list[str]) -> str:
     """Story sections. A name with "/" is an exact heading path and what lies under it;
     a single word matches any heading that contains it."""
@@ -165,11 +175,13 @@ def story_text(page: WikiPage, wanted: list[str]) -> str:
 
 
 async def read_page(
-    planned: PlannedPage, site: WikiSite, sections: list[str] | None = None
+    planned: PlannedPage, site: WikiSite, sections: list[str] | None = None, focus: str = ""
 ) -> tuple[LibrarySource | None, str]:
     """One page as a library source, or the reason it could not be used."""
     page = await site.page(planned.title)
-    text = story_text(page, sections or site.config.sections)
+    text = "" if sections else _under(page, focus)
+    if len(text) < 200:
+        text = story_text(page, sections or site.config.sections)
     note = ""
     # An arc that names its own headings must not fall back to other material.
     if len(text) < 200 and not sections:

@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     ai_provider_mode: Literal["local", "hybrid", "cloud"] = "hybrid"
     ai_max_concurrent_inferences: int = Field(default=1, ge=1, le=2)
     ai_cloud_content_allowed: bool = False
+    # Where story worlds are saved; empty means the repository's library folder.
+    story_library_path: str = ""
     ai_timeout_seconds: float = Field(default=120, gt=0, le=600)
     ai_max_attempts: int = Field(default=2, ge=1, le=3)
     # One key per provider. Limits are never bypassed by rotating keys.

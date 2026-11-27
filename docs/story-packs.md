@@ -54,6 +54,27 @@ is git-ignored. Run from `services/intelligence`:
 `edits.json`). `load <world>` merges every drafted arc into the one draft world.
 `samples/glass-orchard/` is a longer owned story for judging the article.
 
+## From the app
+
+Open **New story** (`/new`) with the API and web app running:
+
+1. Name the story, the arc and its kind.
+2. Paste a link to the wiki page about it. "Suggest wikis" offers AI guesses; none is
+   contacted until you check it.
+3. "Check this site" reads that page within the site's rules and shows its name, licence and
+   headings. You confirm the terms allow automated reading, and decide whether its text may
+   go to cloud models.
+4. Review the proposed page list: untick pages and correct their order (at least three).
+5. The build runs in the background; progress is saved in `<arc>/job.json`. A failed or
+   interrupted build can be resumed. Finished replies and saved pages are reused.
+
+One build runs at a time. Only MediaWiki wikis work. Sites known to forbid automated reading
+are refused, and a bot check is never worked around. The checks cannot read a site's terms
+for you. A second arc of a story appears in the same world, chosen with the arc picker.
+
+Writes to `/api/builds` need the `X-Chronicles-Local: 1` header, so other websites cannot
+start builds. The API is meant for this computer only; do not expose it.
+
 ## Scout: finding sources
 
 `scout` reads wikis you approve, finds the pages that tell an arc and saves their story
@@ -129,7 +150,7 @@ tied to events and sources. The app opens a told arc as a journey:
 Each story has its own look. The model picks a background, two colours, a heading style and
 a motif; code derives the rest and adjusts colours until text passes contrast. Override it
 in `edits.json` with `"theme": {...}`. A pack without a theme gets a steady default of its
-own. Building a story from the app's search box is not available yet.
+own. A new story is built from the **New story** screen.
 
 ### How the article is written
 

@@ -53,3 +53,17 @@ def test_a_second_arc_joins_the_world_and_shares_its_cast():
     other = StoryPack.model_validate(sample(slug="other-draft"))
     with pytest.raises(ValueError, match="same draft world"):
         merge_packs([first, other])
+
+
+def test_a_shared_page_keeps_its_place_in_each_arc():
+    value = sample()
+    value["sources"][0]["position"] = 3
+    first = StoryPack.model_validate(value)
+    value["sources"][0]["position"] = 1
+    value["arcs"][0]["key"] = "sequel"
+    merged = merge_packs([first, StoryPack.model_validate(value)])
+    shared = [s for s in merged.sources if s.url == first.sources[0].url]
+    assert sorted(s.position for s in shared) == [1, 3]
+    # Each arc still cites the copy that carries its own place.
+    cited = [{c.source for e in arc.events for c in e.sources} for arc in merged.arcs]
+    assert shared[0].key in cited[0] and shared[1].key in cited[1]

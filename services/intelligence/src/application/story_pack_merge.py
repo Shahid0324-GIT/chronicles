@@ -35,7 +35,7 @@ def merge_packs(packs: list[StoryPack]) -> StoryPack:
         raise ValueError("There is no drafted arc to load")
     if len({p.slug for p in packs}) != 1:
         raise ValueError("Only arcs of the same draft world can be merged")
-    sources: dict[str, dict[str, Any]] = {}
+    sources: dict[tuple[str, int], dict[str, Any]] = {}
     entities: list[dict[str, Any]] = []
     names: dict[tuple[str, str], dict[str, Any]] = {}
     arcs: list[dict[str, Any]] = []
@@ -49,10 +49,12 @@ def merge_packs(packs: list[StoryPack]) -> StoryPack:
         data = pack.model_dump(mode="json")
         cited: dict[str, str] = {}
         for source in data["sources"]:
-            existing = sources.get(source["url"])
+            # One page can come at different points of two arcs, naming a stop in each.
+            place = (source["url"], source["position"])
+            existing = sources.get(place)
             if existing is None:
                 existing = {**source, "key": _free(source["key"], source_keys)}
-                sources[source["url"]] = existing
+                sources[place] = existing
             cited[source["key"]] = existing["key"]
         for part in (data["entities"], data["arcs"], data["lore"]):
             _recite(part, cited)

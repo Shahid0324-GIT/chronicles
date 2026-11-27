@@ -128,3 +128,10 @@ The product is an all-in-one story atlas: events with causes, cast, places, deep
 A told arc opens as the journey page in `apps/web/src/features/article/`: React Flow draws the
 stop-and-moment tree (pure layout in `journey.ts`), and `application/story_theme.py` gives each
 story a contrast-checked look served in the catalog. No story-specific colours, layouts or code.
+
+## New story builds
+
+`/new` drives `application/story_jobs.py` through `/api/builds`. Nothing is fetched before the
+reader checks a site, and no build starts without their terms confirmation; cloud sharing is a
+separate choice. Keep the local-header check on every write and the page-review pause.
+

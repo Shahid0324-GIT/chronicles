@@ -140,10 +140,11 @@ class StoryPack(StructuredModel):
     medium: str = Field(min_length=1, max_length=40)
     position_word: str = Field(default="chapter", pattern=r"^[a-z][a-z -]{0,30}$")
     theme: StoryTheme | None = None
-    sources: list[PackSource] = Field(min_length=1, max_length=100)
-    entities: list[PackEntity] = Field(default_factory=list, max_length=300)
-    arcs: list[PackArc] = Field(min_length=1, max_length=20)
-    lore: list[PackThread] = Field(default_factory=list, max_length=40)
+    # A world holds every arc merged into it, so these allow for many.
+    sources: list[PackSource] = Field(min_length=1, max_length=500)
+    entities: list[PackEntity] = Field(default_factory=list, max_length=2000)
+    arcs: list[PackArc] = Field(min_length=1, max_length=60)
+    lore: list[PackThread] = Field(default_factory=list, max_length=200)
 
     @model_validator(mode="after")
     def references_resolve(self) -> "StoryPack":

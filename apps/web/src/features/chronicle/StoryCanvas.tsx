@@ -27,6 +27,8 @@ export default function StoryCanvas() {
     inspect = useExploration((s) => s.selectNode),
     setMode = useExploration((s) => s.setMode),
     mode = useExploration((s) => s.mode),
+    arcs = useExploration((s) => s.narrative.journeys),
+    begin = useExploration((s) => s.beginJourney),
     draft = useExploration((s) => isDraftWorld(s.graph?.universe.slug));
   // A told arc opens as a journey; the story map stays one step away.
   const [reading, setReading] = useState(true);
@@ -62,6 +64,24 @@ export default function StoryCanvas() {
           {research?.status === "failed" &&
             " · Research failed; open research details"}
         </p>
+      )}
+      {arcs.length > 1 && (
+        <label className="story-arc-picker">
+          Arc
+          <select
+            value={journey?.id ?? ""}
+            onChange={(e) => {
+              setPlace({ stop: null, straight: false });
+              begin(e.target.value);
+            }}
+          >
+            {arcs.map((arc) => (
+              <option key={arc.id} value={arc.id}>
+                {arc.title}
+              </option>
+            ))}
+          </select>
+        </label>
       )}
       {told && (
         <div className="arc-view-switch" role="group" aria-label="Arc view">

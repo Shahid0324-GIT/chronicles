@@ -15,6 +15,7 @@ your own PC, localhost only, with no authentication, cloud storage or deployment
 | Draft worlds open as a themed journey: a story tree, cited article and entry pages, built from a reviewed story pack | working ([story packs](docs/story-packs.md)) |
 | File-based story library, many arcs per world | working |
 | Agent that finds and saves an arc's pages from wikis you approve | working, tried on one wiki ([story packs](docs/story-packs.md)) |
+| New story screen: check a source, review its pages, build in the background | working ([story packs](docs/story-packs.md)) |
 | Images with credit, arc-focused screens, later-fact lookups | planned |
 | Game lore scattered across books and items | planned |
 
