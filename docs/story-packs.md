@@ -86,6 +86,8 @@ Rules it follows:
 - Each saved page keeps its link, revision and stated licence. Keep credit, and note that
   share-alike and non-commercial licences also cover what you make from them.
 - A model picks only among titles the site returned. It can pick wrongly, so read the list.
+- Events follow the order of the pages. Pages organised by place or person can tell later
+  visits early, so the article's order and spoiler boundary are only as good as that split.
 
 ## The arc article
 

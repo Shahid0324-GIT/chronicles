@@ -33,6 +33,8 @@ class PackSource(StructuredModel):
     key: str = Key
     title: str = Field(min_length=1, max_length=300)
     url: str = Field(pattern=r"^https?://", max_length=1000)
+    # Shown beside the link, since open licences require credit.
+    licence: str = Field(default="", max_length=300)
 
 
 class Citation(StructuredModel):
@@ -490,7 +492,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                 "id": sources.uuid(s.key),
                 "title": s.title,
                 "url": s.url,
-                "locator": "Cited by this draft",
+                "locator": s.licence or "Cited by this draft",
             }
             for s in pack.sources
         ],
@@ -523,7 +525,7 @@ def entries(pack: StoryPack, boundary: int | None = None) -> list[dict[str, Any]
                 "id": sources.uuid(c.source),
                 "title": source.title,
                 "url": source.url,
-                "locator": "Cited by this draft",
+                "locator": source.licence or "Cited by this draft",
             }
             if c.quote:
                 reference["quote"] = c.quote

@@ -184,6 +184,12 @@
 .arc-article footer ol {
   padding-left: 22px;
 }
+.arc-article footer small {
+  display: block;
+  font: 11px/1.6 var(--label);
+  color: var(--muted);
+  margin-bottom: 8px;
+}
 .arc-article footer p {
   margin-top: var(--space-3);
   font-size: 12px;

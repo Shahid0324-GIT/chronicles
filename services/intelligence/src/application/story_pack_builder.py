@@ -42,6 +42,7 @@ STORY_EVENTS = 4
 STORY_TOKENS = 1800
 # A section shorter than this share of its source words is asked for again.
 STORY_COVERAGE = 0.6
+HEADING_CHARS = 60
 
 
 class EventCard(StructuredModel):
@@ -591,7 +592,9 @@ async def _story(
         if paragraphs:
             ending = paragraphs[-1]["text"][-400:]
             heading = clip(best.heading, 150)
-            if len(heading) < 3 or name_key(heading) == name_key(title):
+            # A heading that lists everything in the section is replaced by its start.
+            wordy = len(heading) > HEADING_CHARS
+            if wordy or len(heading) < 3 or name_key(heading) == name_key(title):
                 heading = first
             sections.append({"heading": heading, "paragraphs": paragraphs})
     return sections

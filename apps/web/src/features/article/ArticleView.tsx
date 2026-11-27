@@ -204,6 +204,7 @@ export default function ArticleView({
                   <a href={source.url} target="_blank" rel="noreferrer">
                     {source.title} ↗
                   </a>
+                  <small>{source.locator}</small>
                 </li>
               ))}
             </ol>

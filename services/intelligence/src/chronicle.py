@@ -178,6 +178,9 @@ async def build(
         subjects=subjects,
         progress=say,
     )
+    licences = {s.url: s.licence for s in files.sources(world, arc.key)}
+    for listed in draft.pack.sources:
+        listed.licence = licences.get(listed.url, "")
     folder = files.folder(world.slug) / arc.key
     corrections = folder / "edits.json"
     if corrections.exists():
