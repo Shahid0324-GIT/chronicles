@@ -318,7 +318,8 @@ def create_inference(
                 "gemini",
                 health_url=f"{GEMINI_MODELS}/{settings.gemini_model}",
                 api_key=gemini.get_secret_value(),
-                method="json_schema",
+                # Native JSON schema mode rejects some of our nested limits with HTTP 400.
+                method="function_calling",
             )
         )
     return InferenceRouter(
