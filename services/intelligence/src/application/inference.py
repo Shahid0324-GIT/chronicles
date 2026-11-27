@@ -37,17 +37,13 @@ class InferenceRouter:
         max_calls: int = 1000,
         stage_limits: dict[str, int] | None = None,
         cloud_rate_limit_wait_seconds: float = 0,
-        key_failover: bool = False,
     ) -> None:
+        # ``cloud`` is a chain of different providers in preference order.
         self.local, self.cloud = local, cloud
-        # Off by default: credentials normally share one account budget, so trying the
-        # next key would only bypass a limit. Enable only for keys from separate accounts.
-        self.key_failover = key_failover
-        self.cooldowns: dict[str, float] = {}
         self.mode, self.cloud_content_allowed = mode, cloud_content_allowed
         self.attempts, self.timeout, self.clock = attempts, timeout, clock
         self.gate = asyncio.Semaphore(concurrency)
-        self.cloud_until = 0.0
+        self.cooldowns: dict[str, float] = {}
         self.disabled: set[str] = set()
         self.usage: list[InferenceUsage] = []
         self.cache, self.max_calls, self.stage_limits = cache, max_calls, stage_limits or {}
@@ -96,19 +92,8 @@ class InferenceRouter:
             )
             candidates = [self.local]
             last_code = "provider_unavailable"
-            if prefer_cloud and self.key_failover:
-                # Opt-in: each credential has its own account budget and cooldown.
-                live = [
-                    p
-                    for p in self.cloud
-                    if p.credential not in self.disabled
-                    and self.clock() >= self.cooldowns.get(p.credential, 0.0)
-                ]
-                candidates = [*live, self.local]
-            elif prefer_cloud and self.clock() >= self.cloud_until:
-                candidate = next((p for p in self.cloud if p.credential not in self.disabled), None)
-                if candidate:
-                    candidates.insert(0, candidate)
+            if prefer_cloud:
+                candidates = [*self.live_cloud(), self.local]
             if not allow_local_fallback:
                 # Quality-critical callers wait and resume instead of silently
                 # downgrading to the local model.
@@ -231,20 +216,10 @@ class InferenceRouter:
                         if provider is not self.local and code == "rate_limited":
                             delay = error.retry_after if isinstance(error, InferenceFailure) else 60
                             delay = max(60, delay or 60)
-                            if self.key_failover:
-                                self.cooldowns[provider.credential] = self.clock() + delay
-                                cooling = [
-                                    self.cooldowns.get(p.credential, 0.0)
-                                    for p in self.cloud
-                                    if p.credential not in self.disabled
-                                ]
-                                if cooling and min(cooling) > self.clock():
-                                    self.cloud_until = min(cooling)
-                                later = candidates[candidates.index(provider) + 1 :]
-                                if any(p is not self.local for p in later):
-                                    break  # a key from a separately budgeted account is next
-                            else:
-                                self.cloud_until = self.clock() + delay
+                            self.cooldowns[provider.name] = self.clock() + delay
+                            later = candidates[candidates.index(provider) + 1 :]
+                            if any(p is not self.local for p in later):
+                                break  # the next provider in the chain takes over
                             if (
                                 delay <= self.cloud_rate_limit_wait_seconds
                                 and attempt + 1 < self.attempts
@@ -254,7 +229,7 @@ class InferenceRouter:
                                     await asyncio.sleep(min(60, remaining))
                                     remaining -= min(60, remaining)
                                 continue
-                            break  # shared account budget: never try the other key to bypass this
+                            break  # a limit is never bypassed with another key
                         if code == "authentication":
                             self.disabled.add(provider.credential)
                             break
@@ -290,16 +265,26 @@ class InferenceRouter:
                 issues=(last_code,),
             )
 
+    def providers_in_chain(self) -> list[InferenceProvider]:
+        """The first usable credential of each provider, in preference order.
+
+        A second key for the same provider is never used to get past its limit.
+        """
+        chosen: dict[str, InferenceProvider] = {}
+        for provider in self.cloud:
+            if provider.credential not in self.disabled:
+                chosen.setdefault(provider.name, provider)
+        return list(chosen.values())
+
+    def live_cloud(self) -> list[InferenceProvider]:
+        now = self.clock()
+        return [p for p in self.providers_in_chain() if now >= self.cooldowns.get(p.name, 0.0)]
+
     def cloud_wait(self) -> float:
-        """Seconds until the earliest enabled cloud credential may be tried again."""
-        if self.key_failover:
-            waits = [
-                max(0.0, self.cooldowns.get(p.credential, 0.0) - self.clock())
-                for p in self.cloud
-                if p.credential not in self.disabled
-            ]
-            return min(waits, default=0.0)
-        return max(0.0, self.cloud_until - self.clock())
+        """Seconds until the first cloud provider in the chain may be tried again."""
+        now = self.clock()
+        waits = [max(0.0, self.cooldowns.get(p.name, 0.0) - now) for p in self.providers_in_chain()]
+        return min(waits, default=0.0)
 
     def status(self) -> dict[str, str | bool | list[str]]:
         return {
@@ -307,5 +292,5 @@ class InferenceRouter:
             "cloud_content_allowed": self.cloud_content_allowed,
             "cloud_configured": bool(self.cloud),
             "disabled_credentials": sorted(self.disabled),
-            "cloud_cooldown": self.clock() < self.cloud_until,
+            "cloud_cooldown": self.cloud_wait() > 0,
         }

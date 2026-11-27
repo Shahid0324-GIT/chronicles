@@ -66,7 +66,8 @@ async def test_routine_hybrid_task_stays_local_and_missing_cloud_works():
 async def test_rate_limit_never_rotates_keys_and_cooldown_is_shared():
     local = Provider()
     primary = Provider("groq", [InferenceFailure("rate_limited", 120)])
-    secondary = Provider("secondary")
+    secondary = Provider("groq")
+    secondary.credential = "second-key"
     router = InferenceRouter(
         local, [primary, secondary], cloud_content_allowed=True, clock=lambda: 100
     )
@@ -87,7 +88,8 @@ async def test_bounded_rate_limit_wait_retries_same_credential(monkeypatch):
     monkeypatch.setattr(asyncio, "sleep", sleep)
     local = Provider()
     primary = Provider("groq", [InferenceFailure("rate_limited", 90)])
-    secondary = Provider("secondary")
+    secondary = Provider("groq")
+    secondary.credential = "second-key"
     router = InferenceRouter(
         local, [primary, secondary], cloud_content_allowed=True, cloud_rate_limit_wait_seconds=120
     )
@@ -172,7 +174,7 @@ async def test_waiting_cloud_request_rechecks_cooldown_after_acquiring_gate():
 
 
 def test_credentials_are_masked_and_ollama_cannot_point_to_public_inference():
-    settings = Settings(_env_file=None, groq_api_key_primary="test-secret")
+    settings = Settings(_env_file=None, groq_api_key_1="test-secret")
     assert "test-secret" not in repr(settings)
     with pytest.raises(ValueError):
         Settings(_env_file=None, ollama_base_url="https://example.org")
@@ -183,7 +185,7 @@ def test_groq_response_format_is_configurable_without_changing_permissions():
 
     settings = Settings(
         _env_file=None,
-        groq_api_key_primary="owned-test-key",
+        groq_api_key_1="owned-test-key",
         groq_model="owned-test-model",
         groq_structured_output_method="json_schema",
         groq_structured_output_strict=True,
@@ -198,26 +200,65 @@ def test_groq_response_format_is_configurable_without_changing_permissions():
         Settings(_env_file=None, groq_structured_output_method="invented-format")
 
 
-async def test_key_failover_is_opt_in_and_uses_the_second_account_before_local():
-    for failover, expect_secondary in ((False, 0), (True, 1)):
-        local = Provider()
-        primary = Provider("groq", [InferenceFailure("rate_limited", 90)])
-        secondary = Provider("secondary")
-        router = InferenceRouter(
-            local, [primary, secondary], cloud_content_allowed=True, key_failover=failover
+async def test_a_limited_provider_hands_over_to_the_next_provider():
+    local = Provider()
+    groq = Provider("groq", [InferenceFailure("rate_limited", 90)])
+    gemini = Provider("gemini", [InferenceFailure("rate_limited", 90)])
+    router = InferenceRouter(local, [groq, gemini], cloud_content_allowed=True)
+
+    async def ask():
+        return await router.generate(
+            "Owned", "Owned", ResearchPlan, "verification", public_source_content=True
         )
+
+    # Both clouds are limited in turn, so the local model answers.
+    assert (await ask()).usage.provider == "ollama"
+    assert (groq.calls, gemini.calls, local.calls) == (1, 1, 1)
+    # While they cool down neither is called again.
+    assert (await ask()).usage.provider == "ollama"
+    assert (groq.calls, gemini.calls) == (1, 1)
+    assert router.status()["cloud_cooldown"] is True
+
+
+async def test_a_second_key_of_the_same_provider_is_never_used_to_pass_a_limit():
+    local = Provider()
+    first = Provider("groq", [InferenceFailure("rate_limited", 90)])
+    second = Provider("groq")
+    second.credential = "second-key"
+    router = InferenceRouter(local, [first, second], cloud_content_allowed=True)
+    for _ in range(2):
         result = await router.generate(
             "Owned", "Owned", ResearchPlan, "verification", public_source_content=True
         )
-        assert secondary.calls == expect_secondary
-        assert (result.usage.provider == "secondary") is bool(expect_secondary)
-        assert local.calls == (0 if failover else 1)
-        # The limited key stays cooling; the next call goes straight to the live key.
-        again = await router.generate(
-            "Owned", "Owned", ResearchPlan, "verification", public_source_content=True
-        )
-        assert primary.calls == 1
-        assert (again.usage.provider == "secondary") is failover
+        assert result.usage.provider == "ollama"
+    assert first.calls == 1 and second.calls == 0
+
+
+def test_the_chain_is_groq_then_gemini_with_one_key_each():
+    from src.infrastructure.inference import create_inference
+
+    settings = Settings(
+        _env_file=None,
+        groq_api_key_1="owned-test-key",
+        groq_model="owned-groq-model",
+        gemini_api_key_1="owned-test-key",
+        gemini_model="owned-gemini-model",
+    )
+    router = create_inference(settings)
+    assert [p.name for p in router.cloud] == ["groq", "gemini"]
+    assert "owned-test-key" not in repr(settings)
+
+
+def test_http_status_is_found_through_wrapped_sdk_errors():
+    from src.infrastructure.inference import http_status
+
+    class Exhausted(Exception):
+        code = 429
+
+    wrapped = RuntimeError("wrapped")
+    wrapped.__cause__ = Exhausted()
+    assert http_status(wrapped) == 429
+    assert http_status(RuntimeError("no status")) == 0
 
 
 async def test_quality_critical_calls_never_fall_back_to_the_local_model():

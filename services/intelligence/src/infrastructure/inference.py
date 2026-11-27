@@ -9,6 +9,7 @@ from typing import Any
 import httpx
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import HumanMessage, SystemMessage
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_ollama import ChatOllama
 from langsmith import tracing_context
@@ -25,6 +26,19 @@ from src.application.research_contracts import (
     validation_issues,
 )
 from src.infrastructure.config.settings import Settings
+
+GEMINI_MODELS = "https://generativelanguage.googleapis.com/v1beta/models"
+
+
+def http_status(error: BaseException | None) -> int:
+    """The HTTP status carried by an SDK error or its causes, else zero."""
+    while error is not None:
+        for name in ("status_code", "code"):
+            value = getattr(error, name, None)
+            if isinstance(value, int) and 100 <= value < 600:
+                return value
+        error = error.__cause__
+    return 0
 
 
 class LangChainProvider:
@@ -50,10 +64,14 @@ class LangChainProvider:
     async def available(self) -> bool:
         try:
             headers = {"Authorization": "Bearer " + self.api_key} if self.api_key else {}
+            if self.name == "gemini":
+                headers = {"x-goog-api-key": self.api_key or ""}
             async with httpx.AsyncClient(timeout=10, trust_env=False) as client:
                 response = await client.get(self.health_url, headers=headers)
             self._check_status(response.status_code, response.headers)
             payload = response.json()
+            if self.name == "gemini":
+                return bool(payload.get("name") == "models/" + self.model)
             models = payload.get("models", []) if self.name == "ollama" else payload.get("data", [])
             match = next(
                 (
@@ -167,6 +185,13 @@ class LangChainProvider:
                 "invalid_output", issues=validation_issues(error, schema)
             ) from None
         except Exception as error:
+            if self.name == "gemini":
+                status = http_status(error)
+                if status == 413:
+                    raise InferenceFailure("request_too_large") from None
+                if status:
+                    self._check_status(status, {})
+                raise InferenceFailure("inference_failed") from None
             response = getattr(error, "response", None)
             code = getattr(error, "status_code", 0)
             body = getattr(error, "body", {})
@@ -247,39 +272,55 @@ def create_inference(
         health_url=settings.ollama_base_url + "/api/tags",
         lease=lease,
     )
+    # The provider chain: one key each, tried in this order, then the local model.
     cloud: list[LangChainProvider] = []
-    if settings.groq_model:
-        for label, secret in [
-            ("primary", settings.groq_api_key_primary),
-            ("secondary", settings.groq_api_key_secondary),
-        ]:
-            if secret and secret.get_secret_value().strip():
-                key = secret.get_secret_value()
-                cloud.append(
-                    LangChainProvider(
-                        ChatGroq(
-                            model=settings.groq_model,
-                            api_key=secret,
-                            temperature=0,
-                            max_retries=0,
-                            max_tokens=4000,
-                            reasoning_effort=(
-                                "low"
-                                if settings.groq_structured_output_method == "json_mode"
-                                and "gpt-oss" in settings.groq_model
-                                else None
-                            ),
-                            timeout=settings.ai_timeout_seconds,
-                        ),
-                        "groq",
-                        settings.groq_model,
-                        label,
-                        health_url="https://api.groq.com/openai/v1/models",
-                        api_key=key,
-                        method=settings.groq_structured_output_method,
-                        strict=settings.groq_structured_output_strict,
-                    )
-                )
+    groq = settings.groq_api_key_1
+    if settings.groq_model and groq and groq.get_secret_value().strip():
+        cloud.append(
+            LangChainProvider(
+                ChatGroq(
+                    model=settings.groq_model,
+                    api_key=groq,
+                    temperature=0,
+                    max_retries=0,
+                    max_tokens=4000,
+                    reasoning_effort=(
+                        "low"
+                        if settings.groq_structured_output_method == "json_mode"
+                        and "gpt-oss" in settings.groq_model
+                        else None
+                    ),
+                    timeout=settings.ai_timeout_seconds,
+                ),
+                "groq",
+                settings.groq_model,
+                "groq",
+                health_url="https://api.groq.com/openai/v1/models",
+                api_key=groq.get_secret_value(),
+                method=settings.groq_structured_output_method,
+                strict=settings.groq_structured_output_strict,
+            )
+        )
+    gemini = settings.gemini_api_key_1
+    if settings.gemini_model and gemini and gemini.get_secret_value().strip():
+        cloud.append(
+            LangChainProvider(
+                ChatGoogleGenerativeAI(
+                    model=settings.gemini_model,
+                    google_api_key=gemini,
+                    temperature=0,
+                    max_retries=1,
+                    max_output_tokens=8000,
+                    timeout=settings.ai_timeout_seconds,
+                ),
+                "gemini",
+                settings.gemini_model,
+                "gemini",
+                health_url=f"{GEMINI_MODELS}/{settings.gemini_model}",
+                api_key=gemini.get_secret_value(),
+                method="json_schema",
+            )
+        )
     return InferenceRouter(
         local,
         list(cloud),
@@ -292,5 +333,4 @@ def create_inference(
         max_calls=settings.agent_max_model_calls,
         stage_limits=settings.agent_stage_model_calls,
         cloud_rate_limit_wait_seconds=settings.ai_cloud_rate_limit_wait_seconds,
-        key_failover=settings.ai_cloud_key_failover,
     )
