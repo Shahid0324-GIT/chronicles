@@ -11,12 +11,8 @@ import MediaArtwork from "@/features/discovery/MediaArtwork";
 import { resolveMedia } from "@/features/discovery/media-registry";
 import { BRANCHES, eventRegion } from "./model";
 import type { NarrativeCatalog } from "@/features/narrative/contracts";
+import { discoveryLabels } from "@/features/narrative/draft";
 
-export const DISCOVERY_LABELS = {
-  established: "Established in the opening",
-  interpretation: "Editorial interpretation",
-  unresolved: "Unresolved in this scope",
-};
 export default function StoryBranches() {
   const graph = useExploration((s) => s.graph),
     catalog = useExploration((s) => s.narrative),
@@ -34,7 +30,8 @@ export default function StoryBranches() {
   const root = useRef<HTMLElement>(null);
   useAtlasMotion(root, [branch, step?.id, discovery?.id].join(":"), "card");
   if (!graph || !step || !branch) return null;
-  const region = eventRegion(graph, step, catalog, continuity),
+  const labels = discoveryLabels(catalog.availability?.kind === "generated"),
+    region = eventRegion(graph, step, catalog, continuity),
     definition = BRANCHES.find((b) => b.kind === branch)!;
   const items = branch === "lore" ? [] : region[branch];
   const activeLore =
@@ -69,7 +66,7 @@ export default function StoryBranches() {
         <>
           <aside className="lore-reading" aria-label="Lore discovery">
             <p className={"discovery-class " + discovery.classification}>
-              {DISCOVERY_LABELS[discovery.classification]}
+              {labels[discovery.classification]}
             </p>
             <h2>{discovery.title}</h2>
             <p>{discovery.explanation}</p>
@@ -92,16 +89,14 @@ export default function StoryBranches() {
                   key={id}
                   className={id === discovery.id ? "current" : ""}
                   onClick={() => discover(id)}
-                  aria-label={
-                    item.title + " · " + DISCOVERY_LABELS[item.classification]
-                  }
+                  aria-label={item.title + " · " + labels[item.classification]}
                   aria-pressed={id === discovery.id}
                 >
                   <span className={"discovery-seal " + item.classification}>
                     {i + 1}
                   </span>
                   <strong>{item.title}</strong>
-                  <small>{DISCOVERY_LABELS[item.classification]}</small>
+                  <small>{labels[item.classification]}</small>
                 </button>
               );
             })}

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { useExploration } from "@/stores/ExplorationProvider";
+import { DRAFT_NOTE, isDraftWorld } from "@/features/narrative/draft";
 import {
   activeDiscovery,
   activeJourney,
@@ -17,7 +18,8 @@ export default function SourceNotes() {
     mode = useExploration((s) => s.mode),
     journey = useExploration(activeJourney),
     thread = useExploration(activeThread),
-    catalog = useExploration((s) => s.narrative);
+    catalog = useExploration((s) => s.narrative),
+    draft = useExploration((s) => isDraftWorld(s.graph?.universe.slug));
   const root = useRef<HTMLElement>(null),
     close = useRef<HTMLButtonElement>(null);
   useAtlasMotion(root, open, "card");
@@ -56,9 +58,11 @@ export default function SourceNotes() {
       <h2>Notes behind the story</h2>
       <p>{mode === "lore" ? thread?.spoilerScope : journey?.spoilerScope}</p>
       <p>
-        {catalog.availability?.kind === "generated"
-          ? "Source-backed model research with evidence-gated publication. Assessments are not independent verification."
-          : "Manually curated introductory notes. No automated research."}
+        {draft
+          ? DRAFT_NOTE
+          : catalog.availability?.kind === "generated"
+            ? "Source-backed model research with evidence-gated publication. Assessments are not independent verification."
+            : "Manually curated introductory notes. No automated research."}
       </p>
       {mode !== "lore" && <p>{journey?.ordering.explanation}</p>}
       <ol>

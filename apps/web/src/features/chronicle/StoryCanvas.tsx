@@ -1,6 +1,7 @@
 "use client";
 import { useExploration } from "@/stores/ExplorationProvider";
 import { activeJourney } from "@/features/narrative/selectors";
+import { isDraftWorld } from "@/features/narrative/draft";
 import StorySpine from "./StorySpine";
 import EventInvestigation from "./EventInvestigation";
 import SourceNotes from "./SourceNotes";
@@ -22,7 +23,8 @@ export default function StoryCanvas() {
     reconstruction = useExploration((s) => s.narrative.reconstruction),
     scope = useExploration((s) => s.narrative.researchScopes?.[0]),
     inspect = useExploration((s) => s.selectNode),
-    setMode = useExploration((s) => s.setMode);
+    setMode = useExploration((s) => s.setMode),
+    draft = useExploration((s) => isDraftWorld(s.graph?.universe.slug));
   return (
     <section
       className={
@@ -55,9 +57,11 @@ export default function StoryCanvas() {
             <div>
               <p className="folio-eyebrow">
                 <span>CHRONICLE</span>{" "}
-                {availability?.kind === "generated"
-                  ? "RESEARCHED JOURNEY"
-                  : "A CURATED JOURNEY"}
+                {draft
+                  ? "AI DRAFT JOURNEY"
+                  : availability?.kind === "generated"
+                    ? "RESEARCHED JOURNEY"
+                    : "A CURATED JOURNEY"}
               </p>
               <h1>{journey.title}</h1>
               <p>{journey.overview ?? journey.introduction}</p>
@@ -69,15 +73,18 @@ export default function StoryCanvas() {
             <div className="story-orientation">
               <span>
                 {availability?.kind === "generated"
-                  ? `${journey.ordering.basis === "manga-chapter" ? "MANGA CHAPTER" : "SUPPORTING"} SOURCES · PARTIAL ORDER`
+                  ? `${journey.ordering.basis === "manga-chapter" ? "MANGA CHAPTER" : "SUPPORTING"} SOURCES · ${draft ? "DRAFT" : "PARTIAL"} ORDER`
                   : "ORIGINAL BROADCAST PRESENTATION"}
               </span>
-              {availability?.kind === "generated" && availability.partial && (
-                <small>
-                  Incomplete knowledge · {availability.gapCount ?? 0} ordering
-                  gaps
-                </small>
-              )}
+              {draft && <small>Unverified · check the sources</small>}
+              {!draft &&
+                availability?.kind === "generated" &&
+                availability.partial && (
+                  <small>
+                    Incomplete knowledge · {availability.gapCount ?? 0} ordering
+                    gaps
+                  </small>
+                )}
               <p>
                 <span>Earlier</span>
                 <b>Moment {String(index + 1).padStart(2, "0")}</b>

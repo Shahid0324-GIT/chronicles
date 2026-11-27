@@ -1,6 +1,11 @@
 "use client";
 import { useEffect, useRef } from "react";
 import { useExploration } from "@/stores/ExplorationProvider";
+import {
+  DRAFT_NOTE,
+  discoveryLabels,
+  isDraftWorld,
+} from "@/features/narrative/draft";
 import { useAtlasMotion, useExitMotion } from "@/animations/useAtlasMotion";
 import IconButton from "@/components/ui/IconButton";
 import MediaArtwork from "@/features/discovery/MediaArtwork";
@@ -11,11 +16,6 @@ import {
   activeThread,
   activeDiscovery,
 } from "./selectors";
-const labels = {
-  established: "Established in the opening",
-  interpretation: "Editorial interpretation",
-  unresolved: "Unresolved in this scope",
-};
 export default function NarrativePanel() {
   const mode = useExploration((s) => s.mode),
     graph = useExploration((s) => s.graph),
@@ -27,6 +27,8 @@ export default function NarrativePanel() {
     discover = useExploration((s) => s.selectDiscovery),
     enter = useExploration((s) => s.enterLore),
     clear = useExploration((s) => s.clearSelection);
+  const draft = isDraftWorld(graph?.universe.slug);
+  const labels = discoveryLabels(narrative.availability?.kind === "generated");
   const journey = useExploration(activeJourney),
     step = useExploration(activeStep),
     thread = useExploration(activeThread),
@@ -175,9 +177,11 @@ export default function NarrativePanel() {
                   : thread?.spoilerScope}
               </p>
               <p>
-                {narrative.availability?.kind === "generated"
-                  ? "Source-backed model research. Assessments are not independent verification."
-                  : "Manually curated introductory notes. No automated research."}
+                {draft
+                  ? DRAFT_NOTE
+                  : narrative.availability?.kind === "generated"
+                    ? "Source-backed model research. Assessments are not independent verification."
+                    : "Manually curated introductory notes. No automated research."}
               </p>
               {narrative.sources
                 .filter((s) => sourceIds.includes(s.id))

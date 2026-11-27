@@ -6,6 +6,7 @@ import {
   subscribeResearchJobs,
 } from "./session";
 import { useExploration } from "@/stores/ExplorationProvider";
+import { isDraftWorld } from "@/features/narrative/draft";
 import {
   getResearchSummary,
   startResearch,
@@ -26,9 +27,11 @@ export default function ResearchControls() {
         title={availability?.reason}
         role="status"
       >
-        {availability?.kind === "generated"
-          ? "Research archive"
-          : "Curated fallback"}
+        {isDraftWorld(universe?.slug)
+          ? "AI draft"
+          : availability?.kind === "generated"
+            ? "Research archive"
+            : "Curated fallback"}
       </span>
       <ResearchPanel
         key={`${universe?.id}:${continuity}`}
