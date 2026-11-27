@@ -633,6 +633,7 @@ async def build_story_pack(
     infer: Infer,
     subjects: list[str],
     progress: Callable[[str], None] = lambda _message: None,
+    position_word: str = "chapter",
 ) -> PackDraft:
     if not passages.sentences:
         raise ValueError("The arc has no permitted archived sentences")
@@ -964,6 +965,7 @@ async def build_story_pack(
             "title": world_title,
             "description": "An AI-drafted story atlas awaiting review.",
             "medium": medium,
+            "position_word": position_word,
             "sources": [
                 {"key": key, "title": clip(source.label, 300), "url": source.url}
                 for key, source in evidence.sources.values()
@@ -1000,7 +1002,7 @@ def render_review(draft: PackDraft) -> str:
         if arc.story:
             lines += ["## Events", ""]
         for number, event in enumerate(arc.events, 1):
-            label = event.label or f"by chapter {event.chapter}"
+            label = event.label or f"by {pack.position_word} {event.chapter}"
             lines += [f"### {number}. {event.title} ({label})", ""]
             lines += [event.summary, ""]
             for label, keys in (
@@ -1025,7 +1027,7 @@ def render_review(draft: PackDraft) -> str:
         lines += [f"### {entity.name} ({entity.type.casefold()})", "", entity.introduction, ""]
         for section in entity.sections:
             lines += [f"**{section.name.title()}**", ""]
-            lines += [f"- {s.text} (chapter {s.chapter})" for s in section.statements]
+            lines += [f"- {s.text} ({pack.position_word} {s.chapter})" for s in section.statements]
             lines.append("")
     if draft.notes:
         lines += ["## Check these", ""] + [f"- {n}" for n in draft.notes]

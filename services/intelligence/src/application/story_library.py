@@ -18,6 +18,34 @@ SLUG = r"^[a-z0-9]+(?:-[a-z0-9]+)*$"
 class LibraryArc(StructuredModel):
     key: str = Field(pattern=SLUG, max_length=80)
     title: str = Field(min_length=1, max_length=100)
+    # Story headings for this arc, when a page covers several stories.
+    sections: list[str] = Field(default_factory=list, max_length=20)
+
+
+class LibrarySite(StructuredModel):
+    """A wiki you approved for this world.
+
+    Give ``api`` (its MediaWiki api.php), or ``pages`` (the address article titles
+    are added to) when the site's robots rules allow pages but not the API.
+    """
+
+    api: str = Field(default="", pattern=r"^(https://[^?#]+api\.php)?$", max_length=300)
+    pages: str = Field(default="", pattern=r"^(https://[^?#]+/)?$", max_length=300)
+    cloud_allowed: bool = False
+    # Headings whose text tells the story.
+    sections: list[str] = Field(
+        default_factory=lambda: ["plot", "story", "synopsis", "summary"], max_length=20
+    )
+
+    @model_validator(mode="after")
+    def one_way_in(self) -> "LibrarySite":
+        if bool(self.api) == bool(self.pages):
+            raise ValueError("A site needs either its api address or its pages address")
+        return self
+
+    @property
+    def address(self) -> str:
+        return self.api or self.pages
 
 
 class LibraryWorld(StructuredModel):
@@ -28,6 +56,7 @@ class LibraryWorld(StructuredModel):
     medium: str = Field(min_length=1, max_length=40)
     position_word: str = Field(default="chapter", pattern=r"^[a-z][a-z -]{0,30}$")
     arcs: list[LibraryArc] = Field(min_length=1, max_length=200)
+    sites: list[LibrarySite] = Field(default_factory=list, max_length=8)
 
     @model_validator(mode="after")
     def distinct_arcs(self) -> "LibraryWorld":

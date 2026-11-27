@@ -11,9 +11,11 @@ import time
 from collections.abc import Awaitable, Callable
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
+from typing import Any
 from urllib.parse import urlencode, urljoin, urlsplit, urlunsplit
 from urllib.robotparser import RobotFileParser
 
+import certifi
 import httpx
 from bs4 import BeautifulSoup
 
@@ -103,7 +105,10 @@ def pinned_request(
     connection = http.client.HTTPConnection(host, port, timeout=20)
     try:
         connection.sock = (
-            ssl.create_default_context().wrap_socket(raw, server_hostname=host)
+            # The Mozilla bundle: some systems hold an expired chain for valid sites.
+            ssl.create_default_context(cafile=certifi.where()).wrap_socket(
+                raw, server_hostname=host
+            )
             if scheme == "https"
             else raw
         )
@@ -136,6 +141,8 @@ class PublicDocumentFetcher:
         self.lock = asyncio.Lock()
         self.last: dict[str, float] = {}
         self.cooldowns: dict[str, float] = {}
+        self.delays: dict[str, float] = {}
+        self.rules: dict[str, RobotFileParser] = {}
         self.reserve_bytes: Callable[[int], Awaitable[None]] | None = None
         self.complete_bytes: Callable[[int, int], Awaitable[None]] | None = None
 
@@ -206,7 +213,8 @@ class PublicDocumentFetcher:
             remaining = self.cooldowns.get(host, 0) - time.monotonic()
             if remaining > 0:
                 raise SourceRejected("source_rate_limited", remaining)
-            delay = 1.0 - (time.monotonic() - self.last.get(host, 0))
+            interval = self.delays.get(host, 1.0)
+            delay = interval - (time.monotonic() - self.last.get(host, 0))
             if delay > 0:
                 await asyncio.sleep(delay)
             try:
@@ -265,8 +273,47 @@ class PublicDocumentFetcher:
             raise SourceRejected("robots_unavailable")
         robots = RobotFileParser()
         robots.parse(body.decode("utf-8", errors="replace").splitlines())
+        self.rules[parsed.netloc] = robots
+        # A site that asks for slower reading gets it.
+        asked = robots.crawl_delay(USER_AGENT)
+        if asked:
+            host = (parsed.hostname or "").lower()
+            self.delays[host] = min(60.0, max(1.0, float(asked)))
         if not robots.can_fetch(USER_AGENT, url):
             raise SourceRejected("robots_disallowed")
+
+    async def _allowed(self, url: str, kind: str) -> tuple[bytes, str]:
+        """One approved reply of a content kind. One robots reading covers later ones."""
+        for _ in range(4):
+            self.policy.validate(url)
+            known = self.rules.get(urlsplit(url).netloc)
+            if known is None:
+                await self._robots(url)
+            elif not known.can_fetch(USER_AGENT, url):
+                raise SourceRejected("robots_disallowed")
+            code, headers, body = await self._request(url)
+            if code in {301, 302, 303, 307, 308}:
+                url = urljoin(url, headers.get("location", ""))
+                continue
+            if code != 200 or kind not in headers.get("content-type", ""):
+                raise SourceRejected("source_response_rejected")
+            return body, url
+        raise SourceRejected("too_many_source_redirects")
+
+    async def get_json(self, url: str) -> dict[str, Any]:
+        body, _ = await self._allowed(url, "json")
+        try:
+            data = json.loads(body)
+        except ValueError:
+            raise SourceRejected("source_response_rejected") from None
+        if not isinstance(data, dict):
+            raise SourceRejected("source_response_rejected")
+        return data
+
+    async def get_html(self, url: str) -> tuple[str, str]:
+        """The page text and the address it finally came from."""
+        body, final = await self._allowed(url, "html")
+        return body.decode("utf-8", errors="replace"), final
 
     async def fetch(self, url: str) -> FetchedDocument:
         return await self._fetch(url, True)

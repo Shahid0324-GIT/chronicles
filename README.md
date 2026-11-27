@@ -14,7 +14,7 @@ your own PC, localhost only, with no authentication, cloud storage or deployment
 | Model chain: Groq, then Gemini, then local Ollama | working |
 | Draft worlds read as a cited arc article with a timeline, plus the story map, built from a reviewed story pack | working ([story packs](docs/story-packs.md)) |
 | File-based story library, many arcs per world | working |
-| Agents that find and fetch sources from sites you approve | planned |
+| Agent that finds and saves an arc's pages from wikis you approve | working, tried on one wiki ([story packs](docs/story-packs.md)) |
 | Images with credit, arc-focused screens, later-fact lookups | planned |
 | Game lore scattered across books and items | planned |
 

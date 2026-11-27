@@ -45,6 +45,7 @@ export interface StorySection {
 }
 export interface NarrativeJourney {
   story?: StorySection[];
+  positionWord?: string;
   presentationState?: { status: string; reason: string };
   overview?: string;
   id: string;
@@ -54,7 +55,11 @@ export interface NarrativeJourney {
   introduction: string;
   spoilerScope: string;
   ordering: {
-    basis: "broadcast-presentation" | "manga-chapter" | "unresolved";
+    basis:
+      | "broadcast-presentation"
+      | "manga-chapter"
+      | "story-position"
+      | "unresolved";
     explanation: string;
     sourceIds: string[];
   };

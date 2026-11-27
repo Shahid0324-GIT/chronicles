@@ -54,6 +54,39 @@ is git-ignored. Run from `services/intelligence`:
 `edits.json`). `load <world>` merges every drafted arc into the one draft world.
 `samples/glass-orchard/` is a longer owned story for judging the article.
 
+## Scout: finding sources
+
+`scout` reads wikis you approve, finds the pages that tell an arc and saves their story
+sections. Approve a site in `world.json`:
+
+```json
+"sites": [{"pages": "https://www.khwiki.com/", "cloud_allowed": true}],
+"arcs": [{"key": "first-journey", "title": "Sora's First Journey",
+          "sections": ["story / kingdom hearts"]}]
+```
+
+- Give `api` (a MediaWiki `api.php`) or `pages` (the address article titles are added to),
+  whichever the site's robots rules allow. `sections` names the story headings; a name with
+  `/` is an exact heading path.
+- `cloud_allowed` stays false unless you decide that site's text may go to cloud models.
+
+```powershell
+..\..\.venv\Scripts\python -m src.chronicle scout <world> <arc> --start "<overview page>" --about "<what to cover>"
+```
+
+The chosen pages are listed in `<arc>/pages.json`. Edit it and run `scout` again to correct
+the choice; saved pages are not fetched twice (delete a source file to refetch it).
+
+Rules it follows:
+
+- Only approved hosts, within each site's robots rules and requested delay.
+- A site that answers with a bot check is left alone. Never work around one.
+- Check a site's terms before approving it. Some forbid automated reading even where robots
+  rules do not (Fandom's terms, checked 2026-11-27).
+- Each saved page keeps its link, revision and stated licence. Keep credit, and note that
+  share-alike and non-commercial licences also cover what you make from them.
+- A model picks only among titles the site returned. It can pick wrongly, so read the list.
+
 ## The arc article
 
 A pack also tells the arc as an article: an opening paragraph, then headed sections of prose

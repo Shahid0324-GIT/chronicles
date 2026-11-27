@@ -48,9 +48,12 @@ export function resolveNarrative(
   const journeys = catalog.journeys.filter((j) => {
     const valid =
       scoped(j) &&
-      ["broadcast-presentation", "manga-chapter", "unresolved"].includes(
-        j.ordering.basis,
-      ) &&
+      [
+        "broadcast-presentation",
+        "manga-chapter",
+        "story-position",
+        "unresolved",
+      ].includes(j.ordering.basis) &&
       sourced(j.ordering.sourceIds) &&
       j.steps.length >= 1 &&
       new Set(j.steps.map((s) => s.id)).size === j.steps.length &&

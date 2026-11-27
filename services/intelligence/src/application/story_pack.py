@@ -130,6 +130,7 @@ class StoryPack(StructuredModel):
     title: str = Field(min_length=1, max_length=200)
     description: str = Field(min_length=1, max_length=600)
     medium: str = Field(min_length=1, max_length=40)
+    position_word: str = Field(default="chapter", pattern=r"^[a-z][a-z -]{0,30}$")
     sources: list[PackSource] = Field(min_length=1, max_length=100)
     entities: list[PackEntity] = Field(default_factory=list, max_length=300)
     arcs: list[PackArc] = Field(min_length=1, max_length=20)
@@ -441,7 +442,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                     "eventNodeId": own,
                     "title": event.title,
                     "body": event.summary,
-                    "episodeLabel": event.label or f"By chapter {event.chapter}",
+                    "episodeLabel": event.label or f"By {pack.position_word} {event.chapter}",
                     "sourceIds": sources.ids(event.sources),
                     "loreThreadIds": [
                         i
@@ -464,8 +465,11 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                     "title": arc.title,
                     "introduction": arc.introduction,
                     "spoilerScope": "AI draft awaiting review",
+                    "positionWord": pack.position_word,
                     "ordering": {
-                        "basis": "manga-chapter",
+                        "basis": "manga-chapter"
+                        if pack.medium.casefold() == "manga"
+                        else "story-position",
                         "explanation": "Draft story order merged from sources; not verified.",
                         "sourceIds": used,
                     },
@@ -588,7 +592,7 @@ def entries(pack: StoryPack, boundary: int | None = None) -> list[dict[str, Any]
         ]
         # The subject's events, in story order, are assembled here rather than rewritten.
         own_events = [
-            f"Chapter {e.chapter}: {e.title}"
+            f"{pack.position_word.capitalize()} {e.chapter}: {e.title}"
             for e in events
             if entity.key in (*e.characters, *e.places, *e.objects, *e.mysteries)
         ]

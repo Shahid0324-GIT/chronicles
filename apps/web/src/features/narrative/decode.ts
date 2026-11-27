@@ -197,13 +197,17 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
         (j.overview === undefined || text(j.overview)) &&
         text(j.spoilerScope) &&
         object(j.ordering) &&
-        ["broadcast-presentation", "manga-chapter", "unresolved"].includes(
-          String(j.ordering.basis),
-        ) &&
+        [
+          "broadcast-presentation",
+          "manga-chapter",
+          "story-position",
+          "unresolved",
+        ].includes(String(j.ordering.basis)) &&
         text(j.ordering.explanation) &&
         ids(j.ordering.sourceIds) &&
         list(j.steps, step) &&
-        (j.story === undefined || list(j.story, section)),
+        (j.story === undefined || list(j.story, section)) &&
+        (j.positionWord === undefined || text(j.positionWord)),
     ) ||
     !list(
       value.loreThreads,
