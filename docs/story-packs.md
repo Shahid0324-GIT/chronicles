@@ -38,3 +38,17 @@ Run from `services/intelligence`.
 - The chapter boundary hides events, pages, sections and lore from later chapters.
 - Source filtering is not supported for draft worlds.
 - `story-packs/` is git-ignored because it quotes source text.
+
+## Story library (new path)
+
+`library/<world>/world.json` names the world, its medium, its position word and its arcs.
+Each arc keeps saved pages in `library/<world>/<arc>/sources/*.json` with `url`, `title`,
+`position`, `text`, `licence` and `cloud_allowed`. See `samples/lantern-marsh/`. The library
+is git-ignored. Run from `services/intelligence`:
+
+```powershell
+..\..\.venv\Scripts\python -m src.chronicle check lantern-marsh the-search --library ..\..\samples
+```
+
+`build <world> <arc>` drafts `pack.json` and `review.md` in the arc folder (corrections go in
+`edits.json`). `load <world>` merges every drafted arc into the one draft world.

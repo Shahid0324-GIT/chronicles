@@ -1,0 +1,10 @@
+{
+  "slug": "lantern-marsh",
+  "title": "The Lantern Marsh",
+  "medium": "novel",
+  "position_word": "chapter",
+  "arcs": [
+    {"key": "the-search", "title": "The Search"},
+    {"key": "the-return", "title": "The Return"}
+  ]
+}
