@@ -69,7 +69,6 @@ export const UNIVERSE_THEMES: Record<string, UniverseTheme> = {
 };
 const universeThemes: Record<string, string> = {
   "re-zero": "manuscript",
-  "one-piece": "nautical",
   "elden-ring": "weathered",
 };
 export const themeForUniverse = (slug?: string) =>

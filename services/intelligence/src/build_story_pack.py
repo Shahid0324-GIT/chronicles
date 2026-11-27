@@ -1,6 +1,6 @@
 """Draft a story pack from the local archive for review.
 
-python -m src.build_story_pack --world one-piece --arc romance-dawn --subject "Monkey D. Luffy"
+python -m src.build_story_pack --world <world> --arc <arc> --subject "<name>"
 
 Model replies are cached, so an interrupted or rate-limited run resumes where it stopped.
 The pack is written to a file; nothing reaches the atlas until you import it.

@@ -24,13 +24,13 @@ services:
     environment:
       POSTGRES_USER: atlas
       POSTGRES_PASSWORD: atlas_local
-      POSTGRES_DB: universe_atlas
+      POSTGRES_DB: chronicles
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
       - atlas_postgres:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U atlas -d universe_atlas"]
+      test: ["CMD-SHELL", "pg_isready -U atlas -d chronicles"]
       interval: 5s
       timeout: 5s
       retries: 10

@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=(Path(__file__).resolve().parents[5] / ".env", ".env"), extra="ignore"
     )
-    database_url: str = "postgresql+asyncpg://atlas:atlas_local@127.0.0.1:5432/universe_atlas"
+    database_url: str = "postgresql+asyncpg://atlas:atlas_local@127.0.0.1:5432/chronicles"
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
     ollama_base_url: str = "http://localhost:11434"
     ollama_chat_model: str = "qwen3.5:4b"

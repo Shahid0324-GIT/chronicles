@@ -8,8 +8,9 @@ import json
 import os
 import socket
 import subprocess
+from dataclasses import asdict
 from pathlib import Path
-from uuid import uuid4
+from uuid import NAMESPACE_URL, uuid4, uuid5
 
 import httpx
 import pytest
@@ -23,14 +24,16 @@ from src.application.inference import InferenceRouter
 from src.application.relationship_contracts import AtomicAssertion, InvestigationSubject
 from src.application.research import ResearchRequest
 from src.application.research_contracts import InferenceResult, InferenceUsage
-from src.application.research_policy import ResearchPolicy
+from src.application.research_policy import ResearchPolicy, UniverseResearchProfile
 from src.application.retrieval import EvidenceRetrieval
-from src.domain.entities import now
+from src.application.story_scope import ArcResearchScope
+from src.domain.entities import Continuity, Universe, now
 from src.domain.research import SourceDocument, digest, passages_for
+from src.domain.value_objects import Slug
 from src.infrastructure.config.settings import Settings
-from src.infrastructure.persistence.configure_one_piece import MANGA_ID, UNIVERSE_ID, configure
-from src.infrastructure.persistence.models import Base, UniverseModel
+from src.infrastructure.persistence.models import Base, ContinuityModel, UniverseModel
 from src.infrastructure.persistence.models.research import ResearchJobModel
+from src.infrastructure.persistence.research_memory import SqlResearchMemory
 from src.infrastructure.persistence.research_repository import SqlResearchRepository
 from src.infrastructure.research_runtime import build_workflow, index_transactions
 from src.main import create_app
@@ -38,6 +41,52 @@ from src.presentation.dependencies import get_session
 
 from .test_relationship_workflow import TEXT, OwnedProvider
 from .test_source_intelligence import FakeEmbeddings
+
+UNIVERSE_ID = uuid5(NAMESPACE_URL, "chronicles:owned-world")
+MANGA_ID = uuid5(UNIVERSE_ID, "original-manga")
+
+
+async def configure(session):
+    """An owned test world with one manga arc scope; it holds no story facts."""
+    universe = Universe(
+        id=UNIVERSE_ID,
+        slug=Slug("owned-world"),
+        title="Owned fixture world",
+        description="Synthetic material used only by this test.",
+    )
+    session.add(UniverseModel(**{**asdict(universe), "slug": "owned-world"}))
+    await session.flush()
+    session.add(
+        ContinuityModel(
+            **asdict(
+                Continuity(
+                    id=MANGA_ID,
+                    universe_id=UNIVERSE_ID,
+                    name="Original manga",
+                    medium="MANGA",
+                    description="Owned synthetic continuity.",
+                )
+            )
+        )
+    )
+    await session.flush()
+    await SqlResearchMemory(session).save_profile(
+        UniverseResearchProfile(
+            universe_id=UNIVERSE_ID,
+            original_medium="manga",
+            continuity_media={MANGA_ID: "MANGA"},
+            story_scopes=[
+                ArcResearchScope(
+                    slug="owned-arc",
+                    title="Owned arc",
+                    continuity_id=MANGA_ID,
+                    first_position=1,
+                    last_position=7,
+                    references=["https://owned.example/arc"],
+                )
+            ],
+        )
+    )
 
 
 def unused_port():
@@ -138,11 +187,9 @@ async def reader_factory(tmp_path):
 
 async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_factory, tmp_path):
     factory = reader_factory
-    # One Piece configuration is real code; all Mira/Ron content is synthetic in isolated SQLite.
+    # All world, Mira and Ron content is synthetic and lives in isolated SQLite.
     async with factory() as session, session.begin():
         await configure(session)
-        universe = await session.get(UniverseModel, UNIVERSE_ID)
-        universe.title = "Owned fixture · One Piece"
     provider = ReaderFixtureProvider()
     workflow = build_workflow(
         Settings(_env_file=None), factory, InferenceRouter(provider, [], mode="local")
@@ -271,7 +318,7 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
                 .first.wait_for()
             )
             response = await page.request.get(
-                f"/api/atlas/universes/one-piece/narrative?continuity_id={MANGA_ID}&spoiler_position=7"
+                f"/api/atlas/universes/owned-world/narrative?continuity_id={MANGA_ID}&spoiler_position=7"
             )
             catalog = await response.json()
             assert catalog["coverage"]["validatedMilestones"] > 0
@@ -280,7 +327,7 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
             selected_step = catalog["journeys"][0]["steps"][0]["id"]
             before_revision = catalog["revision"]
             await page.screenshot(path=str(screenshots / "fixture-after.png"))
-            graph = await (await page.request.get("/api/atlas/universes/one-piece/graph")).json()
+            graph = await (await page.request.get("/api/atlas/universes/owned-world/graph")).json()
             mira = next(
                 n for n in graph["nodes"] if n["type"] == "CHARACTER" and n["title"] == "Mira"
             )
@@ -306,13 +353,13 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
                 stored = await session.get(ResearchJobModel, enrichment_job)
                 assert stored.checkpoint["narrative"]["generated"] > 0
             response = await page.request.get(
-                f"/api/atlas/universes/one-piece/narrative?continuity_id={MANGA_ID}&spoiler_position=7"
+                f"/api/atlas/universes/owned-world/narrative?continuity_id={MANGA_ID}&spoiler_position=7"
             )
             enriched = await response.json()
             assert enriched["coverage"]["acceptedEvents"] == 4
             assert enriched["journeys"][0]["steps"][0]["id"] == selected_step
             refreshed_graph = await (
-                await page.request.get("/api/atlas/universes/one-piece/graph")
+                await page.request.get("/api/atlas/universes/owned-world/graph")
             ).json()
             assert len(refreshed_graph["nodes"]) == len(graph["nodes"]) + 1
             assert (

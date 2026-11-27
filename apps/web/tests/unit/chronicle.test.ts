@@ -81,7 +81,6 @@ describe("illustrated story presentation", () => {
   });
   it("uses configurable universe themes and a stable fallback", () => {
     expect(themeForUniverse("re-zero").motif).toBe("arch");
-    expect(themeForUniverse("one-piece").motif).toBe("chart");
     expect(themeForUniverse("elden-ring").motif).toBe("rune");
     expect(themeForUniverse("unknown")).toEqual(themeForUniverse());
     expect(themeStyle(themeForUniverse("re-zero"))).toHaveProperty(

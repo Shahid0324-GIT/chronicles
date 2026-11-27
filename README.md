@@ -109,8 +109,8 @@ Default tests use **in-memory SQLite with foreign keys enabled** or fake reposit
 For the opt-in test, start Docker and create a separate database **once**, from the root:
 
 ```powershell
-docker compose exec -T postgres createdb -U atlas universe_atlas_test
-$env:TEST_DATABASE_URL = 'postgresql+asyncpg://atlas:atlas_local@127.0.0.1:5432/universe_atlas_test'
+docker compose exec -T postgres createdb -U atlas chronicles_test
+$env:TEST_DATABASE_URL = 'postgresql+asyncpg://atlas:atlas_local@127.0.0.1:5432/chronicles_test'
 Set-Location services/intelligence
 ..\..\.venv\Scripts\python -m pytest -q
 Remove-Item Env:TEST_DATABASE_URL

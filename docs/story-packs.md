@@ -9,10 +9,10 @@ Run from `services/intelligence`.
 1. Draft it from the local archive. Replies are cached, so rerunning resumes.
 
 ```powershell
-..\..\.venv\Scripts\python -m src.build_story_pack --world one-piece --arc romance-dawn --subject "Luffy" --subject "Shanks" --subject "Gomu Gomu no Mi"
+..\..\.venv\Scripts\python -m src.build_story_pack --world <world> --arc <arc> --subject "<name>"
 ```
 
-2. Read `story-packs/romance-dawn.md`. Put corrections in `story-packs/romance-dawn.edits.json`;
+2. Read `story-packs/<arc>.md`. Put corrections in `story-packs/<arc>.edits.json`;
    they are reapplied whenever the draft is regenerated (editing the pack file directly is
    overwritten by the next generation). Corrections are keyed by event and entry keys:
    `events` (title, summary, label, sources, `after` to move), `chapter_labels`, `rename`,
@@ -22,11 +22,11 @@ Run from `services/intelligence`.
 3. Check and load it. Loading replaces only the draft world.
 
 ```powershell
-..\..\.venv\Scripts\python -m src.import_story_pack ..\..\story-packs\romance-dawn.json --check
+..\..\.venv\Scripts\python -m src.import_story_pack ..\..\story-packs\<arc>.json --check
 ```
 
 ```powershell
-..\..\.venv\Scripts\python -m src.import_story_pack ..\..\story-packs\romance-dawn.json
+..\..\.venv\Scripts\python -m src.import_story_pack ..\..\story-packs\<arc>.json
 ```
 
 4. Start the API and web app, then pick the draft world in the world switcher.
