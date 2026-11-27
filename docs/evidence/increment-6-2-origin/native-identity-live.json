@@ -1,0 +1,212 @@
+{
+  "kind": "live-local-inference-on-owned-fixtures-not-research",
+  "cases": [
+    {
+      "case": "explicit-nickname",
+      "owned_source": "Liora Vale led the northern crew. Her crew called her Dawnkeeper. Dawnkeeper rescued Iven.",
+      "expected_same_person": true,
+      "matched_selected_person": true,
+      "passed": true,
+      "decision": {
+        "decision": "SAME_ENTITY",
+        "target_id": null,
+        "target_index": 1,
+        "entity_type_valid": true,
+        "reason": "Model proposal and contextual review agree on this reference.",
+        "evidence": [
+          {
+            "passage_id": "0bb0f207-0bcb-4af6-9ea4-13417b972030",
+            "quote": "Liora Vale led the northern crew. Her crew called her Dawnkeeper. Dawnkeeper rescued Iven."
+          }
+        ],
+        "hidden_identity": false,
+        "accepted": true,
+        "canonical_id": "68ff8622-7756-41c4-aa19-bdf51b7782d4",
+        "proof": "source_context_identity",
+        "model_reason": "Candidate 'Dawnkeeper' is explicitly identified as Liora Vale in the same passage.",
+        "model_evidence_indices": [
+          0
+        ],
+        "native_identity": {
+          "catalog_key": "7589520b8bac09c89cc9fdcc5cb6f684d7b75966112fcf1c8b20e9730d660c4a",
+          "review": {
+            "decision": "same",
+            "evidence_indices": [
+              0
+            ],
+            "distinguishes_alternatives": true,
+            "hidden_identity": false,
+            "reason": "The source context explicitly links the nickname 'Dawnkeeper' to 'Liora Vale' via the sentence 'Her crew called her Dawnkeeper,' where 'Her' refers to the previously mentioned 'Liora Vale.' The alternative character 'Reno Vale' is distinguished by a different description ('Leader of the southern crew') and lacks any association with the nickname in the provided text. No hidden identity or translит"
+          },
+          "context_key": "69435529e8ca5e8b5067cb948f027ec6d4800ce66c290aab6efa406bed5dfdcb"
+        }
+      }
+    },
+    {
+      "case": "distinct-people",
+      "owned_source": "Liora Vale met Dawnkeeper at the harbor. Dawnkeeper rescued Iven.",
+      "expected_same_person": false,
+      "matched_selected_person": false,
+      "passed": true,
+      "decision": {
+        "decision": "AMBIGUOUS",
+        "target_id": null,
+        "target_index": null,
+        "entity_type_valid": true,
+        "reason": "The name 'Dawnkeeper' is a title or role rather than a unique personal identifier. The text states 'Liora Vale met Dawnkeeper', implying Dawnkeeper is a distinct entity from Liora Vale. However, the source does not provide a specific name (e.g., 'Jared Dawnkeeper') that would allow distinguishing this referent from other potential individuals who might hold the title 'Dawnkeeper'. Without a unique",
+        "evidence": [
+          {
+            "passage_id": "76c73d99-50ab-4c47-9594-a08f817317b0",
+            "quote": "Liora Vale met Dawnkeeper at the harbor. Dawnkeeper rescued Iven."
+          }
+        ],
+        "hidden_identity": false,
+        "accepted": false,
+        "canonical_id": null,
+        "proof": "unresolved",
+        "model_reason": "Dawnkeeper is a distinct character from Liora Vale and Reno Vale with no matching records.",
+        "model_evidence_indices": [
+          0
+        ],
+        "new_identity_review": {
+          "decision": "ambiguous",
+          "evidence_indices": [
+            0
+          ],
+          "distinguishes_alternatives": false,
+          "hidden_identity": false,
+          "reason": "The name 'Dawnkeeper' is a title or role rather than a unique personal identifier. The text states 'Liora Vale met Dawnkeeper', implying Dawnkeeper is a distinct entity from Liora Vale. However, the source does not provide a specific name (e.g., 'Jared Dawnkeeper') that would allow distinguishing this referent from other potential individuals who might hold the title 'Dawnkeeper'. Without a unique"
+        }
+      }
+    },
+    {
+      "case": "ambiguous-nickname",
+      "owned_source": "Two captains were called Dawnkeeper. Dawnkeeper rescued Iven.",
+      "expected_same_person": false,
+      "matched_selected_person": false,
+      "passed": true,
+      "decision": {
+        "decision": "AMBIGUOUS",
+        "target_id": null,
+        "target_index": null,
+        "entity_type_valid": true,
+        "reason": "The source text states 'Two captains were called Dawnkeeper.' This indicates that the name 'Dawnkeeper' is a title or nickname shared by at least two distinct individuals (the two captains). Since the name does not uniquely identify a single person and refers to multiple people, it fails to denote ONE identifiable new person. No specific evidence links this title to a unique individual distinct in",
+        "evidence": [
+          {
+            "passage_id": "baba34f0-f630-4834-ac5c-ba12d53cf821",
+            "quote": "Two captains were called Dawnkeeper. Dawnkeeper rescued Iven."
+          }
+        ],
+        "hidden_identity": false,
+        "accepted": false,
+        "canonical_id": null,
+        "proof": "unresolved",
+        "model_reason": "No record matches 'Dawnkeeper'; names alone do not prove identity.",
+        "model_evidence_indices": [
+          0
+        ],
+        "new_identity_review": {
+          "decision": "ambiguous",
+          "evidence_indices": [
+            0
+          ],
+          "distinguishes_alternatives": false,
+          "hidden_identity": false,
+          "reason": "The source text states 'Two captains were called Dawnkeeper.' This indicates that the name 'Dawnkeeper' is a title or nickname shared by at least two distinct individuals (the two captains). Since the name does not uniquely identify a single person and refers to multiple people, it fails to denote ONE identifiable new person. No specific evidence links this title to a unique individual distinct in"
+        }
+      }
+    }
+  ],
+  "usage": [
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 9484,
+      "input_tokens": 617,
+      "output_tokens": 66,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 15152,
+      "input_tokens": 347,
+      "output_tokens": 121,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 12188,
+      "input_tokens": 608,
+      "output_tokens": 58,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 15654,
+      "input_tokens": 285,
+      "output_tokens": 140,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 12290,
+      "input_tokens": 590,
+      "output_tokens": 53,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 23965,
+      "input_tokens": 281,
+      "output_tokens": 129,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    }
+  ]
+}

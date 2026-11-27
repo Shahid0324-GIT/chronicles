@@ -1,0 +1,3420 @@
+{
+  "status": "partial",
+  "dossier": {
+    "version": "arc-dossier-v1",
+    "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+    "universe_id": "db33dec2-5da5-53f2-9a1f-d43009d50dba",
+    "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+    "title": "Romance Dawn",
+    "perspective": "bounded",
+    "spoiler_position": 7,
+    "source_range": [
+      1,
+      7
+    ],
+    "plan_status": "provisional_not_canon",
+    "section_focus": [
+      "setup"
+    ],
+    "status": "partial",
+    "sections": [
+      {
+        "id": "e5b635af-20e9-5316-9492-6475fa922eb0",
+        "plan": {
+          "key": "setup",
+          "title": "Luffy's Origin and Devil Fruit Acquisition",
+          "objective": "Establish the context for Luffy's dream to become a pirate and his acquisition of the Gomu Gomu no Mi (Rubber Man) abilities.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "What specific events or motivations led to Luffy acquiring the Devil Fruit?",
+            "How did Luffy's desire to become a pirate develop prior to this arc?",
+            "What is the nature of the 'rubber man' abilities and how do they function in combat?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [
+          {
+            "section_key": "setup",
+            "facet": "action",
+            "fact_ids": [
+              "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "action",
+            "fact_ids": [
+              "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "action",
+            "fact_ids": [
+              "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "action",
+            "fact_ids": [
+              "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "development",
+            "fact_ids": [
+              "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+            ]
+          },
+          {
+            "section_key": "setup",
+            "facet": "decision",
+            "fact_ids": [
+              "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5"
+            ]
+          }
+        ],
+        "narrative_developments": [
+          {
+            "section_key": "setup",
+            "key": "setup-1",
+            "stage": "action",
+            "fact_ids": [
+              "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "setup-2",
+            "stage": "action",
+            "fact_ids": [
+              "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "setup-3",
+            "stage": "action",
+            "fact_ids": [
+              "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "setup-4",
+            "stage": "action",
+            "fact_ids": [
+              "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "setup-5",
+            "stage": "development",
+            "fact_ids": [
+              "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "setup-6",
+            "stage": "decision",
+            "fact_ids": [
+              "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5"
+            ],
+            "connections": []
+          },
+          {
+            "section_key": "setup",
+            "key": "setup-7",
+            "stage": "consequence",
+            "fact_ids": [
+              "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+            ],
+            "connections": [
+              {
+                "from_key": "setup-5",
+                "relation": "consequence",
+                "fact_ids": [
+                  "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+                ]
+              }
+            ]
+          }
+        ],
+        "coverage": {
+          "research": "partial",
+          "presentation": "validated",
+          "supported_facets": [
+            "action",
+            "decision",
+            "development"
+          ],
+          "missing_facets": [
+            "circumstances",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+            "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+            "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+          ]
+        },
+        "revision": "63abb7f8f8629ce97f06635a660f802e2ccf36d9ad79668753fdf60c69bef626"
+      },
+      {
+        "id": "450b434e-c4f9-553e-b1aa-5d293775aa54",
+        "plan": {
+          "key": "development",
+          "title": "Luffy's Early Pirate Adventure and Meeting Koby",
+          "objective": "Depict Luffy setting off on his epic pirate adventure ten years later, meeting Koby, and helping him escape from Alvida.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "What are the specific circumstances of Luffy meeting Koby?",
+            "How does Luffy assist Koby in escaping from Alvida?",
+            "What role does Alvida play as an antagonist in this segment?",
+            "How do Luffy and Koby's interactions evolve during their time together?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [],
+        "narrative_developments": [],
+        "coverage": {
+          "research": "not_researched",
+          "presentation": "not_ready",
+          "supported_facets": [],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "action",
+            "decision",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+            "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+          ]
+        },
+        "revision": "6358942f101dd2934364a8185dd0bca567773f29ffd716c9d97d4b67b5aaad5a"
+      },
+      {
+        "id": "7755d968-308d-5d8f-90d1-8b14f92d1b3d",
+        "plan": {
+          "key": "conflict",
+          "title": "Recruiting Zoro and Confronting Axe-Hand Morgan",
+          "objective": "Detail the process of Luffy recruiting Roronoa Zoro as his first crewmate and the subsequent conflict against Marine Captain Axe-Hand Morgan.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "What specific actions or dialogue led to Luffy recruiting Roronoa Zoro?",
+            "Who is Axe-Hand Morgan, and what is his significance as a Marine Captain?",
+            "How does the conflict with Morgan unfold?",
+            "What are the implications of this battle for Luffy's growth and crew formation?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [],
+        "narrative_developments": [],
+        "coverage": {
+          "research": "not_researched",
+          "presentation": "not_ready",
+          "supported_facets": [],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "action",
+            "decision",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+            "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+          ]
+        },
+        "revision": "77fcf6788577c62495be6bb030647602ba78a8893bd0b18ad4979120257e2136"
+      },
+      {
+        "id": "caa511c6-2fe6-5265-8160-f6a5412cb908",
+        "plan": {
+          "key": "resolution",
+          "title": "Formation of the Straw Hat Crew",
+          "objective": "Conclude the arc by solidifying the initial crew structure and setting the stage for future adventures.",
+          "first_position": null,
+          "last_position": null,
+          "questions": [
+            "How is the final composition of Luffy's crew established?",
+            "What are the immediate aftermaths of the conflict with Morgan?",
+            "How does this arc conclude in relation to the broader East Blue saga?"
+          ],
+          "outline_evidence_ids": []
+        },
+        "developments": [],
+        "narrative_developments": [],
+        "coverage": {
+          "research": "not_researched",
+          "presentation": "not_ready",
+          "supported_facets": [],
+          "missing_facets": [
+            "circumstances",
+            "development",
+            "action",
+            "decision",
+            "conflict",
+            "consequence"
+          ],
+          "gaps": [
+            "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+            "What evidence establishes development in Formation of the Straw Hat Crew?",
+            "What evidence establishes action in Formation of the Straw Hat Crew?",
+            "What evidence establishes decision in Formation of the Straw Hat Crew?",
+            "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+            "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+          ]
+        },
+        "revision": "8f2fb9cf86e5c7af82c683174f29e4cd831603b5c07a6c1748c760e43586b73e"
+      }
+    ],
+    "accepted_facts": [
+      {
+        "id": "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65",
+        "kind": "relationship",
+        "payload": {
+          "type": "RELATED_TO",
+          "atomic": {
+            "id": "081f79324104f8505970a5ad069b7a05b8fd1438cf6424f3fde656ca19e7bb78",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "gives",
+            "statement": "Shanks gives Luffy",
+            "event_name": "gives · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              1
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "description": "Shanks gives Luffy",
+          "source_name": "Shanks",
+          "target_name": "Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Before departing, Shanks gives Luffy his iconic straw hat, symbolizing a promise that Luffy will one day become a great pirate and return the hat.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 295,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 149,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+      },
+      {
+        "id": "08e7f5fc3d0eeaefb913f0293bdbb1ab9dd73923331ecdd10586ea64f21873e9",
+        "kind": "entity",
+        "payload": {
+          "name": "arriving at a naval base · Koby",
+          "type": "EVENT",
+          "event": {
+            "trigger": "arriving at a naval base",
+            "outcomes": [],
+            "source_id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "trigger_end": 100,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "Koby"
+            ],
+            "preconditions": [],
+            "trigger_start": 76,
+            "identity_anchor": "af983645ab28570a55bb31dfa4cc1c18058e99fb06126ce3e29ce3260b35614a",
+            "reveal_position": null,
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Koby": "actor",
+              "Luffy": "actor"
+            },
+            "chronological_position": null
+          },
+          "atomic": {
+            "id": "ec6d5554b59f1db7110060532c78474e8e22573f122e1458caff439c2dd3a968",
+            "kind": "interaction",
+            "object": "Koby",
+            "subject": "Luffy",
+            "predicate": "arriving at a naval base",
+            "statement": "Luffy and Koby arriving at a naval base",
+            "event_name": "arriving at a naval base · Koby",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "2d8add91ab6601ccbd634a9f931ce0203f103141e2452521272ad2929f1f37ec"
+          },
+          "knowledge": null,
+          "description": "Luffy and Koby arriving at a naval base"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+            "quote_end": 159,
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      },
+      {
+        "id": "09209f09ae680f457855a29f6198372c9d914ca5bc59f22bc9a2bf79f37210a1",
+        "kind": "entity",
+        "payload": {
+          "name": "recruiting his first crewmate named · Roronoa Zoro",
+          "type": "EVENT",
+          "event": {
+            "trigger": "recruiting his first crewmate named",
+            "outcomes": [],
+            "source_id": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+            "trigger_end": 721,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "Roronoa Zoro"
+            ],
+            "preconditions": [],
+            "trigger_start": 686,
+            "identity_anchor": "3abcf1aa91ede81e92ee8dd2010364e560701745393390d2ad530070c8190105",
+            "reveal_position": null,
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "actor",
+              "Roronoa Zoro": "recipient"
+            },
+            "chronological_position": null
+          },
+          "atomic": {
+            "id": "460d160d051918df568af16450ed488e05cd4e7ab4e2928993fcb822d8115171",
+            "kind": "interaction",
+            "object": "Roronoa Zoro",
+            "subject": "Luffy",
+            "predicate": "recruiting his first crewmate named",
+            "statement": "Luffy recruiting his first crewmate named Roronoa Zoro",
+            "event_name": "recruiting his first crewmate named · Roronoa Zoro",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              4
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "8d21d8a4b25589db8aeb71ab29da829e7cfc64fa65c407a44c0ef1471b213656"
+          },
+          "knowledge": null,
+          "description": "Luffy recruiting his first crewmate named Roronoa Zoro"
+        },
+        "sources": [
+          {
+            "id": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+            "url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review#scope-27504630b9679e54",
+            "quote": "The third and final story is about Luffy recruiting his first crewmate named Roronoa Zoro and fighting against Marine Captain Axe-Hand Morgan.",
+            "title": "Post — Aaron Ngo — www.aaronngo.com",
+            "locator": "passage 4fcb4d42-e602-5ddd-ab9d-e44ffad037c7; normalized offsets 0:787",
+            "quote_end": 787,
+            "passage_id": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "3a7d7ff7-601b-54de-bc0f-9052398cf021",
+              "revision_id": null,
+              "canonical_url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review",
+              "sections_json": "[]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": [],
+              "structure_selection_start": "410"
+            },
+            "quote_start": 645,
+            "content_hash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7"
+          }
+        ],
+        "target_id": "1e3c5f5d-1c55-529b-afd3-345bd56a2e12"
+      },
+      {
+        "id": "0db2e9cb681f8df36dd5067ec7db5d7c29b775c8dd6ea3cdb08a2ccf97495724",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": null,
+          "description": "Luffy set sail on his own in a small rowboat."
+        },
+        "sources": [
+          {
+            "id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7",
+            "quote": "[1] On the High Seas: Luffy's First Voyage Ten years later, Luffy set sail on his own in a small rowboat.",
+            "title": "User-supplied Fandom Romance Dawn narrative reference — onepiece.fandom.com",
+            "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+            "quote_end": 212,
+            "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 107,
+            "content_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "1e6ac2ccb32f884c2ee34055313a5dbeef18f060ea719c95a7aefc8fb6327d50",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": null,
+          "source_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "target_id": "75ba6f36-89bc-5845-bfa3-a88078f44401",
+          "description": "[1] On the High Seas: Luffy's First Voyage Ten years later, Luffy set sail on his own in a small rowboat.",
+          "source_name": "Luffy",
+          "target_name": "set sail on his own in a small rowboat",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7",
+            "quote": "[1] On the High Seas: Luffy's First Voyage Ten years later, Luffy set sail on his own in a small rowboat.",
+            "title": "User-supplied Fandom Romance Dawn narrative reference — onepiece.fandom.com",
+            "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+            "quote_end": 212,
+            "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 107,
+            "content_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789"
+          }
+        ],
+        "target_id": "5ecb11f1-7939-5f1a-81ef-806119ae463e"
+      },
+      {
+        "id": "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "knowledge": null,
+          "description": "Shanks saves Luffy"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "quote": "Luffy starts drowning and as the Sea King comes to eat Luffy, Shanks shows up and saves Luffy.",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" — healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "provenance": {
+              "category": "reference",
+              "language": "en",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "d417fc46-0301-5796-a9e2-aa71b63c8e16",
+              "revision_id": null,
+              "canonical_url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html",
+              "sections_json": "[{\"title\": \"\", \"level\": 3, \"start\": 0, \"end\": 5433}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "3554"
+            },
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Luffy’s Promise: After an incident where Luffy stands up to a group of mountain bandits to defend Shanks’ honor, Shanks saves Luffy from a sea king.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "ability",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy's body became rubber due to eating the Devil Fruit, making him unable to swim for the rest of his life."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Shanks revealed that Luffy's body was now made of rubber due to eating the Devil Fruit, and he would be unable to swim for the rest of his life.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 942,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 798,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "20f2ab7bbd95caaf79b7fc2e4034256a42c7b835450971a38653364dc9130775",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "460d160d051918df568af16450ed488e05cd4e7ab4e2928993fcb822d8115171",
+            "kind": "interaction",
+            "object": "Roronoa Zoro",
+            "subject": "Luffy",
+            "predicate": "recruiting his first crewmate named",
+            "statement": "Luffy recruiting his first crewmate named Roronoa Zoro",
+            "event_name": "recruiting his first crewmate named · Roronoa Zoro",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              4
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "8d21d8a4b25589db8aeb71ab29da829e7cfc64fa65c407a44c0ef1471b213656"
+          },
+          "source_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "target_id": "1e3c5f5d-1c55-529b-afd3-345bd56a2e12",
+          "description": "Luffy recruiting his first crewmate named Roronoa Zoro",
+          "source_name": "Luffy",
+          "target_name": "recruiting his first crewmate named · Roronoa Zoro",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+            "url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review#scope-27504630b9679e54",
+            "quote": "The third and final story is about Luffy recruiting his first crewmate named Roronoa Zoro and fighting against Marine Captain Axe-Hand Morgan.",
+            "title": "Post — Aaron Ngo — www.aaronngo.com",
+            "locator": "passage 4fcb4d42-e602-5ddd-ab9d-e44ffad037c7; normalized offsets 0:787",
+            "quote_end": 787,
+            "passage_id": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "3a7d7ff7-601b-54de-bc0f-9052398cf021",
+              "revision_id": null,
+              "canonical_url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review",
+              "sections_json": "[]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": [],
+              "structure_selection_start": "410"
+            },
+            "quote_start": 645,
+            "content_hash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7"
+          }
+        ],
+        "target_id": "e2a89257-7f61-5a26-9029-9b1f10cdf7d0"
+      },
+      {
+        "id": "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Shanks gave Luffy his straw hat and told him to return it once he had surpassed Shanks."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "To take Luffy up on his word, Shanks gave him his straw hat and told him to return it once he had surpassed him.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 1293,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 1181,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "22ca065056026f50eed211e75e72ccd9ba55a8d177edd4cee4a0937a9973e19b",
+        "kind": "entity",
+        "payload": {
+          "name": "set sail on his own in a small rowboat",
+          "type": "EVENT",
+          "event": {
+            "arc": null,
+            "trigger": "set sail on his own in a small rowboat",
+            "location": null,
+            "outcomes": [],
+            "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "trigger_end": 4068,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "the High Seas"
+            ],
+            "preconditions": [],
+            "trigger_start": 4030,
+            "position_basis": "manga-chapter",
+            "identity_anchor": "50b767f198445d21c41336c471dc2c7cb48509c5c6424cfaf1f4be48b8a66723",
+            "reveal_position": null,
+            "source_position": 7,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "actor",
+              "the High Seas": "recipient"
+            },
+            "chronological_position": null
+          },
+          "atomic": null,
+          "knowledge": null,
+          "description": "[1] On the High Seas: Luffy's First Voyage Ten years later, Luffy set sail on his own in a small rowboat."
+        },
+        "sources": [
+          {
+            "id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7",
+            "quote": "[1] On the High Seas: Luffy's First Voyage Ten years later, Luffy set sail on his own in a small rowboat.",
+            "title": "User-supplied Fandom Romance Dawn narrative reference — onepiece.fandom.com",
+            "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+            "quote_end": 212,
+            "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 107,
+            "content_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789"
+          }
+        ],
+        "target_id": "75ba6f36-89bc-5845-bfa3-a88078f44401"
+      },
+      {
+        "id": "4576e67198281ea081dae874f2d805154aafff483d6658edf380fb16d267b24a",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "target_id": "541a9375-7b31-5d93-8de8-d094dfc95dee",
+          "description": "Shanks saves Luffy",
+          "source_name": "Luffy",
+          "target_name": "saves · Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "quote": "Luffy starts drowning and as the Sea King comes to eat Luffy, Shanks shows up and saves Luffy.",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" — healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "provenance": {
+              "category": "reference",
+              "language": "en",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "d417fc46-0301-5796-a9e2-aa71b63c8e16",
+              "revision_id": null,
+              "canonical_url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html",
+              "sections_json": "[{\"title\": \"\", \"level\": 3, \"start\": 0, \"end\": 5433}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "3554"
+            },
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Luffy’s Promise: After an incident where Luffy stands up to a group of mountain bandits to defend Shanks’ honor, Shanks saves Luffy from a sea king.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "652b5879-4f01-5871-93f2-25c2788218c8"
+      },
+      {
+        "id": "58049049f1a477d5c733946a605f509ada6bf7a4a8b2aaf7ca1fae4076682feb",
+        "kind": "entity",
+        "payload": {
+          "name": "arriving at a naval base",
+          "type": "EVENT",
+          "event": {
+            "arc": null,
+            "trigger": "arriving at a naval base",
+            "location": null,
+            "outcomes": [],
+            "source_id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "trigger_end": 100,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "Koby"
+            ],
+            "preconditions": [],
+            "trigger_start": 76,
+            "position_basis": "manga-chapter",
+            "identity_anchor": "af983645ab28570a55bb31dfa4cc1c18058e99fb06126ce3e29ce3260b35614a",
+            "reveal_position": null,
+            "source_position": 3,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Koby": "actor",
+              "Luffy": "actor",
+              "Axe-Hand Morgan": "mentioned"
+            },
+            "chronological_position": null
+          },
+          "atomic": null,
+          "knowledge": null,
+          "description": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan."
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+            "quote_end": 159,
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      },
+      {
+        "id": "61673febb0901f2eb8f9ca96645db245d90d142a25304d53d19a825f6fd083fd",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "target_id": "541a9375-7b31-5d93-8de8-d094dfc95dee",
+          "description": "Shanks saves Luffy",
+          "source_name": "Shanks",
+          "target_name": "saves · Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "quote": "Luffy starts drowning and as the Sea King comes to eat Luffy, Shanks shows up and saves Luffy.",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" — healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "provenance": {
+              "category": "reference",
+              "language": "en",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "d417fc46-0301-5796-a9e2-aa71b63c8e16",
+              "revision_id": null,
+              "canonical_url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html",
+              "sections_json": "[{\"title\": \"\", \"level\": 3, \"start\": 0, \"end\": 5433}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "3554"
+            },
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Luffy’s Promise: After an incident where Luffy stands up to a group of mountain bandits to defend Shanks’ honor, Shanks saves Luffy from a sea king.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "d994712b-92b3-5ec5-81ef-3fc709664937"
+      },
+      {
+        "id": "694beecd8bf688e82435f2f82b17dd64f1e40a5c595ffd7449822e39bef34cc8",
+        "kind": "entity",
+        "payload": {
+          "name": "took it out with Gomu Gomu no Pistol",
+          "type": "EVENT",
+          "event": {
+            "arc": null,
+            "trigger": "took it out with Gomu Gomu no Pistol",
+            "location": null,
+            "outcomes": [],
+            "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "trigger_end": 4165,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "The Lord of the Coast"
+            ],
+            "preconditions": [],
+            "trigger_start": 4129,
+            "position_basis": "manga-chapter",
+            "identity_anchor": "1359a6db4ccf50037aa549eb7cfdcccf9bcdb0b21741628feccf3f4e55a72430",
+            "reveal_position": null,
+            "source_position": 7,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "actor",
+              "The Lord of the Coast": "recipient"
+            },
+            "chronological_position": null
+          },
+          "atomic": null,
+          "knowledge": null,
+          "description": "The Lord of the Coast came to confront him, and he quickly took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range punch."
+        },
+        "sources": [
+          {
+            "id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7",
+            "quote": "The Lord of the Coast came to confront him, and he quickly took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range punch.",
+            "title": "User-supplied Fandom Romance Dawn narrative reference — onepiece.fandom.com",
+            "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+            "quote_end": 378,
+            "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 213,
+            "content_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789"
+          }
+        ],
+        "target_id": "6e1a0eab-4b5b-5212-8089-22b469eca9a3"
+      },
+      {
+        "id": "6f3cd13f9773daaf13d6155d2bf64678b83d8b90c2f40b83ed44887de93d53f1",
+        "kind": "entity",
+        "payload": {
+          "name": "arriving at a naval base · Luffy",
+          "type": "EVENT",
+          "event": {
+            "trigger": "arriving at a naval base",
+            "outcomes": [],
+            "source_id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "trigger_end": 100,
+            "uncertainty": "",
+            "participants": [
+              "Koby",
+              "Luffy"
+            ],
+            "preconditions": [],
+            "trigger_start": 76,
+            "identity_anchor": "af983645ab28570a55bb31dfa4cc1c18058e99fb06126ce3e29ce3260b35614a",
+            "reveal_position": null,
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Koby": "actor",
+              "Luffy": "actor"
+            },
+            "chronological_position": null
+          },
+          "atomic": {
+            "id": "41ab55abd329f0d1b975cfff3d886f020fe98075b36cfaf61a9df39dc41af64b",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Koby",
+            "predicate": "arriving at a naval base",
+            "statement": "Luffy and Koby arriving at a naval base",
+            "event_name": "arriving at a naval base · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "2d8add91ab6601ccbd634a9f931ce0203f103141e2452521272ad2929f1f37ec"
+          },
+          "knowledge": null,
+          "description": "Luffy and Koby arriving at a naval base"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+            "quote_end": 159,
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+      },
+      {
+        "id": "6fe6e60d14188dbd23023bec44c1a014b5b6a26a106425f8e641344481b38a06",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy tried to convince Shanks to let him join the crew."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Luffy tried to convince the captain, \"Red-Haired\" Shanks, to let him join the crew, but Shanks gently refused due to Luffy being too young and unable to swim.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "71b929416233bddd1f83fc9a171d598513e86adcfdea46e79d94494b2d08ef60",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy decided not to join the Red Hair Pirates and declared he would form his own crew to become stronger than Shanks and find the greatest treasure."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Luffy had decided that he would not try to join them and declared that he would form his own crew that would be stronger than Shanks', find the greatest treasure, and become the Pirate King.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 1180,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 990,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "7ed17b2db07d66240cdd3d7cbf9f9d50ffae84fc579bb0d03e32c68dc02ba9f4",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "knowledge": null,
+          "description": "Shanks saves Luffy"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "quote": "Luffy starts drowning and as the Sea King comes to eat Luffy, Shanks shows up and saves Luffy.",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" — healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "provenance": {
+              "category": "reference",
+              "language": "en",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "d417fc46-0301-5796-a9e2-aa71b63c8e16",
+              "revision_id": null,
+              "canonical_url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html",
+              "sections_json": "[{\"title\": \"\", \"level\": 3, \"start\": 0, \"end\": 5433}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "3554"
+            },
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Luffy’s Promise: After an incident where Luffy stands up to a group of mountain bandits to defend Shanks’ honor, Shanks saves Luffy from a sea king.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "91a88538aae5ab78cabf5006a7db3dd86e06beff24fca50d32376b2babbfedf0",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "history",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Shanks arrived in time to save Luffy from a Sea King that was about to eat him."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "It then moved to eat Luffy, but Shanks arrived in the nick of time to save Luffy and scare the beast away.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 67fd9486-2ccb-5f20-bad4-8f9abe9a5d40; normalized offsets 2563:3857",
+            "quote_end": 799,
+            "passage_id": "67fd9486-2ccb-5f20-bad4-8f9abe9a5d40",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 693,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "943b04c86f413547c75b823f767b6073810945e0e3a67f53d61914207049ebc7",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": {
+            "id": "460d160d051918df568af16450ed488e05cd4e7ab4e2928993fcb822d8115171",
+            "kind": "interaction",
+            "object": "Roronoa Zoro",
+            "subject": "Luffy",
+            "predicate": "recruiting his first crewmate named",
+            "statement": "Luffy recruiting his first crewmate named Roronoa Zoro",
+            "event_name": "recruiting his first crewmate named · Roronoa Zoro",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              4
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "8d21d8a4b25589db8aeb71ab29da829e7cfc64fa65c407a44c0ef1471b213656"
+          },
+          "knowledge": null,
+          "description": "Luffy recruiting his first crewmate named Roronoa Zoro"
+        },
+        "sources": [
+          {
+            "id": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+            "url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review#scope-27504630b9679e54",
+            "quote": "The third and final story is about Luffy recruiting his first crewmate named Roronoa Zoro and fighting against Marine Captain Axe-Hand Morgan.",
+            "title": "Post — Aaron Ngo — www.aaronngo.com",
+            "locator": "passage 4fcb4d42-e602-5ddd-ab9d-e44ffad037c7; normalized offsets 0:787",
+            "quote_end": 787,
+            "passage_id": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "3a7d7ff7-601b-54de-bc0f-9052398cf021",
+              "revision_id": null,
+              "canonical_url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review",
+              "sections_json": "[]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": [],
+              "structure_selection_start": "410"
+            },
+            "quote_start": 645,
+            "content_hash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "99172483adae513ffc3b61646d05e5e38c178a838451557f62604f0c60cc6b85",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": {
+            "id": "ec6d5554b59f1db7110060532c78474e8e22573f122e1458caff439c2dd3a968",
+            "kind": "interaction",
+            "object": "Koby",
+            "subject": "Luffy",
+            "predicate": "arriving at a naval base",
+            "statement": "Luffy and Koby arriving at a naval base",
+            "event_name": "arriving at a naval base · Koby",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "2d8add91ab6601ccbd634a9f931ce0203f103141e2452521272ad2929f1f37ec"
+          },
+          "knowledge": null,
+          "description": "Luffy and Koby arriving at a naval base"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+            "quote_end": 159,
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "9be8bcd7c494993d8573e0ec8bdf65dff21c4a6710d65b08bb81a4b9068bb145",
+        "kind": "entity",
+        "payload": {
+          "name": "Marine base courtyard",
+          "type": "LOCATION",
+          "event": null,
+          "atomic": null,
+          "knowledge": null,
+          "description": "He is shown tied to a post in the Marine base courtyard,"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Introduction of Roronoa Zoro: The Pirate Hunter The biggest highlight of One Piece Chapter 3 is undoubtedly the debut of Roronoa Zoro.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 44c8331b-7f0d-5151-9b43-a9dc08804e89; normalized offsets 847:1571",
+            "quote_end": 134,
+            "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          },
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 44c8331b-7f0d-5151-9b43-a9dc08804e89; normalized offsets 847:1571",
+            "quote_end": 219,
+            "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 134,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "a6735b0c-c971-522d-8918-d82cf17fbfc0"
+      },
+      {
+        "id": "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5",
+        "kind": "entity",
+        "payload": {
+          "name": "Shanks",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "\"Red-Haired\" Shanks gently refused Luffy's request to join his crew due to Luffy being too young and unable to swim."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Romance Dawn: The Origin of an Adventure!",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 41,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 0,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Gold Roger at his execution.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 70,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 42,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          },
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Luffy tried to convince the captain, \"Red-Haired\" Shanks, to let him join the crew, but Shanks gently refused due to Luffy being too young and unable to swim.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 926,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 768,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "c09e82c7-ad90-5655-9a57-4b1527888441"
+      },
+      {
+        "id": "afc0d6ba0ee92f556b0b3c8e5dce064133e5799a601290167bdbd1ccd4ef2a54",
+        "kind": "entity",
+        "payload": {
+          "name": "hit Alvida to the ground with Gomu Gomu no Pistol",
+          "type": "EVENT",
+          "event": {
+            "arc": null,
+            "trigger": "hit Alvida to the ground with Gomu Gomu no Pistol",
+            "location": null,
+            "outcomes": [],
+            "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "trigger_end": 6419,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "Alvida"
+            ],
+            "preconditions": [],
+            "trigger_start": 6370,
+            "position_basis": "manga-chapter",
+            "identity_anchor": "7ebb600815f17cddd308d1f0ce1dcfb410b889eb9aff627533d6377e465ac182",
+            "reveal_position": null,
+            "source_position": 7,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "actor",
+              "Alvida": "recipient"
+            },
+            "chronological_position": null
+          },
+          "atomic": null,
+          "knowledge": null,
+          "description": "He then hit Alvida to the ground with Gomu Gomu no Pistol and told her crew to get Koby a boat, to which they quickly complied."
+        },
+        "sources": [
+          {
+            "id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7",
+            "quote": "He then hit Alvida to the ground with Gomu Gomu no Pistol and told her crew to get Koby a boat, to which they quickly complied.",
+            "title": "User-supplied Fandom Romance Dawn narrative reference — onepiece.fandom.com",
+            "locator": "passage 24125976-bf68-5e69-95ce-331cf9346e3b; normalized offsets 6362:7701",
+            "quote_end": 127,
+            "passage_id": "24125976-bf68-5e69-95ce-331cf9346e3b",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 0,
+            "content_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789"
+          }
+        ],
+        "target_id": "c91608e3-9ea0-57b2-a719-7d4efaed9cba"
+      },
+      {
+        "id": "b7eed7add4899ebd9f30782a5d82f995c8c99ab4845b6bc4b88ff05b4ec84aa6",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "background",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy came to the Red Hair Pirates' ship to prove he was tough enough to join them by stabbing his face under his left eye."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "After a year of them being there, a young boy named Monkey D. Luffy came to their ship to prove he was tough enough to join them by stabbing his face under his left eye.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 664965e8-2646-578d-9a11-c9ac4da05233; normalized offsets 0:1202",
+            "quote_end": 653,
+            "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 484,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "c4673b35112a5f7546d15fa719e341a0f36c714497d7be7c2adc40a12b32e5a4",
+        "kind": "entity",
+        "payload": {
+          "name": "Marine base courtyard",
+          "type": "LOCATION",
+          "event": null,
+          "atomic": null,
+          "knowledge": null,
+          "description": "He is shown tied to a post in the Marine base courtyard,"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "He is shown tied to a post in the Marine base courtyard, looking worn but unyielding.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 44c8331b-7f0d-5151-9b43-a9dc08804e89; normalized offsets 847:1571",
+            "quote_end": 219,
+            "passage_id": "44c8331b-7f0d-5151-9b43-a9dc08804e89",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 134,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "a6735b0c-c971-522d-8918-d82cf17fbfc0"
+      },
+      {
+        "id": "dacb6ec6354fcaf21ddf36fb9847ce5af9fe48a55b647fadd8b256da577972ce",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "ec6d5554b59f1db7110060532c78474e8e22573f122e1458caff439c2dd3a968",
+            "kind": "interaction",
+            "object": "Koby",
+            "subject": "Luffy",
+            "predicate": "arriving at a naval base",
+            "statement": "Luffy and Koby arriving at a naval base",
+            "event_name": "arriving at a naval base · Koby",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "2d8add91ab6601ccbd634a9f931ce0203f103141e2452521272ad2929f1f37ec"
+          },
+          "source_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+          "description": "Luffy and Koby arriving at a naval base",
+          "source_name": "Luffy",
+          "target_name": "arriving at a naval base · Koby",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+            "quote_end": 159,
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "76e7c5ab-4460-5b7b-9fbb-643ddd71ccd3"
+      },
+      {
+        "id": "db24cba08cd46d02ec63009b08780a1c1fe6d9e9b8b122addabff6805e369630",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "history",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy was kidnapped by Higuma's gang after picking a fight with them."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "Soon afterwards, Makino alerted the mayor, Woop Slap, that Luffy had been kidnapped by the bandits after picking a fight with them.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 1360,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 1229,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      },
+      {
+        "id": "e7c2dcc905f8f865a69b8c26dfd608a6b6b5c48e03292e2769fa407db89cdadf",
+        "kind": "entity",
+        "payload": {
+          "name": "saves · Luffy",
+          "type": "EVENT",
+          "event": {
+            "trigger": "saves",
+            "outcomes": [],
+            "source_id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "trigger_end": 939,
+            "uncertainty": "",
+            "participants": [
+              "Shanks",
+              "Luffy"
+            ],
+            "preconditions": [],
+            "trigger_start": 934,
+            "identity_anchor": "bca11457f22cc91276821a41b72019d45d21fdc8a4f16d49f5182e61f1465b95",
+            "reveal_position": null,
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "recipient",
+              "Shanks": "actor"
+            },
+            "chronological_position": null
+          },
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "knowledge": null,
+          "description": "Shanks saves Luffy"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "quote": "Luffy starts drowning and as the Sea King comes to eat Luffy, Shanks shows up and saves Luffy.",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" — healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "provenance": {
+              "category": "reference",
+              "language": "en",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "d417fc46-0301-5796-a9e2-aa71b63c8e16",
+              "revision_id": null,
+              "canonical_url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html",
+              "sections_json": "[{\"title\": \"\", \"level\": 3, \"start\": 0, \"end\": 5433}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "3554"
+            },
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Luffy’s Promise: After an incident where Luffy stands up to a group of mountain bandits to defend Shanks’ honor, Shanks saves Luffy from a sea king.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "541a9375-7b31-5d93-8de8-d094dfc95dee"
+      },
+      {
+        "id": "e8595ed6b6efaf0f5f20cf9df1d327140a3f541dec6eb2bc3cb89bfdd274b698",
+        "kind": "entity",
+        "payload": {
+          "name": "took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range",
+          "type": "EVENT",
+          "event": {
+            "arc": null,
+            "trigger": "took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range",
+            "location": null,
+            "outcomes": [],
+            "source_id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "trigger_end": 4228,
+            "uncertainty": "",
+            "participants": [
+              "Luffy",
+              "The Lord of the Coast"
+            ],
+            "preconditions": [],
+            "trigger_start": 4129,
+            "position_basis": "manga-chapter",
+            "identity_anchor": "707df64c02c16cdab20990868374a161b60d834046c5269611236440480fd942",
+            "reveal_position": null,
+            "source_position": 7,
+            "occurrence_status": "actual",
+            "participant_roles": {
+              "Luffy": "actor",
+              "The Lord of the Coast": "recipient"
+            },
+            "chronological_position": null
+          },
+          "atomic": null,
+          "knowledge": null,
+          "description": "The Lord of the Coast came to confront him, and he quickly took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range punch."
+        },
+        "sources": [
+          {
+            "id": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-4730308313ee39b7",
+            "quote": "The Lord of the Coast came to confront him, and he quickly took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range punch.",
+            "title": "User-supplied Fandom Romance Dawn narrative reference — onepiece.fandom.com",
+            "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+            "quote_end": 378,
+            "passage_id": "327854c7-1e42-52c3-ab20-d28c2845d06b",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "b494a79c-b6fa-5a76-a665-62fa54ea0f3d",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 213,
+            "content_hash": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789"
+          }
+        ],
+        "target_id": "6e1a0eab-4b5b-5212-8089-22b469eca9a3"
+      },
+      {
+        "id": "ea57ec87fe942fa074823974f78d351ad02ede910f9ca4d0ce87940afbb13418",
+        "kind": "relationship",
+        "payload": {
+          "type": "RELATED_TO",
+          "atomic": {
+            "id": "250c20be63476c5192fc814577c34ef8600cd01bd6e3e62cbbcc17ed93a17f21",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Shanks",
+            "predicate": "saves",
+            "statement": "Shanks saves Luffy",
+            "event_name": "saves · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "383fdbe0ff62d5bdd26f28d67b291987e8ede5260b1104a72c7b256a776d4b16"
+          },
+          "source_id": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "description": "Shanks saves Luffy",
+          "source_name": "Shanks",
+          "target_name": "Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+            "url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html#scope-2b4d2cb384216625",
+            "quote": "Luffy starts drowning and as the Sea King comes to eat Luffy, Shanks shows up and saves Luffy.",
+            "title": "One Piece Chapter 1 Review - \"Romance Dawn\" — healthydoseofanime.blogspot.com",
+            "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+            "quote_end": 480,
+            "passage_id": "cbb5369e-0541-53fb-9a0a-561e1879fff2",
+            "provenance": {
+              "category": "reference",
+              "language": "en",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "d417fc46-0301-5796-a9e2-aa71b63c8e16",
+              "revision_id": null,
+              "canonical_url": "https://healthydoseofanime.blogspot.com/2018/10/one-piece-chapter-1-review-romance-dawn.html",
+              "sections_json": "[{\"title\": \"\", \"level\": 3, \"start\": 0, \"end\": 5433}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "3554"
+            },
+            "quote_start": 386,
+            "content_hash": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111"
+          },
+          {
+            "id": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+            "url": "https://uchihaluffy.com/chapter-1/#scope-35e532b486979295",
+            "quote": "Luffy’s Promise: After an incident where Luffy stands up to a group of mountain bandits to defend Shanks’ honor, Shanks saves Luffy from a sea king.",
+            "title": "One Piece Chapter 1 : \"Romance Dawn\" - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+            "quote_end": 148,
+            "passage_id": "fb949397-65fb-5045-b043-2215e0b4c15f",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[{\"url\": \"https://uchihaluffy.com/origins-of-shanks/\", \"text\": \"Shanks\", \"start\": 162, \"section\": \"Luffy’s Dream:\"}]",
+              "registry_id": "98e6480a-e616-51fd-9f8b-8ea944dd8322",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/chapter-1/",
+              "sections_json": "[{\"title\": \"Key Events in Chapter 1 :\", \"level\": 2, \"start\": 0, \"end\": 1331}, {\"title\": \"Luffy’s Dream:\", \"level\": 3, \"start\": 26, \"end\": 250}, {\"title\": \"Shanks and the Red-Haired Pirates:\", \"level\": 3, \"start\": 250, \"end\": 520}, {\"title\": \"The Gum-Gum Fruit:\", \"level\": 3, \"start\": 520, \"end\": 814}, {\"title\": \"Luffy’s Promise:\", \"level\": 3, \"start\": 814, \"end\": 1110}, {\"title\": \"The Journey Begins:\", \"level\": 3, \"start\": 1110, \"end\": 1331}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "cloud_content_allowed": true,
+              "presentation_position": 1,
+              "eligible_section_terms": [],
+              "structure_selection_start": "421"
+            },
+            "quote_start": 0,
+            "content_hash": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256"
+          }
+        ],
+        "target_id": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+      },
+      {
+        "id": "f93df47d93bcf682c89edf11b94be05c10ee7d2e8306f4b827253a71f69403d7",
+        "kind": "relationship",
+        "payload": {
+          "type": "PARTICIPATED_IN",
+          "atomic": {
+            "id": "41ab55abd329f0d1b975cfff3d886f020fe98075b36cfaf61a9df39dc41af64b",
+            "kind": "interaction",
+            "object": "Luffy",
+            "subject": "Koby",
+            "predicate": "arriving at a naval base",
+            "statement": "Luffy and Koby arriving at a naval base",
+            "event_name": "arriving at a naval base · Luffy",
+            "context_ids": [],
+            "object_type": "CHARACTER",
+            "uncertainty": "",
+            "sentence_ids": [
+              0
+            ],
+            "subject_type": "CHARACTER",
+            "classification": "ESTABLISHED_CANON",
+            "policy_version": "atomic-binding-v2",
+            "temporal_context": null,
+            "occurrence_status": "actual",
+            "bundle_fingerprint": "2d8add91ab6601ccbd634a9f931ce0203f103141e2452521272ad2929f1f37ec"
+          },
+          "source_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "target_id": "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+          "description": "Luffy and Koby arriving at a naval base",
+          "source_name": "Luffy",
+          "target_name": "arriving at a naval base · Luffy",
+          "classification": "ESTABLISHED_CANON"
+        },
+        "sources": [
+          {
+            "id": "255333fa-631b-5110-9d04-8a79db2d3f31",
+            "url": "https://uchihaluffy.com/one-piece-chapter-3/#scope-94c3133b51de6fdb",
+            "quote": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+            "title": "One Piece Chapter 3 Summary & Review - Uchiha Luffy — uchihaluffy.com",
+            "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+            "quote_end": 159,
+            "passage_id": "7905bdc4-f12e-594f-935b-cd4b45a51388",
+            "provenance": {
+              "category": "reference",
+              "language": "en-US",
+              "rendered": "false",
+              "authority": "secondary",
+              "links_json": "[]",
+              "registry_id": "a17ccf2e-01f1-52c5-9d09-be1fbe9a6eaa",
+              "revision_id": null,
+              "canonical_url": "https://uchihaluffy.com/one-piece-chapter-3/",
+              "sections_json": "[{\"title\": \"Chapter Overview: A Town in Trouble\", \"level\": 2, \"start\": 0, \"end\": 342}, {\"title\": \"Key Setting: Shells Town\", \"level\": 2, \"start\": 342, \"end\": 847}, {\"title\": \"Introduction of Roronoa Zoro: The Pirate Hunter\", \"level\": 2, \"start\": 847, \"end\": 1571}, {\"title\": \"Monkey D. Luffy: Building His Crew\", \"level\": 2, \"start\": 1571, \"end\": 2237}, {\"title\": \"Captain Morgan and Helmeppo: Corruption in Uniform\", \"level\": 2, \"start\": 2237, \"end\": 2857}]",
+              "position_basis": "manga-chapter",
+              "registry_revision": null,
+              "extraction_version": "structured-html-v5",
+              "structure_text_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "cloud_content_allowed": false,
+              "presentation_position": 3,
+              "eligible_section_terms": [],
+              "structure_selection_start": "642"
+            },
+            "quote_start": 0,
+            "content_hash": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034"
+          }
+        ],
+        "target_id": "76e7c5ab-4460-5b7b-9fbb-643ddd71ccd3"
+      },
+      {
+        "id": "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e",
+        "kind": "entity",
+        "payload": {
+          "name": "Luffy",
+          "type": "CHARACTER",
+          "event": null,
+          "atomic": null,
+          "knowledge": {
+            "section": "history",
+            "category": "character",
+            "route_id": null,
+            "attempt_id": null,
+            "classification": "ESTABLISHED_CANON"
+          },
+          "description": "Luffy ate the Gomu Gomu no Mi, a Devil Fruit the Red Hair Pirates had stolen, for dessert."
+        },
+        "sources": [
+          {
+            "id": "70ac2c1f-0e61-5643-9b4c-15d635878728",
+            "url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc#scope-897f1df05a497328",
+            "quote": "The Red Hair Pirates then realized that the Devil Fruit they had stolen, the Gomu Gomu no Mi, was no longer in its chest, and Luffy confirmed that he had eaten it for dessert.",
+            "title": "Approved supplied origin section — onepiece.fandom.com",
+            "locator": "passage 8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a; normalized offsets 1202:2563",
+            "quote_end": 797,
+            "passage_id": "8f4c4557-9f7c-5a71-9ae0-8b7e30b1f11a",
+            "provenance": {
+              "category": "reference",
+              "authority": "secondary",
+              "registry_id": "76903255-4bcb-5058-97ec-4b26f22b94ea",
+              "revision_id": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "canonical_url": "https://onepiece.fandom.com/wiki/Romance_Dawn_Arc",
+              "position_basis": "manga-chapter",
+              "registry_revision": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94",
+              "extraction_version": "normalized-html-v2",
+              "cloud_content_allowed": true,
+              "presentation_position": 7,
+              "eligible_section_terms": []
+            },
+            "quote_start": 622,
+            "content_hash": "e430ef220c9afcf24814ceb182763ed47363f717068c87b4e2f8757dbf758c94"
+          }
+        ],
+        "target_id": "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+      }
+    ],
+    "reconstruction": {
+      "gaps": [
+        {
+          "id": "beb7b733-7ab1-52fb-9db2-7463e18720d8",
+          "kind": "missing_transition",
+          "question": "What permitted evidence explains the transition between 'saves · Luffy' and 'arriving at a naval base'? Establish narrative order, chronology and any actual cause separately; do not assume source order proves them.",
+          "eventNodeIds": [
+            "541a9375-7b31-5d93-8de8-d094dfc95dee",
+            "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+          ]
+        },
+        {
+          "id": "b41eaa29-9bda-53c6-abb5-3c9cdafef6aa",
+          "kind": "missing_transition",
+          "question": "What permitted evidence explains the transition between 'arriving at a naval base' and 'hit Alvida to the ground with Gomu Gomu no Pistol'? Establish narrative order, chronology and any actual cause separately; do not assume source order proves them.",
+          "eventNodeIds": [
+            "dd6117bb-b626-5ead-b888-0ae7ac12c265",
+            "c91608e3-9ea0-57b2-a719-7d4efaed9cba"
+          ]
+        },
+        {
+          "id": "4637d9fb-58f2-5755-9714-5160522fb478",
+          "kind": "missing_transition",
+          "question": "What permitted evidence explains the transition between 'hit Alvida to the ground with Gomu Gomu no Pistol' and 'took it out with Gomu Gomu no Pistol'? Establish narrative order, chronology and any actual cause separately; do not assume source order proves them.",
+          "eventNodeIds": [
+            "c91608e3-9ea0-57b2-a719-7d4efaed9cba",
+            "6e1a0eab-4b5b-5212-8089-22b469eca9a3"
+          ]
+        },
+        {
+          "id": "ea724337-a3b7-5432-823c-4063848faf4a",
+          "kind": "missing_transition",
+          "question": "What permitted evidence explains the transition between 'took it out with Gomu Gomu no Pistol' and 'set sail on his own in a small rowboat'? Establish narrative order, chronology and any actual cause separately; do not assume source order proves them.",
+          "eventNodeIds": [
+            "6e1a0eab-4b5b-5212-8089-22b469eca9a3",
+            "75ba6f36-89bc-5845-bfa3-a88078f44401"
+          ]
+        },
+        {
+          "id": "8cabb923-581c-5ab2-884f-f3b95010de78",
+          "kind": "missing_transition",
+          "question": "What permitted evidence explains the transition between 'set sail on his own in a small rowboat' and 'recruiting his first crewmate named · Roronoa Zoro'? Establish narrative order, chronology and any actual cause separately; do not assume source order proves them.",
+          "eventNodeIds": [
+            "75ba6f36-89bc-5845-bfa3-a88078f44401",
+            "1e3c5f5d-1c55-529b-afd3-345bd56a2e12"
+          ]
+        },
+        {
+          "id": "13899afa-5895-5a6a-ac80-a03fb88f1912",
+          "kind": "event_coverage",
+          "question": "What permitted evidence establishes location, outcomes for 'saves · Luffy'?",
+          "eventNodeIds": [
+            "541a9375-7b31-5d93-8de8-d094dfc95dee"
+          ]
+        },
+        {
+          "id": "8fbcee89-0a6d-5b2f-a15a-a5f0c9a40f46",
+          "kind": "event_coverage",
+          "question": "What permitted evidence establishes location, outcomes for 'arriving at a naval base'?",
+          "eventNodeIds": [
+            "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+          ]
+        },
+        {
+          "id": "ecd6a966-60e8-50e8-b95d-53c2728ab012",
+          "kind": "unresolved_roles",
+          "question": "Which permitted evidence resolves canonical identities and actual roles for Koby in 'arriving at a naval base'?",
+          "eventNodeIds": [
+            "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+          ]
+        },
+        {
+          "id": "1e6e5abd-1dae-5756-bb84-e7fbe22236ac",
+          "kind": "event_coverage",
+          "question": "What permitted evidence establishes participants, location, outcomes for 'hit Alvida to the ground with Gomu Gomu no Pistol'?",
+          "eventNodeIds": [
+            "c91608e3-9ea0-57b2-a719-7d4efaed9cba"
+          ]
+        },
+        {
+          "id": "d1499fab-e5bd-51e8-a2a1-e2b0ccfc1121",
+          "kind": "unresolved_roles",
+          "question": "Which permitted evidence resolves canonical identities and actual roles for Alvida, Luffy in 'hit Alvida to the ground with Gomu Gomu no Pistol'?",
+          "eventNodeIds": [
+            "c91608e3-9ea0-57b2-a719-7d4efaed9cba"
+          ]
+        },
+        {
+          "id": "be27d192-6e60-5539-a4f0-72aea7036643",
+          "kind": "event_coverage",
+          "question": "What permitted evidence establishes participants, location, outcomes for 'took it out with Gomu Gomu no Pistol'?",
+          "eventNodeIds": [
+            "6e1a0eab-4b5b-5212-8089-22b469eca9a3"
+          ]
+        },
+        {
+          "id": "ac140c51-44ab-59ff-b6b4-ee2cbfb14b7f",
+          "kind": "unresolved_roles",
+          "question": "Which permitted evidence resolves canonical identities and actual roles for Luffy, The Lord of the Coast in 'took it out with Gomu Gomu no Pistol'?",
+          "eventNodeIds": [
+            "6e1a0eab-4b5b-5212-8089-22b469eca9a3"
+          ]
+        },
+        {
+          "id": "0661c450-c780-5124-aa07-6f8ee8db357e",
+          "kind": "event_coverage",
+          "question": "What permitted evidence establishes location, outcomes for 'set sail on his own in a small rowboat'?",
+          "eventNodeIds": [
+            "75ba6f36-89bc-5845-bfa3-a88078f44401"
+          ]
+        },
+        {
+          "id": "7d37a8e8-5770-5aea-a0df-eac1c623723d",
+          "kind": "unresolved_roles",
+          "question": "Which permitted evidence resolves canonical identities and actual roles for the High Seas in 'set sail on his own in a small rowboat'?",
+          "eventNodeIds": [
+            "75ba6f36-89bc-5845-bfa3-a88078f44401"
+          ]
+        },
+        {
+          "id": "c10543b9-08c8-568d-a506-c196ba3741d5",
+          "kind": "event_coverage",
+          "question": "What permitted evidence establishes location, outcomes for 'recruiting his first crewmate named · Roronoa Zoro'?",
+          "eventNodeIds": [
+            "1e3c5f5d-1c55-529b-afd3-345bd56a2e12"
+          ]
+        },
+        {
+          "id": "c60e2699-daa5-51a7-92d8-7ab648b3ca7c",
+          "kind": "unresolved_roles",
+          "question": "Which permitted evidence resolves canonical identities and actual roles for Roronoa Zoro in 'recruiting his first crewmate named · Roronoa Zoro'?",
+          "eventNodeIds": [
+            "1e3c5f5d-1c55-529b-afd3-345bd56a2e12"
+          ]
+        },
+        {
+          "id": "fc985661-0b36-596b-ac8a-c4e4d6ff5b67",
+          "kind": "reference_segment_unverified",
+          "question": "Which permitted evidence establishes events and transitions in this reference-described segment: The first story is Luffy’s origin story, giving us context the driving force behind his dream to become a pirate and why he has the Devil Fruit—“rubber man”—abilities.",
+          "sourceId": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+          "eventNodeIds": []
+        },
+        {
+          "id": "40355dcd-8098-5007-9a67-56a75f8576f7",
+          "kind": "reference_segment_unverified",
+          "question": "Which permitted evidence establishes events and transitions in this reference-described segment: The second story takes place ten years later when he sets off on his epic pirate adventure and meets Koby, helping the boy escape from an evil female pirate named Alvida.",
+          "sourceId": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+          "eventNodeIds": []
+        }
+      ],
+      "arcId": "757483a7-667c-5caf-9e49-64f6d8772839",
+      "title": "Romance Dawn",
+      "status": "partial",
+      "version": "story-reconstruction-v1",
+      "coverage": {
+        "verifiedSegments": 6,
+        "explicitCausalLinks": 0,
+        "candidateTransitions": 5,
+        "segmentsWithLocations": 0,
+        "unexplainedTransitions": 5,
+        "explicitPrecedenceLinks": 0,
+        "segmentsWithParticipants": 4,
+        "causallyExplainedTransitions": 0
+      },
+      "segments": [
+        {
+          "id": "e64da77e-0d1b-52a6-8e38-456022ab507a",
+          "title": "Shanks saves Luffy",
+          "changes": [
+            {
+              "type": "RELATED_TO",
+              "source": "c09e82c7-ad90-5655-9a57-4b1527888441",
+              "target": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "factIds": [
+                "bebfd510-6288-5ec5-bab9-205267aaae4c"
+              ],
+              "statements": [
+                "Shanks saves Luffy"
+              ],
+              "relationshipId": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+            }
+          ],
+          "factIds": [
+            "10f431e6-a532-5e4f-b365-dd310bebd24c"
+          ],
+          "outcomes": [],
+          "conflicts": [],
+          "statement": "Shanks saves Luffy",
+          "locationIds": [],
+          "eventNodeIds": [
+            "541a9375-7b31-5d93-8de8-d094dfc95dee"
+          ],
+          "participants": [
+            {
+              "name": "Luffy",
+              "roles": [
+                "recipient"
+              ],
+              "nodeId": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "relationshipId": "652b5879-4f01-5871-93f2-25c2788218c8"
+            },
+            {
+              "name": "Shanks",
+              "roles": [
+                "actor"
+              ],
+              "nodeId": "c09e82c7-ad90-5655-9a57-4b1527888441",
+              "relationshipId": "d994712b-92b3-5ec5-81ef-3fc709664937"
+            }
+          ],
+          "loreConnections": [],
+          "missingCoverage": [
+            "location",
+            "outcomes"
+          ],
+          "sourcePositions": [
+            {
+              "basis": "manga-chapter",
+              "locator": "passage cbb5369e-0541-53fb-9a0a-561e1879fff2; normalized offsets 4101:5432",
+              "position": 1,
+              "revision": "b9680253748a862774d990fe7fdeeb459db86828abd02047aafaa9bc39bf9111",
+              "sourceId": "bcdc9aed-cff3-53d7-9895-b329a0109068",
+              "passageId": "cbb5369e-0541-53fb-9a0a-561e1879fff2"
+            },
+            {
+              "basis": "manga-chapter",
+              "locator": "passage fb949397-65fb-5045-b043-2215e0b4c15f; normalized offsets 814:1110",
+              "position": 1,
+              "revision": "75cd8f22d476afd910e7fce8cf4d5211aa3dd0c4e7e142a78a8ee53aa8b68256",
+              "sourceId": "497b4e5e-e30f-54b5-b0d4-c9310a4ca9cf",
+              "passageId": "fb949397-65fb-5045-b043-2215e0b4c15f"
+            }
+          ],
+          "turningPointStatus": "narrative_importance_not_established",
+          "stateChangeAssertions": [],
+          "relationshipInteractions": [
+            {
+              "type": "RELATED_TO",
+              "source": "c09e82c7-ad90-5655-9a57-4b1527888441",
+              "target": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "factIds": [
+                "bebfd510-6288-5ec5-bab9-205267aaae4c"
+              ],
+              "statements": [
+                "Shanks saves Luffy"
+              ],
+              "relationshipId": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+            }
+          ],
+          "unresolvedParticipantNames": []
+        },
+        {
+          "id": "fdc940f8-1b29-522e-84da-7070f684cdf6",
+          "title": "Luffy and Koby arrive at naval base",
+          "changes": [],
+          "factIds": [
+            "12cb22f2-2ffe-5d57-b794-6fc055b4596d",
+            "ad6b0e64-7cc9-5b82-9c0a-d163e5865c85",
+            "f9a0475d-8366-509b-b118-c7daaaae893c"
+          ],
+          "outcomes": [],
+          "conflicts": [],
+          "statement": "Chapter Overview: A Town in Trouble The story continues with Luffy and Koby arriving at a naval base controlled by the corrupt Marine captain, Axe-Hand Morgan.",
+          "locationIds": [],
+          "eventNodeIds": [
+            "dd6117bb-b626-5ead-b888-0ae7ac12c265"
+          ],
+          "participants": [
+            {
+              "name": "Luffy",
+              "roles": [
+                "actor"
+              ],
+              "nodeId": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "relationshipId": "76e7c5ab-4460-5b7b-9fbb-643ddd71ccd3"
+            }
+          ],
+          "loreConnections": [],
+          "missingCoverage": [
+            "location",
+            "outcomes"
+          ],
+          "sourcePositions": [
+            {
+              "basis": "manga-chapter",
+              "locator": "passage 7905bdc4-f12e-594f-935b-cd4b45a51388; normalized offsets 0:342",
+              "position": 3,
+              "revision": "14bec65ff018265c67242b44d56a90690b936cbcd519bc06e91a3c67efea3034",
+              "sourceId": "255333fa-631b-5110-9d04-8a79db2d3f31",
+              "passageId": "7905bdc4-f12e-594f-935b-cd4b45a51388"
+            }
+          ],
+          "turningPointStatus": "narrative_importance_not_established",
+          "stateChangeAssertions": [],
+          "relationshipInteractions": [],
+          "unresolvedParticipantNames": [
+            "Koby"
+          ]
+        },
+        {
+          "id": "1ccb634c-b487-58ec-a4af-fe1ab8d589ad",
+          "title": "hit Alvida to the ground with Gomu Gomu no Pistol",
+          "changes": [],
+          "factIds": [
+            "632c3347-c5dc-5a65-ad15-7edcb7bd586d"
+          ],
+          "outcomes": [],
+          "conflicts": [],
+          "statement": "He then hit Alvida to the ground with Gomu Gomu no Pistol and told her crew to get Koby a boat, to which they quickly complied.",
+          "locationIds": [],
+          "eventNodeIds": [
+            "c91608e3-9ea0-57b2-a719-7d4efaed9cba"
+          ],
+          "participants": [],
+          "loreConnections": [],
+          "missingCoverage": [
+            "participants",
+            "location",
+            "outcomes"
+          ],
+          "sourcePositions": [
+            {
+              "basis": "manga-chapter",
+              "locator": "passage 24125976-bf68-5e69-95ce-331cf9346e3b; normalized offsets 6362:7701",
+              "position": 7,
+              "revision": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+              "sourceId": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+              "passageId": "24125976-bf68-5e69-95ce-331cf9346e3b"
+            }
+          ],
+          "turningPointStatus": "narrative_importance_not_established",
+          "stateChangeAssertions": [],
+          "relationshipInteractions": [],
+          "unresolvedParticipantNames": [
+            "Alvida",
+            "Luffy"
+          ]
+        },
+        {
+          "id": "20976aa2-24d4-5c9e-9db8-7fa601a26ced",
+          "title": "took it out with Gomu Gomu no Pistol",
+          "changes": [],
+          "factIds": [
+            "92017d7c-decb-51af-80ad-197d2a9a50d7",
+            "daecc449-5841-573a-a43e-cf416b5a01a5"
+          ],
+          "outcomes": [],
+          "conflicts": [],
+          "statement": "The Lord of the Coast came to confront him, and he quickly took it out with Gomu Gomu no Pistol, where he stretched his arm forward and unleashed a long-range punch.",
+          "locationIds": [],
+          "eventNodeIds": [
+            "6e1a0eab-4b5b-5212-8089-22b469eca9a3"
+          ],
+          "participants": [],
+          "loreConnections": [],
+          "missingCoverage": [
+            "participants",
+            "location",
+            "outcomes"
+          ],
+          "sourcePositions": [
+            {
+              "basis": "manga-chapter",
+              "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+              "position": 7,
+              "revision": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+              "sourceId": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+              "passageId": "327854c7-1e42-52c3-ab20-d28c2845d06b"
+            }
+          ],
+          "turningPointStatus": "narrative_importance_not_established",
+          "stateChangeAssertions": [],
+          "relationshipInteractions": [],
+          "unresolvedParticipantNames": [
+            "Luffy",
+            "The Lord of the Coast"
+          ]
+        },
+        {
+          "id": "c2a7d487-d5fc-561e-b36c-39e56a694170",
+          "title": "set sail on his own in a small rowboat",
+          "changes": [],
+          "factIds": [
+            "958ba095-db01-5d0b-b7b4-7bdddd64cb80"
+          ],
+          "outcomes": [],
+          "conflicts": [],
+          "statement": "[1] On the High Seas: Luffy's First Voyage Ten years later, Luffy set sail on his own in a small rowboat.",
+          "locationIds": [],
+          "eventNodeIds": [
+            "75ba6f36-89bc-5845-bfa3-a88078f44401"
+          ],
+          "participants": [
+            {
+              "name": "Luffy",
+              "roles": [
+                "actor"
+              ],
+              "nodeId": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "relationshipId": "5ecb11f1-7939-5f1a-81ef-806119ae463e"
+            }
+          ],
+          "loreConnections": [],
+          "missingCoverage": [
+            "location",
+            "outcomes"
+          ],
+          "sourcePositions": [
+            {
+              "basis": "manga-chapter",
+              "locator": "passage 327854c7-1e42-52c3-ab20-d28c2845d06b; normalized offsets 3857:5175",
+              "position": 7,
+              "revision": "aff7e9cf47a2d678c448937791fa0e72e995047cfe72565cdcbdebb02c553789",
+              "sourceId": "6bb24512-ba6b-5c63-8c7c-96c70e88a689",
+              "passageId": "327854c7-1e42-52c3-ab20-d28c2845d06b"
+            }
+          ],
+          "turningPointStatus": "narrative_importance_not_established",
+          "stateChangeAssertions": [],
+          "relationshipInteractions": [],
+          "unresolvedParticipantNames": [
+            "the High Seas"
+          ]
+        },
+        {
+          "id": "e062c79a-4764-5bde-9397-4f5ec4ee636f",
+          "title": "Luffy recruits Roronoa Zoro",
+          "changes": [],
+          "factIds": [
+            "517eecca-83c2-55dd-9c79-0bef445b2e79"
+          ],
+          "outcomes": [],
+          "conflicts": [],
+          "statement": "Luffy recruiting his first crewmate named Roronoa Zoro",
+          "locationIds": [],
+          "eventNodeIds": [
+            "1e3c5f5d-1c55-529b-afd3-345bd56a2e12"
+          ],
+          "participants": [
+            {
+              "name": "Luffy",
+              "roles": [
+                "actor"
+              ],
+              "nodeId": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "relationshipId": "e2a89257-7f61-5a26-9029-9b1f10cdf7d0"
+            }
+          ],
+          "loreConnections": [],
+          "missingCoverage": [
+            "location",
+            "outcomes"
+          ],
+          "sourcePositions": [
+            {
+              "basis": "manga-chapter",
+              "locator": "passage 4fcb4d42-e602-5ddd-ab9d-e44ffad037c7; normalized offsets 0:787",
+              "position": 7,
+              "revision": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+              "sourceId": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+              "passageId": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7"
+            }
+          ],
+          "turningPointStatus": "narrative_importance_not_established",
+          "stateChangeAssertions": [
+            {
+              "status": "accepted_action_only",
+              "statement": "Luffy recruiting his first crewmate named Roronoa Zoro"
+            }
+          ],
+          "relationshipInteractions": [],
+          "unresolvedParticipantNames": [
+            "Roronoa Zoro"
+          ]
+        }
+      ],
+      "transitions": [
+        {
+          "toId": "fdc940f8-1b29-522e-84da-7070f684cdf6",
+          "fromId": "e64da77e-0d1b-52a6-8e38-456022ab507a",
+          "causality": [],
+          "chronology": "not_established",
+          "explanation": "A shared participant links these moments; the transition is unexplained.",
+          "sourceOrder": "supporting-source-order-only",
+          "narrativeOrder": "not_established",
+          "assertedSequence": [],
+          "publicationOrder": "supporting_boundaries_only; first reveal not established",
+          "sharedParticipantIds": [
+            "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+          ]
+        },
+        {
+          "toId": "1ccb634c-b487-58ec-a4af-fe1ab8d589ad",
+          "fromId": "fdc940f8-1b29-522e-84da-7070f684cdf6",
+          "causality": [],
+          "chronology": "not_established",
+          "explanation": "No accepted evidence explains how these story segments connect.",
+          "sourceOrder": "supporting-source-order-only",
+          "narrativeOrder": "not_established",
+          "assertedSequence": [],
+          "publicationOrder": "supporting_boundaries_only; first reveal not established",
+          "sharedParticipantIds": []
+        },
+        {
+          "toId": "20976aa2-24d4-5c9e-9db8-7fa601a26ced",
+          "fromId": "1ccb634c-b487-58ec-a4af-fe1ab8d589ad",
+          "causality": [],
+          "chronology": "not_established",
+          "explanation": "No accepted evidence explains how these story segments connect.",
+          "sourceOrder": "supporting-source-order-only",
+          "narrativeOrder": "not_established",
+          "assertedSequence": [],
+          "publicationOrder": "supporting_boundaries_only; first reveal not established",
+          "sharedParticipantIds": []
+        },
+        {
+          "toId": "c2a7d487-d5fc-561e-b36c-39e56a694170",
+          "fromId": "20976aa2-24d4-5c9e-9db8-7fa601a26ced",
+          "causality": [],
+          "chronology": "not_established",
+          "explanation": "No accepted evidence explains how these story segments connect.",
+          "sourceOrder": "supporting-source-order-only",
+          "narrativeOrder": "not_established",
+          "assertedSequence": [],
+          "publicationOrder": "supporting_boundaries_only; first reveal not established",
+          "sharedParticipantIds": []
+        },
+        {
+          "toId": "e062c79a-4764-5bde-9397-4f5ec4ee636f",
+          "fromId": "c2a7d487-d5fc-561e-b36c-39e56a694170",
+          "causality": [],
+          "chronology": "not_established",
+          "explanation": "A shared participant links these moments; the transition is unexplained.",
+          "sourceOrder": "supporting-source-order-only",
+          "narrativeOrder": "not_established",
+          "assertedSequence": [],
+          "publicationOrder": "supporting_boundaries_only; first reveal not established",
+          "sharedParticipantIds": [
+            "9082d048-da66-5b4a-bcbd-e6fb1681a62d"
+          ]
+        }
+      ],
+      "outlineBasis": "Accepted event groups only; not an exhaustive arc outline.",
+      "characterThreads": [
+        {
+          "name": "Luffy",
+          "segmentIds": [
+            "e64da77e-0d1b-52a6-8e38-456022ab507a",
+            "fdc940f8-1b29-522e-84da-7070f684cdf6",
+            "c2a7d487-d5fc-561e-b36c-39e56a694170",
+            "e062c79a-4764-5bde-9397-4f5ec4ee636f"
+          ],
+          "characterId": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+          "orderingBasis": "Supporting source boundaries; state transitions require explicit evidence.",
+          "relationshipChanges": [
+            {
+              "type": "RELATED_TO",
+              "source": "c09e82c7-ad90-5655-9a57-4b1527888441",
+              "target": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "factIds": [
+                "bebfd510-6288-5ec5-bab9-205267aaae4c"
+              ],
+              "statements": [
+                "Shanks saves Luffy"
+              ],
+              "relationshipId": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+            }
+          ]
+        },
+        {
+          "name": "Shanks",
+          "segmentIds": [
+            "e64da77e-0d1b-52a6-8e38-456022ab507a"
+          ],
+          "characterId": "c09e82c7-ad90-5655-9a57-4b1527888441",
+          "orderingBasis": "Supporting source boundaries; state transitions require explicit evidence.",
+          "relationshipChanges": [
+            {
+              "type": "RELATED_TO",
+              "source": "c09e82c7-ad90-5655-9a57-4b1527888441",
+              "target": "9082d048-da66-5b4a-bcbd-e6fb1681a62d",
+              "factIds": [
+                "bebfd510-6288-5ec5-bab9-205267aaae4c"
+              ],
+              "statements": [
+                "Shanks saves Luffy"
+              ],
+              "relationshipId": "00f839bd-ece3-5268-bc83-f68dd7f1befd"
+            }
+          ]
+        }
+      ],
+      "referenceOutline": [
+        {
+          "id": "f971442a2b1a7ddc687d8047ada0df7c2eac046a9b008f747661f097f0b40bd1",
+          "url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review#scope-27504630b9679e54",
+          "status": "reference_description_not_canon",
+          "position": 7,
+          "quoteEnd": 473,
+          "sourceId": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+          "passageId": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7",
+          "statement": "The first story is Luffy’s origin story, giving us context the driving force behind his dream to become a pirate and why he has the Devil Fruit—“rubber man”—abilities.",
+          "quoteStart": 306,
+          "passageHash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+          "positionBasis": "manga-chapter",
+          "sourceRevision": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+          "verifiedEventIds": [],
+          "permissionFingerprint": "3a60a12128b1bf391bd4ec82c629b619fad1d65622f6e195220f39558edb1e9a"
+        },
+        {
+          "id": "0391ad06c35529afe2b9b28d82f1e78323f8e6c06dd61a9849ffb13aa4de1858",
+          "url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review#scope-27504630b9679e54",
+          "status": "reference_description_not_canon",
+          "position": 7,
+          "quoteEnd": 644,
+          "sourceId": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+          "passageId": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7",
+          "statement": "The second story takes place ten years later when he sets off on his epic pirate adventure and meets Koby, helping the boy escape from an evil female pirate named Alvida.",
+          "quoteStart": 474,
+          "passageHash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+          "positionBasis": "manga-chapter",
+          "sourceRevision": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+          "verifiedEventIds": [],
+          "permissionFingerprint": "3a60a12128b1bf391bd4ec82c629b619fad1d65622f6e195220f39558edb1e9a"
+        },
+        {
+          "id": "104f0881c5fd69b9453f9adacd95dba60f3173adb530e7264f88c18ec654dd9e",
+          "url": "https://www.aaronngo.com/blogthread/2021/2/5/one-piece-east-blue-saga-romance-dawn-arc-chapters-1-through-7-manga-review#scope-27504630b9679e54",
+          "status": "partially_supported_reference_segment",
+          "position": 7,
+          "quoteEnd": 787,
+          "sourceId": "4f51f992-7ac0-5b91-8230-ab6c7a114ac8",
+          "passageId": "4fcb4d42-e602-5ddd-ab9d-e44ffad037c7",
+          "statement": "The third and final story is about Luffy recruiting his first crewmate named Roronoa Zoro and fighting against Marine Captain Axe-Hand Morgan.",
+          "quoteStart": 645,
+          "passageHash": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+          "positionBasis": "manga-chapter",
+          "sourceRevision": "5b2f07e0b06fb11511d17b04baaca9e414ab1ddccc10192b73a76af7044424d7",
+          "verifiedEventIds": [
+            "1e3c5f5d-1c55-529b-afd3-345bd56a2e12"
+          ],
+          "permissionFingerprint": "3a60a12128b1bf391bd4ec82c629b619fad1d65622f6e195220f39558edb1e9a"
+        }
+      ],
+      "duplicateHandling": "Canonical event identity and exact anchored groups; similarities never merge events.",
+      "explicitEventLinks": [],
+      "readingExplanation": "Supporting source boundaries organize this partial account. They do not establish narrative order, in-world chronology or causation. Unexplained transitions remain research questions."
+    },
+    "revision": "5854dd6537c7ed367ea626f1423c1793775961c7834cc364b6600f56e95eb9db"
+  },
+  "article": {
+    "title": "Romance Dawn",
+    "arc_id": "757483a7-667c-5caf-9e49-64f6d8772839",
+    "status": "partial",
+    "quality": {
+      "gate": "Requires real narrative review; generation success is not completeness",
+      "complete": false,
+      "validated_sections": 1
+    },
+    "version": "arc-article-v1",
+    "coverage": [
+      {
+        "research": "partial",
+        "presentation": "validated",
+        "supported_facets": [
+          "action",
+          "decision",
+          "development"
+        ],
+        "missing_facets": [
+          "circumstances",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes conflict in Luffy's Origin and Devil Fruit Acquisition?",
+          "What evidence establishes consequence in Luffy's Origin and Devil Fruit Acquisition?"
+        ]
+      },
+      {
+        "research": "not_researched",
+        "presentation": "not_ready",
+        "supported_facets": [],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "action",
+          "decision",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes development in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes action in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes decision in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes conflict in Luffy's Early Pirate Adventure and Meeting Koby?",
+          "What evidence establishes consequence in Luffy's Early Pirate Adventure and Meeting Koby?"
+        ]
+      },
+      {
+        "research": "not_researched",
+        "presentation": "not_ready",
+        "supported_facets": [],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "action",
+          "decision",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes development in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes action in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes decision in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes conflict in Recruiting Zoro and Confronting Axe-Hand Morgan?",
+          "What evidence establishes consequence in Recruiting Zoro and Confronting Axe-Hand Morgan?"
+        ]
+      },
+      {
+        "research": "not_researched",
+        "presentation": "not_ready",
+        "supported_facets": [],
+        "missing_facets": [
+          "circumstances",
+          "development",
+          "action",
+          "decision",
+          "conflict",
+          "consequence"
+        ],
+        "gaps": [
+          "What evidence establishes circumstances in Formation of the Straw Hat Crew?",
+          "What evidence establishes development in Formation of the Straw Hat Crew?",
+          "What evidence establishes action in Formation of the Straw Hat Crew?",
+          "What evidence establishes decision in Formation of the Straw Hat Crew?",
+          "What evidence establishes conflict in Formation of the Straw Hat Crew?",
+          "What evidence establishes consequence in Formation of the Straw Hat Crew?"
+        ]
+      }
+    ],
+    "sections": [
+      {
+        "id": "e5b635af-20e9-5316-9492-6475fa922eb0",
+        "status": "validated",
+        "heading": "Luffy's Origin and Acquisition of Rubber Powers",
+        "revision": "63abb7f8f8629ce97f06635a660f802e2ccf36d9ad79668753fdf60c69bef626",
+        "assessment": {
+          "claims": [
+            {
+              "index": 0,
+              "reason": "The claim matches the accepted assertion that Shanks saves Luffy.",
+              "verdict": "supported"
+            },
+            {
+              "index": 1,
+              "reason": "The claim aligns with the accepted assertion that Shanks gives Luffy a gift.",
+              "verdict": "supported"
+            },
+            {
+              "index": 2,
+              "reason": "The claim corresponds to the accepted assertion that Shanks gave Luffy his straw hat and asked for its return after Luffy surpasses him.",
+              "verdict": "supported"
+            },
+            {
+              "index": 3,
+              "reason": "The claim reflects the accepted assertion that Shanks gently refused Luffy's request due to his youth and inability to swim.",
+              "verdict": "supported"
+            },
+            {
+              "index": 4,
+              "reason": "The claim matches the accepted assertion that Luffy ate the stolen Gomu Gomu no Mi as dessert.",
+              "verdict": "supported"
+            },
+            {
+              "index": 5,
+              "reason": "The claim aligns with the accepted assertion that eating the fruit turned Luffy's body into rubber, making him unable to swim permanently.",
+              "verdict": "supported"
+            }
+          ],
+          "coherent": true,
+          "paragraphs_faithful": true,
+          "reviewer_qualification": {
+            "claims": [
+              {
+                "index": 0,
+                "reason": "The evidence directly states that Mira rescued Ron, matching the claim.",
+                "verdict": "supported"
+              },
+              {
+                "index": 1,
+                "reason": "The evidence explicitly says that after lunch Mira entered the observatory, which is exactly the claim.",
+                "verdict": "supported"
+              },
+              {
+                "index": 2,
+                "reason": "The evidence records Mira rescuing Ron, not Ron rescuing Mira, so the claim is not supported.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 3,
+                "reason": "While the rescue is confirmed, the evidence provides no motive about wanting treasure, making the claim unsupported.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 4,
+                "reason": "The evidence lists both events but does not specify that Mira entered after Ron left, so the temporal ordering cannot be confirmed.",
+                "verdict": "uncertain"
+              },
+              {
+                "index": 5,
+                "reason": "The evidence mentions a male pronoun \"He\" being tied to a post, without identifying him as Kira, so the claim cannot be verified.",
+                "verdict": "uncertain"
+              },
+              {
+                "index": 6,
+                "reason": "Ron deciding he would build his own ship indicates a plan, which supports the claim that he planned to build it.",
+                "verdict": "supported"
+              },
+              {
+                "index": 7,
+                "reason": "The evidence only shows Ron's decision to build, not that he actually built the ship, so the claim is unsupported.",
+                "verdict": "unsupported"
+              },
+              {
+                "index": 8,
+                "reason": "The evidence says Mira (she) lost an arm while saving Ron; it does not state that Ron lost an arm.",
+                "verdict": "unsupported"
+              }
+            ],
+            "passed": true,
+            "coherent": true,
+            "paragraphs_faithful": true,
+            "unsupported_connections": []
+          },
+          "unsupported_connections": []
+        },
+        "paragraphs": [
+          {
+            "text": "Shanks rescued Luffy from danger. Shanks gave Luffy a gift. Shanks presented Luffy with his iconic straw hat, promising its return once Luffy surpasses him. Shanks declined Luffy's request to join his crew, citing Luffy's youth and inability to swim.",
+            "claims": [
+              {
+                "text": "Shanks rescued Luffy from danger.",
+                "fact_ids": [
+                  "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2"
+                ]
+              },
+              {
+                "text": "Shanks gave Luffy a gift.",
+                "fact_ids": [
+                  "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65"
+                ]
+              },
+              {
+                "text": "Shanks presented Luffy with his iconic straw hat, promising its return once Luffy surpasses him.",
+                "fact_ids": [
+                  "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77"
+                ]
+              },
+              {
+                "text": "Shanks declined Luffy's request to join his crew, citing Luffy's youth and inability to swim.",
+                "fact_ids": [
+                  "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5"
+                ]
+              }
+            ],
+            "fact_ids": [
+              "1f8bbf41337ae6b44c780796c9abf7b89e0af94a08c08d549dae8bc1828d6ac2",
+              "00c3b6b9404641479447735c6ddc056654654b75b69359dcbd553b7c5163cf65",
+              "21c0c1c8e03f50981ca1de5163b3b562559c92f4be7e4263fd48da69145b1d77",
+              "a2ebf68c06dcbf077c925a442551cbcc78c62b2f26c4396657897d2920907bc5"
+            ]
+          },
+          {
+            "text": "Luffy consumed the Gomu Gomu no Mi, a Devil Fruit previously stolen by the Red Hair Pirates, as a dessert. The fruit transformed his body into rubber, rendering him permanently unable to swim.",
+            "claims": [
+              {
+                "text": "Luffy consumed the Gomu Gomu no Mi, a Devil Fruit previously stolen by the Red Hair Pirates, as a dessert.",
+                "fact_ids": [
+                  "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e"
+                ]
+              },
+              {
+                "text": "The fruit transformed his body into rubber, rendering him permanently unable to swim.",
+                "fact_ids": [
+                  "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+                ]
+              }
+            ],
+            "fact_ids": [
+              "fdafaabc667519101eee4406a1f6c3387a60e6d573ce0a895860b8d5436f066e",
+              "20ae10c5b4caac42ab44f93575f59aa269c849d11f8a0cebdd3e761d7eb22738"
+            ]
+          }
+        ]
+      }
+    ],
+    "perspective": "bounded",
+    "continuity_id": "9110bdd8-a094-570f-827b-ad75793989cd",
+    "dossier_revision": "5854dd6537c7ed367ea626f1423c1793775961c7834cc364b6600f56e95eb9db",
+    "spoiler_position": 7
+  }
+}

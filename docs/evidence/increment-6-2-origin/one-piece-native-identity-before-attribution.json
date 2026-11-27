@@ -1,0 +1,58 @@
+{
+  "kind": "read-only-live-local-identity-check-on-actual-approved-evidence",
+  "source_job": "497b34a5-af13-49f8-9d3e-73008266d12b",
+  "claim_id": "1d7b6084-1d84-5201-ba1b-dafeebd447c8",
+  "result": {
+    "decision": "AMBIGUOUS",
+    "target_id": null,
+    "target_index": 0,
+    "entity_type_valid": true,
+    "reason": "The source context identifies the character only by the full name 'Monkey D. Luffy' in a specific narrative passage (index 0). The provided data does not contain internal UUIDs or canonical_target_id mappings within the story quotation itself to link this text definitively to the selected target ID '9082d048-da66-5b4a-bcbd-e6fb1681a62d'. While the JSON structure associates the quote with that ID, ",
+    "evidence": [
+      {
+        "passage_id": "664965e8-2646-578d-9a11-c9ac4da05233",
+        "quote": "After a year of them being there, a young boy named Monkey D. Luffy came to their ship to prove he was tough enough to join them by stabbing his face under his left eye."
+      }
+    ],
+    "hidden_identity": false,
+    "accepted": false,
+    "canonical_id": null,
+    "proof": "unresolved",
+    "model_reason": "Candidate evidence explicitly names 'Monkey D. Luffy' matching the target record's name and identical event description.",
+    "model_evidence_indices": [
+      0
+    ]
+  },
+  "usage": [
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 6246,
+      "input_tokens": 1536,
+      "output_tokens": 69,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    },
+    {
+      "provider": "ollama",
+      "model": "qwen3.5:4b",
+      "credential": "local",
+      "task": "identity_resolution",
+      "status": "ok",
+      "elapsed_ms": 7660,
+      "input_tokens": 1255,
+      "output_tokens": 136,
+      "retry": 0,
+      "validation_errors": [],
+      "model_call": true,
+      "reservation_id": null,
+      "model_digest": "d8b0f5e9760cd1682034f292d7ef72ec46f432149be0df7574bf2d6e92e38c04"
+    }
+  ]
+}
