@@ -22,6 +22,7 @@ from src.application.research import SourceRejected
 from src.application.research_contracts import InferenceFailure, Task
 from src.application.scout import PagePlan, WikiSite, discover, read_page
 from src.application.story_library import library_passages
+from src.application.story_order import order_sources
 from src.application.story_pack import DRAFT_SUFFIX, StoryPack
 from src.application.story_pack_builder import (
     PACK_RULES,
@@ -160,10 +161,17 @@ async def build(
 ) -> None:
     world = files.world(world_slug)
     arc = files.arc(world, arc_key)
-    passages = library_passages(world, files.sources(world, arc.key))
+    saved = files.sources(world, arc.key)
+    passages = library_passages(world, saved)
     if not passages.sentences:
         raise ValueError("Add source files for this arc first")
     infer = model_calls(files.folder(world.slug) / "cache", passages.cloud_eligible)
+    moved: list[str] = []
+    if arc.reorder:
+        say("putting the story in order")
+        ordering = await order_sources(arc.title, saved, infer)
+        passages = library_passages(world, ordering.sources, ordered=True)
+        moved = ordering.notes
 
     draft = await build_story_pack(
         slug=world.slug + DRAFT_SUFFIX,
@@ -178,7 +186,8 @@ async def build(
         subjects=subjects,
         progress=say,
     )
-    licences = {s.url: s.licence for s in files.sources(world, arc.key)}
+    draft = PackDraft(draft.pack, [*moved, *draft.notes])
+    licences = {s.url: s.licence for s in saved}
     for listed in draft.pack.sources:
         listed.licence = licences.get(listed.url, "")
     folder = files.folder(world.slug) / arc.key

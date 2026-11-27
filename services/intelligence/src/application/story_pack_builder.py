@@ -201,7 +201,12 @@ class _Evidence:
     def __init__(self, passages: ArcPassageSet) -> None:
         self.numbered: dict[int, DevelopmentEvidence] = number_sentences(passages)
         self.position = sentence_positions(passages, self.numbered)
-        self.sources = {s.id: (f"source-{i}", s) for i, s in enumerate(passages.sources, 1)}
+        # Pieces of one page, split by story order, share its source entry.
+        keys: dict[str, str] = {}
+        self.sources = {
+            s.id: (keys.setdefault(s.url or str(s.id), f"source-{len(keys) + 1}"), s)
+            for s in passages.sources
+        }
         self.copied = set().union(*(word_spans(s.text, 18) for s in self.numbered.values()))
 
     def texts(self, ids: list[int], budget: int = REQUEST_TOKENS) -> dict[str, str]:
@@ -971,7 +976,7 @@ async def build_story_pack(
             "position_word": position_word,
             "sources": [
                 {"key": key, "title": clip(source.label, 300), "url": source.url}
-                for key, source in evidence.sources.values()
+                for key, source in dict(evidence.sources.values()).items()
             ],
             "entities": list(entities.values()),
             "arcs": [

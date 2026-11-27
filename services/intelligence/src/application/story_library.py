@@ -20,6 +20,9 @@ class LibraryArc(StructuredModel):
     title: str = Field(min_length=1, max_length=100)
     # Story headings for this arc, when a page covers several stories.
     sections: list[str] = Field(default_factory=list, max_length=20)
+    # Move return visits and endings to where they happen; off for sources already
+    # told in order.
+    reorder: bool = True
 
 
 class LibrarySite(StructuredModel):
@@ -76,14 +79,23 @@ class LibrarySource(StructuredModel):
     cloud_allowed: bool = False
 
 
-def library_passages(world: LibraryWorld, sources: list[LibrarySource]) -> ArcPassageSet:
-    """Sentences in presentation order; a sentence already read is not repeated."""
+def page_order(source: LibrarySource) -> tuple[int, int, str, str]:
+    return source.position, -len(source.text), source.title, source.url
+
+
+def library_passages(
+    world: LibraryWorld, sources: list[LibrarySource], *, ordered: bool = False
+) -> ArcPassageSet:
+    """Sentences in page order, or as given when already in story order.
+
+    A sentence already read is not repeated.
+    """
     universe = uuid5(NAMESPACE_URL, f"chronicles:library:{world.slug}")
     continuity = uuid5(universe, world.medium)
     listed: list[ArcSource] = []
     sentences: list[DevelopmentEvidence] = []
     seen: set[str] = set()
-    for page in sorted(sources, key=lambda s: (s.position, -len(s.text), s.title, s.url)):
+    for page in sources if ordered else sorted(sources, key=page_order):
         document = SourceDocument(
             id=uuid5(universe, f"{page.url}:{digest(page.text)}"),
             universe_id=universe,

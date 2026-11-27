@@ -86,8 +86,20 @@ Rules it follows:
 - Each saved page keeps its link, revision and stated licence. Keep credit, and note that
   share-alike and non-commercial licences also cover what you make from them.
 - A model picks only among titles the site returned. It can pick wrongly, so read the list.
-- Events follow the order of the pages. Pages organised by place or person can tell later
-  visits early, so the article's order and spoiler boundary are only as good as that split.
+
+## Story order
+
+Pages organised by place or person tell return visits and endings beside first events.
+Before reading, `build` asks a model which paragraphs belong elsewhere and moves only those
+whose own words show it; the quoted words must be in the moved paragraph.
+
+- Every move is listed under "Check these" in `review.md`. A quoted clue shows the move has
+  support, not that the new place is right.
+- A paragraph moved later belongs to that later part. One moved earlier stays behind the
+  spoiler boundary of the page that told it.
+- Only whole paragraphs move. One without a quoted clue moves only as the continuation of
+  the paragraph before it, and a page's first paragraph never moves.
+- Set `"reorder": false` on an arc whose sources are already in order.
 
 ## The arc article
 

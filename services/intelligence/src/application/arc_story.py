@@ -13,7 +13,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, Literal
 
-from pydantic import Field
+from pydantic import Field, ValidationInfo, field_validator
 
 from src.application.arc_contracts import (
     ArcEvidenceQuestion,
@@ -68,6 +68,21 @@ class GroupReading(StructuredModel):
     relationships: list[str] = Field(default_factory=list, max_length=16)
     carried_state: str = Field(min_length=10, max_length=1200)
     open_questions: list[ArcEvidenceQuestion] = Field(default_factory=list, max_length=8)
+
+    @field_validator("participants", "relationships", mode="before")
+    @classmethod
+    def shorten(cls, value: Any, info: ValidationInfo) -> Any:
+        """Side lists never decide the story, so a long one is cut, not rejected."""
+        limit = 24 if info.field_name == "participants" else 16
+        return value[:limit] if isinstance(value, list) else value
+
+    @field_validator("open_questions", mode="before")
+    @classmethod
+    def usable_questions(cls, value: Any) -> Any:
+        if not isinstance(value, list):
+            return value
+        known = set(ArcEvidenceQuestion.model_fields)
+        return [q for q in value if not isinstance(q, dict) or set(q) <= known][:8]
 
 
 class StoryBeat(StructuredModel):

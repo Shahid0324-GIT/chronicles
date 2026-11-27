@@ -6,8 +6,10 @@ const object = (v: unknown): v is RecordValue =>
 const text = (v: unknown): v is string =>
   typeof v === "string" && v.length <= 20000;
 const id = (v: unknown): v is string => text(v) && /^[0-9a-f-]{36}$/i.test(v);
-const list = (v: unknown, check: (item: unknown) => boolean) =>
-  Array.isArray(v) && v.length <= 500 && v.every(check);
+const list = (v: unknown, check: (item: unknown) => boolean, limit = 500) =>
+  Array.isArray(v) && v.length <= limit && v.every(check);
+// A long arc has far more entries and connections than any single list on screen.
+const GRAPH_LIMIT = 5000;
 const ids = (v: unknown) => list(v, id);
 const hint = (v: unknown) =>
   object(v) &&
@@ -166,11 +168,13 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
           id(edge.source) &&
           id(edge.target) &&
           text(edge.type),
+        GRAPH_LIMIT,
       )) ||
     (value.entryIndex !== undefined &&
       !list(
         value.entryIndex,
         (e) => object(e) && id(e.id) && text(e.displayTitle),
+        GRAPH_LIMIT,
       )) ||
     !list(
       value.sources,
