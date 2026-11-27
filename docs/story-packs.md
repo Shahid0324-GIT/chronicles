@@ -16,7 +16,8 @@ Run from `services/intelligence`.
    they are reapplied whenever the draft is regenerated (editing the pack file directly is
    overwritten by the next generation). Corrections are keyed by event and entry keys:
    `events` (title, summary, label, sources, `after` to move), `chapter_labels`, `rename`,
-   `merge` (from into) and `drop`.
+   `merge` (from into), `drop`, `introductions`, `drop_statements` (exact text) and
+   `drop_links` ("cause-event>effect-event").
 
 3. Check and load it. Loading replaces only the draft world.
 

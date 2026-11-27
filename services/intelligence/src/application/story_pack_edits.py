@@ -15,6 +15,7 @@ class EventEdit(StructuredModel):
     summary: str | None = None
     label: str | None = None
     sources: list[Citation] | None = None
+    characters: list[str] | None = None
     after: str | None = None
 
 
@@ -24,6 +25,11 @@ class PackEdits(StructuredModel):
     rename: dict[str, str] = Field(default_factory=dict)
     merge: dict[str, str] = Field(default_factory=dict)
     drop: list[str] = Field(default_factory=list)
+    introductions: dict[str, str] = Field(default_factory=dict)
+    # Exact statement text to remove from entry pages.
+    drop_statements: list[str] = Field(default_factory=list)
+    # Cause links to remove, written "cause-event>effect-event".
+    drop_links: list[str] = Field(default_factory=list)
 
 
 def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]]:
@@ -72,6 +78,29 @@ def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]
             entity["name"] = name
         else:
             notes.append(f"Edit skipped: no entry {key} to rename")
+    for key, introduction in edits.introductions.items():
+        if key in entities:
+            entities[key]["introduction"] = introduction
+        else:
+            notes.append(f"Edit skipped: no entry {key} to introduce")
+    unwanted = set(edits.drop_statements)
+    for entity in entities.values():
+        for section in entity["sections"]:
+            unwanted_here = {s["text"] for s in section["statements"]} & unwanted
+            section["statements"] = [
+                s for s in section["statements"] if s["text"] not in unwanted_here
+            ]
+            unwanted -= unwanted_here
+        entity["sections"] = [s for s in entity["sections"] if s["statements"]]
+    notes += [f"Edit skipped: no statement '{text[:60]}'" for text in sorted(unwanted)]
+    for wanted in edits.drop_links:
+        removed = False
+        for arc in data["arcs"]:
+            kept = [x for x in arc["links"] if f"{x['cause']}>{x['effect']}" != wanted]
+            removed = removed or len(kept) != len(arc["links"])
+            arc["links"] = kept
+        if not removed:
+            notes.append(f"Edit skipped: no cause link {wanted}")
     data["entities"] = [e for e in data["entities"] if e["key"] in entities]
 
     for event in events:

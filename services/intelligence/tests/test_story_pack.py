@@ -290,3 +290,24 @@ def test_short_names_join_the_only_fuller_character_name():
     assert "zoro" not in subjects and alias_of["zoro"] == "roronoa zoro"
     assert subjects["roronoa zoro"]["aliases"] == ["Zoro"]
     assert {"base", "rika"} <= set(subjects)
+
+
+def test_corrections_remove_wrong_links_and_statements_before_validation():
+    edits = PackEdits.model_validate(
+        {
+            "events": {"departure": {"after": "lantern-found"}},
+            "drop_links": ["departure>lantern-found", "departure>missing"],
+            "drop_statements": ["Mira grew up by the harbor.", "Never written."],
+            "introductions": {"mira": "A traveller whose introduction was corrected."},
+        }
+    )
+    pack, notes = apply_edits(StoryPack.model_validate(sample()), edits)
+    assert pack.arcs[0].links == []
+    assert [e.key for e in pack.arcs[0].events] == ["lantern-found", "departure"]
+    mira = next(e for e in pack.entities if e.key == "mira")
+    assert mira.introduction.endswith("corrected.")
+    assert [s.text for s in mira.sections[0].statements] == ["Mira later kept the lantern."]
+    assert notes == [
+        "Edit skipped: no statement 'Never written.'",
+        "Edit skipped: no cause link departure>missing",
+    ]
