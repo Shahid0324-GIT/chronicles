@@ -301,7 +301,7 @@ async def test_new_research_reaches_next_provider_browser_and_enrichment(reader_
             page = await browser.new_page(
                 viewport={"width": 1920, "height": 1080}, base_url=f"http://127.0.0.1:{web_port}"
             )
-            await page.goto(f"http://127.0.0.1:{web_port}")
+            await page.goto(f"http://127.0.0.1:{web_port}/atlas")
             await page.get_by_role("status").filter(has_text="No verified story events").wait_for()
             screenshots = Path(
                 os.environ.get("CHRONICLES_FIXTURE_EVIDENCE_DIR", tmp_path / "screenshots")
