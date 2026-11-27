@@ -26,53 +26,21 @@ export interface UniverseTheme {
   };
   motif: "arch" | "chart" | "rune";
 }
-export const UNIVERSE_THEMES: Record<string, UniverseTheme> = {
-  manuscript: {
-    id: "manuscript",
-    motif: "arch",
-    palette: {
-      ground: "#141c20",
-      surface: "#1b272a",
-      ink: "#eee5cf",
-      muted: "#aaa99b",
-      accent: "#ceb17d",
-      branch: "#a6c0b6",
-      paper: "#e7d6ae",
-    },
-  },
-  nautical: {
-    id: "nautical",
-    motif: "chart",
-    palette: {
-      ground: "#101f27",
-      surface: "#1c3038",
-      ink: "#f0e6d0",
-      muted: "#a6b2ad",
-      accent: "#d4b274",
-      branch: "#8bbfb8",
-      paper: "#e9d7b1",
-    },
-  },
-  weathered: {
-    id: "weathered",
-    motif: "rune",
-    palette: {
-      ground: "#20211c",
-      surface: "#2b2c23",
-      ink: "#e8e3ce",
-      muted: "#ada992",
-      accent: "#bfa468",
-      branch: "#aab498",
-      paper: "#d6cba6",
-    },
+/** The look before a story supplies its own. */
+export const DEFAULT_THEME: UniverseTheme = {
+  id: "midnight",
+  motif: "arch",
+  palette: {
+    ground: "#0e1130",
+    surface: "#181c48",
+    ink: "#f1f2fb",
+    muted: "#b6bce0",
+    accent: "#ffc857",
+    branch: "#78bdff",
+    paper: "#ece9f8",
   },
 };
-const universeThemes: Record<string, string> = {
-  "re-zero": "manuscript",
-  "elden-ring": "weathered",
-};
-export const themeForUniverse = (slug?: string) =>
-  UNIVERSE_THEMES[universeThemes[slug ?? ""] ?? "manuscript"];
+export const themeForUniverse = () => DEFAULT_THEME;
 export function themeStyle(theme: UniverseTheme): CSSProperties {
   return Object.fromEntries(
     Object.entries(theme.palette).map(([key, value]) => [

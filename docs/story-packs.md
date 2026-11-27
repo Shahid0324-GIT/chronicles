@@ -115,12 +115,23 @@ whose own words show it; the quoted words must be in the moved paragraph.
 - Each page also lists who the subject appears alongside and its events; event pages list
   who is there, where, and what led to and from it. These are assembled, not written.
 
-## The arc article
+## The journey page
 
 A pack also tells the arc as an article: an opening paragraph, then headed sections of prose
-tied to events and sources. The app opens a told arc as that article, with contents, a
-timeline that follows the reader, spoiler control, and names that open their entry page.
-The story map stays available beside it.
+tied to events and sources. The app opens a told arc as a journey:
+
+- a full opening with the story's title and artwork;
+- a tree (React Flow) of stops, one per chapter or place, where the chosen stop grows its
+  moments and the stated causes between them;
+- reading stop by stop or straight through, with names opening their entry page;
+- a spoiler limit set from the map: hidden stops are revealed only after you confirm.
+
+Each story has its own look. The model picks a background, two colours, a heading style and
+a motif; code derives the rest and adjusts colours until text passes contrast. Override it
+in `edits.json` with `"theme": {...}`. A pack without a theme gets a steady default of its
+own. Building a story from the app's search box is not available yet.
+
+### How the article is written
 
 - The writer gets a few events and all their source sentences per section, so its length
   follows the sources. A section much shorter than its sources, or one that skips an event,

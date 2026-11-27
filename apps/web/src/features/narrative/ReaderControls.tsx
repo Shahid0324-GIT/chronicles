@@ -1,6 +1,6 @@
 "use client";
 import { useExploration } from "@/stores/ExplorationProvider";
-import { usePositionUnit } from "./SpoilerControl";
+import { usePositionUnit } from "./units";
 
 export default function ReaderControls() {
   const boundary = useExploration((s) => s.spoilerPosition),

@@ -26,6 +26,7 @@ const step = (v: unknown) =>
   object(v) &&
   id(v.id) &&
   id(v.eventNodeId) &&
+  (v.position === undefined || Number.isInteger(v.position)) &&
   text(v.title) &&
   text(v.body) &&
   (v.detailedRecap === undefined || text(v.detailedRecap)) &&
@@ -48,6 +49,34 @@ const step = (v: unknown) =>
         id(r.nodeId) &&
         ["actor", "recipient", "witness", "opponent"].includes(String(r.role)),
     ));
+
+// Colours go into style rules, so nothing but a plain hex value is accepted.
+const colour = (v: unknown) => text(v) && /^#[0-9a-f]{6}$/i.test(v);
+const among = (v: unknown, choices: string[]) => choices.includes(String(v));
+const theme = (v: unknown) =>
+  object(v) &&
+  among(v.mode, ["dark", "light"]) &&
+  [
+    "ground",
+    "surface",
+    "ink",
+    "muted",
+    "line",
+    "accent",
+    "accentInk",
+    "second",
+  ].every((key) => colour(v[key])) &&
+  among(v.style, [
+    "epic",
+    "storybook",
+    "gothic",
+    "scifi",
+    "playful",
+    "modern",
+  ]) &&
+  among(v.motif, ["stars", "branches", "waves", "peaks", "embers", "rings"]);
+const stop = (v: unknown) =>
+  object(v) && Number.isInteger(v.position) && text(v.title);
 
 const section = (v: unknown) =>
   object(v) &&
@@ -211,7 +240,10 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
         ids(j.ordering.sourceIds) &&
         list(j.steps, step) &&
         (j.story === undefined || list(j.story, section)) &&
-        (j.positionWord === undefined || text(j.positionWord)),
+        (j.positionWord === undefined || text(j.positionWord)) &&
+        (j.theme === undefined || theme(j.theme)) &&
+        (j.stops === undefined || list(j.stops, stop)) &&
+        (j.stopCount === undefined || Number.isInteger(j.stopCount)),
     ) ||
     !list(
       value.loreThreads,

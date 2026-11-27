@@ -1,8 +1,8 @@
 /* Pass 1 visual system: manuscript, not a component-library dashboard. */
 .chronicle-shell {
-  --display: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  --reading: Georgia, "Times New Roman", serif;
-  --label: Arial, Helvetica, sans-serif;
+  --display: var(--font-fraunces), Georgia, serif;
+  --reading: var(--font-literata), Georgia, "Times New Roman", serif;
+  --label: var(--font-inter), Arial, Helvetica, sans-serif;
   --space-1: 6px;
   --space-2: 12px;
   --space-3: 20px;
@@ -36,15 +36,17 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: url("/art/chronicle-landscape.svg") center bottom / cover
-    no-repeat;
-  opacity: 0.32;
-}
-.chronicle-atmosphere:after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg, transparent 0 3px, #d3c8a501 4px);
+  background:
+    radial-gradient(
+      60% 45% at 85% 0%,
+      color-mix(in srgb, var(--chronicle-accent) 13%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      55% 50% at 0% 65%,
+      color-mix(in srgb, var(--chronicle-branch) 11%, transparent),
+      transparent
+    );
 }
 .chronicle-shell .glass {
   background: var(--chronicle-surface);

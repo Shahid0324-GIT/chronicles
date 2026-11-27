@@ -15,6 +15,7 @@ from src.application.story_pack_builder import (
     render_review,
 )
 from src.application.story_pack_edits import PackEdits, apply_edits
+from src.application.story_theme import StoryTheme
 from tests.test_arc_story import passage_set, payload
 
 
@@ -187,6 +188,8 @@ def scripted():
                     ]
                 }
             )
+        if schema is StoryTheme:
+            return StoryTheme(mode="dark", ground="#101438", accent="#ffc857", second="#6cb8ff")
         if schema is LeadDraft:
             return schema.model_validate(
                 {
@@ -254,6 +257,12 @@ async def test_builder_drafts_a_valid_pack_and_reports_what_to_check():
     # Only the first mention of an entry opens it.
     assert [s["text"] for s in segments if "nodeId" in s] == ["Mira", "marsh"]
     assert catalog(pack, 1)["journeys"][0]["story"] == []
+    # The journey names its stops after the pages and hides those not reached.
+    whole, early = catalog(pack)["journeys"][0], catalog(pack, 1)["journeys"][0]
+    assert whole["stopCount"] == early["stopCount"] == len(whole["stops"])
+    assert [s["position"] for s in early["stops"]] == [1]
+    assert whole["theme"]["accent"] == "#ffc857"
+    assert {s["position"] for s in whole["steps"]} <= {s["position"] for s in whole["stops"]}
     # The draft is immediately servable.
     assert len(catalog(pack)["journeys"][0]["steps"]) == 4
     assert any(p["display_title"] == "Mira" for p in entries(pack, 1))

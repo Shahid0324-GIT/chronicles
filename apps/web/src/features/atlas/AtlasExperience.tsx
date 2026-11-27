@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Universe, UniverseGraph } from "@/lib/contracts";
 import {
   ExplorationProvider,
@@ -13,6 +13,9 @@ import ContextPanel from "@/features/discovery/ContextPanel";
 import JourneyControls from "@/features/journey/JourneyControls";
 import StoryCanvas from "@/features/chronicle/StoryCanvas";
 import { themeForUniverse, themeStyle } from "@/features/chronicle/design";
+import { storyThemeStyle } from "@/features/theme/story-theme";
+import { activeJourney } from "@/features/narrative/selectors";
+import type { StoryTheme } from "@/features/narrative/contracts";
 import { useAtlasMotion } from "@/animations/useAtlasMotion";
 import { filterGraph } from "@/features/graph/filter";
 import Search from "./Search";
@@ -75,7 +78,13 @@ function Experience({ universes }: { universes: Universe[] }) {
     mode !== "explore" ||
     narrativeStatus === "idle" ||
     narrativeStatus === "loading";
-  const theme = themeForUniverse(active?.slug);
+  const theme = themeForUniverse();
+  // A story keeps its look while it reloads, such as after a new spoiler limit.
+  const drafted = useExploration((s) => activeJourney(s)?.theme);
+  const [look, setLook] = useState<{ world?: string; theme?: StoryTheme }>({});
+  if (drafted && (look.theme !== drafted || look.world !== active?.id))
+    setLook({ world: active?.id, theme: drafted });
+  const storyTheme = look.world === active?.id ? look.theme : undefined;
   useAtlasMotion(root, active?.id);
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
@@ -99,7 +108,7 @@ function Experience({ universes }: { universes: Universe[] }) {
   return (
     <section
       ref={root}
-      style={themeStyle(theme)}
+      style={storyTheme ? storyThemeStyle(storyTheme) : themeStyle(theme)}
       data-theme={theme.id}
       data-motif={theme.motif}
       className={[

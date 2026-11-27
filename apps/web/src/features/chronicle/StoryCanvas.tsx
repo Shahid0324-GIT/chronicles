@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useExploration } from "@/stores/ExplorationProvider";
-import ArticleView from "@/features/article/ArticleView";
+import ArticleView, { type ReadingPlace } from "@/features/article/ArticleView";
 import { activeJourney } from "@/features/narrative/selectors";
 import { isDraftWorld } from "@/features/narrative/draft";
 import StorySpine from "./StorySpine";
@@ -28,8 +28,13 @@ export default function StoryCanvas() {
     setMode = useExploration((s) => s.setMode),
     mode = useExploration((s) => s.mode),
     draft = useExploration((s) => isDraftWorld(s.graph?.universe.slug));
-  // A told arc opens as an article; the story map stays one step away.
+  // A told arc opens as a journey; the story map stays one step away.
   const [reading, setReading] = useState(true);
+  // Kept here so it survives the reload that a new spoiler limit causes.
+  const [place, setPlace] = useState<ReadingPlace>({
+    stop: null,
+    straight: false,
+  });
   const told = !!journey?.story?.length,
     article = told && reading && mode !== "lore";
   return (
@@ -68,7 +73,7 @@ export default function StoryCanvas() {
               if (mode === "lore") setMode("guided");
             }}
           >
-            Article
+            Journey
           </button>
           <button
             type="button"
@@ -80,7 +85,12 @@ export default function StoryCanvas() {
         </div>
       )}
       {journey && article ? (
-        <ArticleView key={journey.id} journey={journey} />
+        <ArticleView
+          key={journey.id}
+          journey={journey}
+          place={place}
+          onPlace={setPlace}
+        />
       ) : journey ? (
         <>
           <header className="story-intro">

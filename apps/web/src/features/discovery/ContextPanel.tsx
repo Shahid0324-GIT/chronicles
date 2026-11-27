@@ -6,6 +6,7 @@ import { NODE_IDENTITIES, humanize } from "@/features/graph/identity";
 import LoreEntryLinks from "@/features/narrative/LoreEntryLinks";
 import IconButton from "@/components/ui/IconButton";
 import MediaArtwork from "./MediaArtwork";
+import { isDraftWorld } from "@/features/narrative/draft";
 import { resolveMedia } from "./media-registry";
 import {
   useEncyclopediaEntry,
@@ -45,6 +46,7 @@ export default function ContextPanel() {
     types = useExploration((s) => s.types);
   const catalog = useExploration((s) => s.narrative),
     boundary = useExploration((s) => s.spoilerPosition);
+  const draft = isDraftWorld(graph?.universe.slug);
   const generated =
     catalog.availability?.kind === "generated" || boundary !== null;
   const result = useEncyclopediaEntry(
@@ -151,7 +153,17 @@ export default function ContextPanel() {
           </IconButton>
         </div>
       </div>
-      {!minimized && <MediaArtwork asset={asset} className="context-art" />}
+      {!minimized &&
+        (draft ? (
+          <div className="entry-portrait">
+            <span aria-hidden="true">
+              {(entry?.display_title ?? node.title).charAt(0).toUpperCase()}
+            </span>
+            <small>No portrait yet</small>
+          </div>
+        ) : (
+          <MediaArtwork asset={asset} className="context-art" />
+        ))}
       <div className="context-copy">
         <h2 ref={heading} tabIndex={-1}>
           {generated
@@ -237,7 +249,7 @@ export default function ContextPanel() {
                 No connections have been charted for this entry.
               </p>
             )}
-            <p className="art-credit">{asset.credit}</p>
+            {!draft && <p className="art-credit">{asset.credit}</p>}
           </>
         )}
       </div>

@@ -79,13 +79,8 @@ describe("illustrated story presentation", () => {
     expect(view.find((item) => item.position === "current")?.index).toBe(12);
     expect(journey.steps).toHaveLength(20);
   });
-  it("uses configurable universe themes and a stable fallback", () => {
-    expect(themeForUniverse("re-zero").motif).toBe("arch");
-    expect(themeForUniverse("elden-ring").motif).toBe("rune");
-    expect(themeForUniverse("unknown")).toEqual(themeForUniverse());
-    expect(themeStyle(themeForUniverse("re-zero"))).toHaveProperty(
-      "--chronicle-accent",
-    );
+  it("starts from one default look until a story brings its own", () => {
+    expect(themeStyle(themeForUniverse())).toHaveProperty("--chronicle-accent");
   });
   it("opens and collapses event branches while retaining their originating moment", async () => {
     const store = await ready();

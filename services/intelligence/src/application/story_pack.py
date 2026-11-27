@@ -12,6 +12,7 @@ from uuid import NAMESPACE_URL, UUID, uuid5
 from pydantic import Field, model_validator
 
 from src.application.research_contracts import StructuredModel
+from src.application.story_theme import StoryTheme, fallback_theme, palette
 from src.domain.entities import Continuity, GraphNode, GraphRelationship, Universe
 from src.domain.value_objects import NodeType, RelationshipType, Slug
 
@@ -35,6 +36,8 @@ class PackSource(StructuredModel):
     url: str = Field(pattern=r"^https?://", max_length=1000)
     # Shown beside the link, since open licences require credit.
     licence: str = Field(default="", max_length=300)
+    # Where the story reaches this page, naming that stop on the journey; 0 if unknown.
+    position: int = Field(default=0, ge=0)
 
 
 class Citation(StructuredModel):
@@ -136,6 +139,7 @@ class StoryPack(StructuredModel):
     description: str = Field(min_length=1, max_length=600)
     medium: str = Field(min_length=1, max_length=40)
     position_word: str = Field(default="chapter", pattern=r"^[a-z][a-z -]{0,30}$")
+    theme: StoryTheme | None = None
     sources: list[PackSource] = Field(min_length=1, max_length=100)
     entities: list[PackEntity] = Field(default_factory=list, max_length=300)
     arcs: list[PackArc] = Field(min_length=1, max_length=20)
@@ -340,6 +344,22 @@ def _segments(text: str, names: dict[str, str], linked: set[str]) -> list[tuple[
     return pieces
 
 
+def _journey_stops(pack: StoryPack, arc: PackArc) -> tuple[list[tuple[int, str]], int]:
+    """The arc's positions in order, each named after the page that first reaches it."""
+    cited = {c.source for event in arc.events for c in event.sources}
+    names: dict[int, str] = {}
+    for source in pack.sources:
+        if source.key in cited and source.position:
+            # "Chapter 2: The fair" and "Wonderland (Some Wiki)" are named by their subject.
+            name = re.sub(
+                r"^(chapter|part|episode|quest)\s+\d+\s*:\s*", "", source.title, flags=re.I
+            )
+            names.setdefault(source.position, re.sub(r"\s*\([^()]*\)$", "", name) or source.title)
+    positions = sorted({event.chapter for event in arc.events} | set(names))
+    word = pack.position_word.capitalize()
+    return [(n, names.get(n, f"{word} {n}")) for n in positions], len(positions)
+
+
 def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
     """The story map response; nothing beyond the reader's chapter boundary is included."""
     _, continuity, _, edges = graph(pack)
@@ -429,7 +449,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
 
     journeys = []
     for arc in pack.arcs:
-        steps = []
+        steps: list[dict[str, Any]] = []
         for event in arc.events:
             if event.key not in events:
                 continue
@@ -446,6 +466,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                 {
                     "id": str(identifier(pack.slug, "step", event.key)),
                     "eventNodeId": own,
+                    "position": event.chapter,
                     "title": event.title,
                     "body": event.summary,
                     "episodeLabel": event.label or f"By {pack.position_word} {event.chapter}",
@@ -462,6 +483,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                 }
             )
         if steps:
+            stops, stop_count = _journey_stops(pack, arc)
             used = list(dict.fromkeys(i for s in steps for i in s["sourceIds"]))
             journeys.append(
                 {
@@ -472,6 +494,13 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                     "introduction": arc.introduction,
                     "spoilerScope": "AI draft awaiting review",
                     "positionWord": pack.position_word,
+                    "theme": palette(pack.theme or fallback_theme(pack.slug)),
+                    "stops": [
+                        {"position": n, "title": title}
+                        for n, title in stops
+                        if _visible(n, boundary)
+                    ],
+                    "stopCount": stop_count,
                     "ordering": {
                         "basis": "manga-chapter"
                         if pack.medium.casefold() == "manga"

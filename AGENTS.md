@@ -123,3 +123,8 @@ Inference dossiers omit full archive navigation metadata, preserving citation id
 
 The product is an all-in-one story atlas: events with causes, cast, places, deep entry pages and lore. Story packs (`application/story_pack.py`, `story_pack_builder.py`, `docs/story-packs.md`) are AI-drafted, user-reviewed files loaded only into `-draft` universes. They are never canonical, never presented as verified, and must not write into other universes. Keep citations, the chapter boundary and the explicit-cause rule.
 
+## Journey page (draft worlds)
+
+A told arc opens as the journey page in `apps/web/src/features/article/`: React Flow draws the
+stop-and-moment tree (pure layout in `journey.ts`), and `application/story_theme.py` gives each
+story a contrast-checked look served in the catalog. No story-specific colours, layouts or code.

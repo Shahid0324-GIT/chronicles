@@ -1,9 +1,9 @@
 :root {
-  --ink: #e8e6d9;
-  --muted: #9aaea9;
-  --paper: #0d1b22;
-  --line: #69776c44;
-  --gold: #cfb789;
+  --ink: #f1f2fb;
+  --muted: #b6bce0;
+  --paper: #0e1130;
+  --line: #323b7566;
+  --gold: #ffc857;
   --serif: Georgia, "Times New Roman", serif;
 }
 * {

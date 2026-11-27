@@ -3,18 +3,6 @@ import type { StorySection } from "@/features/narrative/contracts";
 export const paragraphKey = (section: number, paragraph: number) =>
   `${section}-${paragraph}`;
 
-/** The first paragraph that tells each event. */
-export function eventTargets(story: StorySection[]) {
-  const targets = new Map<string, string>();
-  story.forEach((section, s) =>
-    section.paragraphs.forEach((paragraph, p) => {
-      for (const id of paragraph.eventNodeIds)
-        if (!targets.has(id)) targets.set(id, paragraphKey(s, p));
-    }),
-  );
-  return targets;
-}
-
 /** The events at the reader's place; a paragraph without any keeps the previous ones. */
 export function eventsAt(story: StorySection[], key: string) {
   let current: string[] = [];

@@ -6,6 +6,7 @@ from pydantic import Field
 
 from src.application.research_contracts import StructuredModel
 from src.application.story_pack import Citation, StoryPack
+from src.application.story_theme import StoryTheme
 
 CAST_FIELDS = ("characters", "places", "objects", "mysteries")
 
@@ -32,6 +33,8 @@ class PackEdits(StructuredModel):
     drop_links: list[str] = Field(default_factory=list)
     # Wording to correct in the article: exact text -> replacement (empty removes it).
     story_text: dict[str, str] = Field(default_factory=dict)
+    # The look to use instead of the drafted one.
+    theme: StoryTheme | None = None
 
 
 def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]]:
@@ -118,6 +121,8 @@ def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]
             arc["story"] = [s for s in arc["story"] if s["paragraphs"]]
         if not found:
             notes.append(f"Edit skipped: no article text '{old[:60]}'")
+    if edits.theme:
+        data["theme"] = edits.theme.model_dump(mode="json")
     data["entities"] = [e for e in data["entities"] if e["key"] in entities]
 
     for event in events:

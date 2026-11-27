@@ -21,6 +21,7 @@ export interface JourneyStep {
     role: "actor" | "recipient" | "witness" | "opponent";
   }[];
   id: string;
+  position?: number;
   eventNodeId: string;
   title: string;
   body: string;
@@ -43,7 +44,27 @@ export interface StorySection {
   heading: string;
   paragraphs: StoryParagraph[];
 }
+export type ThemeMotif =
+  "stars" | "branches" | "waves" | "peaks" | "embers" | "rings";
+/** A story's own look; colours arrive already checked for contrast. */
+export interface StoryTheme {
+  mode: "dark" | "light";
+  ground: string;
+  surface: string;
+  ink: string;
+  muted: string;
+  line: string;
+  accent: string;
+  accentInk: string;
+  second: string;
+  style: "epic" | "storybook" | "gothic" | "scifi" | "playful" | "modern";
+  motif: ThemeMotif;
+}
 export interface NarrativeJourney {
+  theme?: StoryTheme;
+  /** Stops reached so far, and how many the arc has in all. */
+  stops?: { position: number; title: string }[];
+  stopCount?: number;
   story?: StorySection[];
   positionWord?: string;
   presentationState?: { status: string; reason: string };
