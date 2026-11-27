@@ -8,6 +8,7 @@ from src.application.story_pack_builder import (
     LinkList,
     LoreDraft,
     PageDraft,
+    StoryPartDraft,
     build_story_pack,
     render_review,
 )
@@ -145,6 +146,27 @@ def scripted():
                     ]
                 }
             )
+        if schema is StoryPartDraft:
+            numbers = [e["number"] for e in data["events"]]
+            cited = [int(n) for n in data["excerpts"]]
+            return schema.model_validate(
+                {
+                    "heading": "Setting out",
+                    "paragraphs": [
+                        {
+                            "text": "Mira set out from the harbor and kept searching "
+                            "until the marsh gave up its secret.",
+                            "events": [*numbers, 99],
+                            "sentences": [cited[0]],
+                        },
+                        {
+                            "text": "This paragraph invents something and cites no "
+                            "saved sentence at all.",
+                            "sentences": [999],
+                        },
+                    ],
+                }
+            )
         raise AssertionError(schema)
 
     return infer
@@ -186,6 +208,13 @@ async def test_builder_drafts_a_valid_pack_and_reports_what_to_check():
     assert "'Tobin' does not appear" in notes and "Unknown thread" in notes
     review = render_review(draft)
     assert "Led here:" in review and "## Check these" in review
+    # The arc is also told as prose, and uncited paragraphs never survive.
+    paragraph = arc.story[0].paragraphs
+    assert len(paragraph) == 1 and paragraph[0].events == [e.key for e in arc.events]
+    assert "Story paragraph left out" in notes
+    assert "### Setting out" in review
+    assert catalog(pack)["journeys"][0]["story"][0]["heading"] == "Setting out"
+    assert catalog(pack, 1)["journeys"][0]["story"] == []
     # The draft is immediately servable.
     assert len(catalog(pack)["journeys"][0]["steps"]) == 4
     assert any(p["display_title"] == "Mira" for p in entries(pack, 1))

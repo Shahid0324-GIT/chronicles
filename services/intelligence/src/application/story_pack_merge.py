@@ -93,6 +93,9 @@ def merge_packs(packs: list[StoryPack]) -> StoryPack:
                 event["lore"] = [threads[k] for k in event["lore"]]
             for link in arc["links"]:
                 link["cause"], link["effect"] = events[link["cause"]], events[link["effect"]]
+            for section in arc["story"]:
+                for paragraph in section["paragraphs"]:
+                    paragraph["events"] = [events[k] for k in paragraph["events"]]
             arcs.append(arc)
     return StoryPack.model_validate(
         {

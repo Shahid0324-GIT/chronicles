@@ -92,6 +92,17 @@ class PageDraft(StructuredModel):
     sections: list[SectionDraft] = Field(default_factory=list, max_length=10)
 
 
+class ToldParagraph(StructuredModel):
+    text: str
+    events: list[int] = Field(default_factory=list)
+    sentences: list[int] = Field(default_factory=list)
+
+
+class StoryPartDraft(StructuredModel):
+    heading: str
+    paragraphs: list[ToldParagraph] = Field(min_length=1, max_length=8)
+
+
 class DiscoveryDraft(StructuredModel):
     title: str
     explanation: str
@@ -295,6 +306,82 @@ async def _links(
             if link.cause in chosen and link.effect in chosen:
                 found.setdefault((link.cause, link.effect), link)
     return list(found.values())
+
+
+async def _story(
+    title: str,
+    events: dict[int, dict[str, Any]],
+    evidence: _Evidence,
+    infer: Infer,
+    notes: list[str],
+) -> list[dict[str, Any]]:
+    """Tell the arc as connected prose, a few events at a time, carrying the thread forward."""
+    order = list(events)
+    sections: list[dict[str, Any]] = []
+    ending = ""
+    for start in range(0, len(order), 6):
+        chosen = order[start : start + 6]
+        shown = list(dict.fromkeys(n for i in chosen for n in events[i]["context"]))
+        part = StoryPartDraft.model_validate(
+            await infer(
+                "Tell this stretch of the arc as one section of an encyclopedia story, not "
+                "as a list of events. Write flowing paragraphs that set the scene, follow "
+                "what people want and do, and carry the thread from the previous ending into "
+                "what comes next. Connect events with causes or motives only where the "
+                "excerpts show them. Use original wording and clear names, and no sentence "
+                "numbers in the text. Give each paragraph the event numbers it tells and the "
+                "sentence numbers that support it.\n"
+                'Return only JSON: {"heading":"","paragraphs":[{"text":"","events":[1],'
+                '"sentences":[1]}]}\n'
+                + json.dumps(
+                    {
+                        "arc": title,
+                        "previous_ending": ending or None,
+                        "events": [
+                            {
+                                "number": i,
+                                "title": events[i]["title"],
+                                "summary": events[i]["summary"][:300],
+                            }
+                            for i in chosen
+                        ],
+                        "upcoming": [events[i]["title"] for i in order[start + 6 : start + 8]],
+                        "excerpts": evidence.texts(shown),
+                    },
+                    ensure_ascii=False,
+                ),
+                StoryPartDraft,
+                "presentation",
+            )
+        )
+        paragraphs = []
+        for written in part.paragraphs:
+            ids = [n for n in dict.fromkeys(written.sentences) if n in shown]
+            text = clip(written.text, 2600)
+            if not ids or len(text) < 40:
+                notes.append(f"Story paragraph left out (no cited source): {text[:80]}")
+                continue
+            if word_spans(text, 18) & evidence.copied:
+                notes.append(f"Story paragraph copies source wording: {text[:80]}")
+            told = [i for i in dict.fromkeys(written.events) if i in chosen]
+            paragraphs.append(
+                {
+                    "text": text,
+                    "chapter": max([evidence.chapter(ids), *(events[i]["chapter"] for i in told)]),
+                    "events": [events[i]["key"] for i in told],
+                    "sources": evidence.citations(ids, 12),
+                }
+            )
+        if paragraphs:
+            ending = paragraphs[-1]["text"][-400:]
+            heading = clip(part.heading, 150)
+            sections.append(
+                {
+                    "heading": heading if len(heading) >= 3 else events[chosen[0]]["title"],
+                    "paragraphs": paragraphs,
+                }
+            )
+    return sections
 
 
 async def build_story_pack(
@@ -599,6 +686,8 @@ async def build_story_pack(
     if not links:
         notes.append("No cause links were supported; check the Causes panels")
 
+    progress("telling the story")
+    story = await _story(arc_title, events, evidence, infer, notes)
     rows = []
     for event in events.values():
         cast_keys: dict[str, list[str]] = {
@@ -644,6 +733,7 @@ async def build_story_pack(
                     "introduction": clip(" ".join(b.summary for b in beats[:3]), 1200),
                     "events": rows,
                     "links": links,
+                    "story": story,
                 }
             ],
             "lore": threads,
@@ -660,6 +750,12 @@ def render_review(draft: PackDraft) -> str:
     for arc in pack.arcs:
         titles = {e.key: e.title for e in arc.events}
         lines += [f"## {arc.title}", ""]
+        for told_part in arc.story:
+            lines += [f"### {told_part.heading}", ""]
+            for told_paragraph in told_part.paragraphs:
+                lines += [told_paragraph.text, ""]
+        if arc.story:
+            lines += ["## Events", ""]
         for number, event in enumerate(arc.events, 1):
             label = event.label or f"by chapter {event.chapter}"
             lines += [f"### {number}. {event.title} ({label})", ""]

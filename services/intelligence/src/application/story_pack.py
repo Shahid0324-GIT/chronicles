@@ -82,12 +82,27 @@ class PackLink(StructuredModel):
     sources: list[Citation] = Field(min_length=1, max_length=4)
 
 
+class PackParagraph(StructuredModel):
+    """One paragraph of the arc told as a story, tied to its events and sources."""
+
+    text: str = Field(min_length=40, max_length=2600)
+    chapter: int = Field(ge=1)
+    events: list[str] = Field(default_factory=list, max_length=20)
+    sources: list[Citation] = Field(min_length=1, max_length=12)
+
+
+class PackStorySection(StructuredModel):
+    heading: str = Field(min_length=3, max_length=150)
+    paragraphs: list[PackParagraph] = Field(min_length=1, max_length=12)
+
+
 class PackArc(StructuredModel):
     key: str = Key
     title: str = Field(min_length=1, max_length=100)
     introduction: str = Field(min_length=12, max_length=1200)
     events: list[PackEvent] = Field(min_length=1, max_length=80)
     links: list[PackLink] = Field(default_factory=list, max_length=200)
+    story: list[PackStorySection] = Field(default_factory=list, max_length=60)
 
 
 class PackDiscovery(StructuredModel):
@@ -163,6 +178,12 @@ class StoryPack(StructuredModel):
                 for key in event.lore:
                     if key not in threads:
                         problems.append(f"{event.key}: unknown lore thread {key}")
+            for told_part in arc.story:
+                for told_paragraph in told_part.paragraphs:
+                    cited(told_part.heading, told_paragraph.sources)
+                    for key in told_paragraph.events:
+                        if key not in order:
+                            problems.append(f"{told_part.heading}: unknown event {key}")
             for link in arc.links:
                 cited(f"{link.cause}->{link.effect}", link.sources)
                 if link.cause not in order or link.effect not in order:
@@ -380,6 +401,21 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                         "sourceIds": used,
                     },
                     "steps": steps,
+                    "story": [
+                        {"heading": section.heading, "paragraphs": told}
+                        for section in arc.story
+                        if (
+                            told := [
+                                {
+                                    "text": p.text,
+                                    "eventNodeIds": [node_id(k) for k in p.events if k in events],
+                                    "sourceIds": sources.ids(p.sources),
+                                }
+                                for p in section.paragraphs
+                                if _visible(p.chapter, boundary)
+                            ]
+                        )
+                    ],
                 }
             )
     return {
