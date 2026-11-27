@@ -1,5 +1,14 @@
 # Universe Atlas repository guidance
 
+## Current direction (2026-11-27)
+
+Chronicles is a budget-constrained story atlas built on free and local models. A user names a world and one arc; agents find and fetch sources from user-approved sites, read them, and draft a story pack the user reviews. It must work for any story, with no story-specific code. Existing research, canonical-promotion and arc pipelines below are legacy: do not extend them, and remove them only after the new path is proven and a caller audit is approved.
+
+- Model chain: Groq (`GROQ_API_KEY_1`), then Gemini (`GEMINI_API_KEY_1`), then local Ollama. One key per provider. Never rotate keys or accounts to get past a limit.
+- Fetch only from sites the user approved for that world; respect robots rules and terms, keep source links and licence notes, and send text to a cloud model only when that site is allowed for it.
+- Story sources, caches and images live in git-ignored folders; never commit third-party text or art.
+- Every drafted item cites a saved source. Drafts are never presented as verified.
+
 ## Git workflow preference
 
 The user has authorized small commits at meaningful checkpoints and explicitly requires pushing whenever a commit is created. Follow this standing instruction without asking again. Use `main` for completed milestones and report the commit and push result. Run relevant checks and keep credentials/local environment files out of commits.

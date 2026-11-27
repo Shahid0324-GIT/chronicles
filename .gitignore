@@ -19,3 +19,5 @@ playwright-report/
 test-results/
 # Draft story packs quote source text
 story-packs/
+# Fetched story sources and images stay local
+library/

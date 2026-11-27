@@ -1,22 +1,47 @@
-# Chronicles · Universe Atlas
+# Chronicles: a story atlas on free and local models
 
-A local-first explorer for fictional worlds as connected knowledge. Phase 1 provides the PostgreSQL-backed graph API. Phase 2 provides a continuous Sigma.js atlas with illustrated nodes, GSAP motion and Zustand exploration state. Phase 3 adds source-backed research, identity resolution, relationship analysis, local retrieval and reversible graph publication to the Ollama/optional Groq worker. The frontend is preserved; default graph reads include accepted research. No authentication, cloud storage or deployment is included.
+Chronicles turns one story arc into an explorable atlas: events, causes and consequences,
+characters, places, deep entry pages and lore, each tied to a source. It is a
+**budget-constrained** project: it is built to run on free cloud allowances and a model on
+your own PC, localhost only, with no authentication, cloud storage or deployment.
 
-Phase 3 increment 4 connects PostgreSQL-backed researched journeys to the existing atlas, adds bounded inference/repair and telemetry, and provides compact research controls with status polling and explicit refresh. Curated content is an identified fallback. See [architecture and local runbook](docs/phase-3-increment-4.md), [executed tests, actual findings and screenshots](docs/phase-3-increment-4-verification.md), and the [quotation-free audit](docs/phase-3-increment-4-demo.json). Research remains partial: uncertain identities, chronology and causality stay outside publication. The [source registry and local RAG architecture](docs/phase-3-increment-3.md) remains in place.
+## Direction
 
-## Current status
+`name a world and arc -> find sources -> read -> build the atlas -> you review -> explore`
 
-Increment 6.1 adds evidence-backed story reconstruction and explicit missing-transition coverage. The real Romance Dawn reader exposes three verified segments linked through Luffy, with two unexplained transitions and no accepted causal links. It remains a partial account, not a complete arc reconstruction. See [implementation, actual research and limitations](docs/phase-3-increment-6-1.md) and the [persisted research audit](docs/phase-3-increment-6-1-results.json). The mandatory research-to-browser enrichment test uses explicitly owned fixtures, separately from real One Piece research.
+| Step | State |
+|---|---|
+| Model chain: Groq, then Gemini, then local Ollama | working |
+| Draft worlds on the story map, built from a reviewed story pack | working ([story packs](docs/story-packs.md)) |
+| File-based story library, many arcs per world | next |
+| Agents that find and fetch sources from sites you approve | planned |
+| Images with credit, arc-focused screens, later-fact lookups | planned |
+| Game lore scattered across books and items | planned |
 
-Increment 6.2 adds durable arc dossiers, section-driven research, cited composition artifacts, and a read-only arc API. The **6.2.5 backend rework** gives extraction direct access to licensed archive passages and bounded context. It carries qualified event frames into writing and review, and segments prose in Python before citation alignment. [Workflow and remaining limits](docs/phase-3-increment-6-2-5-rework.md) · [Arc API contract](docs/contracts/arc-intelligence.md)
+AI-drafted content is labelled as a draft and is never presented as verified. Quality
+depends on the sources and on your review.
 
-The latest controlled Romance Dawn benchmark recovered parts of the tavern and Devil Fruit sequence and Higuma’s escape with Luffy. Missing qualified frames for the Sea King encounter, Shanks’ rescue, and his injury stopped composition. **Luffy’s Origin has no published article.** The spoiler-bounded API returned `status: pending` and `article: null`. The benchmark reused a fixed archive. First Voyage and the retrospective-lore acceptance gate remain pending. This increment contains backend changes only. [Scene reconstruction](docs/evidence/increment-6-2-5-rework/origin-reconstruction.md) · [Benchmark audit](docs/evidence/increment-6-2-5-rework/origin-audit.json)
+## Model providers
+
+Put one key per provider in the root `.env`: `GROQ_API_KEY_1` with `GROQ_MODEL`, and
+`GEMINI_API_KEY_1` with `GEMINI_MODEL`. When a provider reaches its limit the next one takes
+over, ending with local Ollama. Keys are never rotated to get past a provider's limit; do
+not add several accounts for that purpose. Text goes to a cloud provider only with
+`AI_CLOUD_CONTENT_ALLOWED=true` and permission for its source. Free tiers may use submitted
+text to improve their products.
+
+## Earlier research engine
+
+The graph API, research worker and arc research from earlier phases remain in the code and
+are documented in `docs/` (see [verification history](docs/verification.md) and the
+[source registry and retrieval notes](docs/phase-3-increment-3.md)). The new direction does
+not build on them, and they will be removed only after it is proven.
 
 ## Prerequisites
 
 - Windows 11, PowerShell, Python 3.11+, Node.js 20.9+ (Node 24 LTS recommended), npm, Docker Desktop using Linux containers.
 - Docker Desktop must be running. Ports 5432, 8000 and 3000 must be free.
-- Internet is needed for installation and public-source research. Graph browsing and research over imported permitted text run locally with Ollama. Groq is optional and requires explicit cloud-content permission.
+- Internet is needed for installation and public-source research. Graph browsing and local Ollama work offline. Groq and Gemini are optional and require explicit cloud-content permission.
 - Verified versions and check results are in [verification.md](docs/verification.md).
 
 ## Install
@@ -48,8 +73,6 @@ Run the seed again safely. It inserts missing deterministic IDs, preserves exist
 The sample contains one universe, one anime continuity, 15 nodes and 25 edges. It is hand-curated **illustrative data**, limited to the original TV anime's opening three episodes, with early-story spoilers. It does not claim exhaustive or researched coverage. Reference: [official first-season story guide](https://re-zero-anime.jp/tv/story/tv1r.html) (the guide includes later episodes; the seed excludes them). No adaptation is assumed equivalent to another.
 
 `compose.yaml` binds PostgreSQL to loopback and stores data in a named volume. The supplied credentials are for local development. `docker compose stop` stops it without removing data. Backend owns all schema changes; frontend never connects to PostgreSQL.
-
-To configure One Piece after migrations, run `..\..\.venv\Scripts\python -m src.infrastructure.persistence.configure_one_piece` from `services/intelligence`. Then use the research worker and source controls to add permitted evidence. The configuration command creates the universe scope. Source access and cloud sharing require separate permissions.
 
 ## Run
 
