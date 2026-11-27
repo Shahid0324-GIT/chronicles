@@ -41,6 +41,20 @@ def http_status(error: BaseException | None) -> int:
     return 0
 
 
+def text_object(raw: Any) -> Any:
+    """The JSON object in a plain text reply, for models that skip the requested call."""
+    content = getattr(raw, "content", "")
+    if isinstance(content, list):
+        content = "".join(str(b.get("text", "")) for b in content if isinstance(b, dict))
+    text = str(content).strip()
+    if not text.startswith(("{", "```")):
+        return None
+    try:
+        return json.loads(text[text.index("{") : text.rindex("}") + 1])
+    except ValueError:
+        return None
+
+
 class LangChainProvider:
     def __init__(
         self,
@@ -152,6 +166,9 @@ class LangChainProvider:
             if not isinstance(result, dict):
                 raise InferenceFailure("invalid_output")
             parsed = result.get("parsed")
+            if parsed is None and not result.get("parsing_error"):
+                # The schema is still checked below, so a wrong reply stays rejected.
+                parsed = text_object(result.get("raw"))
             if parsed is None or result.get("parsing_error"):
                 error = result.get("parsing_error")
                 while (

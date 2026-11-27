@@ -52,3 +52,24 @@ is git-ignored. Run from `services/intelligence`:
 
 `build <world> <arc>` drafts `pack.json` and `review.md` in the arc folder (corrections go in
 `edits.json`). `load <world>` merges every drafted arc into the one draft world.
+`samples/glass-orchard/` is a longer owned story for judging the article.
+
+## The arc article
+
+A pack also tells the arc as an article: an opening paragraph, then headed sections of prose
+tied to events and sources. The app opens a told arc as that article, with contents, a
+timeline that follows the reader, spoiler control, and names that open their entry page.
+The story map stays available beside it.
+
+- The writer gets a few events and all their source sentences per section, so its length
+  follows the sources. A section much shorter than its sources, or one that skips an event,
+  is asked for once more and then listed under "Check these".
+- A second model pass checks each section against its sources. It only points at sentences:
+  the writer then rewrites the section once, and each finding is listed under "Check
+  these". The checker can be wrong and can miss things.
+- Paragraphs without a cited sentence are dropped. Citations show that a paragraph has
+  support, not that every phrase in it is correct, so read the article before trusting it.
+- Correct wording in `edits.json` with `"story_text": {"exact text": "replacement"}`; an
+  empty replacement removes the text.
+- Names link by entry name, alias or unshared first name, once per section.
+- A section partly hidden by the spoiler boundary loses its heading.

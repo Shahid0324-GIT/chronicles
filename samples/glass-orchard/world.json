@@ -1,0 +1,12 @@
+{
+  "slug": "glass-orchard",
+  "title": "The Glass Orchard",
+  "medium": "novel",
+  "position_word": "chapter",
+  "arcs": [
+    {
+      "key": "the-first-frost",
+      "title": "The First Frost"
+    }
+  ]
+}

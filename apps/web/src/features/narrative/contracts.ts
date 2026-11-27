@@ -29,7 +29,22 @@ export interface JourneyStep {
   loreThreadIds: string[];
   presentation: PresentationHint;
 }
+/** A run of article text; a nodeId makes it open that entry. */
+export interface StorySegment {
+  text: string;
+  nodeId?: string;
+}
+export interface StoryParagraph {
+  segments: StorySegment[];
+  eventNodeIds: string[];
+  sourceIds: string[];
+}
+export interface StorySection {
+  heading: string;
+  paragraphs: StoryParagraph[];
+}
 export interface NarrativeJourney {
+  story?: StorySection[];
   presentationState?: { status: string; reason: string };
   overview?: string;
   id: string;

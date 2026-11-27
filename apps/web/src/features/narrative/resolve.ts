@@ -63,6 +63,26 @@ export function resolveNarrative(
     if (!valid) issues.push("Journey unavailable: " + j.id);
     return valid;
   });
+  // Article links and event marks may only point at entries the graph holds.
+  const articled = journeys.map((j) =>
+    j.story
+      ? {
+          ...j,
+          story: j.story.map((section) => ({
+            ...section,
+            paragraphs: section.paragraphs.map((p) => ({
+              segments: p.segments.map((s) =>
+                s.nodeId && !nodes.has(s.nodeId) ? { text: s.text } : s,
+              ),
+              eventNodeIds: p.eventNodeIds.filter((id) =>
+                j.steps.some((s) => s.eventNodeId === id),
+              ),
+              sourceIds: p.sourceIds.filter((id) => sources.has(id)),
+            })),
+          })),
+        }
+      : j,
+  );
   const discoveries = catalog.discoveries.filter((d) => {
     const valid =
       nodes.has(d.nodeId) && hintValid(d.presentation) && sourced(d.sourceIds);
@@ -109,7 +129,7 @@ export function resolveNarrative(
     availability: catalog.availability,
     schemaVersion: 1,
     sources: catalog.sources.filter((s) => sources.has(s.id)),
-    journeys,
+    journeys: articled,
     loreThreads,
     discoveries: discoveries
       .filter((d) => threadIds.has(d.threadId))

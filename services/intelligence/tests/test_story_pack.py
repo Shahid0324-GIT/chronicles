@@ -311,3 +311,12 @@ def test_corrections_remove_wrong_links_and_statements_before_validation():
         "Edit skipped: no statement 'Never written.'",
         "Edit skipped: no cause link departure>missing",
     ]
+
+
+def test_entry_pages_show_one_section_per_name():
+    value = sample()
+    mira = next(e for e in value["entities"] if e["name"] == "Mira")
+    mira["sections"].append(mira["sections"][0])
+    page = next(p for p in entries(StoryPack.model_validate(value)) if p["display_title"] == "Mira")
+    names = [s["name"] for s in page["sections"]]
+    assert len(names) == len(set(names))

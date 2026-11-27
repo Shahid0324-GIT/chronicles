@@ -30,6 +30,8 @@ class PackEdits(StructuredModel):
     drop_statements: list[str] = Field(default_factory=list)
     # Cause links to remove, written "cause-event>effect-event".
     drop_links: list[str] = Field(default_factory=list)
+    # Wording to correct in the article: exact text -> replacement (empty removes it).
+    story_text: dict[str, str] = Field(default_factory=dict)
 
 
 def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]]:
@@ -101,6 +103,19 @@ def apply_edits(pack: StoryPack, edits: PackEdits) -> tuple[StoryPack, list[str]
             arc["links"] = kept
         if not removed:
             notes.append(f"Edit skipped: no cause link {wanted}")
+    for old, new in edits.story_text.items():
+        found = False
+        for arc in data["arcs"]:
+            for section in arc["story"]:
+                for paragraph in section["paragraphs"]:
+                    if old and old in paragraph["text"]:
+                        found = True
+                        text = paragraph["text"].replace(old, new)
+                        paragraph["text"] = " ".join(text.split())
+                section["paragraphs"] = [p for p in section["paragraphs"] if len(p["text"]) >= 40]
+            arc["story"] = [s for s in arc["story"] if s["paragraphs"]]
+        if not found:
+            notes.append(f"Edit skipped: no article text '{old[:60]}'")
     data["entities"] = [e for e in data["entities"] if e["key"] in entities]
 
     for event in events:

@@ -5,13 +5,16 @@ from src.application.story_pack import catalog, entries
 from src.application.story_pack_builder import (
     CardBatch,
     CastList,
+    LeadDraft,
     LinkList,
     LoreDraft,
     PageDraft,
+    StoryCheck,
     StoryPartDraft,
     build_story_pack,
     render_review,
 )
+from src.application.story_pack_edits import PackEdits, apply_edits
 from tests.test_arc_story import passage_set, payload
 
 
@@ -149,6 +152,7 @@ def scripted():
         if schema is StoryPartDraft:
             numbers = [e["number"] for e in data["events"]]
             cited = [int(n) for n in data["excerpts"]]
+            assert cited == list(range(1, len(cited) + 1))
             return schema.model_validate(
                 {
                     "heading": "Setting out",
@@ -165,6 +169,23 @@ def scripted():
                             "sentences": [999],
                         },
                     ],
+                }
+            )
+        if schema is StoryCheck:
+            return schema.model_validate(
+                {
+                    "problems": [
+                        {"sentence": data["paragraphs"][0], "reason": "Too sure."},
+                        {"sentence": "A sentence the article never had at all."},
+                    ]
+                }
+            )
+        if schema is LeadDraft:
+            return schema.model_validate(
+                {
+                    "introduction": "Mira leaves the harbor to look for the brother "
+                    "who went missing in the marsh.",
+                    "sentences": [int(next(iter(data["excerpts"])))],
                 }
             )
         raise AssertionError(schema)
@@ -213,8 +234,51 @@ async def test_builder_drafts_a_valid_pack_and_reports_what_to_check():
     assert len(paragraph) == 1 and paragraph[0].events == [e.key for e in arc.events]
     assert "Story paragraph left out" in notes
     assert "### Setting out" in review
-    assert catalog(pack)["journeys"][0]["story"][0]["heading"] == "Setting out"
+    # A thin first draft is asked for again, then reported if it stays thin.
+    assert "is thin" in notes
+    # The checker's finding sends the section back; invented findings are ignored.
+    assert "Rewritten after the fact check (Too sure.)" in notes
+    assert "never had at all" not in notes
+    assert arc.introduction.startswith("Mira leaves the harbor")
+    told = catalog(pack)["journeys"][0]["story"][0]
+    assert told["heading"] == "Setting out"
+    segments = told["paragraphs"][0]["segments"]
+    assert "".join(s["text"] for s in segments) == paragraph[0].text
+    # Only the first mention of an entry opens it.
+    assert [s["text"] for s in segments if "nodeId" in s] == ["Mira", "marsh"]
     assert catalog(pack, 1)["journeys"][0]["story"] == []
     # The draft is immediately servable.
     assert len(catalog(pack)["journeys"][0]["steps"]) == 4
     assert any(p["display_title"] == "Mira" for p in entries(pack, 1))
+
+
+async def test_article_corrections_and_partly_hidden_sections():
+    passages = passage_set()
+    passages = replace(
+        passages,
+        sources=[replace(s, url=f"https://example.test/{s.position}") for s in passages.sources],
+    )
+    draft = await build_story_pack(
+        slug="marsh-draft",
+        world_title="The Marsh (draft)",
+        arc_key="search",
+        arc_title="The Search",
+        medium="manga",
+        passages=passages,
+        story_bible=None,
+        infer=scripted(),
+        subjects=[],
+    )
+    fixed, notes = apply_edits(
+        draft.pack,
+        PackEdits(story_text={" until the marsh gave up its secret": "", "absent words": "x"}),
+    )
+    assert fixed.arcs[0].story[0].paragraphs[0].text.endswith("kept searching.")
+    assert notes == ["Edit skipped: no article text 'absent words'"]
+    # A later paragraph hidden by the boundary takes the section heading with it.
+    section = fixed.arcs[0].story[0]
+    first = section.paragraphs[0].model_copy(update={"chapter": 1})
+    later = section.paragraphs[0].model_copy(update={"chapter": 3})
+    section.paragraphs[:] = [first, later]
+    told = catalog(fixed, 1)["journeys"][0]["story"]
+    assert [(s["heading"], len(s["paragraphs"])) for s in told] == [("Part 1", 1)]

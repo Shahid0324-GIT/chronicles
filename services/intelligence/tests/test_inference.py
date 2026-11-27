@@ -1,4 +1,5 @@
 import asyncio
+from types import SimpleNamespace
 
 import pytest
 
@@ -10,6 +11,7 @@ from src.application.research_contracts import (
     ResearchPlan,
 )
 from src.infrastructure.config.settings import Settings
+from src.infrastructure.inference import text_object
 
 
 class Provider:
@@ -281,3 +283,16 @@ async def test_quality_critical_calls_never_fall_back_to_the_local_model():
             "Owned", "Owned", ResearchPlan, "presentation", allow_local_fallback=False
         )
     assert local.calls == 0
+
+
+@pytest.mark.parametrize(
+    ("content", "expected"),
+    [
+        ('```json\n{"a": 1}\n```', {"a": 1}),
+        ([{"type": "text", "text": '{"a": 2}'}], {"a": 2}),
+        ("I cannot answer {that}.", None),
+        ('{"a": ', None),
+    ],
+)
+def test_a_plain_text_reply_is_read_only_when_it_is_json(content, expected):
+    assert text_object(SimpleNamespace(content=content)) == expected

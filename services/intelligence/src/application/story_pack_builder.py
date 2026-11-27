@@ -26,7 +26,7 @@ from src.application.arc_story import (
 from src.application.evidence_dossier import token_estimate
 from src.application.knowledge_presentation import Infer
 from src.application.ports.retrieval import ArcPassageSet
-from src.application.research_contracts import StructuredModel
+from src.application.research_contracts import InferenceFailure, StructuredModel
 from src.application.story_bible import prompt_bible
 from src.application.story_pack import StoryPack
 
@@ -37,6 +37,11 @@ prose, never copying source wording, and leave a field empty when the excerpts d
 it. Cite sentence numbers. Return exactly the requested JSON structure."""
 
 NameKind = Literal["CHARACTER", "LOCATION", "OBJECT", "MYSTERY"]
+# One article section: few events and a small excerpt budget, leaving room to write.
+STORY_EVENTS = 4
+STORY_TOKENS = 1800
+# A section shorter than this share of its source words is asked for again.
+STORY_COVERAGE = 0.6
 
 
 class EventCard(StructuredModel):
@@ -100,7 +105,21 @@ class ToldParagraph(StructuredModel):
 
 class StoryPartDraft(StructuredModel):
     heading: str
-    paragraphs: list[ToldParagraph] = Field(min_length=1, max_length=8)
+    paragraphs: list[ToldParagraph] = Field(min_length=1, max_length=14)
+
+
+class StoryProblem(StructuredModel):
+    sentence: str
+    reason: str = ""
+
+
+class StoryCheck(StructuredModel):
+    problems: list[StoryProblem] = Field(default_factory=list, max_length=20)
+
+
+class LeadDraft(StructuredModel):
+    introduction: str
+    sentences: list[int] = Field(default_factory=list)
 
 
 class DiscoveryDraft(StructuredModel):
@@ -155,8 +174,18 @@ def merge_short_names(subjects: dict[str, dict[str, Any]], alias_of: dict[str, s
                 alias_of[spelling] = fuller[0]
 
 
+def named_in(phrase: str, alias_of: dict[str, str]) -> str | None:
+    """The longest known name inside a looser subject such as "origins of the map"."""
+    words = name_key(phrase)
+    for spelling in sorted(alias_of, key=len, reverse=True):
+        if re.search(rf"\b{re.escape(spelling)}s?\b", words):
+            return alias_of[spelling]
+    return None
+
+
 def clip(value: str, limit: int) -> str:
-    value = " ".join(value.split())
+    # Models sometimes leave sentence numbers in their prose.
+    value = " ".join(re.sub(r"\s*\[\d+(?:\s*,\s*\d+)*\]", "", value).split())
     if len(value) <= limit:
         return value
     cut = value[: limit - 3]
@@ -205,12 +234,14 @@ class _Evidence:
         return earliest if len(earliest) >= 3 else ids
 
 
-def _batches(items: list[Any], size: Callable[[Any], int], limit: int) -> list[list[Any]]:
+def _batches(
+    items: list[Any], size: Callable[[Any], int], limit: int, budget: int = REQUEST_TOKENS
+) -> list[list[Any]]:
     result: list[list[Any]] = []
     used = 0
     for item in items:
         cost = size(item)
-        if result and used + cost <= REQUEST_TOKENS and len(result[-1]) < limit:
+        if result and used + cost <= budget and len(result[-1]) < limit:
             result[-1].append(item)
             used += cost
         else:
@@ -308,82 +339,286 @@ async def _links(
     return list(found.values())
 
 
+def _tellings(events: dict[int, dict[str, Any]], numbers: list[int]) -> dict[int, list[int]]:
+    """Every sentence of the arc, each shared with one event, so the article misses none."""
+    owner: dict[int, int] = {}
+    for index, event in events.items():
+        for n in event["ids"]:
+            owner.setdefault(n, index)
+    result: dict[int, list[int]] = {index: [] for index in events}
+    reached = next(iter(events), 0)
+    for n in sorted(numbers) if events else []:
+        if n in owner:
+            reached = max(reached, owner[n])
+        result[owner.get(n, reached)].append(n)
+    return result
+
+
+def _told_paragraphs(
+    part: StoryPartDraft,
+    shown: list[int],
+    chosen: list[int],
+    events: dict[int, dict[str, Any]],
+    evidence: _Evidence,
+) -> tuple[list[dict[str, Any]], list[str]]:
+    """Keep only paragraphs that cite a sentence the writer was shown."""
+    paragraphs: list[dict[str, Any]] = []
+    notes: list[str] = []
+    for written in part.paragraphs:
+        # Sections number their excerpts from 1.
+        ids = [shown[n - 1] for n in dict.fromkeys(written.sentences) if 0 < n <= len(shown)]
+        text = clip(written.text, 2600)
+        if not ids or len(text) < 40:
+            notes.append(f"Story paragraph left out (no cited source): {text[:80]}")
+            continue
+        if word_spans(text, 18) & evidence.copied:
+            notes.append(f"Story paragraph copies source wording: {text[:80]}")
+        told = [i for i in dict.fromkeys(written.events) if i in chosen]
+        paragraphs.append(
+            {
+                "text": text,
+                "chapter": max([evidence.chapter(ids), *(events[i]["chapter"] for i in told)]),
+                "events": [events[i]["key"] for i in told],
+                "sources": evidence.citations(ids, 12),
+            }
+        )
+    return paragraphs, notes
+
+
+@dataclass
+class _Section:
+    heading: str
+    paragraphs: list[dict[str, Any]]
+    dropped: list[str]
+    covered: set[str]
+    words: int
+    copied: int
+
+    @property
+    def score(self) -> tuple[int, int, int]:
+        return len(self.covered), -self.copied, self.words
+
+
+def _words(texts: list[str]) -> int:
+    return sum(len(t.split()) for t in texts)
+
+
+async def _unsupported(
+    paragraphs: list[dict[str, Any]],
+    excerpts: dict[str, str],
+    names: list[str],
+    infer: Infer,
+    notes: list[str],
+) -> list[dict[str, str]]:
+    """A second reading against the sources. It only points at sentences, never edits them."""
+    try:
+        found = StoryCheck.model_validate(
+            await infer(
+                "Check these article paragraphs against the excerpts, sentence by sentence. "
+                "Report only sentences that say something the excerpts contradict or do not "
+                "say: a wrong person, number, order, cause, motive or action, or an added "
+                "judgement. Rewording, style and tense are not problems, and neither is using "
+                "a full name or title listed in known_names. Copy each such "
+                "sentence exactly into sentence and say briefly in reason what is wrong. "
+                "Return an empty list when everything is supported.\n"
+                'Return only JSON: {"problems":[{"sentence":"","reason":""}]}\n'
+                + json.dumps(
+                    {
+                        "known_names": names,
+                        "excerpts": excerpts,
+                        "paragraphs": [p["text"] for p in paragraphs],
+                    },
+                    ensure_ascii=False,
+                ),
+                StoryCheck,
+                "presentation_verification",
+            )
+        )
+    except InferenceFailure:
+        notes.append(f"Not fact-checked: the section starting '{paragraphs[0]['text'][:60]}'")
+        return []
+    return [
+        {"sentence": sentence, "reason": clip(problem.reason, 200)}
+        for problem in found.problems
+        # A sentence the section does not contain cannot be a problem with it.
+        if len(sentence := problem.sentence.strip()) >= 20
+        and any(sentence in p["text"] for p in paragraphs)
+    ]
+
+
 async def _story(
     title: str,
     events: dict[int, dict[str, Any]],
     evidence: _Evidence,
     infer: Infer,
     notes: list[str],
+    names: list[str],
 ) -> list[dict[str, Any]]:
-    """Tell the arc as connected prose, a few events at a time, carrying the thread forward."""
+    """Tell the arc as a full article, a few events at a time, carrying the thread forward."""
     order = list(events)
+    telling = _tellings(events, list(evidence.numbered))
+
+    def size(index: int) -> int:
+        return sum(token_estimate(evidence.numbered[n].text) for n in telling[index])
+
     sections: list[dict[str, Any]] = []
     ending = ""
-    for start in range(0, len(order), 6):
-        chosen = order[start : start + 6]
-        shown = list(dict.fromkeys(n for i in chosen for n in events[i]["context"]))
-        part = StoryPartDraft.model_validate(
-            await infer(
-                "Tell this stretch of the arc as one section of an encyclopedia story, not "
-                "as a list of events. Write flowing paragraphs that set the scene, follow "
-                "what people want and do, and carry the thread from the previous ending into "
-                "what comes next. Connect events with causes or motives only where the "
-                "excerpts show them. Add no detail, description, timing, feeling or judgement "
-                "that the excerpts do not state; plain faithful prose is better than colour. "
-                "Use original wording and clear names, and no sentence "
-                "numbers in the text. Give each paragraph the event numbers it tells and the "
-                "sentence numbers that support it.\n"
-                'Return only JSON: {"heading":"","paragraphs":[{"text":"","events":[1],'
-                '"sentences":[1]}]}\n'
-                + json.dumps(
-                    {
-                        "arc": title,
-                        "previous_ending": ending or None,
-                        "events": [
-                            {
-                                "number": i,
-                                "title": events[i]["title"],
-                                "summary": events[i]["summary"][:300],
-                            }
-                            for i in chosen
-                        ],
-                        "upcoming": [events[i]["title"] for i in order[start + 6 : start + 8]],
-                        "excerpts": evidence.texts(shown),
-                    },
-                    ensure_ascii=False,
-                ),
-                StoryPartDraft,
-                "presentation",
+    done = 0
+    for chosen in _batches(order, size, STORY_EVENTS, STORY_TOKENS) if order else []:
+        done += len(chosen)
+        wanted = sorted({n for i in chosen for n in telling[i] or events[i]["ids"]})
+        found = evidence.texts(wanted)
+        shown = [int(n) for n in found]
+        excerpts = {str(i): text for i, text in enumerate(found.values(), 1)}
+        if len(shown) < len(wanted):
+            notes.append(
+                f"Article section from '{events[chosen[0]]['title']}' had more source text than "
+                "fits one request; check it for gaps"
+            )
+        source_words = _words(list(excerpts.values()))
+        prompt = (
+            "Write one section of a long encyclopedia plot article, the way a fan wiki "
+            "retells a story arc, using these excerpts. Retell everything they tell: every "
+            "action, exchange, reason, discovery and detail, in order, as flowing narrative "
+            "prose that follows what people want and do. Do not summarise, compress or make "
+            "lists. Write several developed paragraphs, usually one to three for each event, "
+            f"each of three to six sentences. The excerpts hold about {source_words} words, "
+            "so the section should be about that long in your own words. Length comes only "
+            "from the excerpts: add no detail, description, feeling, motive, timing or "
+            "judgement they do not state, and connect events with causes only where they show "
+            "them. Carry on from the previous ending without repeating it. The upcoming "
+            "titles are listed so that you do not tell them early. Write in the past tense "
+            "throughout. Use clear names and no "
+            "sentence numbers in the text. Give each paragraph the event numbers it tells "
+            "and the sentence numbers that support it.\n"
+            'Return only JSON: {"heading":"","paragraphs":[{"text":"","events":[1],'
+            '"sentences":[1]}]}\n'
+            + json.dumps(
+                {
+                    "arc": title,
+                    "headings_so_far": [x["heading"] for x in sections],
+                    "previous_ending": ending or None,
+                    "events": [
+                        {
+                            "number": i,
+                            "title": events[i]["title"],
+                            "summary": events[i]["summary"][:300],
+                        }
+                        for i in chosen
+                    ],
+                    "upcoming": [events[i]["title"] for i in order[done : done + 2]],
+                    "excerpts": excerpts,
+                },
+                ensure_ascii=False,
             )
         )
-        paragraphs = []
-        for written in part.paragraphs:
-            ids = [n for n in dict.fromkeys(written.sentences) if n in shown]
-            text = clip(written.text, 2600)
-            if not ids or len(text) < 40:
-                notes.append(f"Story paragraph left out (no cited source): {text[:80]}")
-                continue
-            if word_spans(text, 18) & evidence.copied:
-                notes.append(f"Story paragraph copies source wording: {text[:80]}")
-            told = [i for i in dict.fromkeys(written.events) if i in chosen]
-            paragraphs.append(
-                {
-                    "text": text,
-                    "chapter": max([evidence.chapter(ids), *(events[i]["chapter"] for i in told)]),
-                    "events": [events[i]["key"] for i in told],
-                    "sources": evidence.citations(ids, 12),
-                }
+
+        async def draft(
+            request: str, shown: list[int] = shown, chosen: list[int] = chosen
+        ) -> _Section:
+            part = StoryPartDraft.model_validate(
+                await infer(request, StoryPartDraft, "presentation")
+            )
+            kept, dropped = _told_paragraphs(part, shown, chosen, events, evidence)
+            return _Section(
+                part.heading,
+                kept,
+                dropped,
+                {key for p in kept for key in p["events"]},
+                _words([p["text"] for p in kept]),
+                sum(bool(word_spans(p["text"], 18) & evidence.copied) for p in kept),
+            )
+
+        best = await draft(prompt)
+        missing = [i for i in chosen if events[i]["key"] not in best.covered]
+        faults = []
+        if missing or best.words < source_words * STORY_COVERAGE:
+            faults.append(
+                f"it kept {best.words} words and left out event numbers {missing}; tell every "
+                "event fully, citing excerpt numbers for every paragraph"
+            )
+        if best.copied:
+            faults.append("it copied source sentences; retell them in your own words")
+        if faults:
+            # The data stays last in the prompt, so the correction goes first.
+            again = await draft(
+                f"YOUR EARLIER DRAFT HAD FAULTS: {' and '.join(faults)}. Write the whole "
+                "section again.\n" + prompt
+            )
+            if again.score > best.score:
+                best = again
+        problems = (
+            await _unsupported(best.paragraphs, excerpts, names, infer, notes)
+            if best.paragraphs
+            else []
+        )
+        if problems:
+            corrected = await draft(
+                "A CHECKER FOUND UNSUPPORTED STATEMENTS in your earlier draft: "
+                + json.dumps(problems, ensure_ascii=False)
+                + " Write the whole section again without these errors, keeping every "
+                "supported fact and using your own words.\n" + prompt
+            )
+            # A correction that loses events, wording or much of the telling is no better.
+            if (
+                corrected.covered >= best.covered
+                and corrected.copied <= best.copied
+                and corrected.words >= best.words * 0.8
+            ):
+                best = corrected
+                notes += [
+                    f"Rewritten after the fact check ({p['reason']}): {p['sentence'][:160]}"
+                    for p in problems
+                ]
+            else:
+                notes += [
+                    f"Check this sentence by hand ({p['reason']}): {p['sentence'][:160]}"
+                    for p in problems
+                ]
+        paragraphs, covered, words = best.paragraphs, best.covered, best.words
+        notes += best.dropped
+        first = events[chosen[0]]["title"]
+        notes += [
+            f"The article does not tell '{events[i]['title']}'; check that section"
+            for i in chosen
+            if events[i]["key"] not in covered
+        ]
+        if words < source_words * STORY_COVERAGE:
+            notes.append(
+                f"Article section from '{first}' is thin: {words} words from "
+                f"{source_words} words of sources"
             )
         if paragraphs:
             ending = paragraphs[-1]["text"][-400:]
-            heading = clip(part.heading, 150)
-            sections.append(
-                {
-                    "heading": heading if len(heading) >= 3 else events[chosen[0]]["title"],
-                    "paragraphs": paragraphs,
-                }
-            )
+            heading = clip(best.heading, 150)
+            if len(heading) < 3 or name_key(heading) == name_key(title):
+                heading = first
+            sections.append({"heading": heading, "paragraphs": paragraphs})
     return sections
+
+
+async def _lead(title: str, evidence: _Evidence, infer: Infer) -> str:
+    """The article's opening, from the earliest position only, so it never spoils later ones."""
+    earliest = min(evidence.position.values())
+    excerpts = evidence.texts(
+        [n for n in sorted(evidence.numbered) if evidence.position[n] == earliest], STORY_TOKENS
+    )
+    draft = LeadDraft.model_validate(
+        await infer(
+            "Write the opening paragraph of an encyclopedia article about this story arc: "
+            "who it follows, where it begins and what sets it in motion, in three to five "
+            "sentences using only these opening excerpts. Do not hint at how it ends. Add "
+            "nothing they do not state, use original wording and no sentence numbers in the "
+            "text. List the sentence numbers you used.\n"
+            'Return only JSON: {"introduction":"","sentences":[1]}\n'
+            + json.dumps({"arc": title, "excerpts": excerpts}, ensure_ascii=False),
+            LeadDraft,
+            "presentation",
+        )
+    )
+    text = clip(draft.introduction, 1200)
+    supported = any(str(n) in excerpts for n in draft.sentences)
+    return text if supported and len(text) >= 40 else ""
 
 
 async def build_story_pack(
@@ -606,8 +841,10 @@ async def build_story_pack(
     lore = LoreDraft.model_validate(
         await infer(
             "Find the threads of lore this arc reveals: powers, promises, histories, objects "
-            "and open mysteries that span events. For each, name the listed subject it is "
-            "about and give its discoveries in the order the reader learns them. Mark each "
+            "and open mysteries that span events. For each, copy into subject exactly one "
+            "name from the subjects list that it is mainly about, title it after what it "
+            "follows rather than a category, and give its discoveries in the order the "
+            "reader learns them. Mark each "
             "established (stated), interpretation (a reasonable reading) or unresolved.\n"
             'Return only JSON: {"threads":[{"title":"","subject":"","introduction":"",'
             '"discoveries":[{"title":"","explanation":"","classification":"established",'
@@ -628,7 +865,7 @@ async def build_story_pack(
     thread_taken: set[str] = set()
     discovery_taken: set[str] = set()
     for thread in lore.threads:
-        concept = alias_of.get(name_key(thread.subject))
+        concept = alias_of.get(name_key(thread.subject)) or named_in(thread.subject, alias_of)
         discoveries: list[dict[str, Any]] = []
         for told in thread.discoveries:
             ids = [n for n in dict.fromkeys(told.sentences) if n in numbered]
@@ -689,7 +926,11 @@ async def build_story_pack(
         notes.append("No cause links were supported; check the Causes panels")
 
     progress("telling the story")
-    story = await _story(arc_title, events, evidence, infer, notes)
+    known = [e["name"] for e in entities.values()]
+    story = await _story(arc_title, events, evidence, infer, notes, known)
+    lead = await _lead(arc_title, evidence, infer)
+    if not lead:
+        notes.append("No supported opening paragraph; the introduction needs writing")
     rows = []
     for event in events.values():
         cast_keys: dict[str, list[str]] = {
@@ -732,7 +973,7 @@ async def build_story_pack(
                 {
                     "key": arc_key,
                     "title": arc_title,
-                    "introduction": clip(" ".join(b.summary for b in beats[:3]), 1200),
+                    "introduction": lead or clip(" ".join(b.summary for b in beats[:3]), 1200),
                     "events": rows,
                     "links": links,
                     "story": story,
@@ -751,7 +992,7 @@ def render_review(draft: PackDraft) -> str:
     lines = [f"# {pack.title}", "", "*AI draft. Edit the JSON file, then import it.*", ""]
     for arc in pack.arcs:
         titles = {e.key: e.title for e in arc.events}
-        lines += [f"## {arc.title}", ""]
+        lines += [f"## {arc.title}", "", arc.introduction, ""]
         for told_part in arc.story:
             lines += [f"### {told_part.heading}", ""]
             for told_paragraph in told_part.paragraphs:

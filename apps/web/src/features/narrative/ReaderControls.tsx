@@ -1,22 +1,13 @@
 "use client";
 import { useExploration } from "@/stores/ExplorationProvider";
+import { usePositionUnit } from "./SpoilerControl";
 
 export default function ReaderControls() {
   const boundary = useExploration((s) => s.spoilerPosition),
     setBoundary = useExploration((s) => s.setSpoilerPosition),
     entries = useExploration((s) => s.narrative.entryIndex),
     inspect = useExploration((s) => s.selectNode);
-  const medium = useExploration((s) =>
-    s.graph?.continuities
-      .find((c) => c.id === s.continuityId)
-      ?.medium.toUpperCase(),
-  );
-  const unit =
-    medium === "MANGA"
-      ? "chapter"
-      : medium === "ANIME"
-        ? "episode"
-        : "source position";
+  const unit = usePositionUnit();
   return (
     <div className="story-scope-controls">
       <label>

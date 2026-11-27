@@ -74,6 +74,9 @@ async def build(
                 break
             except InferenceFailure as error:
                 invalid += error.code == "structured_output_exhausted"
+                for use in router.usage[-4:]:
+                    if use.validation_errors:
+                        say(f"  invalid reply from {use.provider}: {use.validation_errors}")
                 permanent = error.code in {"cloud_not_permitted", "request_too_large"}
                 if permanent or invalid >= MAX_INVALID or attempt == MAX_ATTEMPTS:
                     raise

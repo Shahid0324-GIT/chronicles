@@ -4,6 +4,8 @@ A pack is AI-drafted content that a person reviews. It lives in its own "-draft"
 universe, is never canonical knowledge, and is never presented as verified.
 """
 
+import re
+from collections import Counter
 from typing import Any, Literal
 from uuid import NAMESPACE_URL, UUID, uuid5
 
@@ -93,7 +95,7 @@ class PackParagraph(StructuredModel):
 
 class PackStorySection(StructuredModel):
     heading: str = Field(min_length=3, max_length=150)
-    paragraphs: list[PackParagraph] = Field(min_length=1, max_length=12)
+    paragraphs: list[PackParagraph] = Field(min_length=1, max_length=14)
 
 
 class PackArc(StructuredModel):
@@ -102,7 +104,7 @@ class PackArc(StructuredModel):
     introduction: str = Field(min_length=12, max_length=1200)
     events: list[PackEvent] = Field(min_length=1, max_length=80)
     links: list[PackLink] = Field(default_factory=list, max_length=200)
-    story: list[PackStorySection] = Field(default_factory=list, max_length=60)
+    story: list[PackStorySection] = Field(default_factory=list, max_length=80)
 
 
 class PackDiscovery(StructuredModel):
@@ -294,6 +296,43 @@ def _visible(chapter: int, boundary: int | None) -> bool:
     return boundary is None or chapter <= boundary
 
 
+def _link_names(entities: list[PackEntity]) -> dict[str, str]:
+    """Spellings that open an entry: names, aliases and unshared first names of characters."""
+    names: dict[str, str] = {}
+    for entity in entities:
+        for name in (entity.name, *entity.aliases):
+            names.setdefault(name.casefold(), entity.key)
+    firsts = [(e.name.split()[0].casefold(), e) for e in entities if " " in e.name]
+    shared = Counter(first for first, _ in firsts)
+    for first, entity in firsts:
+        if entity.type == "CHARACTER" and shared[first] == 1 and len(first) > 2:
+            if first not in {"the", "old", "young", "lady", "lord"}:
+                names.setdefault(first, entity.key)
+    return names
+
+
+def _segments(text: str, names: dict[str, str], linked: set[str]) -> list[tuple[str, str]]:
+    """Split text into (words, entry key) pieces, linking each entry's first mention only."""
+    if not names:
+        return [(text, "")]
+    longest = sorted(names, key=len, reverse=True)
+    pattern = rf"(?<!\w)(?:{'|'.join(map(re.escape, longest))})(?!\w)"
+    pieces: list[tuple[str, str]] = []
+    end = 0
+    for match in re.finditer(pattern, text, re.IGNORECASE):
+        key = names.get(match.group().casefold(), "")
+        if not key or key in linked:
+            continue
+        linked.add(key)
+        if match.start() > end:
+            pieces.append((text[end : match.start()], ""))
+        pieces.append((match.group(), key))
+        end = match.end()
+    if end < len(text):
+        pieces.append((text[end:], ""))
+    return pieces
+
+
 def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
     """The story map response; nothing beyond the reader's chapter boundary is included."""
     _, continuity, _, edges = graph(pack)
@@ -351,6 +390,36 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                 }
             )
     available_threads = {t["id"] for t in threads}
+    names = _link_names(entities)
+
+    def article(arc: PackArc) -> list[dict[str, Any]]:
+        sections = []
+        for number, section in enumerate(arc.story, 1):
+            visible = [p for p in section.paragraphs if _visible(p.chapter, boundary)]
+            if not visible:
+                continue
+            linked: set[str] = set()
+            paragraphs = [
+                {
+                    "segments": [
+                        {"text": words, "nodeId": node_id(key)} if key else {"text": words}
+                        for words, key in _segments(p.text, names, linked)
+                    ],
+                    "eventNodeIds": [node_id(k) for k in p.events if k in events],
+                    "sourceIds": sources.ids(p.sources),
+                }
+                for p in visible
+            ]
+            # A heading may name later events, so a partly hidden section loses it.
+            complete = len(visible) == len(section.paragraphs)
+            sections.append(
+                {
+                    "heading": section.heading if complete else f"Part {number}",
+                    "paragraphs": paragraphs,
+                }
+            )
+        return sections
+
     journeys = []
     for arc in pack.arcs:
         steps = []
@@ -401,21 +470,7 @@ def catalog(pack: StoryPack, boundary: int | None = None) -> dict[str, Any]:
                         "sourceIds": used,
                     },
                     "steps": steps,
-                    "story": [
-                        {"heading": section.heading, "paragraphs": told}
-                        for section in arc.story
-                        if (
-                            told := [
-                                {
-                                    "text": p.text,
-                                    "eventNodeIds": [node_id(k) for k in p.events if k in events],
-                                    "sourceIds": sources.ids(p.sources),
-                                }
-                                for p in section.paragraphs
-                                if _visible(p.chapter, boundary)
-                            ]
-                        )
-                    ],
+                    "story": article(arc),
                 }
             )
     return {
@@ -521,11 +576,16 @@ def entries(pack: StoryPack, boundary: int | None = None) -> list[dict[str, Any]
         if not _visible(entity.chapter, boundary):
             continue
         sections, citations = [], list(entity.sources)
+        # Merged arcs can each carry a section of the same name; the page shows one.
+        told: dict[str, list[str]] = {}
         for section in entity.sections:
             visible = [s for s in section.statements if _visible(s.chapter, boundary)]
             if visible:
-                sections.append(statements(entity.key, section.name, [s.text for s in visible]))
+                told.setdefault(section.name, []).extend(s.text for s in visible)
                 citations += [c for s in visible for c in s.sources]
+        sections += [
+            statements(entity.key, name, list(dict.fromkeys(texts))) for name, texts in told.items()
+        ]
         # The subject's events, in story order, are assembled here rather than rewritten.
         own_events = [
             f"Chapter {e.chapter}: {e.title}"

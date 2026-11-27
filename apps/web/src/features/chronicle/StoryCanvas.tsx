@@ -1,5 +1,7 @@
 "use client";
+import { useState } from "react";
 import { useExploration } from "@/stores/ExplorationProvider";
+import ArticleView from "@/features/article/ArticleView";
 import { activeJourney } from "@/features/narrative/selectors";
 import { isDraftWorld } from "@/features/narrative/draft";
 import StorySpine from "./StorySpine";
@@ -24,7 +26,12 @@ export default function StoryCanvas() {
     scope = useExploration((s) => s.narrative.researchScopes?.[0]),
     inspect = useExploration((s) => s.selectNode),
     setMode = useExploration((s) => s.setMode),
+    mode = useExploration((s) => s.mode),
     draft = useExploration((s) => isDraftWorld(s.graph?.universe.slug));
+  // A told arc opens as an article; the story map stays one step away.
+  const [reading, setReading] = useState(true);
+  const told = !!journey?.story?.length,
+    article = told && reading && mode !== "lore";
   return (
     <section
       className={
@@ -51,7 +58,30 @@ export default function StoryCanvas() {
             " · Research failed; open research details"}
         </p>
       )}
-      {journey ? (
+      {told && (
+        <div className="arc-view-switch" role="group" aria-label="Arc view">
+          <button
+            type="button"
+            aria-pressed={article}
+            onClick={() => {
+              setReading(true);
+              if (mode === "lore") setMode("guided");
+            }}
+          >
+            Article
+          </button>
+          <button
+            type="button"
+            aria-pressed={!article}
+            onClick={() => setReading(false)}
+          >
+            Story map
+          </button>
+        </div>
+      )}
+      {journey && article ? (
+        <ArticleView key={journey.id} journey={journey} />
+      ) : journey ? (
         <>
           <header className="story-intro">
             <div>

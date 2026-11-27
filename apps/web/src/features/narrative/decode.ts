@@ -47,6 +47,22 @@ const step = (v: unknown) =>
         ["actor", "recipient", "witness", "opponent"].includes(String(r.role)),
     ));
 
+const section = (v: unknown) =>
+  object(v) &&
+  text(v.heading) &&
+  list(
+    v.paragraphs,
+    (p) =>
+      object(p) &&
+      ids(p.eventNodeIds) &&
+      ids(p.sourceIds) &&
+      list(
+        p.segments,
+        (s) =>
+          object(s) && text(s.text) && (s.nodeId === undefined || id(s.nodeId)),
+      ),
+  );
+
 export function decodeNarrative(value: unknown): NarrativeCatalog {
   if (
     !object(value) ||
@@ -186,7 +202,8 @@ export function decodeNarrative(value: unknown): NarrativeCatalog {
         ) &&
         text(j.ordering.explanation) &&
         ids(j.ordering.sourceIds) &&
-        list(j.steps, step),
+        list(j.steps, step) &&
+        (j.story === undefined || list(j.story, section)),
     ) ||
     !list(
       value.loreThreads,
